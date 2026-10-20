@@ -1,6 +1,6 @@
 # Media card
 
-One card on **Thuis** for all media: Sonos and Chromecast, plus stream buttons that start Home Assistant scripts. Dark mode only. It replaces the earlier full-screen Sonos design in [`../sonos-player/`](../sonos-player/README.md).
+One card on **Thuis** for all media: Sonos and Chromecast, plus stream buttons that start Home Assistant scripts. Dark mode only.
 
 | Part | Status |
 |---|---|

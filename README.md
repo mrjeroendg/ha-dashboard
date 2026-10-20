@@ -14,6 +14,10 @@ src/
 ├── lib/houseStatus.ts  "Iedereen thuis · 3 lichten aan · 21,5° binnen"
 ├── lib/quickActions.ts Quick action rules + ENTITIES map (which actions, when, what they do)
 ├── components/QuickActions.tsx  "Voorgesteld" card + "Snel" grid
+├── components/BottomNav.tsx     Floating room navigation ("Thuis" + your rooms)
+├── components/RoomView.tsx      Room page: rows with switches, buttons, read-only sensors
+├── config/rooms.ts     YOUR rooms: name, icon, which entities (edit this)
+├── lib/rooms.ts        How each entity type is shown and what tapping it does
 ├── hooks/useNow.ts     Ticks every minute, refreshes when the app returns to foreground
 ├── styles.css          Warm neutrals, light + dark (follows iOS appearance)
 └── dev/                DEV ONLY — never imported by the library build
@@ -138,6 +142,18 @@ Copy `dist\ha-dashboard.js` to `\\192.168.1.100\config\www\`. Then go to **Setti
 ## Quick actions
 
 `src/lib/quickActions.ts` defines every action as a plain object: `label`, `icon`, `requires` (entity IDs), `relevance(ctx)` (a score for the current time, day and states; 0 hides it), `detail(ctx)` (the second line on the card) and `run(hass)` (the service call). The highest-scoring routine becomes **Voorgesteld**, and the next four non-routine actions fill **Snel**. Actions whose entities don't exist in your HA are hidden. To use your own devices, edit the `ENTITIES` map at the top of the file.
+
+## Rooms
+
+The bottom navigation shows **Thuis** plus the rooms in `src/config/rooms.ts`, in that order. You define them yourself; HA areas aren't used. Each room lists its entities:
+
+- **Controllable** (light, switch, fan, input_boolean, cover, media_player): a row with a switch.
+- **Climate:** −/+ buttons that change the target temperature by 0.5°.
+- **Scene/script:** a "Start" button.
+- **Lock:** shows "Op slot", or a button to lock it. Unlocking from the dashboard is intentionally not possible.
+- **Everything else** (sensor, binary_sensor, …): read-only. A room with only sensors is fine.
+
+Entities that don't exist in HA are skipped, and a room with none left is hidden. Use `{ entity, name }` for a shorter row name.
 
 ## Status line logic
 

@@ -53,6 +53,26 @@ const PATHS = {
   check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
   chevron: <path d="M9 6l6 6-6 6" />,
   alert: <path d="M12 8v5M12 16.5v.5M10.3 3.9L2.6 17.5A2 2 0 0 0 4.3 20.5h15.4a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z" />,
+  home: <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z" />,
+  bulb: <path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z" />,
+  plug: <path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0zM12 17v5" />,
+  door: (
+    <>
+      <path d="M6 21V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17M3 21h18" />
+      <circle cx="14.5" cy="12" r="1" />
+    </>
+  ),
+  monitor: (
+    <>
+      <rect x="3" y="4" width="18" height="12" rx="2" />
+      <path d="M9 20h6M12 16v4" />
+    </>
+  ),
+  droplet: <path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z" />,
+  gauge: <path d="M4 15a8 8 0 1 1 16 0M12 15l4-4" />,
+  play: <path d="M8 5v14l11-7z" />,
+  minus: <path d="M6 12h12" />,
+  plus: <path d="M12 6v12M6 12h12" />,
 } as const;
 
 export type IconName = keyof typeof PATHS;

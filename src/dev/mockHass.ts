@@ -22,12 +22,13 @@ function baseStates(): HassEntities {
   const list = [
     entity('person.jeroen', 'home', { friendly_name: 'Jeroen' }),
     entity('person.an', 'home', { friendly_name: 'An' }),
-    entity('light.keuken', 'off', { friendly_name: 'Keuken' }),
-    entity('light.gang', 'off', { friendly_name: 'Gang' }),
-    entity('light.woonkamer', 'off', { friendly_name: 'Woonkamer', brightness: 204 }),
-    entity('light.eettafel', 'off', { friendly_name: 'Eettafel' }),
-    entity('light.slaapkamer', 'off', { friendly_name: 'Slaapkamer' }),
-    entity('light.bureau', 'off', { friendly_name: 'Bureau' }),
+    // supported_color_modes like real lights: dimmable, colour, or on/off only.
+    entity('light.keuken', 'off', { friendly_name: 'Keuken', supported_color_modes: ['brightness'] }),
+    entity('light.gang', 'off', { friendly_name: 'Gang', supported_color_modes: ['onoff'] }),
+    entity('light.woonkamer', 'off', { friendly_name: 'Woonkamer', supported_color_modes: ['color_temp', 'xy'] }),
+    entity('light.eettafel', 'off', { friendly_name: 'Eettafel', supported_color_modes: ['brightness'] }),
+    entity('light.slaapkamer', 'off', { friendly_name: 'Slaapkamer', supported_color_modes: ['brightness'] }),
+    entity('light.bureau', 'off', { friendly_name: 'Bureau', supported_color_modes: ['onoff'] }),
     entity('binary_sensor.raam_badkamer', 'off', { friendly_name: 'Raam badkamer', device_class: 'window' }),
     entity('sensor.woonkamer_temperatuur', '19.5', { unit_of_measurement: '°C', device_class: 'temperature' }),
     entity('sensor.slaapkamer_temperatuur', '18.2', { unit_of_measurement: '°C', device_class: 'temperature', friendly_name: 'Temperatuur' }),
@@ -87,12 +88,25 @@ function scenarioFor(date: Date): Scenario {
 export function createMockHass(onChange: (hass: HomeAssistant) => void) {
   let states = baseStates();
 
+  // Last brightness per light, so turning it back on restores it (like HA).
+  const lastBrightness: Record<string, number> = {};
+
   const set = (id: string, state: string, attrs: Attrs = {}) => {
     const prev = states[id];
     if (!prev) return;
+    const next: Attrs = { ...prev.attributes, ...attrs };
+
+    // Like HA: a dimmable light only reports brightness while it's on.
+    const modes = prev.attributes.supported_color_modes as string[] | undefined;
+    if (id.startsWith('light.') && modes && !modes.includes('onoff')) {
+      if (state === 'on') next.brightness = attrs.brightness ?? lastBrightness[id] ?? 204;
+      else next.brightness = null;
+      if (typeof next.brightness === 'number') lastBrightness[id] = next.brightness;
+    }
+
     states = {
       ...states,
-      [id]: { ...prev, state, attributes: { ...prev.attributes, ...attrs }, last_changed: new Date().toISOString() },
+      [id]: { ...prev, state, attributes: next, last_changed: new Date().toISOString() },
     };
   };
 
@@ -143,7 +157,9 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
 
     for (const id of targets(target, data)) {
       const current = states[id]?.state;
-      if (service === 'turn_on') ROUTINES[id] ? ROUTINES[id]() : set(id, 'on');
+      if (service === 'turn_on' && typeof data?.brightness_pct === 'number') {
+        set(id, 'on', { brightness: Math.round((data.brightness_pct / 100) * 255) });
+      } else if (service === 'turn_on') ROUTINES[id] ? ROUTINES[id]() : set(id, 'on');
       else if (service === 'turn_off') set(id, 'off');
       else if (service === 'toggle') set(id, current === 'on' ? 'off' : 'on');
       else if (service === 'open_cover') set(id, 'open');

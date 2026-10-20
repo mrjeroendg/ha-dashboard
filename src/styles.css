@@ -279,7 +279,7 @@ button.quick-card:active { transform: scale(0.97); }
   -webkit-tap-highlight-color: transparent;
 }
 
-.row + .row { box-shadow: inset 0 1px 0 var(--border); }
+.row-item + .row-item { box-shadow: inset 0 1px 0 var(--border); }
 button.row { cursor: pointer; }
 button.row:active { background: var(--accent-soft); }
 
@@ -335,3 +335,63 @@ button.row:active { background: var(--accent-soft); }
 .stepper button { width: 36px; height: 36px; border-radius: 50%; }
 .pill-button:disabled,
 .stepper button:disabled { opacity: 0.5; }
+
+/* Brightness slider under a dimmable light */
+.slider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin: -4px 16px 14px 66px;
+  height: 34px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: linear-gradient(to right, var(--accent-soft) var(--pct), var(--bg) var(--pct));
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.slider .icon {
+  position: absolute;
+  left: 12px;
+  width: 16px;
+  height: 16px;
+  color: var(--accent);
+  pointer-events: none;
+}
+
+.slider__value {
+  position: absolute;
+  right: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.slider input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  touch-action: pan-y;
+}
+
+/* Thin thumb at the edge of the fill */
+.slider input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 4px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--accent);
+}
+
+.slider input::-moz-range-thumb {
+  width: 4px;
+  height: 18px;
+  border: 0;
+  border-radius: 2px;
+  background: var(--accent);
+}

@@ -1,7 +1,9 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
+import { useDebouncedCommit } from '../hooks/useDebouncedCommit';
 import { useRunAction } from '../hooks/useRunAction';
-import { adjustTemperature, roomSummary, rowModel, type ResolvedRoom } from '../lib/rooms';
+import { adjustTemperature, roomSummary, rowModel, setBrightness, type ResolvedRoom } from '../lib/rooms';
 import type { HomeAssistant } from '../types/hass';
+import { BrightnessSlider } from './BrightnessSlider';
 import { Icon } from './Icon';
 
 interface Props {
@@ -36,8 +38,11 @@ interface RowProps {
 function EntityRow({ entity, name, hass }: RowProps) {
   const model = rowModel(entity);
   const [status, run] = useRunAction();
+  const [draft, setDraft] = useDebouncedCommit((pct) => setBrightness(hass, entity, pct));
   const busy = status === 'busy';
-  const detail = status === 'error' ? 'Dat lukte niet' : model.detail;
+  const brightness = model.brightness !== undefined ? (draft ?? model.brightness) : undefined;
+  const detail =
+    status === 'error' ? 'Dat lukte niet' : brightness !== undefined ? `Aan · ${brightness}%` : model.detail;
 
   const label = (
     <>
@@ -54,23 +59,26 @@ function EntityRow({ entity, name, hass }: RowProps) {
   if (model.kind === 'toggle' && model.run) {
     const toggle = model.run;
     return (
-      <button
-        type="button"
-        className={`row status-${status}`}
-        role="switch"
-        aria-checked={model.on}
-        onClick={() => run(() => toggle(hass))}
-      >
-        {label}
-        <span className={`switch${model.on ? ' is-on' : ''}`} aria-hidden />
-      </button>
+      <div className="row-item">
+        <button
+          type="button"
+          className={`row status-${status}`}
+          role="switch"
+          aria-checked={model.on}
+          onClick={() => run(() => toggle(hass))}
+        >
+          {label}
+          <span className={`switch${model.on ? ' is-on' : ''}`} aria-hidden />
+        </button>
+        {brightness !== undefined && <BrightnessSlider value={brightness} label={name} onInput={setDraft} />}
+      </div>
     );
   }
 
   if (model.kind === 'action' && model.run) {
     const action = model.run;
     return (
-      <div className={`row status-${status}`}>
+      <div className={`row-item row status-${status}`}>
         {label}
         <button type="button" className="pill-button" disabled={busy} onClick={() => run(() => action(hass))}>
           {status === 'done' ? <Icon name="check" /> : model.actionLabel}
@@ -81,7 +89,7 @@ function EntityRow({ entity, name, hass }: RowProps) {
 
   if (model.kind === 'climate') {
     return (
-      <div className={`row status-${status}`}>
+      <div className={`row-item row status-${status}`}>
         {label}
         <span className="stepper">
           <button type="button" aria-label="Kouder" disabled={busy} onClick={() => run(() => adjustTemperature(hass, entity, -0.5))}>
@@ -95,5 +103,5 @@ function EntityRow({ entity, name, hass }: RowProps) {
     );
   }
 
-  return <div className="row">{label}</div>;
+  return <div className="row-item row">{label}</div>;
 }

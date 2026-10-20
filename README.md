@@ -16,6 +16,7 @@ src/
 ├── components/QuickActions.tsx  "Voorgesteld" card + "Snel" grid
 ├── components/BottomNav.tsx     Floating room navigation ("Thuis" + your rooms)
 ├── components/RoomView.tsx      Room page: rows with switches, buttons, read-only sensors
+├── components/BrightnessSlider.tsx  Slider for dimmable lights
 ├── config/rooms.ts     YOUR rooms: name, icon, which entities (edit this)
 ├── lib/rooms.ts        How each entity type is shown and what tapping it does
 ├── hooks/useNow.ts     Ticks every minute, refreshes when the app returns to foreground
@@ -148,6 +149,7 @@ Copy `dist\ha-dashboard.js` to `\\192.168.1.100\config\www\`. Then go to **Setti
 The bottom navigation shows **Thuis** plus the rooms in `src/config/rooms.ts`, in that order. You define them yourself; HA areas aren't used. Each room lists its entities:
 
 - **Controllable** (light, switch, fan, input_boolean, cover, media_player): a row with a switch.
+- **Dimmable lights** (`supported_color_modes` contains anything other than `onoff`): also a brightness slider while the light is on. The value is sent to HA 300 ms after you stop dragging (one `light.turn_on` with `brightness_pct`), not on every movement.
 - **Climate:** −/+ buttons that change the target temperature by 0.5°.
 - **Scene/script:** a "Start" button.
 - **Lock:** shows "Op slot", or a button to lock it. Unlocking from the dashboard is intentionally not possible.

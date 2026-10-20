@@ -55,7 +55,26 @@ export interface RowModel {
   on: boolean;
   /** Label of the action button for kind 'action'. */
   actionLabel?: string;
+  /** Brightness 1–100 when the light is on and dimmable; shows a slider. */
+  brightness?: number;
   run?(hass: HomeAssistant): Promise<unknown>;
+}
+
+const COLOR_MODES = ['hs', 'xy', 'rgb', 'rgbw', 'rgbww'];
+
+/** What a light can do, from its `supported_color_modes` (present even when off). */
+export function lightFeatures(entity: HassEntity) {
+  const modes = (entity.attributes.supported_color_modes as string[] | undefined) ?? [];
+  return {
+    brightness: modes.some((m) => m !== 'onoff'),
+    color: modes.some((m) => COLOR_MODES.includes(m)),
+    colorTemp: modes.includes('color_temp'),
+  };
+}
+
+/** Set a light's brightness (1–100%); turns it on if needed. */
+export function setBrightness(hass: HomeAssistant, entity: HassEntity, pct: number) {
+  return hass.callService('light', 'turn_on', { brightness_pct: pct }, { entity_id: entity.entity_id });
 }
 
 const UNAVAILABLE = new Set(['unavailable', 'unknown']);
@@ -73,12 +92,13 @@ export function rowModel(entity: HassEntity): RowModel {
   switch (domain) {
     case 'light': {
       const on = entity.state === 'on';
-      const pct = typeof a.brightness === 'number' ? Math.round((a.brightness / 255) * 100) : undefined;
+      const pct = typeof a.brightness === 'number' ? Math.max(1, Math.round((a.brightness / 255) * 100)) : undefined;
       return {
         kind: 'toggle',
         icon: 'bulb',
         on,
         detail: on ? (pct !== undefined ? `Aan · ${pct}%` : 'Aan') : 'Uit',
+        brightness: on && lightFeatures(entity).brightness ? (pct ?? 100) : undefined,
         run: (h) => h.callService('light', 'toggle', {}, target),
       };
     }

@@ -1,31 +1,20 @@
-/* Warm neutrals, lots of air, one soft accent — after the Claude iOS app. */
+/* Warm neutrals, lots of air, one soft accent — after the Claude iOS app.
+   Dark mode only: the dashboard ignores the iPhone's light/dark setting. */
 :host {
-  --bg: #faf9f5;
-  --surface: #ffffff;
-  --text: #1f1e1d;
-  --text-muted: #73726c;
-  --border: rgba(31, 30, 29, 0.08);
-  --accent: #c96442;
-  --accent-soft: rgba(201, 100, 66, 0.14);
+  --bg: #262624;
+  --surface: #30302e;
+  --text: #f5f4ef;
+  --text-muted: #a6a39b;
+  --border: rgba(245, 244, 239, 0.08);
+  --accent: #d97757;
+  --accent-soft: rgba(217, 119, 87, 0.18);
   --radius-card: 22px;
 
   --font-serif: ui-serif, 'New York', 'Iowan Old Style', Georgia, serif;
   --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
 
   display: block;
-  color-scheme: light dark;
-}
-
-@media (prefers-color-scheme: dark) {
-  :host {
-    --bg: #262624;
-    --surface: #30302e;
-    --text: #f5f4ef;
-    --text-muted: #a6a39b;
-    --border: rgba(245, 244, 239, 0.08);
-    --accent: #d97757;
-    --accent-soft: rgba(217, 119, 87, 0.18);
-  }
+  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }

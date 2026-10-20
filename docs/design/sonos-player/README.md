@@ -56,7 +56,7 @@ The progress, controls and volume form one block at the bottom, within thumb rea
 | Volume | `volume_level` (0–1); `media_player.volume_set`, debounced like the brightness slider |
 | Speaker name | entity `friendly_name` |
 
-## Open questions
+## Decisions
 
-- Which speaker the player follows when there are several: proposal is "the first one in a configured list that is playing, otherwise the first that is paused".
-- Whether "dark mode only" applies to the whole dashboard or just this player.
+- **One speaker group** for now: the player follows a single `media_player` entity, to be configured when the player is built (entity ID still to be added).
+- **Dark mode only** applies to the whole dashboard, not just this player.

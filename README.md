@@ -23,7 +23,7 @@ src/
 ├── config/ignore.ts    Entities never counted automatically (e.g. an access point's LED "light")
 ├── lib/rooms.ts        How each entity type is shown and what tapping it does
 ├── hooks/useNow.ts     Ticks every minute, refreshes when the app returns to foreground
-├── styles.css          Warm neutrals, light + dark (follows iOS appearance)
+├── styles.css          Warm neutrals, dark mode only
 └── dev/                DEV ONLY — never imported by the library build
     ├── main.ts         Dev entry used by index.html
     ├── haAdapter.ts    home-assistant-js-websocket → `hass`-shaped object

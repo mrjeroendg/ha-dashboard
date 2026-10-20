@@ -25,9 +25,17 @@ function baseStates(): HassEntities {
     // supported_color_modes like real lights: dimmable, colour, or on/off only.
     entity('light.keuken', 'off', { friendly_name: 'Keuken', supported_color_modes: ['brightness'] }),
     entity('light.gang', 'off', { friendly_name: 'Gang', supported_color_modes: ['onoff'] }),
-    entity('light.woonkamer', 'off', { friendly_name: 'Woonkamer', supported_color_modes: ['color_temp', 'xy'] }),
+    entity('light.woonkamer', 'off', {
+      friendly_name: 'Woonkamer',
+      supported_color_modes: ['color_temp', 'xy'],
+      min_color_temp_kelvin: 2000,
+      max_color_temp_kelvin: 6500,
+      color_mode: 'color_temp',
+      color_temp_kelvin: 2700,
+      rgb_color: [255, 167, 87],
+    }),
     entity('light.eettafel', 'off', { friendly_name: 'Eettafel', supported_color_modes: ['brightness'] }),
-    entity('light.slaapkamer', 'off', { friendly_name: 'Slaapkamer', supported_color_modes: ['brightness'] }),
+    entity('light.slaapkamer', 'off', { friendly_name: 'Slaapkamer', supported_color_modes: ['hs'], color_mode: 'hs', rgb_color: [255, 147, 41] }),
     entity('light.bureau', 'off', { friendly_name: 'Bureau', supported_color_modes: ['onoff'] }),
     entity('binary_sensor.raam_badkamer', 'off', { friendly_name: 'Raam badkamer', device_class: 'window' }),
     entity('sensor.woonkamer_temperatuur', '19.5', { unit_of_measurement: '°C', device_class: 'temperature' }),
@@ -159,6 +167,14 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
       const current = states[id]?.state;
       if (service === 'turn_on' && typeof data?.brightness_pct === 'number') {
         set(id, 'on', { brightness: Math.round((data.brightness_pct / 100) * 255) });
+      } else if (service === 'turn_on' && Array.isArray(data?.rgb_color)) {
+        const modes = states[id]?.attributes.supported_color_modes as string[];
+        set(id, 'on', { color_mode: modes.find((m) => m !== 'color_temp'), rgb_color: data.rgb_color, color_temp_kelvin: null });
+      } else if (service === 'turn_on' && typeof data?.color_temp_kelvin === 'number') {
+        // Rough display color for the temperature, like HA reports rgb_color in color_temp mode.
+        const k = data.color_temp_kelvin;
+        const rgb = k < 3300 ? [255, 167, 87] : k < 5000 ? [255, 214, 170] : [235, 238, 255];
+        set(id, 'on', { color_mode: 'color_temp', color_temp_kelvin: k, rgb_color: rgb });
       } else if (service === 'turn_on') ROUTINES[id] ? ROUTINES[id]() : set(id, 'on');
       else if (service === 'turn_off') set(id, 'off');
       else if (service === 'toggle') set(id, current === 'on' ? 'off' : 'on');

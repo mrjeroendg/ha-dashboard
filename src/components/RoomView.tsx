@@ -1,9 +1,19 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import { useDebouncedCommit } from '../hooks/useDebouncedCommit';
 import { useRunAction } from '../hooks/useRunAction';
-import { adjustTemperature, roomSummary, rowModel, setBrightness, type ResolvedRoom } from '../lib/rooms';
+import {
+  adjustTemperature,
+  roomSummary,
+  rowModel,
+  setBrightness,
+  setColor,
+  type ColorChoice,
+  type ResolvedRoom,
+  type RGB,
+} from '../lib/rooms';
 import type { HomeAssistant } from '../types/hass';
 import { BrightnessSlider } from './BrightnessSlider';
+import { ColorPicker } from './ColorPicker';
 import { Icon } from './Icon';
 
 interface Props {
@@ -38,15 +48,18 @@ interface RowProps {
 function EntityRow({ entity, name, hass }: RowProps) {
   const model = rowModel(entity);
   const [status, run] = useRunAction();
-  const [draft, setDraft] = useDebouncedCommit((pct) => setBrightness(hass, entity, pct));
+  const [draft, setDraft] = useDebouncedCommit<number>((pct) => setBrightness(hass, entity, pct));
+  const [colorDraft, setColorDraft] = useDebouncedCommit<ColorChoice>((c) => setColor(hass, entity, c), 150);
   const busy = status === 'busy';
   const brightness = model.brightness !== undefined ? (draft ?? model.brightness) : undefined;
   const detail =
     status === 'error' ? 'Dat lukte niet' : brightness !== undefined ? `Aan · ${brightness}%` : model.detail;
 
+  const tint = model.color ? tintFor(colorDraft, model.color.rgb) : undefined;
+
   const label = (
     <>
-      <span className={`icon-tile${model.on ? ' is-on' : ''}`}>
+      <span className={`icon-tile${model.on ? ' is-on' : ''}`} style={tint}>
         <Icon name={model.icon} />
       </span>
       <span className="card-text">
@@ -71,6 +84,9 @@ function EntityRow({ entity, name, hass }: RowProps) {
           <span className={`switch${model.on ? ' is-on' : ''}`} aria-hidden />
         </button>
         {brightness !== undefined && <BrightnessSlider value={brightness} label={name} onInput={setDraft} />}
+        {model.color && (
+          <ColorPicker color={model.color} draft={colorDraft} label={name} onPick={setColorDraft} />
+        )}
       </div>
     );
   }
@@ -104,4 +120,12 @@ function EntityRow({ entity, name, hass }: RowProps) {
   }
 
   return <div className="row-item row">{label}</div>;
+}
+
+/** Color the light's icon tile with the light's current color. */
+function tintFor(draft: ColorChoice | null, current?: RGB) {
+  const c = draft && 'rgb' in draft ? draft.rgb : current;
+  if (!c) return undefined;
+  const luminance = (0.299 * c[0] + 0.587 * c[1] + 0.114 * c[2]) / 255;
+  return { background: `rgb(${c.join(' ')})`, color: luminance > 0.7 ? '#1f1e1d' : '#fff' };
 }

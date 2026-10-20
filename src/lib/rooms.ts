@@ -57,6 +57,8 @@ export interface RowModel {
   actionLabel?: string;
   /** Brightness 1–100 when the light is on and dimmable; shows a slider. */
   brightness?: number;
+  /** Present when the light is on and supports color or color temperature. */
+  color?: LightColor;
   run?(hass: HomeAssistant): Promise<unknown>;
 }
 
@@ -69,6 +71,43 @@ export function lightFeatures(entity: HassEntity) {
     brightness: modes.some((m) => m !== 'onoff'),
     color: modes.some((m) => COLOR_MODES.includes(m)),
     colorTemp: modes.includes('color_temp'),
+  };
+}
+
+export type RGB = [number, number, number];
+
+/** The light's current color, in the form the picker needs. */
+export interface LightColor {
+  supportsColor: boolean;
+  supportsTemp: boolean;
+  minKelvin: number;
+  maxKelvin: number;
+  /** What the light is showing now; HA also reports rgb_color in color_temp mode. */
+  rgb?: RGB;
+  kelvin?: number;
+}
+
+/** A color choice: either an RGB color or a white temperature. */
+export type ColorChoice = { rgb: RGB } | { kelvin: number };
+
+/** Set a light's color or white temperature; turns it on if needed. */
+export function setColor(hass: HomeAssistant, entity: HassEntity, choice: ColorChoice) {
+  const data = 'rgb' in choice ? { rgb_color: choice.rgb } : { color_temp_kelvin: choice.kelvin };
+  return hass.callService('light', 'turn_on', data, { entity_id: entity.entity_id });
+}
+
+function lightColor(entity: HassEntity): LightColor | undefined {
+  const f = lightFeatures(entity);
+  if (entity.state !== 'on' || (!f.color && !f.colorTemp)) return undefined;
+  const a = entity.attributes;
+  const inTempMode = a.color_mode === 'color_temp';
+  return {
+    supportsColor: f.color,
+    supportsTemp: f.colorTemp,
+    minKelvin: Number(a.min_color_temp_kelvin ?? 2000),
+    maxKelvin: Number(a.max_color_temp_kelvin ?? 6500),
+    rgb: Array.isArray(a.rgb_color) ? (a.rgb_color as RGB) : undefined,
+    kelvin: inTempMode && typeof a.color_temp_kelvin === 'number' ? a.color_temp_kelvin : undefined,
   };
 }
 
@@ -99,6 +138,7 @@ export function rowModel(entity: HassEntity): RowModel {
         on,
         detail: on ? (pct !== undefined ? `Aan · ${pct}%` : 'Aan') : 'Uit',
         brightness: on && lightFeatures(entity).brightness ? (pct ?? 100) : undefined,
+        color: lightColor(entity),
         run: (h) => h.callService('light', 'toggle', {}, target),
       };
     }

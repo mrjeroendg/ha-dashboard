@@ -1,11 +1,12 @@
 import type { HassEntities } from 'home-assistant-js-websocket';
+import { isIgnored } from '../config/ignore';
 import type { DashboardConfig } from '../types/hass';
 
 const UNAVAILABLE = new Set(['unavailable', 'unknown']);
 const OPENING_CLASSES = new Set(['door', 'window', 'garage_door', 'opening']);
 
 function entitiesOf(states: HassEntities, domain: string) {
-  return Object.values(states).filter((e) => e.entity_id.startsWith(`${domain}.`));
+  return Object.values(states).filter((e) => e.entity_id.startsWith(`${domain}.`) && !isIgnored(e.entity_id));
 }
 
 function presence(states: HassEntities): string | undefined {

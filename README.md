@@ -20,6 +20,7 @@ src/
 ├── components/ColorPicker.tsx       Swatches + custom color for color lights
 ├── lib/moreInfo.ts     Opens HA's own more-info dialog for an entity
 ├── config/rooms.ts     YOUR rooms: name, icon, which entities (edit this)
+├── config/ignore.ts    Entities never counted automatically (e.g. an access point's LED "light")
 ├── lib/rooms.ts        How each entity type is shown and what tapping it does
 ├── hooks/useNow.ts     Ticks every minute, refreshes when the app returns to foreground
 ├── styles.css          Warm neutrals, light + dark (follows iOS appearance)
@@ -161,6 +162,9 @@ The bottom navigation shows **Thuis** plus the rooms in `src/config/rooms.ts`, i
 Entities that don't exist in HA are skipped, and a room with none left is hidden. Use `{ entity, name }` for a shorter row name.
 
 ## Status line logic
+
+Entities in `src/config/ignore.ts` are skipped in all of these. Use exact IDs or `*` wildcards.
+
 
 `src/lib/houseStatus.ts` builds the status line from these parts:
 

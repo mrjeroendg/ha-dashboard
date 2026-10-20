@@ -1,5 +1,6 @@
 import type { HassEntities } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
+import { isIgnored } from '../config/ignore';
 import type { HomeAssistant } from '../types/hass';
 import { isWeekend, momentOf, type Moment } from './moment';
 
@@ -66,12 +67,13 @@ const openWindows = (ctx: ActionContext) =>
   Object.values(ctx.states).filter(
     (e) =>
       e.entity_id.startsWith('binary_sensor.') &&
+      !isIgnored(e.entity_id) &&
       e.state === 'on' &&
       ['window', 'door', 'opening'].includes(String(e.attributes.device_class)),
   );
 
 const anyoneHome = (ctx: ActionContext) =>
-  Object.values(ctx.states).some((e) => e.entity_id.startsWith('person.') && e.state === 'home');
+  Object.values(ctx.states).some((e) => e.entity_id.startsWith('person.') && !isIgnored(e.entity_id) && e.state === 'home');
 
 const plural = (n: number, one: string, many: string) => `${n} ${n === 1 ? one : many}`;
 

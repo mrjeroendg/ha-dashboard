@@ -1,0 +1,86 @@
+/* Warm neutrals, lots of air, one soft accent — after the Claude iOS app. */
+:host {
+  --bg: #faf9f5;
+  --surface: #ffffff;
+  --text: #1f1e1d;
+  --text-muted: #73726c;
+  --border: rgba(31, 30, 29, 0.08);
+  --accent: #c96442;
+  --accent-soft: rgba(201, 100, 66, 0.14);
+  --radius-card: 22px;
+
+  --font-serif: ui-serif, 'New York', 'Iowan Old Style', Georgia, serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+
+  display: block;
+  color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --bg: #262624;
+    --surface: #30302e;
+    --text: #f5f4ef;
+    --text-muted: #a6a39b;
+    --border: rgba(245, 244, 239, 0.08);
+    --accent: #d97757;
+    --accent-soft: rgba(217, 119, 87, 0.18);
+  }
+}
+
+* { box-sizing: border-box; }
+
+.dashboard {
+  min-height: calc(100vh - var(--header-height, 0px));
+  min-height: calc(100dvh - var(--header-height, 0px));
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  padding: max(28px, env(safe-area-inset-top)) 24px max(32px, env(safe-area-inset-bottom));
+}
+
+.header { padding: 12px 4px 8px; }
+
+.header__date {
+  margin: 0 0 10px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.header__greeting {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: clamp(30px, 8.5vw, 38px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.header__status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0 0;
+  padding: 10px 16px;
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--text-muted);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+}
+
+.header__dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.header__dot--idle { background: var(--text-muted); box-shadow: none; }

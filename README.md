@@ -12,11 +12,15 @@ src/
 ├── components/Header.tsx
 ├── lib/greeting.ts     Time-of-day greeting + Dutch date (all logic in React, not HA templates)
 ├── lib/houseStatus.ts  "Iedereen thuis · 3 lichten aan · 21,5° binnen"
+├── lib/quickActions.ts Quick action rules + ENTITIES map (which actions, when, what they do)
+├── lib/clock.ts        Single "now" (dev toolbar can pin it to a moment)
+├── components/QuickActions.tsx  "Voorgesteld" card + "Snel" grid
 ├── hooks/useNow.ts     Ticks every minute, refreshes when the app returns to foreground
 ├── styles.css          Warm neutrals, light + dark (follows iOS appearance)
 └── dev/                DEV ONLY — never imported by the library build
-    ├── main.ts         Dev entry used by index.html
-    └── haAdapter.ts    home-assistant-js-websocket → `hass`-shaped object
+    ├── main.ts         Dev entry used by index.html (+ moment toolbar)
+    ├── haAdapter.ts    home-assistant-js-websocket → `hass`-shaped object
+    └── mockHass.ts     Fake `hass` with sample entities when there's no token
 scripts/
 ├── check-bundle.mjs    Fails the build if token/dev code ends up in dist/
 └── deploy.mjs          Copies the bundle to /config/www and bumps ?v=N
@@ -72,6 +76,8 @@ Creates your private settings file from the template and opens it. Fill in:
 npm run dev
 ```
 Starts the Vite dev server at http://localhost:5173. The page connects to your HA with the token and shows live states. When you save a `.tsx` or `.css` file, the browser updates straight away. Stop the server with `Ctrl+C`.
+
+**Without a token** (empty or missing `VITE_HA_TOKEN`), dev mode uses **mock data** from `src/dev/mockHass.ts`. Tapping a card changes the fake states, and the console logs the service call it would make. The toolbar at the bottom jumps to a moment of the day (Di 07:15, Za 10:00, Di 19:30, Di 23:10), with matching fake states. With a real token, the toolbar only shifts the clock. The toolbar and mock code are dev-only and never end up in the bundle.
 
 ```powershell
 npm run dev:lan
@@ -129,6 +135,10 @@ Copy `dist\ha-dashboard.js` to `\\192.168.1.100\config\www\`. Then go to **Setti
 1. In the Companion app, open the sidebar and tap the new **Thuis** dashboard. You should see the header.
 2. To make it the default **on this device**, tap your **profile** (bottom of the sidebar) and set **Dashboard** to "Thuis". This setting is stored per device, so other devices keep their own default.
 3. If you still see an old version after a deploy, pull down to refresh. If that doesn't help, go to **Companion App settings → Debugging → Reset frontend cache**.
+
+## Quick actions
+
+`src/lib/quickActions.ts` defines every action as a plain object: `label`, `icon`, `requires` (entity IDs), `relevance(ctx)` (a score for the current time, day and states; 0 hides it), `detail(ctx)` (the second line on the card) and `run(hass)` (the service call). The highest-scoring routine becomes **Voorgesteld**, and the next four non-routine actions fill **Snel**. Actions whose entities don't exist in your HA are hidden. To use your own devices, edit the `ENTITIES` map at the top of the file.
 
 ## Status line logic
 

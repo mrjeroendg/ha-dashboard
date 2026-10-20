@@ -5,7 +5,7 @@ import { loadEnv } from 'vite';
 const bundle = readFileSync('dist/ha-dashboard.js', 'utf8');
 const env = loadEnv('development', process.cwd(), '');
 
-const forbidden = ['VITE_HA_TOKEN', 'createLongLivedTokenAuth', 'auth/current_user'];
+const forbidden = ['VITE_HA_TOKEN', 'createLongLivedTokenAuth', 'auth/current_user', '[mock]', 'dev-toolbar'];
 if (env.VITE_HA_TOKEN && env.VITE_HA_TOKEN.length > 20) forbidden.push(env.VITE_HA_TOKEN);
 
 const leaks = forbidden.filter((s) => bundle.includes(s));

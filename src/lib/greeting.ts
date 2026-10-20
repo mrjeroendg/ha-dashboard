@@ -2,7 +2,7 @@ export type DayPart = 'nacht' | 'ochtend' | 'middag' | 'avond';
 
 export function dayPart(date: Date): DayPart {
   const h = date.getHours();
-  if (h < 6) return 'nacht';
+  if (h < 6 || h >= 22) return 'nacht';
   if (h < 12) return 'ochtend';
   if (h < 18) return 'middag';
   return 'avond';

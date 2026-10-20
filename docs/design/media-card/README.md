@@ -5,7 +5,7 @@ One card on **Thuis** for all media: Sonos and Chromecast, plus stream buttons t
 | Part | Status |
 |---|---|
 | [Mini player](#mini-player--approved-final) | ✅ **Approved: final.** Build exactly as designed. |
-| Expanded player | 🔄 In review |
+| [Expanded player](#expanded-player--approved-final) | ✅ **Approved: final.** Build exactly as designed. |
 
 ---
 
@@ -66,8 +66,52 @@ The device that started most recently is the first page. "Playing" includes paus
 
 ### Interactions
 
-- Tapping the top row opens the **expanded player** for that device (in review).
+- Tapping the top row opens the **expanded player** for that device.
 - Pause/play in the card works directly, without opening anything.
+
+---
+
+## Expanded player: approved, final
+
+> ✅ **This design is final.** The owner approved it. Don't change proportions, spacing or content without asking first.
+
+![Expanded player](./expanded-player.png)
+
+Source: [`expanded-player.html`](./expanded-player.html) (a static mockup; open it in a browser, not part of the build).
+
+### Behaviour
+
+- **Opening:** tap the top row of the mini player. The card expands in place above the bottom navigation, and the rest of the page dims.
+- **Closing:** swipe down on the grab handle (a 36×5px pill, centred at the top), or tap the dimmed page. There's no close button.
+- **Page dots** sit under the handle when there are 2 devices. You swipe horizontally between Chromecast and Sonos with the same snapping as the mini player: always a full page, never halfway.
+- **Fixed height of 483px for every card** (Chromecast, Sonos track, Sonos stream), so swiping never changes the height. The rows are fixed: image, title block (min 52px), progress slot (44px), controls (60px), and a footer row for volume.
+
+### Rows, top to bottom
+
+| Row | Chromecast | Sonos · track | Sonos · live stream |
+|---|---|---|---|
+| Image (16:9, radius 16) | Thumbnail fills the area | Square cover (78% of the height, radius 14) centred on a blurred, darkened copy of itself | Same as track |
+| Title block | Title only (serif, 22px), with empty space below | Title + `artist · album` (13px, muted) | Station + current programme/track |
+| Progress slot | Progress bar + `32:10 / −19:40` | Progress bar + times | **"● LIVE" pill** (accent tint) instead of the bar |
+| Controls | −10 s · **play/pause** · +30 s | previous · **play/pause** · next | previous · **play/pause** · next, with **previous/next disabled** (25% opacity, not tappable) |
+| Footer | Volume pill + **Stop** button | Volume pill (full width) | Volume pill (full width) |
+
+- Play/pause is a 60px accent circle, in exactly the same place on every card.
+- No shuffle, no repeat, no stream buttons (those live in the mini player).
+- Previous/next are disabled based on the player's `supported_features`, not on hard-coded stream logic.
+
+### Home Assistant mapping
+
+| UI | HA |
+|---|---|
+| Title / subtitle | `media_title`; `media_artist`, `media_album_name` (Sonos) |
+| Image | `entity_picture` (prefix with the HA URL in dev) |
+| Progress | `media_position`, `media_duration`, `media_position_updated_at` (extrapolate while playing); no duration means live |
+| Play/pause | `media_player.media_play_pause` |
+| Previous / next (Sonos) | `media_player.media_previous_track` / `media_next_track`; enabled only if `supported_features` allows it |
+| −10 / +30 s (Chromecast) | `media_player.media_seek` to position ∓ 10 / + 30; hidden if seeking isn't supported |
+| Volume | `volume_level`; `media_player.volume_set`, debounced like the brightness slider |
+| Stop (Chromecast) | `media_player.media_stop` |
 
 ---
 

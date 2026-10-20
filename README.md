@@ -18,6 +18,7 @@ src/
 ├── components/RoomView.tsx      Room page: rows with switches, buttons, read-only sensors
 ├── components/BrightnessSlider.tsx  Slider for dimmable lights
 ├── components/ColorPicker.tsx       Swatches + custom color for color lights
+├── lib/moreInfo.ts     Opens HA's own more-info dialog for an entity
 ├── config/rooms.ts     YOUR rooms: name, icon, which entities (edit this)
 ├── lib/rooms.ts        How each entity type is shown and what tapping it does
 ├── hooks/useNow.ts     Ticks every minute, refreshes when the app returns to foreground
@@ -151,7 +152,7 @@ The bottom navigation shows **Thuis** plus the rooms in `src/config/rooms.ts`, i
 
 - **Controllable** (light, switch, fan, input_boolean, cover, media_player): a row with a switch.
 - **Dimmable lights** (`supported_color_modes` contains anything other than `onoff`): also a brightness slider while the light is on. The value is sent to HA 300 ms after you stop dragging (one `light.turn_on` with `brightness_pct`), not on every movement.
-- **Color lights** (`hs`, `xy`, `rgb`, `rgbw`, `rgbww` in `supported_color_modes`): color swatches under the slider, plus a rainbow swatch that opens the native color picker. Lights with `color_temp` also get warm, neutral and cool white. The light's icon takes its current color.
+- **Color lights** (`hs`, `xy`, `rgb`, `rgbw`, `rgbww` in `supported_color_modes`): color swatches under the slider, plus a rainbow swatch that opens **HA's own light dialog** (color wheel, temperature, brightness) via the `hass-more-info` event. In `npm run dev` there is no HA frontend to open that dialog, so there the rainbow swatch uses the browser's native color picker instead. Lights with `color_temp` also get warm, neutral and cool white. The light's icon takes its current color.
 - **Climate:** −/+ buttons that change the target temperature by 0.5°.
 - **Scene/script:** a "Start" button.
 - **Lock:** shows "Op slot", or a button to lock it. Unlocking from the dashboard is intentionally not possible.

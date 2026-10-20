@@ -1,7 +1,9 @@
 import type { CSSProperties } from 'react';
+import { openMoreInfo } from '../lib/moreInfo';
 import type { ColorChoice, LightColor, RGB } from '../lib/rooms';
 
 interface Props {
+  entityId: string;
   color: LightColor;
   /** Pending choice while it's being sent; shown as selected right away. */
   draft: ColorChoice | null;
@@ -31,8 +33,12 @@ const COLORS: Swatch[] = [
   { name: 'Groen', choice: { rgb: [60, 200, 110] }, display: [60, 200, 110] },
 ];
 
-/** Preset swatches plus a custom color via the native (iOS) color picker. */
-export function ColorPicker({ color, draft, label, onPick }: Props) {
+/**
+ * Preset swatches plus a "custom" swatch. Inside HA the custom swatch opens
+ * HA's own light dialog (color wheel); in dev, where there is no HA frontend,
+ * it falls back to the browser's native color input.
+ */
+export function ColorPicker({ entityId, color, draft, label, onPick }: Props) {
   const swatches = [
     ...(color.supportsTemp
       ? WHITES.map((w) => ({ ...w, choice: { kelvin: clampKelvin(w.choice, color) } }))
@@ -59,20 +65,31 @@ export function ColorPicker({ color, draft, label, onPick }: Props) {
           onClick={() => onPick(s.choice)}
         />
       ))}
-      {color.supportsColor && (
-        <label
-          className={`swatch swatch--custom${customRgb ? ' is-custom' : ''}`}
-          aria-checked={Boolean(customRgb)}
-          style={customRgb ? ({ '--swatch': rgb(customRgb) } as CSSProperties) : undefined}
-        >
-          <input
-            type="color"
-            aria-label="Eigen kleur"
-            value={toHex(customRgb ?? color.rgb ?? [255, 255, 255])}
-            onChange={(e) => onPick({ rgb: fromHex(e.currentTarget.value) })}
+      {color.supportsColor &&
+        (import.meta.env.DEV ? (
+          <label
+            className={`swatch swatch--custom${customRgb ? ' is-custom' : ''}`}
+            aria-checked={Boolean(customRgb)}
+            style={customRgb ? ({ '--swatch': rgb(customRgb) } as CSSProperties) : undefined}
+          >
+            <input
+              type="color"
+              aria-label="Eigen kleur"
+              value={toHex(customRgb ?? color.rgb ?? [255, 255, 255])}
+              onChange={(e) => onPick({ rgb: fromHex(e.currentTarget.value) })}
+            />
+          </label>
+        ) : (
+          <button
+            type="button"
+            role="radio"
+            aria-label="Meer kleuren"
+            aria-checked={Boolean(customRgb)}
+            className={`swatch swatch--custom${customRgb ? ' is-custom' : ''}`}
+            style={customRgb ? ({ '--swatch': rgb(customRgb) } as CSSProperties) : undefined}
+            onClick={(e) => openMoreInfo(e.currentTarget, entityId)}
           />
-        </label>
-      )}
+        ))}
     </div>
   );
 }

@@ -85,7 +85,13 @@ function EntityRow({ entity, name, hass }: RowProps) {
         </button>
         {brightness !== undefined && <BrightnessSlider value={brightness} label={name} onInput={setDraft} />}
         {model.color && (
-          <ColorPicker color={model.color} draft={colorDraft} label={name} onPick={setColorDraft} />
+          <ColorPicker
+            entityId={entity.entity_id}
+            color={model.color}
+            draft={colorDraft}
+            label={name}
+            onPick={setColorDraft}
+          />
         )}
       </div>
     );

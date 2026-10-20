@@ -1,4 +1,6 @@
-# Sonos player: design (approved, not built yet)
+# Sonos player: design (superseded)
+
+> ⚠️ **Superseded** by the [media card](../media-card/README.md). The full-screen player below was replaced by the mini player plus an expanded card. Kept for reference only.
 
 ![Mockup](./mockup.png)
 

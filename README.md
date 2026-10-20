@@ -13,12 +13,11 @@ src/
 ├── lib/greeting.ts     Time-of-day greeting + Dutch date (all logic in React, not HA templates)
 ├── lib/houseStatus.ts  "Iedereen thuis · 3 lichten aan · 21,5° binnen"
 ├── lib/quickActions.ts Quick action rules + ENTITIES map (which actions, when, what they do)
-├── lib/clock.ts        Single "now" (dev toolbar can pin it to a moment)
 ├── components/QuickActions.tsx  "Voorgesteld" card + "Snel" grid
 ├── hooks/useNow.ts     Ticks every minute, refreshes when the app returns to foreground
 ├── styles.css          Warm neutrals, light + dark (follows iOS appearance)
 └── dev/                DEV ONLY — never imported by the library build
-    ├── main.ts         Dev entry used by index.html (+ moment toolbar)
+    ├── main.ts         Dev entry used by index.html
     ├── haAdapter.ts    home-assistant-js-websocket → `hass`-shaped object
     └── mockHass.ts     Fake `hass` with sample entities when there's no token
 scripts/
@@ -77,7 +76,7 @@ npm run dev
 ```
 Starts the Vite dev server at http://localhost:5173. The page connects to your HA with the token and shows live states. When you save a `.tsx` or `.css` file, the browser updates straight away. Stop the server with `Ctrl+C`.
 
-**Without a token** (empty or missing `VITE_HA_TOKEN`), dev mode uses **mock data** from `src/dev/mockHass.ts`. Tapping a card changes the fake states, and the console logs the service call it would make. The toolbar at the bottom jumps to a moment of the day (Di 07:15, Za 10:00, Di 19:30, Di 23:10), with matching fake states. With a real token, the toolbar only shifts the clock. The toolbar and mock code are dev-only and never end up in the bundle.
+**Without a token** (empty or missing `VITE_HA_TOKEN`), dev mode uses **mock data** from `src/dev/mockHass.ts`. The fake states start out matching the current moment of the day; reload the page to reset them. Tapping a card changes the fake states, and the console logs the service call it would make. The mock code is dev-only and never ends up in the bundle.
 
 ```powershell
 npm run dev:lan

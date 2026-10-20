@@ -8,22 +8,7 @@
       html, body { margin: 0; padding: 0; background: #faf9f5; }
       @media (prefers-color-scheme: dark) { html, body { background: #262624; } }
       /* Mimic a narrow phone column on desktop so you see the iPhone layout. */
-      #stage { max-width: 430px; margin: 0 auto; min-height: 100vh; padding-bottom: 72px; }
-
-      /* Dev-only toolbar to preview moments of the day (see src/dev/main.ts). */
-      #dev-toolbar {
-        position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%);
-        display: flex; gap: 2px; align-items: center; padding: 5px;
-        background: rgba(31, 30, 29, 0.88); border-radius: 999px;
-        font: 500 13px -apple-system, 'Segoe UI', system-ui, sans-serif;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18); z-index: 10;
-      }
-      #dev-toolbar span { color: #a6a39b; padding: 0 4px 0 8px; }
-      #dev-toolbar button {
-        border: 0; border-radius: 999px; padding: 7px 10px; white-space: nowrap; cursor: pointer;
-        font: inherit; color: #f5f4ef; background: transparent;
-      }
-      #dev-toolbar button.on { background: #d97757; color: #fff; }
+      #stage { max-width: 430px; margin: 0 auto; min-height: 100vh; }
     </style>
   </head>
   <body>

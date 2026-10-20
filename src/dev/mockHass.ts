@@ -1,7 +1,8 @@
 // DEV ONLY. A fake `hass` with sample entities, used by `npm run dev` when
-// .env.local has no token. callService mutates the fake states so tapping a
+// .env.local has no token. States start out matching the current moment of day. callService mutates the fake states so tapping a
 // card visibly does something.
 import type { HassEntities, HassEntity, HassServiceTarget } from 'home-assistant-js-websocket';
+import { isWeekend, momentOf, type Moment } from '../lib/moment';
 import type { HomeAssistant } from '../types/hass';
 
 type Attrs = Record<string, unknown>;
@@ -26,6 +27,7 @@ function baseStates(): HassEntities {
     entity('light.woonkamer', 'off', { friendly_name: 'Woonkamer' }),
     entity('light.eettafel', 'off', { friendly_name: 'Eettafel' }),
     entity('light.slaapkamer', 'off', { friendly_name: 'Slaapkamer' }),
+    entity('light.bureau', 'off', { friendly_name: 'Bureau' }),
     entity('binary_sensor.raam_badkamer', 'off', { friendly_name: 'Raam badkamer', device_class: 'window' }),
     entity('sensor.woonkamer_temperatuur', '19.5', { unit_of_measurement: '°C' }),
     entity('climate.woonkamer', 'heat', { current_temperature: 19.5, temperature: 19 }),
@@ -47,45 +49,37 @@ function baseStates(): HassEntities {
   return Object.fromEntries(list.map((e) => [e.entity_id, e]));
 }
 
-/** Starting situations for the dev toolbar presets. */
-export const SCENARIOS: Record<string, { label: string; at: string; apply: Record<string, string> }> = {
-  ochtend: {
-    label: 'Di 07:15',
-    at: '2026-10-20T07:15',
-    apply: { 'light.keuken': 'on', 'light.gang': 'on' },
-  },
-  weekend: {
-    label: 'Za 10:00',
-    at: '2026-10-24T10:00',
-    apply: { 'light.keuken': 'on', 'cover.rolluiken': 'open', 'sensor.woonkamer_temperatuur': '20.5' },
-  },
+type Scenario = Moment | 'weekend';
+
+/** Plausible fake states for the current moment of the day. */
+const SCENARIOS: Record<Scenario, Record<string, string>> = {
+  ochtend: { 'light.keuken': 'on', 'light.gang': 'on' },
+  weekend: { 'light.keuken': 'on', 'cover.rolluiken': 'open', 'sensor.woonkamer_temperatuur': '20.5' },
+  dag: { 'cover.rolluiken': 'open', 'light.bureau': 'on', 'sensor.woonkamer_temperatuur': '20.5' },
   avond: {
-    label: 'Di 19:30',
-    at: '2026-10-20T19:30',
-    apply: {
-      'light.keuken': 'on',
-      'light.woonkamer': 'on',
-      'light.eettafel': 'on',
-      'light.gang': 'on',
-      'cover.rolluiken': 'open',
-      'switch.auto_laden': 'on',
-      'sensor.woonkamer_temperatuur': '21',
-    },
+    'light.keuken': 'on',
+    'light.woonkamer': 'on',
+    'light.eettafel': 'on',
+    'light.gang': 'on',
+    'cover.rolluiken': 'open',
+    'switch.auto_laden': 'on',
+    'sensor.woonkamer_temperatuur': '21',
   },
   nacht: {
-    label: 'Di 23:10',
-    at: '2026-10-20T23:10',
-    apply: {
-      'light.keuken': 'on',
-      'light.woonkamer': 'on',
-      'light.gang': 'on',
-      'light.slaapkamer': 'on',
-      'binary_sensor.raam_badkamer': 'on',
-      'lock.voordeur': 'unlocked',
-      'sensor.woonkamer_temperatuur': '20',
-    },
+    'light.keuken': 'on',
+    'light.woonkamer': 'on',
+    'light.gang': 'on',
+    'light.slaapkamer': 'on',
+    'binary_sensor.raam_badkamer': 'on',
+    'lock.voordeur': 'unlocked',
+    'sensor.woonkamer_temperatuur': '20',
   },
 };
+
+function scenarioFor(date: Date): Scenario {
+  const moment = momentOf(date);
+  return isWeekend(date) && moment !== 'avond' && moment !== 'nacht' ? 'weekend' : moment;
+}
 
 export function createMockHass(onChange: (hass: HomeAssistant) => void) {
   let states = baseStates();
@@ -173,15 +167,9 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
       callWS,
     });
 
-  return {
-    /** Reset to the base states plus a scenario's overrides. */
-    loadScenario(key: keyof typeof SCENARIOS | null) {
-      states = baseStates();
-      for (const [id, state] of Object.entries(key ? SCENARIOS[key].apply : {})) {
-        set(id, state);
-        if (id === 'sensor.woonkamer_temperatuur') set('climate.woonkamer', 'heat', { current_temperature: Number(state) });
-      }
-      emit();
-    },
-  };
+  for (const [id, value] of Object.entries(SCENARIOS[scenarioFor(new Date())])) {
+    set(id, value);
+    if (id === 'sensor.woonkamer_temperatuur') set('climate.woonkamer', 'heat', { current_temperature: Number(value) });
+  }
+  emit();
 }

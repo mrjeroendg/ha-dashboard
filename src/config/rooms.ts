@@ -19,8 +19,6 @@ export interface RoomConfig {
   id: string;
   name: string;
   icon: IconName;
-  /** Shown in the room summary line. */
-  temperature?: string;
   entities: Array<string | RoomEntity>;
 }
 

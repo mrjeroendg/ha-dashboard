@@ -3,7 +3,6 @@ import { useDebouncedCommit } from '../hooks/useDebouncedCommit';
 import { useRunAction } from '../hooks/useRunAction';
 import {
   adjustTemperature,
-  roomSummary,
   rowModel,
   setBrightness,
   setColor,
@@ -27,7 +26,6 @@ export function RoomView({ room, hass }: Props) {
       <header className="header">
         <p className="header__date">Kamer</p>
         <h1 className="header__greeting">{room.name}</h1>
-        <p className="room-summary">{roomSummary(room, hass.states)}</p>
       </header>
       <section className="row-group">
         {room.rows.map((row) => (

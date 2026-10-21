@@ -27,21 +27,6 @@ const domainOf = (e: HassEntity) => e.entity_id.split('.')[0];
 const number = (value: unknown, digits = 1) =>
   Number(value).toLocaleString('nl-BE', { maximumFractionDigits: digits });
 
-/** "2 lichten aan · 21°" */
-export function roomSummary(room: ResolvedRoom, states: HassEntities): string {
-  const lights = room.rows.filter((r) => domainOf(r.entity) === 'light');
-  const on = lights.filter((r) => r.entity.state === 'on').length;
-  const parts: string[] = [];
-
-  if (lights.length > 0) {
-    parts.push(on === 0 ? 'Lichten uit' : on === 1 ? '1 licht aan' : `${on} lichten aan`);
-  }
-  const temp = room.temperature ? Number.parseFloat(states[room.temperature]?.state ?? '') : NaN;
-  if (!Number.isNaN(temp)) parts.push(`${number(temp)}°`);
-
-  return parts.join(' · ') || 'Alleen sensoren';
-}
-
 // ---------------------------------------------------------------- rows
 
 export type RowKind = 'toggle' | 'action' | 'climate' | 'readonly';

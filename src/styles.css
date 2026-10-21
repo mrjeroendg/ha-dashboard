@@ -233,12 +233,6 @@ button.quick-card:active { transform: scale(0.97); }
 
 /* ---------------------------------------------------------------- room page */
 
-.room-summary {
-  margin: 10px 0 0;
-  font-size: 15px;
-  color: var(--text-muted);
-}
-
 .row-group {
   margin-top: 28px;
   border-radius: var(--radius-card);

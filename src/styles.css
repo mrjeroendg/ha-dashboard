@@ -91,7 +91,6 @@
   color: var(--text-muted);
 }
 
-button.suggested,
 button.quick-card {
   appearance: none;
   border: 0;
@@ -103,7 +102,6 @@ button.quick-card {
   transition: transform 120ms ease, background-color 200ms ease;
 }
 
-button.suggested:active,
 button.quick-card:active { transform: scale(0.97); }
 
 .icon {
@@ -132,22 +130,6 @@ button.quick-card:active { transform: scale(0.97); }
 .card-label { font-size: 15px; font-weight: 600; }
 .card-detail { margin-top: 2px; font-size: 13px; line-height: 1.3; color: var(--text-muted); }
 
-/* Suggested: one wide card in the accent tint */
-.suggested {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  width: 100%;
-  padding: 18px;
-  border-radius: var(--radius-card);
-  background: var(--accent-soft);
-}
-
-.suggested .icon-tile { background: var(--accent); color: #fff; }
-.suggested .card-label { font-size: 17px; }
-.suggested .card-detail { font-size: 14px; }
-.suggested__end { margin-left: auto; color: var(--accent); display: grid; }
-
 /* Quick: 2-column grid of small cards */
 .quick-grid {
   display: grid;
@@ -170,8 +152,6 @@ button.quick-card:active { transform: scale(0.97); }
 
 .quick-card.is-active .icon-tile { background: var(--accent); color: #fff; }
 
-.quick-card.is-warning { background: var(--accent-soft); box-shadow: none; }
-.quick-card.is-warning .icon-tile { background: var(--surface); }
 
 .quick-card__check {
   position: absolute;

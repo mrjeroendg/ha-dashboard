@@ -12,7 +12,7 @@ src/
 ├── components/Header.tsx
 ├── lib/greeting.ts     Time-of-day greeting + Dutch date (all logic in React, not HA templates)
 ├── lib/houseStatus.ts  "Iedereen thuis · 3 lichten aan · 21,5° binnen"
-├── lib/quickActions.ts Quick action rules + ENTITIES map (which actions, when, what they do)
+├── config/shortcuts.ts YOUR shortcuts on Thuis ("Snel"), in order (edit this)
 ├── components/media/            Media card (docs/design/media-card)
 │   ├── MiniPlayer.tsx           Small: Chromecast + Sonos pages, swipe, opens the large one
 │   ├── CastPage.tsx / SonosPage.tsx           Small pages
@@ -20,7 +20,7 @@ src/
 │   ├── CastExpanded.tsx / SonosExpanded.tsx   Large pages
 │   └── parts/                   Shared: progress bar, LIVE pill, volume slider, rows of the large card
 ├── hooks/useMediaPlayer.ts      Shared data + actions for one media_player (small and large use it)
-├── components/QuickActions.tsx  "Voorgesteld" card + "Snel" grid
+├── components/QuickActions.tsx  "Snel" grid with your shortcuts
 ├── components/BottomNav.tsx     Floating room navigation ("Thuis" + your rooms)
 ├── components/RoomView.tsx      Room page: rows with switches, buttons, read-only sensors
 ├── components/BrightnessSlider.tsx  Slider for dimmable lights
@@ -151,9 +151,16 @@ Copy `dist\ha-dashboard.js` to `\\192.168.1.100\config\www\`. Then go to **Setti
 2. To make it the default **on this device**, tap your **profile** (bottom of the sidebar) and set **Dashboard** to "Thuis". This setting is stored per device, so other devices keep their own default.
 3. If you still see an old version after a deploy, pull down to refresh. If that doesn't help, go to **Companion App settings → Debugging → Reset frontend cache**.
 
-## Quick actions
+## Shortcuts (Snel)
 
-`src/lib/quickActions.ts` defines every action as a plain object: `label`, `icon`, `requires` (entity IDs), `relevance(ctx)` (a score for the current time, day and states; 0 hides it), `detail(ctx)` (the second line on the card) and `run(hass)` (the service call). The highest-scoring routine becomes **Voorgesteld**, and the next four non-routine actions fill **Snel**. Actions whose entities don't exist in your HA are hidden. To use your own devices, edit the `ENTITIES` map at the top of the file.
+`src/config/shortcuts.ts` lists the shortcuts on Thuis. They show in that order, always, with no time or state logic:
+
+```ts
+{ label: 'Film kijken', icon: 'tv', entity: 'script.film_kijken', detail: 'Dimmen & tv aan' },
+{ label: 'Keuken', icon: 'bulb', entity: 'light.keuken', service: 'toggle' },
+```
+
+A tap calls `<domain>.<service>` on the entity (default `turn_on`), with feedback: Bezig… → ✓, or "Dat lukte niet". A card whose entity is `on` is highlighted. An empty list shows no "Snel" section.
 
 ## Sonos mini player
 

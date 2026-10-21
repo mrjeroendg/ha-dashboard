@@ -69,3 +69,32 @@ export function formatDuration(seconds: number): string {
   const ss = String(s % 60).padStart(2, '0');
   return h ? `${h}:${String(m).padStart(2, '0')}:${ss}` : `${m}:${ss}`;
 }
+
+/** Bits of a media_player's `supported_features` (HA MediaPlayerEntityFeature). */
+export const FEATURE = {
+  PAUSE: 1,
+  SEEK: 2,
+  VOLUME_SET: 4,
+  PREVIOUS_TRACK: 16,
+  NEXT_TRACK: 32,
+  STOP: 4096,
+} as const;
+
+export function supports(player: HassEntity, feature: number): boolean {
+  return (Number(player.attributes.supported_features ?? 0) & feature) !== 0;
+}
+
+/** Absolute URL of the player's current image, if it has one. */
+export function imageUrl(hass: { hassUrl?(path?: string): string }, player: HassEntity): string | undefined {
+  const picture = player.attributes.entity_picture ? String(player.attributes.entity_picture) : undefined;
+  return picture && hass.hassUrl ? hass.hassUrl(picture) : picture;
+}
+
+/** Subtitle for the expanded player: current track for radio, else artist · album. */
+export function longSubtitle(player: HassEntity): string {
+  const a = player.attributes;
+  const parts = a.media_channel
+    ? [a.media_artist, a.media_title].filter(Boolean).join(' – ')
+    : [a.media_artist, a.media_album_name].filter(Boolean).join(' · ');
+  return String(parts);
+}

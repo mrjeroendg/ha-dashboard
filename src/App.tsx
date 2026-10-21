@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BottomNav } from './components/BottomNav';
 import { Header } from './components/Header';
-import { MiniPlayer } from './components/MiniPlayer';
+import { MiniPlayer } from './components/media/MiniPlayer';
 import { QuickActions } from './components/QuickActions';
 import { RoomView } from './components/RoomView';
 import { ROOMS } from './config/rooms';

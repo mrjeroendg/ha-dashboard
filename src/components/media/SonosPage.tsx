@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { HassEntity } from 'home-assistant-js-websocket';
-import { SONOS, STREAM_SCRIPTS } from '../config/media';
-import { hasMedia, nowPlaying, streamButtons } from '../lib/media';
-import type { HomeAssistant } from '../types/hass';
-import { Icon } from './Icon';
+import { SONOS, STREAM_SCRIPTS } from '../../config/media';
+import { hasMedia, imageUrl, nowPlaying, streamButtons } from '../../lib/media';
+import type { HomeAssistant } from '../../types/hass';
+import { Icon } from '../Icon';
 
 /** How long to wait for the Sonos to start playing after a stream button. */
 const START_TIMEOUT = 10_000;
@@ -19,6 +19,8 @@ const DOTS = [
 
 interface Props {
   hass: HomeAssistant;
+  /** Tapping the top row opens the expanded player. */
+  onOpen(): void;
 }
 
 type Starting = { script: string; before: string } | null;
@@ -27,7 +29,7 @@ const mediaKey = (p?: HassEntity) =>
   p ? [p.state, p.attributes.media_channel, p.attributes.media_title, p.attributes.media_content_id].join('|') : '';
 
 /** Sonos page of the mini player: what's playing on top, stream buttons below. */
-export function SonosPage({ hass }: Props) {
+export function SonosPage({ hass, onOpen }: Props) {
   const player = hass.states[SONOS];
   const buttons = useMemo(() => streamButtons(STREAM_SCRIPTS, hass.states), [hass.states]);
 
@@ -74,7 +76,7 @@ export function SonosPage({ hass }: Props) {
 
   return (
     <section className="mini-player" aria-label="Muziek">
-      <TopRow hass={hass} player={player} starting={!!starting} failed={failed} />
+      <TopRow hass={hass} player={player} starting={!!starting} failed={failed} onOpen={onOpen} />
       {buttons.length > 0 && (
         <div className="mini-player__streams">
           {buttons.map((b, i) => (
@@ -107,9 +109,10 @@ interface TopRowProps {
   player?: HassEntity;
   starting: boolean;
   failed: boolean;
+  onOpen(): void;
 }
 
-function TopRow({ hass, player, starting, failed }: TopRowProps) {
+function TopRow({ hass, player, starting, failed, onOpen }: TopRowProps) {
   if (starting || failed || !hasMedia(player)) {
     const [title, subtitle] = starting
       ? ['Starten…', 'Even geduld, de stream laadt']
@@ -118,36 +121,39 @@ function TopRow({ hass, player, starting, failed }: TopRowProps) {
         : ['Muziek op Sonos', 'Kies een stream om te beginnen'];
     return (
       <div className="mini-player__top">
-        <span className="mini-player__art mini-player__art--icon" aria-hidden>
-          <Icon name="radio" />
-        </span>
-        <span className="mini-player__text">
-          <span className={`mini-player__title${failed ? ' is-error' : ''}`}>{title}</span>
-          <span className="mini-player__subtitle">{subtitle}</span>
-        </span>
+        <button type="button" className="mini-player__open" onClick={onOpen} aria-label="Sonos openen">
+          <span className="mini-player__art mini-player__art--icon" aria-hidden>
+            <Icon name="radio" />
+          </span>
+          <span className="mini-player__text">
+            <span className={`mini-player__title${failed ? ' is-error' : ''}`}>{title}</span>
+            <span className="mini-player__subtitle">{subtitle}</span>
+          </span>
+        </button>
       </div>
     );
   }
 
   const p = player!;
   const { title, subtitle } = nowPlaying(p);
-  const picture = p.attributes.entity_picture ? String(p.attributes.entity_picture) : undefined;
-  const src = picture && hass.hassUrl ? hass.hassUrl(picture) : picture;
+  const src = imageUrl(hass, p);
   const playing = p.state === 'playing';
 
   return (
     <div className="mini-player__top">
-      {src ? (
-        <img className="mini-player__art" src={src} alt="" />
-      ) : (
-        <span className="mini-player__art mini-player__art--icon" aria-hidden>
-          <Icon name="music" />
+      <button type="button" className="mini-player__open" onClick={onOpen} aria-label="Sonos openen">
+        {src ? (
+          <img className="mini-player__art" src={src} alt="" />
+        ) : (
+          <span className="mini-player__art mini-player__art--icon" aria-hidden>
+            <Icon name="music" />
+          </span>
+        )}
+        <span className="mini-player__text">
+          <span className="mini-player__title">{title}</span>
+          {subtitle && <span className="mini-player__subtitle">{subtitle}</span>}
         </span>
-      )}
-      <span className="mini-player__text">
-        <span className="mini-player__title">{title}</span>
-        {subtitle && <span className="mini-player__subtitle">{subtitle}</span>}
-      </span>
+      </button>
       <button
         type="button"
         className="round-button"

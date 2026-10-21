@@ -2,6 +2,7 @@
 // .env.local has no token. States start out matching the current moment of day. callService mutates the fake states so tapping a
 // card visibly does something.
 import type { HassEntities, HassEntity, HassServiceTarget } from 'home-assistant-js-websocket';
+import { CHROMECAST, SONOS, STREAM_SCRIPTS } from '../config/media';
 import { isWeekend, momentOf, type Moment } from '../lib/moment';
 import type { HomeAssistant } from '../types/hass';
 
@@ -15,6 +16,8 @@ const entity = (entity_id: string, state: string, attributes: Attrs = {}): HassE
   last_updated: new Date().toISOString(),
   context: { id: 'mock', user_id: null, parent_id: null },
 });
+
+const STREAM_NAMES = ['Radio 1', 'StuBru', 'Klara'];
 
 const DOWNSTAIRS = ['light.keuken', 'light.gang', 'light.woonkamer', 'light.eettafel'];
 
@@ -49,14 +52,23 @@ function baseStates(): HassEntities {
     entity('sensor.auto_batterij', '62', { unit_of_measurement: '%' }),
     entity('switch.auto_laden', 'off', { friendly_name: 'Auto laden' }),
     entity('media_player.woonkamer', 'idle', { friendly_name: 'Woonkamer' }),
-    entity('media_player.chromecast', 'off', { friendly_name: 'Tv woonkamer' }),
+    // The media card uses the IDs from src/config/media.ts, so mock those.
+    entity(SONOS, 'idle', { friendly_name: 'Woonkamer', volume_level: 0.3, supported_features: 1 | 4 | 16 | 32 | 4096 }),
+    entity(CHROMECAST, 'playing', {
+      friendly_name: 'Tv woonkamer',
+      app_name: 'Netflix',
+      media_title: 'Planet Earth III',
+      media_duration: 3110,
+      media_position: 1928,
+      media_position_updated_at: new Date().toISOString(),
+      volume_level: 0.25,
+      supported_features: 1 | 2 | 4 | 4096,
+    }),
     entity('scene.ochtend', 'scening'),
     entity('scene.weekendochtend', 'scening'),
     entity('scene.gezellige_avond', 'scening'),
     entity('scene.film', 'scening'),
-    entity('script.sonos_stubru', 'off', { friendly_name: 'StuBru' }),
-    entity('script.sonos_klara', 'off', { friendly_name: 'Klara' }),
-    entity('script.sonos_lofi', 'off', { friendly_name: 'Lo-fi' }),
+    ...STREAM_SCRIPTS.map((id, i) => entity(id, 'off', { friendly_name: STREAM_NAMES[i % STREAM_NAMES.length] })),
     entity('script.slaapwel', 'off'),
     entity('script.vertrekken', 'off'),
     entity('script.sproeier', 'off'),
@@ -128,16 +140,29 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
   };
 
   // Fake stream scripts: like the real ones, the Sonos starts a moment later.
-  const STREAMS: Record<string, Attrs> = {
-    'script.sonos_stubru': { media_channel: 'Studio Brussel', media_artist: 'Arctic Monkeys', media_title: 'Do I Wanna Know?' },
-    'script.sonos_klara': { media_channel: 'Klara', media_artist: 'Bach', media_title: 'Goldbergvariaties' },
-    'script.sonos_lofi': { media_channel: 'Lo-fi Beats', media_artist: 'Lofi Girl', media_title: 'Snowman' },
-  };
+  const NOW_ON = [
+    { media_channel: 'Radio 1', media_artist: 'Arno', media_title: 'Les yeux de ma mère' },
+    { media_channel: 'Studio Brussel', media_artist: 'Arctic Monkeys', media_title: 'Do I Wanna Know?' },
+    { media_channel: 'Klara', media_artist: 'Bach', media_title: 'Goldbergvariaties' },
+  ];
+  const STREAMS: Record<string, Attrs> = Object.fromEntries(
+    STREAM_SCRIPTS.map((id, i) => [id, NOW_ON[i % NOW_ON.length]]),
+  );
   const startStream = (id: string) =>
     setTimeout(() => {
-      set('media_player.woonkamer', 'playing', { ...STREAMS[id], media_content_id: id });
+      // A live stream: no duration, so no progress bar.
+      set(SONOS, 'playing', { ...STREAMS[id], media_content_id: id, media_duration: null, media_position: null });
       emit();
     }, 1500);
+
+  /** Current position of a playing player, like HA would report it on pause. */
+  const positionNow = (id: string) => {
+    const a = states[id]?.attributes ?? {};
+    const pos = Number(a.media_position) || 0;
+    if (states[id]?.state !== 'playing' || !a.media_position_updated_at) return pos;
+    return pos + (Date.now() - Date.parse(String(a.media_position_updated_at))) / 1000;
+  };
+  const stamp = () => new Date().toISOString();
 
   // What the fake scenes/scripts do.
   const ROUTINES: Record<string, () => void> = {
@@ -200,7 +225,11 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
       else if (service === 'lock') set(id, 'locked');
       else if (service === 'unlock') set(id, 'unlocked');
       else if (service === 'set_temperature') set(id, 'heat', { temperature: data?.temperature });
-      else if (service === 'media_play_pause') set(id, current === 'playing' ? 'paused' : 'playing');
+      else if (service === 'media_play_pause')
+        set(id, current === 'playing' ? 'paused' : 'playing', { media_position: positionNow(id), media_position_updated_at: stamp() });
+      else if (service === 'media_seek') set(id, current, { media_position: data?.seek_position, media_position_updated_at: stamp() });
+      else if (service === 'volume_set') set(id, current, { volume_level: data?.volume_level });
+      else if (service === 'media_stop') set(id, 'idle', { media_title: null, media_duration: null, media_position: null });
     }
     emit();
   };

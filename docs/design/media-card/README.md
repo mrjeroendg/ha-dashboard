@@ -124,7 +124,11 @@ Source: [`expanded-player.html`](./expanded-player.html) (a static mockup; open 
   - **Order is fixed:** Chromecast first, then Sonos. It never reorders, which replaces the "most recently started first" rule.
 - **No image from the cast app → the colour fade**, never a TV icon.
 - **Casting** means `playing`, `paused` or `buffering`, and not the "Backdrop" ambient screen. With no `media_duration` (live TV), the progress row shows a "● LIVE" pill.
-- **Built so far:** the mini player, with both pages and swiping. **Still to do:** the expanded player.
+- **Built:** the mini player and the expanded player, both with Chromecast and Sonos pages.
+- **Idle pages in the expanded player:** the same layout as an active page, with the dimmed colour fade, "Niets aan het casten" / "Niets aan het spelen", an empty progress bar and a disabled play button. Volume still works.
+- **No image → colour fade** everywhere. For Sonos it's a faded square on a blurred fade, the same build as a real cover.
+- **Previous/next and ±10/30 s** are enabled only when `supported_features` allows them *and* there's a duration. You can't skip in a live stream, even if the player claims it can. If seeking isn't supported at all, ±10/30 s are hidden but keep their space.
+- **Closing returns to the same page:** the mini player shows the device that was last in view in the expanded player.
 
 ## Open questions
 

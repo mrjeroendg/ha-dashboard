@@ -13,9 +13,13 @@ src/
 ├── lib/greeting.ts     Time-of-day greeting + Dutch date (all logic in React, not HA templates)
 ├── lib/houseStatus.ts  "Iedereen thuis · 3 lichten aan · 21,5° binnen"
 ├── lib/quickActions.ts Quick action rules + ENTITIES map (which actions, when, what they do)
-├── components/MiniPlayer.tsx    Mini player on Thuis: Sonos + Chromecast pages (docs/design/media-card)
-├── components/SonosPage.tsx     Sonos page of the mini player (now playing + stream buttons)
-├── components/CastPage.tsx      Chromecast page of the mini player
+├── components/media/            Media card (docs/design/media-card)
+│   ├── MiniPlayer.tsx           Small: Chromecast + Sonos pages, swipe, opens the large one
+│   ├── CastPage.tsx / SonosPage.tsx           Small pages
+│   ├── ExpandedPlayer.tsx       Large: handle, dots, swipe down to close
+│   ├── CastExpanded.tsx / SonosExpanded.tsx   Large pages
+│   └── parts/                   Shared: progress bar, LIVE pill, volume slider, rows of the large card
+├── hooks/useMediaPlayer.ts      Shared data + actions for one media_player (small and large use it)
 ├── components/QuickActions.tsx  "Voorgesteld" card + "Snel" grid
 ├── components/BottomNav.tsx     Floating room navigation ("Thuis" + your rooms)
 ├── components/RoomView.tsx      Room page: rows with switches, buttons, read-only sensors
@@ -160,7 +164,7 @@ On Thuis, docked above the room navigation (built from the approved design in `d
 - **Tapping a stream button** runs `script.turn_on`. The button shows a spinner until the Sonos plays something new, and "Dat lukte niet" if that doesn't happen within 10 s.
 - The active stream is not highlighted, on purpose.
 - **Chromecast** (`CHROMECAST` in the same file): a second page next to Sonos, always present. You swipe between the pages, and a swipe always lands on a whole page. It shows the thumbnail (or a colour fade), the title, play/pause and a progress bar that moves smoothly by itself, or "LIVE" for live TV. When the TV is idle it says "Niets aan het casten". The order is fixed: Chromecast first, then Sonos.
-- Not built yet: the expanded player.
+- **Tapping the top row** of a page opens the **expanded player** on that device (483 px). It has a large image, title, progress bar or LIVE pill, previous/play/next (Sonos) or −10/play/+30 s (Chromecast), a volume slider, and Stop for the Chromecast. Swipe sideways to switch device. Swipe the handle down, or tap the dimmed page, to close.
 
 ## Rooms
 

@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { CHROMECAST, SONOS } from '../config/media';
-import { hasMedia, isCasting } from '../lib/media';
+import { useRef, useState } from 'react';
+import { CHROMECAST } from '../config/media';
 import type { HomeAssistant } from '../types/hass';
 import { CastPage } from './CastPage';
 import { SonosPage } from './SonosPage';
@@ -11,33 +10,19 @@ interface Props {
 
 /**
  * Mini media player on Thuis (docs/design/media-card): one page per device,
- * Sonos and Chromecast, swiped horizontally and always snapping to a whole
- * page. The device that started playing most recently comes first.
+ * Chromecast first, then Sonos, swiped horizontally and always snapping to a
+ * whole page.
  */
 export function MiniPlayer({ hass }: Props) {
-  const sonos = hass.states[SONOS];
   const cast = hass.states[CHROMECAST];
   const scroller = useRef<HTMLDivElement>(null);
   const [page, setPage] = useState(0);
 
-  // Order: whatever started most recently first; with nothing playing, Sonos
-  // first (that's where you start music).
-  const castFirst =
-    !!cast &&
-    isCasting(cast) &&
-    (!hasMedia(sonos) || Date.parse(cast.last_changed) > Date.parse(sonos!.last_changed));
-
+  // Fixed order: Chromecast first, then Sonos.
   const pages = [
-    { key: 'sonos', node: <SonosPage hass={hass} /> },
     ...(cast ? [{ key: 'cast', node: <CastPage hass={hass} player={cast} /> }] : []),
+    { key: 'sonos', node: <SonosPage hass={hass} /> },
   ];
-  if (castFirst) pages.reverse();
-
-  // A new order starts at the first page again.
-  useEffect(() => {
-    scroller.current?.scrollTo({ left: 0 });
-    setPage(0);
-  }, [castFirst]);
 
   const onScroll = () => {
     const el = scroller.current;

@@ -26,59 +26,12 @@ export interface RoomConfig {
 
 export const ROOMS: RoomConfig[] = [
   {
-    id: 'woonkamer',
-    name: 'Woonkamer',
+    id: 'living',
+    name: 'Living',
     icon: 'sofa',
-    temperature: 'sensor.woonkamer_temperatuur',
     entities: [
-      { entity: 'light.woonkamer', name: 'Plafond' },
-      { entity: 'light.eettafel', name: 'Eettafel' },
-      { entity: 'cover.rolluiken', name: 'Rolluiken' },
-      { entity: 'climate.woonkamer', name: 'Verwarming' },
-      { entity: 'media_player.woonkamer', name: 'Speaker' },
+      { entity: 'switch.0x94a081fffe4fce2f', name: 'Staanlamp' },
+      { entity: 'light.huecupboard', name: 'Hue Play Bars' }      
     ],
-  },
-  {
-    id: 'keuken',
-    name: 'Keuken',
-    icon: 'coffee',
-    entities: [
-      { entity: 'light.keuken', name: 'Plafond' },
-      { entity: 'switch.koffiemachine', name: 'Koffiemachine' },
-    ],
-  },
-  {
-    id: 'inkom',
-    name: 'Inkom',
-    icon: 'door',
-    entities: [
-      { entity: 'light.gang', name: 'Gang' },
-      { entity: 'lock.voordeur', name: 'Voordeur' },
-    ],
-  },
-  {
-    id: 'bureau',
-    name: 'Bureau',
-    icon: 'monitor',
-    entities: [{ entity: 'light.bureau', name: 'Bureaulamp' }],
-  },
-  {
-    id: 'slaapkamer',
-    name: 'Slaapkamer',
-    icon: 'moon',
-    temperature: 'sensor.slaapkamer_temperatuur',
-    entities: [{ entity: 'light.slaapkamer', name: 'Plafond' }, 'sensor.slaapkamer_temperatuur'],
-  },
-  {
-    // Sensors only: nothing to control, just to glance at.
-    id: 'badkamer',
-    name: 'Badkamer',
-    icon: 'droplet',
-    temperature: 'sensor.badkamer_temperatuur',
-    entities: [
-      { entity: 'binary_sensor.raam_badkamer', name: 'Raam' },
-      { entity: 'sensor.badkamer_vochtigheid', name: 'Vochtigheid' },
-      { entity: 'sensor.badkamer_temperatuur', name: 'Temperatuur' },
-    ],
-  },
+  }
 ];

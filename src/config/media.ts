@@ -10,7 +10,7 @@
  */
 export const SONOS = 'media_player.living_room';
 
-export const CHROMECAST = 'media_player.chromecast';
+export const CHROMECAST = 'media_player.living_living';
 
 export const STREAM_SCRIPTS: string[] = [
   'script.speel_radio1_op_chromecast',

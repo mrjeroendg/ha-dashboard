@@ -46,13 +46,14 @@ export function isCasting(cast?: HassEntity): boolean {
 
 /**
  * Current playback position in seconds, extrapolated while playing (HA only
- * updates media_position on changes). Undefined when there is no duration,
- * e.g. live TV.
+ * updates media_position on changes). Undefined when there is no (positive)
+ * duration, e.g. live TV.
  */
 export function progress(player: HassEntity, now: number): { position: number; duration: number } | undefined {
   const a = player.attributes;
   const duration = Number(a.media_duration);
-  if (!duration || !Number.isFinite(duration)) return undefined;
+  // Live streams have no duration; Cast reports that as -1 instead of empty.
+  if (!Number.isFinite(duration) || duration <= 0) return undefined;
 
   let position = Number(a.media_position) || 0;
   if (player.state === 'playing' && a.media_position_updated_at) {

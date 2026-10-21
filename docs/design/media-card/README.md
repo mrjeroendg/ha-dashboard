@@ -121,7 +121,7 @@ Source: [`expanded-player.html`](./expanded-player.html) (a static mockup; open 
 - **Button labels are the scripts' names in HA** (`friendly_name`). The config only lists script entity IDs (`src/config/media.ts`).
 - **The Chromecast page is always present** next to the Sonos page, even when nothing is casting. So there are always 2 pages with dots once a Chromecast is configured. This replaces the "only while something is casting" rule and the page-order table above.
   - **Idle:** the colour fade (dimmed), the TV's name, "Niets aan het casten", and an empty dimmed progress bar.
-  - **Order:** the device that started playing most recently comes first. With nothing playing, Sonos comes first.
+  - **Order is fixed:** Chromecast first, then Sonos. It never reorders, which replaces the "most recently started first" rule.
 - **No image from the cast app → the colour fade**, never a TV icon.
 - **Casting** means `playing`, `paused` or `buffering`, and not the "Backdrop" ambient screen. With no `media_duration` (live TV), the progress row shows a "● LIVE" pill.
 - **Built so far:** the mini player, with both pages and swiping. **Still to do:** the expanded player.

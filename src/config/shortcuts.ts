@@ -21,6 +21,7 @@ export interface Shortcut {
 }
 
 export const SHORTCUTS: Shortcut[] = [
-  // { label: 'Film kijken', icon: 'tv', entity: 'script.film_kijken', detail: 'Dimmen & tv aan' },
-  // { label: 'Keuken', icon: 'bulb', entity: 'light.keuken', service: 'toggle' },
+  { label: 'Staanlamp', icon: 'bulb', entity: 'switch.0x94a081fffe4fce2f', service: 'toggle' },
+  { label: 'Centris', icon: 'moon', entity: 'light.centris', service: 'toggle' },
+  { label: 'Sfeer', icon: 'sofa', entity: '  scene.living_mood_lighting' },
 ];

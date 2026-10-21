@@ -5,6 +5,7 @@ import { MiniPlayer } from './components/media/MiniPlayer';
 import { QuickActions } from './components/QuickActions';
 import { RoomView } from './components/RoomView';
 import { ROOMS } from './config/rooms';
+import { useFillViewport } from './hooks/useFillViewport';
 import { resolveRooms } from './lib/rooms';
 import type { DashboardConfig, HomeAssistant } from './types/hass';
 
@@ -21,9 +22,19 @@ export function App({ hass, config }: Props) {
   const rooms = useMemo(() => (states ? resolveRooms(ROOMS, states) : []), [states]);
   const room = rooms.find((r) => r.id === roomId);
 
-  // Every page starts at the top, like switching tabs in an iOS app.
+  useFillViewport(top);
+
+  // A new room starts at the top, but only scroll if you'd scrolled down
+  // within the dashboard; never on first load (that pushed HA's own top
+  // area out of view and made the page jump).
+  const firstRender = useRef(true);
   useEffect(() => {
-    top.current?.scrollIntoView({ block: 'start' });
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
+    const el = top.current;
+    if (el && el.getBoundingClientRect().top < 0) el.scrollIntoView({ block: 'start' });
   }, [roomId]);
 
   return (

@@ -20,8 +20,8 @@
 * { box-sizing: border-box; }
 
 .dashboard {
-  min-height: calc(100vh - var(--header-height, 0px));
-  min-height: calc(100dvh - var(--header-height, 0px));
+  /* min-height is set from code (useFillViewport) to exactly fill the screen. */
+  box-sizing: border-box;
   background: var(--bg);
   color: var(--text);
   font-family: var(--font-sans);

@@ -32,6 +32,7 @@ export async function connectHass(
     states,
     user,
     language: 'nl',
+    hassUrl: (path = '') => (path.startsWith('http') ? path : `${url.replace(/\/$/, '')}${path}`),
     callService: (domain, service, serviceData, target) =>
       callService(conn, domain, service, serviceData, target),
     callWS,

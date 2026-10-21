@@ -13,6 +13,7 @@ src/
 ├── lib/greeting.ts     Time-of-day greeting + Dutch date (all logic in React, not HA templates)
 ├── lib/houseStatus.ts  "Iedereen thuis · 3 lichten aan · 21,5° binnen"
 ├── lib/quickActions.ts Quick action rules + ENTITIES map (which actions, when, what they do)
+├── components/MiniPlayer.tsx    Sonos mini player on Thuis (docs/design/media-card)
 ├── components/QuickActions.tsx  "Voorgesteld" card + "Snel" grid
 ├── components/BottomNav.tsx     Floating room navigation ("Thuis" + your rooms)
 ├── components/RoomView.tsx      Room page: rows with switches, buttons, read-only sensors
@@ -20,6 +21,7 @@ src/
 ├── components/ColorPicker.tsx       Swatches + custom color for color lights
 ├── lib/moreInfo.ts     Opens HA's own more-info dialog for an entity
 ├── config/rooms.ts     YOUR rooms: name, icon, which entities (edit this)
+├── config/media.ts     Sonos entity + stream scripts for the mini player (edit this)
 ├── config/ignore.ts    Entities never counted automatically (e.g. an access point's LED "light")
 ├── lib/rooms.ts        How each entity type is shown and what tapping it does
 ├── hooks/useNow.ts     Ticks every minute, refreshes when the app returns to foreground
@@ -146,6 +148,16 @@ Copy `dist\ha-dashboard.js` to `\\192.168.1.100\config\www\`. Then go to **Setti
 ## Quick actions
 
 `src/lib/quickActions.ts` defines every action as a plain object: `label`, `icon`, `requires` (entity IDs), `relevance(ctx)` (a score for the current time, day and states; 0 hides it), `detail(ctx)` (the second line on the card) and `run(hass)` (the service call). The highest-scoring routine becomes **Voorgesteld**, and the next four non-routine actions fill **Snel**. Actions whose entities don't exist in your HA are hidden. To use your own devices, edit the `ENTITIES` map at the top of the file.
+
+## Sonos mini player
+
+On Thuis, docked above the room navigation (built from the approved design in `docs/design/media-card/`):
+
+- Set your Sonos entity in `SONOS` in `src/config/media.ts`, and list your stream scripts in `STREAM_SCRIPTS`. Each button is labelled with the script's name in HA, and scripts that don't exist are hidden.
+- **Nothing playing:** "Muziek op Sonos" plus the stream buttons. **Playing or paused:** cover, station or title, current track, and a play/pause button.
+- **Tapping a stream button** runs `script.turn_on`. The button shows a spinner until the Sonos plays something new, and "Dat lukte niet" if that doesn't happen within 10 s.
+- The active stream is not highlighted, on purpose.
+- Not built yet: the Chromecast page and the expanded player.
 
 ## Rooms
 

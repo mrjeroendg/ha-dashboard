@@ -29,7 +29,7 @@ Source: [`mini-player.html`](./mini-player.html) (a static mockup; open it in a 
 | Row | Playing | Idle |
 |---|---|---|
 | Top | Cover (54px, radius 14) · station/title (16px, 600) · current track (13px, muted) · pause button | Radio icon tile (54px) · "Muziek op Sonos" · "Kies een stream om te beginnen" |
-| Bottom | Stream buttons, the active one outlined in the accent color | Stream buttons |
+| Bottom | Stream buttons (no active highlight, see Decisions) | Stream buttons |
 | While starting | n/a | Top row reads "Starten…" / "Even geduld, de stream laadt"; the tapped button shows a spinner instead of its logo |
 
 **Chromecast page** (only while something is casting)
@@ -115,8 +115,12 @@ Source: [`expanded-player.html`](./expanded-player.html) (a static mockup; open 
 
 ---
 
+## Decisions during the build
+
+- **No active-stream highlight.** The owner doesn't need it, so the stream buttons never get an "active" outline. This intentionally deviates from the mockup.
+- **Button labels are the scripts' names in HA** (`friendly_name`). The config only lists script entity IDs (`src/config/media.ts`).
+- **Built so far:** the Sonos page of the mini player. **Still to do:** the Chromecast page and swiping, and the expanded player.
+
 ## Open questions
 
-- **Active stream detection:** match the Sonos `media_title` against the stream name, or have each script store its choice in an `input_select`/`input_text` helper?
-- **Stream names and scripts:** to be provided.
-- **Entity IDs:** the Sonos group and the Chromecast, to be provided.
+- **Entity IDs:** the owner fills in the Sonos entity in `src/config/media.ts`. The Chromecast entity is still to be provided.

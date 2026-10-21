@@ -53,6 +53,9 @@ function baseStates(): HassEntities {
     entity('scene.weekendochtend', 'scening'),
     entity('scene.gezellige_avond', 'scening'),
     entity('scene.film', 'scening'),
+    entity('script.sonos_stubru', 'off', { friendly_name: 'StuBru' }),
+    entity('script.sonos_klara', 'off', { friendly_name: 'Klara' }),
+    entity('script.sonos_lofi', 'off', { friendly_name: 'Lo-fi' }),
     entity('script.slaapwel', 'off'),
     entity('script.vertrekken', 'off'),
     entity('script.sproeier', 'off'),
@@ -123,8 +126,21 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     return ids === undefined ? [] : Array.isArray(ids) ? ids : [String(ids)];
   };
 
+  // Fake stream scripts: like the real ones, the Sonos starts a moment later.
+  const STREAMS: Record<string, Attrs> = {
+    'script.sonos_stubru': { media_channel: 'Studio Brussel', media_artist: 'Arctic Monkeys', media_title: 'Do I Wanna Know?' },
+    'script.sonos_klara': { media_channel: 'Klara', media_artist: 'Bach', media_title: 'Goldbergvariaties' },
+    'script.sonos_lofi': { media_channel: 'Lo-fi Beats', media_artist: 'Lofi Girl', media_title: 'Snowman' },
+  };
+  const startStream = (id: string) =>
+    setTimeout(() => {
+      set('media_player.woonkamer', 'playing', { ...STREAMS[id], media_content_id: id });
+      emit();
+    }, 1500);
+
   // What the fake scenes/scripts do.
   const ROUTINES: Record<string, () => void> = {
+    ...Object.fromEntries(Object.keys(STREAMS).map((id) => [id, () => startStream(id)])),
     'scene.ochtend': () => {
       set('light.keuken', 'on');
       set('light.gang', 'on');
@@ -198,6 +214,7 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
       states,
       user: { id: 'mock', name: 'Jeroen', is_admin: true },
       language: 'nl',
+      hassUrl: (path = '') => path,
       callService,
       callWS,
     });

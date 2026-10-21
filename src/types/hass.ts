@@ -9,6 +9,8 @@ export interface HomeAssistant {
   states: HassEntities;
   user?: { id: string; name: string; is_admin: boolean };
   language?: string;
+  /** Absolute URL for an HA path such as entity_picture (HA provides this too). */
+  hassUrl?(path?: string): string;
   callService(
     domain: string,
     service: string,

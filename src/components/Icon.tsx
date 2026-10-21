@@ -73,6 +73,15 @@ const PATHS = {
   play: <path d="M8 5v14l11-7z" />,
   minus: <path d="M6 12h12" />,
   plus: <path d="M12 6v12M6 12h12" />,
+  pause: <path d="M9 6v12M15 6v12" />,
+  next: <path d="M6 6l9 6-9 6zM18 6v12" />,
+  radio: (
+    <>
+      <rect x="3" y="8" width="18" height="12" rx="2.5" />
+      <circle cx="15.5" cy="14" r="2.5" />
+      <path d="M7 12h3M7 15.5h3M6 8l11-4.5" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof PATHS;

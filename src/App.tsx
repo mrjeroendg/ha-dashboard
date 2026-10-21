@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BottomNav } from './components/BottomNav';
 import { Header } from './components/Header';
+import { MiniPlayer } from './components/MiniPlayer';
 import { QuickActions } from './components/QuickActions';
 import { RoomView } from './components/RoomView';
 import { ROOMS } from './config/rooms';
@@ -37,7 +38,11 @@ export function App({ hass, config }: Props) {
           </>
         )}
       </div>
-      {rooms.length > 0 && <BottomNav rooms={rooms} active={room ? room.id : null} onSelect={setRoomId} />}
+      <div className="dock">
+        {/* The mini player only lives on Thuis. */}
+        {hass && !room && <MiniPlayer hass={hass} />}
+        {rooms.length > 0 && <BottomNav rooms={rooms} active={room ? room.id : null} onSelect={setRoomId} />}
+      </div>
     </main>
   );
 }

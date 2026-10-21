@@ -20,7 +20,7 @@ export function MiniPlayer({ hass }: Props) {
 
   // Fixed order: Chromecast first, then Sonos.
   const pages = [
-    ...(cast ? [{ key: 'cast', node: <CastPage hass={hass} player={cast} /> }] : []),
+    { key: 'cast', node: <CastPage hass={hass} player={cast} /> },
     { key: 'sonos', node: <SonosPage hass={hass} /> },
   ];
 

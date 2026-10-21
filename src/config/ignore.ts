@@ -10,7 +10,7 @@
  * Use exact entity IDs, or `*` as a wildcard: 'light.u7_pro_wall_*'.
  */
 export const IGNORED_ENTITIES: string[] = [
-  // 'light.u7_pro_wall_led',
+  'light.u7_pro_wall_led',
 ];
 
 const patterns = IGNORED_ENTITIES.map(

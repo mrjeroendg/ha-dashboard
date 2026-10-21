@@ -6,10 +6,10 @@
  *   logic stays in HA; the dashboard only starts them. The button label is the
  *   script's name in HA (friendly_name). Scripts that don't exist are hidden.
  */
-export const SONOS = 'media_player.woonkamer';
+export const SONOS = 'media_player.living_room';
 
 export const STREAM_SCRIPTS: string[] = [
-  'script.sonos_stubru',
-  'script.sonos_klara',
-  'script.sonos_lofi',
+  'script.speel_radio1_op_chromecast',
+  'script.speel_studiobrussel_op_chromecast',
+  'script.play_radio_1_on_sonos_duplicate'
 ];

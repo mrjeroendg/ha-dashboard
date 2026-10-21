@@ -5,7 +5,8 @@ import { MiniPlayer } from './components/media/MiniPlayer';
 import { QuickActions } from './components/QuickActions';
 import { RoomView } from './components/RoomView';
 import { ROOMS } from './config/rooms';
-import { scrollParent, useFillViewport } from './hooks/useFillViewport';
+import { useDock } from './hooks/useDock';
+import { scrollParent } from './lib/scroll';
 import { resolveRooms } from './lib/rooms';
 import type { DashboardConfig, HomeAssistant } from './types/hass';
 
@@ -22,7 +23,8 @@ export function App({ hass, config }: Props) {
   const rooms = useMemo(() => (states ? resolveRooms(ROOMS, states) : []), [states]);
   const room = rooms.find((r) => r.id === roomId);
 
-  useFillViewport(top);
+  const dock = useRef<HTMLDivElement>(null);
+  useDock(top, dock);
 
   // A new room starts at the top, but only scroll if you'd scrolled down
   // within the dashboard; never on first load (that pushed HA's own top
@@ -53,7 +55,7 @@ export function App({ hass, config }: Props) {
           </>
         )}
       </div>
-      <div className="dock">
+      <div className="dock" ref={dock}>
         {/* The mini player only lives on Thuis. */}
         {hass && !room && <MiniPlayer hass={hass} />}
         {rooms.length > 0 && <BottomNav rooms={rooms} active={room ? room.id : null} onSelect={setRoomId} />}

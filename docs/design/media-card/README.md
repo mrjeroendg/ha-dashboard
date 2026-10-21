@@ -119,8 +119,13 @@ Source: [`expanded-player.html`](./expanded-player.html) (a static mockup; open 
 
 - **No active-stream highlight.** The owner doesn't need it, so the stream buttons never get an "active" outline. This intentionally deviates from the mockup.
 - **Button labels are the scripts' names in HA** (`friendly_name`). The config only lists script entity IDs (`src/config/media.ts`).
-- **Built so far:** the Sonos page of the mini player. **Still to do:** the Chromecast page and swiping, and the expanded player.
+- **The Chromecast page is always present** next to the Sonos page, even when nothing is casting. So there are always 2 pages with dots once a Chromecast is configured. This replaces the "only while something is casting" rule and the page-order table above.
+  - **Idle:** the colour fade (dimmed), the TV's name, "Niets aan het casten", and an empty dimmed progress bar.
+  - **Order:** the device that started playing most recently comes first. With nothing playing, Sonos comes first.
+- **No image from the cast app → the colour fade**, never a TV icon.
+- **Casting** means `playing`, `paused` or `buffering`, and not the "Backdrop" ambient screen. With no `media_duration` (live TV), the progress row shows a "● LIVE" pill.
+- **Built so far:** the mini player, with both pages and swiping. **Still to do:** the expanded player.
 
 ## Open questions
 
-- **Entity IDs:** the owner fills in the Sonos entity in `src/config/media.ts`. The Chromecast entity is still to be provided.
+- **Entity IDs:** the owner fills in the Sonos and Chromecast entities in `src/config/media.ts`.

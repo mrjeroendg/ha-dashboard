@@ -1,0 +1,41 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Light controls · brightness/colour – approved mockup</title><style>
+body{margin:0;padding:30px;background:#e9e6dd;display:flex;gap:28px;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;align-items:flex-start}
+.col{display:flex;flex-direction:column;gap:12px;width:390px}
+.cap{font:600 15px -apple-system,system-ui;color:#3d3c38;text-align:center}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px}
+.card{background:#30302e;border-radius:22px;box-shadow:inset 0 0 0 1px rgba(245,244,239,.08);color:#f5f4ef;overflow:hidden}
+.row{display:flex;align-items:center;gap:14px;padding:14px 16px}
+.ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:#ff8f66;color:#fff;flex:none}
+svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.t{flex:1}.t b{display:block;font-size:16px;font-weight:500}.t span{font-size:13px;color:#a6a39b}
+.sw{width:48px;height:30px;border-radius:999px;background:#d97757;position:relative;flex:none}.sw::after{content:"";position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;background:#fff}
+.ctl{display:flex;align-items:center;gap:10px;margin:-4px 16px 14px 66px;height:34px}
+.slider{flex:1;height:34px;border-radius:999px;position:relative;background:linear-gradient(to right,rgba(217,119,87,.18) 72%,#262624 72%);box-shadow:inset 0 0 0 1px rgba(245,244,239,.08);display:flex;align-items:center}
+.slider svg{position:absolute;left:12px;width:16px;height:16px;color:#d97757}.slider span{position:absolute;right:14px;font-size:13px;font-weight:600;color:#a6a39b}
+.slider i{position:absolute;left:calc(72% - 2px);width:4px;height:18px;border-radius:2px;background:#d97757}
+.seg{display:flex;flex:none;padding:3px;gap:2px;border-radius:999px;background:#262624;box-shadow:inset 0 0 0 1px rgba(245,244,239,.08)}
+.seg b{width:30px;height:28px;border-radius:999px;display:grid;place-items:center;color:#a6a39b}
+.seg b.on{background:#3a3a37;color:#f5f4ef}.seg b svg{width:15px;height:15px}
+.seg b .dot{width:13px;height:13px;border-radius:50%;background:conic-gradient(red,yellow,lime,cyan,blue,magenta,red)}
+.swatches{flex:1;display:flex;gap:10px;overflow:hidden;-webkit-mask-image:linear-gradient(to right,#000 80%,transparent);mask-image:linear-gradient(to right,#000 80%,transparent)}
+.s{width:30px;height:30px;border-radius:50%;flex:none;box-shadow:inset 0 0 0 1px rgba(0,0,0,.08)}
+.s.sel{box-shadow:0 0 0 2px #30302e,0 0 0 4px #d97757}
+.swatches{padding:2px 0 2px 2px}
+.cdot{width:34px;height:34px;border-radius:50%;flex:none;background:#ff8f66;box-shadow:0 0 0 2px #30302e,0 0 0 3.5px rgba(245,244,239,.25);display:grid;place-items:center}
+.back{width:34px;height:34px;border-radius:50%;flex:none;background:#262624;box-shadow:inset 0 0 0 1px rgba(245,244,239,.08);display:grid;place-items:center;color:#d97757}
+.back svg{width:17px;height:17px}
+.lbl{font:600 12px -apple-system,system-ui;color:#73726c;margin:4px 0 -4px}
+</style></head><body></body>
+<script>
+const sun='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const bulb='<svg viewBox="0 0 24 24"><path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/></svg>';
+const C=['#ffc48a','#ffe4ce','#e8eeff','#ff9330','#ff5e4d','#ff69b4','#966eff','#286eff','#3cc86e'];
+const sw=(sel)=>`<div class="swatches">${C.map((c,i)=>`<span class="s${i===sel?' sel':''}" style="background:${c}"></span>`).join('')}</div>`;
+const head=`<div class="row"><div class="ic">${bulb}</div><div class="t"><b>Hue Play Bars</b><span>Aan · 72%</span></div><div class="sw"></div></div>`;
+const slider=`<div class="slider">${sun}<i></i><span>72%</span></div>`;
+const card=(ctl)=>`<div class="card">${head}<div class="ctl">${ctl}</div></div>`;
+const segB=(on)=>`<div class="seg"><b class="${on==='b'?'on':''}">${sun}</b><b class="${on==='c'?'on':''}"><span class="dot"></span></b></div>`;
+const A=[card(segB('b')+slider),card(segB('c')+sw(3))];
+const B=[card(slider+'<span class="cdot"></span>'),card('<span class="back">'+sun+'</span>'+sw(3))];
+document.body.innerHTML=`
+<div class="col"><div class="cap">B · Kleurbolletje achter de slider<small>Tik op het bolletje → kleuren · ☀ → terug</small></div><div class="lbl">Helderheid (standaard)</div>${B[0]}<div class="lbl">Na tik op het bolletje</div>${B[1]}</div>`;
+</script></html>

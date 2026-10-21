@@ -1,0 +1,153 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Room tabs</title><style>
+body{margin:0;padding:40px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:flex;gap:32px;align-items:flex-start}
+.col{display:flex;flex-direction:column;gap:14px;align-items:center}
+.cap{font-size:15px;font-weight:600;color:#3d3c38;text-align:center}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px}
+.phone{position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12);
+--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.16);--track:rgba(245,244,239,.12);
+--heat:#d97757;--cool:#3987e5;--dry:#199e70;--fan:#a6a39b;--auto:#8f7ee6}
+.in{padding:56px 24px 0}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:33px;line-height:1.15}
+.sec{margin:28px 4px 12px;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--bg);color:var(--accent);flex:none}
+.group{margin-top:24px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.row{display:flex;align-items:center;gap:14px;padding:14px 16px}
+.row+.row,.row+.ac,.ac+.row{box-shadow:inset 0 1px 0 var(--border)}
+.row .t{flex:1}.row b{display:block;font-size:16px;font-weight:500}.row span{font-size:13px;color:var(--muted)}
+.sw{width:48px;height:30px;border-radius:999px;background:var(--border);position:relative;flex:none}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff}
+.sw.on{background:var(--m,var(--accent))}.sw.on::after{transform:translateX(18px)}
+.ic.on{background:var(--m);color:#fff}
+/* airco block */
+.ac{--m:var(--heat)}
+.ac.cool{--m:var(--cool)}
+.ac .body{padding:0 16px 16px}
+.temp{display:flex;align-items:center;justify-content:space-between;padding:6px 0 14px}
+.big{text-align:center}.big b{display:block;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:52px;line-height:1}
+.big span{font-size:13px;color:var(--muted)}
+.rb{width:48px;height:48px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--m) 16%,transparent);color:var(--m)}
+.rb svg{width:22px;height:22px}
+.modes{display:flex;gap:6px;padding:5px;border-radius:999px;background:var(--bg)}
+.mode{flex:1;height:38px;border-radius:999px;display:grid;place-items:center;color:var(--muted)}
+.mode svg{width:19px;height:19px}
+.mode.on{background:var(--m);color:#fff}
+.mlabel{display:flex;justify-content:space-between;margin:10px 4px 0;font-size:13px;color:var(--muted)}
+.mlabel b{color:var(--text);font-weight:500}
+.more{display:flex;align-items:center;gap:6px;color:var(--muted)}.more svg{width:15px;height:15px}
+/* dial */
+.dial{position:relative;width:250px;height:200px;margin:4px auto 0}
+.dial>svg{width:250px;height:200px;stroke-width:12}
+.dial .c{position:absolute;left:0;right:0;top:66px;text-align:center}
+.dial .c b{display:block;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:52px;line-height:1}
+.dial .c span{font-size:13px;color:var(--muted)}
+.dial .pm{position:absolute;left:72px;right:72px;bottom:2px;display:flex;justify-content:space-between}
+.dial .pm .rb{width:44px;height:44px}
+/* thuis overview */
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.chip{--m:var(--muted);padding:14px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);display:flex;flex-direction:column;gap:12px}
+.chip.heat{--m:var(--heat)}.chip.cool{--m:var(--cool)}.chip.dry{--m:var(--dry)}
+.chip .top{display:flex;justify-content:space-between;align-items:center}
+.chip .ic{width:32px;height:32px;border-radius:10px;color:var(--muted)}.chip .ic svg{width:18px;height:18px}
+.chip:not(.off) .ic{background:var(--m);color:#fff}
+.chip .tt{font-family:ui-serif,"New York",Georgia,serif;font-size:26px;line-height:1}
+.chip.off .tt{color:var(--muted)}
+.chip b{display:block;font-size:15px;font-weight:600}.chip span{font-size:13px;color:var(--muted)}
+.chip:not(.off) span em{font-style:normal;color:var(--m)}
+.status{display:inline-flex;gap:10px;align-items:center;margin-top:16px;padding:10px 16px;font-size:15px;color:var(--muted);background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);border-radius:22px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--soft)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{padding:16px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);display:flex;flex-direction:column;gap:12px}.card b{font-size:15px}
+/* dock */
+.nav{position:absolute;left:0;right:0;bottom:0;padding:24px 16px 22px;background:linear-gradient(transparent,var(--bg) 30%)}
+.pills{display:flex;gap:4px;padding:6px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.pill{display:flex;align-items:center;gap:7px;padding:10px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted)}.pill svg{width:18px;height:18px}.pill.on{background:var(--accent);color:#fff}
+/* sheet */
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background:var(--surface);padding:10px 20px 36px;box-shadow:0 -12px 40px rgba(0,0,0,.4);--m:var(--heat)}
+.handle{width:36px;height:5px;border-radius:3px;background:var(--track);margin:0 auto 14px}
+.sheet h2{margin:0 0 2px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:24px}
+.sheet p{margin:0 0 18px;font-size:13px;color:var(--muted)}
+.sheet h3{margin:18px 2px 10px;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.seg{display:flex;gap:4px;padding:4px;border-radius:16px;background:var(--bg)}
+.seg div{flex:1;height:40px;border-radius:12px;display:grid;place-items:center;font-size:14px;font-weight:600;color:var(--muted)}
+.seg div.on{background:var(--m);color:#fff}
+.seg svg{width:20px;height:20px}
+.bars{display:flex;align-items:flex-end;gap:2px;height:14px}.bars i{width:3px;border-radius:1px;background:currentColor;opacity:.35}.bars i.f{opacity:1}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:20px}
+.stat{padding:12px 14px;border-radius:16px;background:var(--bg)}.stat span{display:block;font-size:12px;color:var(--muted)}.stat b{font-size:17px;font-weight:600}
+
+.shead{display:flex;justify-content:space-between;align-items:baseline;margin:26px 4px 10px}
+.shead b{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.shead span{font-size:13px;color:var(--muted)}
+.shead+.group{margin-top:0}
+.tabs{display:flex;gap:6px;margin-top:20px;overflow:hidden}
+.tab{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted);background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);white-space:nowrap}
+.tab.on{background:var(--text);color:var(--bg);box-shadow:none}
+.tabs+.group{margin-top:16px}
+.in{height:calc(844px - 56px);overflow:hidden}
+
+.tab{display:flex;align-items:center;gap:7px}
+.tab i{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.tab.on i{background:var(--bg)}
+.ssum{margin:14px 4px 10px;font-size:13px;color:var(--muted)}
+.tabs+.ssum{margin-top:14px}.ssum+.group{margin-top:0}
+</style></head><body></body>
+<script>
+const P={
+heat:'<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 0 1-10 0c0-2.2 1-3.6 2-4.6.3 1.6 1.2 2.6 2.3 2.6C11 8.5 10.5 6 12 3z"/>',
+cool:'<path d="M12 2v20M4.9 7l14.2 10M4.9 17L19.1 7M9 4l3 2 3-2M9 20l3-2 3 2M3.5 10.5l3.4.5-1.4 3M20.5 13.5l-3.4-.5 1.4-3M3.5 13.5l3.4-.5-1.4-3M20.5 10.5l-3.4.5 1.4 3"/>',
+dry:'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',
+fan:'<path d="M12 12c0-4 1-8 4-8s3 4-4 8zM12 12c4 0 8 1 8 4s-4 3-8-4zM12 12c0 4-1 8-4 8s-3-4 4-8zM12 12c-4 0-8-1-8-4s4-3 8 4z"/>',
+auto:'<path d="M5 19l5.5-14h3L19 19M7.6 13.5h8.8"/>',
+ac:'<rect x="3" y="5" width="18" height="9" rx="2"/><path d="M7 11h10M8 18c0 1.5-1 2-1 2M12 18v2.5M16 18c0 1.5 1 2 1 2"/>',
+minus:'<path d="M5 12h14"/>',plus:'<path d="M12 5v14M5 12h14"/>',chev:'<path d="M9 6l6 6-6 6"/>',
+bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>',
+plug:'<path d="M9 3v5M15 3v5M6 8h12v3a6 6 0 0 1-12 0zM12 17v4"/>',
+home:'<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+sofa:'<path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3M2 13a2 2 0 0 1 4 0v2h12v-2a2 2 0 0 1 4 0v5H2z"/>',
+bed:'<path d="M3 19V6M3 15h18v4M21 15v-3a3 3 0 0 0-3-3h-7v6M7 12.5a1.5 1.5 0 1 0 0-.01"/>',
+desk:'<path d="M3 8h18M5 8v12M19 8v12M14 8v6h5"/>',
+moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+swing:'<path d="M4 6c5 0 9 3 9 8M4 6l2.5-2M4 6l2.5 2M20 18c-5 0-9-3-9-8M20 18l-2.5 2M20 18l-2.5-2"/>'};
+const i=n=>`<svg viewBox="0 0 24 24">${P[n]}</svg>`;
+const vane=a=>`<svg viewBox="0 0 24 24"><path d="M4 5h16"/><path d="M12 7l${(Math.cos(a)*9).toFixed(1)} ${(Math.sin(a)*9).toFixed(1)}"/></svg>`;
+const bars=n=>`<span class="bars">${[5,7,9,11,13].map((h,k)=>`<i class="${k<n?'f':''}" style="height:${h}px"></i>`).join('')}</span>`;
+
+const MODES=[['auto','Auto'],['heat','Verwarmen'],['cool','Koelen'],['dry','Drogen'],['fan','Ventileren']];
+const modes=on=>`<div class="modes">${MODES.map(([k])=>`<div class="mode ${k===on?'on':''}">${i(k)}</div>`).join('')}</div>`;
+const roomTop=`<p class="lbl">Kamer</p><h1>Living</h1>`;
+const lights=`<div class="row"><div class="ic">${i('plug')}</div><div class="t"><b>Staanlamp</b><span>Uit</span></div><div class="sw"></div></div>
+<div class="row"><div class="ic">${i('bulb')}</div><div class="t"><b>Hue Play Bars</b><span>Uit</span></div><div class="sw"></div></div>`;
+const acHead=(m,detail)=>`<div class="row"><div class="ic on">${i('ac')}</div><div class="t"><b>Airco</b><span>${detail}</span></div><div class="sw on"></div></div>`;
+const nav=(on)=>`<div class="nav"><div class="pills"><div class="pill ${on==='thuis'?'on':''}">${i('home')}Thuis</div><div class="pill ${on==='living'?'on':''}">${i('sofa')}Living</div><div class="pill ${on==='slaapkamer'?'on':''}">${i('bed')}Slaapkamer</div><div class="pill">${i('desk')}Bureau</div></div></div>`;
+
+
+P.blinds='<path d="M4 4h16M5 4v13M19 4v13M5 8h14M5 12h14M5 16h14M12 16v4"/>';
+P.drop='<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>';
+P.window='<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18M4 12h16"/>';
+P.therm='<path d="M10 14V5a2 2 0 0 1 4 0v9a4 4 0 1 1-4 0z"/>';
+const row=(ic,name,detail,on,m)=>`<div class="row"${m?` style="--m:${m}"`:''}><div class="ic${on&&m?' on':''}">${i(ic)}</div><div class="t"><b>${name}</b><span>${detail}</span></div>${on===null?'':`<div class="sw${on?' on':''}"></div>`}</div>`;
+const ro=(ic,name,val)=>`<div class="row"><div class="ic">${i(ic)}</div><div class="t"><b>${name}</b></div><span style="font-size:15px;color:var(--text)">${val}</span></div>`;
+const sec=(t,sum,inner)=>`<div class="shead"><b>${t}</b><span>${sum}</span></div><div class="group">${inner}</div>`;
+const acOn=`<div class="ac">${acHead('heat','Verwarmen · nu 19,5°')}<div class="body">
+<div class="temp"><div class="rb">${i('minus')}</div><div class="big"><b>21,5°</b><span>Doel</span></div><div class="rb">${i('plus')}</div></div>
+${modes('heat')}
+<div class="mlabel"><span><b>Verwarmen</b></span><span class="more">Ventilator auto · Lamellen ${i('chev')}</span></div></div></div>`;
+const acOff=`<div class="row"><div class="ic">${i('ac')}</div><div class="t"><b>Airco</b><span>Uit · nu 17,2°</span></div><div class="sw"></div></div>`;
+const lightsS=sec('Verlichting','1 aan',row('plug','Staanlamp','Aan',true,'var(--accent)')+row('bulb','Hue Play Bars','Uit',false));
+const rtop=(name)=>`<p class="lbl">Kamer</p><h1>${name}</h1>`;
+
+
+const tabs=(on,list)=>`<div class="tabs">${list.map(([t,dot])=>`<div class="tab ${t===on?'on':''}">${t}${dot?'<i></i>':''}</div>`).join('')}</div>`;
+const LT=[['Verlichting',true],['Klimaat',true],['Media',false]];
+const ST=[['Verlichting',false],['Klimaat',false],['Ramen',true]];
+const A=`<div class="phone"><div class="in">${rtop('Living')}${tabs('Verlichting',LT)}<p class="ssum">1 van 2 aan</p>
+<div class="group">${row('plug','Staanlamp','Aan',true,'var(--accent)')+row('bulb','Hue Play Bars','Uit',false)}</div></div>${nav('living')}</div>`;
+const B=`<div class="phone"><div class="in">${rtop('Living')}${tabs('Klimaat',LT)}<p class="ssum">19,5° · 54% vochtigheid</p>
+<div class="group">${acOn+ro('drop','Luchtvochtigheid','54%')}</div></div>${nav('living')}</div>`;
+const C=`<div class="phone"><div class="in">${rtop('Slaapkamer')}${tabs('Klimaat',ST)}<p class="ssum">17,2° · 61% vochtigheid</p>
+<div class="group">${acOff+ro('drop','Luchtvochtigheid','61%')}</div></div>${nav('slaapkamer')}</div>`;
+const S=[['Tab Verlichting','Stip = er staat iets aan in die tab',A],['Tab Klimaat · airco aan','Airco A met alle bediening',B],['Tab Klimaat · airco uit','Eén rij, bediening klapt open bij aan',C]];
+document.body.innerHTML=S.map(([c,s,h])=>`<div class="col"><div class="cap">${c}<small>${s}</small></div>${h}</div>`).join('');
+</script></html>

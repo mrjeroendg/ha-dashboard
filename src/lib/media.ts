@@ -35,3 +35,37 @@ export function nowPlaying(player: HassEntity): { title: string; subtitle: strin
     subtitle: artist ?? '',
   };
 }
+
+/** States in which the Chromecast is actually casting something. */
+const CASTING = new Set(['playing', 'paused', 'buffering']);
+
+/** Casting, and not just showing the ambient screen ("Backdrop"). */
+export function isCasting(cast?: HassEntity): boolean {
+  return !!cast && CASTING.has(cast.state) && cast.attributes.app_name !== 'Backdrop';
+}
+
+/**
+ * Current playback position in seconds, extrapolated while playing (HA only
+ * updates media_position on changes). Undefined when there is no duration,
+ * e.g. live TV.
+ */
+export function progress(player: HassEntity, now: number): { position: number; duration: number } | undefined {
+  const a = player.attributes;
+  const duration = Number(a.media_duration);
+  if (!duration || !Number.isFinite(duration)) return undefined;
+
+  let position = Number(a.media_position) || 0;
+  if (player.state === 'playing' && a.media_position_updated_at) {
+    position += (now - Date.parse(String(a.media_position_updated_at))) / 1000;
+  }
+  return { position: Math.min(Math.max(position, 0), duration), duration };
+}
+
+/** 32:10, 1:02:05 */
+export function formatDuration(seconds: number): string {
+  const s = Math.floor(seconds);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const ss = String(s % 60).padStart(2, '0');
+  return h ? `${h}:${String(m).padStart(2, '0')}:${ss}` : `${m}:${ss}`;
+}

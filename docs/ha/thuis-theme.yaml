@@ -1,0 +1,14 @@
+# Home Assistant theme for the "Thuis" dashboard.
+# Gives the iPhone status bar (and HA's own surroundings) the dashboard's
+# background colour instead of black. Put this file in /homeassistant/themes/.
+Thuis:
+  app-header-background-color: "#262624"
+  app-header-text-color: "#f5f4ef"
+  primary-background-color: "#262624"
+  secondary-background-color: "#262624"
+  lovelace-background: "#262624"
+  card-background-color: "#30302e"
+  primary-text-color: "#f5f4ef"
+  secondary-text-color: "#a6a39b"
+  primary-color: "#d97757"
+  accent-color: "#d97757"

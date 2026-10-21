@@ -49,6 +49,7 @@ function baseStates(): HassEntities {
     entity('sensor.auto_batterij', '62', { unit_of_measurement: '%' }),
     entity('switch.auto_laden', 'off', { friendly_name: 'Auto laden' }),
     entity('media_player.woonkamer', 'idle', { friendly_name: 'Woonkamer' }),
+    entity('media_player.chromecast', 'off', { friendly_name: 'Tv woonkamer' }),
     entity('scene.ochtend', 'scening'),
     entity('scene.weekendochtend', 'scening'),
     entity('scene.gezellige_avond', 'scening'),

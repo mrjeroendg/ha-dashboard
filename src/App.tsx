@@ -17,11 +17,21 @@ interface Props {
 
 export function App({ hass, config }: Props) {
   const [roomId, setRoomId] = useState<string | null>(null);
+  // Which way the new page slides in: from the right when you tap a room
+  // further along the bar, from the left when you go back. None on first load.
+  const [direction, setDirection] = useState<'forward' | 'back' | null>(null);
   const top = useRef<HTMLElement>(null);
 
   const states = hass?.states;
   const rooms = useMemo(() => (states ? resolveRooms(ROOMS, states) : []), [states]);
   const room = rooms.find((r) => r.id === roomId);
+
+  const selectPage = (id: string | null) => {
+    if (id === roomId) return;
+    const order = [null, ...rooms.map((r) => r.id)];
+    setDirection(order.indexOf(id) > order.indexOf(roomId) ? 'forward' : 'back');
+    setRoomId(id);
+  };
 
   const dock = useRef<HTMLDivElement>(null);
   useDock(top, dock);
@@ -46,19 +56,22 @@ export function App({ hass, config }: Props) {
   return (
     <main className="dashboard" ref={top}>
       <div className="dashboard__content">
-        {hass && room ? (
-          <RoomView room={room} hass={hass} states={hass.states} />
-        ) : (
-          <>
-            <Header hass={hass} config={config} />
-            {hass && <QuickActions hass={hass} />}
-          </>
-        )}
+        {/* A new key per page restarts the slide-in animation. */}
+        <div key={room?.id ?? 'thuis'} className={direction ? `page page--${direction}` : 'page'}>
+          {hass && room ? (
+            <RoomView room={room} hass={hass} states={hass.states} />
+          ) : (
+            <>
+              <Header hass={hass} config={config} />
+              {hass && <QuickActions hass={hass} />}
+            </>
+          )}
+        </div>
       </div>
       <div className="dock" ref={dock}>
         {/* The mini player only lives on Thuis. */}
         {hass && !room && <MiniPlayer hass={hass} />}
-        {rooms.length > 0 && <BottomNav rooms={rooms} active={room ? room.id : null} onSelect={setRoomId} />}
+        {rooms.length > 0 && <BottomNav rooms={rooms} active={room ? room.id : null} onSelect={selectPage} />}
       </div>
     </main>
   );

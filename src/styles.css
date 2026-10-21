@@ -33,7 +33,19 @@
   flex-direction: column;
 }
 
-.dashboard__content { flex: 1; padding-bottom: 28px; }
+.dashboard__content { flex: 1; padding-bottom: 28px; overflow-x: clip; }
+
+/* Page change: slide in from the side you tapped, with a fade. */
+.page--forward { animation: page-in-forward 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.page--back { animation: page-in-back 260ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+
+@keyframes page-in-forward { from { opacity: 0; transform: translateX(28px); } }
+@keyframes page-in-back { from { opacity: 0; transform: translateX(-28px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .page--forward,
+  .page--back { animation: none; }
+}
 
 .header { padding: 4px 4px 8px; }
 

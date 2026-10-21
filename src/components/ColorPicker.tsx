@@ -1,4 +1,4 @@
-import type { CSSProperties } from 'react';
+import { useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import { openMoreInfo } from '../lib/moreInfo';
 import type { ColorChoice, LightColor, RGB } from '../lib/rooms';
 
@@ -51,8 +51,33 @@ export function ColorPicker({ entityId, color, draft, label, onPick }: Props) {
   const activeIndex = current ? swatches.findIndex((s) => matches(s.choice, current)) : -1;
   const customRgb = activeIndex === -1 && current && 'rgb' in current ? current.rgb : undefined;
 
+  // Bring the selected swatch into view when it sits beyond the visible part
+  // (scrolls only this row sideways, never the page).
+  const row = useRef<HTMLDivElement>(null);
+  const [edges, setEdges] = useState({ scrolled: false, end: false });
+  const updateEdges = () => {
+    const el = row.current;
+    if (el) setEdges({ scrolled: el.scrollLeft > 2, end: el.scrollLeft + el.clientWidth >= el.scrollWidth - 2 });
+  };
+  useLayoutEffect(updateEdges, []);
+  const selected = customRgb ? -2 : activeIndex;
+  useEffect(() => {
+    const el = row.current;
+    const swatch = el?.querySelector<HTMLElement>('[aria-checked="true"]');
+    if (!el || !swatch) return;
+    if (swatch.offsetLeft + swatch.offsetWidth > el.scrollLeft + el.clientWidth) {
+      el.scrollTo({ left: swatch.offsetLeft - el.clientWidth / 2, behavior: 'smooth' });
+    }
+  }, [selected]);
+
   return (
-    <div className="color-picker" role="radiogroup" aria-label={`Kleur ${label}`}>
+    <div
+      className={`color-picker${edges.scrolled ? ' is-scrolled' : ''}${edges.end ? ' is-end' : ''}`}
+      role="radiogroup"
+      aria-label={`Kleur ${label}`}
+      ref={row}
+      onScroll={updateEdges}
+    >
       {swatches.map((s, i) => (
         <button
           key={s.name}

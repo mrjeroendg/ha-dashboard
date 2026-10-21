@@ -374,12 +374,27 @@ button.row:active { background: var(--accent-soft); }
 }
 
 /* Color swatches under a color light */
+/* One row of swatches that scrolls sideways instead of wrapping. The padding
+   leaves room for the selection ring; the soft right edge hints at more. */
 .color-picker {
   display: flex;
-  flex-wrap: wrap;
   gap: 10px;
-  margin: 0 16px 16px 66px;
+  margin: -5px 0 11px 61px;
+  padding: 5px 5px 5px 5px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  /* Fade only the side(s) with more swatches to scroll to. */
+  --fade-left: 0px;
+  --fade-right: 28px;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
 }
+
+.color-picker.is-scrolled { --fade-left: 28px; }
+.color-picker.is-end { --fade-right: 0px; }
+
+.color-picker::-webkit-scrollbar { display: none; }
 
 .swatch {
   appearance: none;

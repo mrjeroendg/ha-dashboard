@@ -26,14 +26,16 @@
   color: var(--text);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
-  padding: max(28px, env(safe-area-inset-top)) 24px 0;
+  /* The Companion app already keeps the page below the status bar, so no
+     extra safe-area padding here (that left a big gap at the top). */
+  padding: 16px 24px 0;
   display: flex;
   flex-direction: column;
 }
 
 .dashboard__content { flex: 1; padding-bottom: 28px; }
 
-.header { padding: 12px 4px 8px; }
+.header { padding: 4px 4px 8px; }
 
 .header__date {
   margin: 0 0 10px;

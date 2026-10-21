@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import type { ResolvedRoom } from '../lib/rooms';
+import { haptic } from '../lib/haptic';
 import { Icon } from './Icon';
 
 interface Props {
@@ -34,7 +35,10 @@ export function BottomNav({ rooms, active, onSelect }: Props) {
             type="button"
             className="bottom-nav__item"
             aria-current={item.id === active ? 'page' : undefined}
-            onClick={() => onSelect(item.id)}
+            onClick={() => {
+              haptic('selection');
+              onSelect(item.id);
+            }}
           >
             <Icon name={item.icon} />
             <span>{item.name}</span>

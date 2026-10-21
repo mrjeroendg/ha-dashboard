@@ -39,11 +39,6 @@ function ShortcutCard({ shortcut, hass }: { shortcut: Shortcut; hass: HomeAssist
       <span className="icon-tile">
         <Icon name={shortcut.icon} />
       </span>
-      {status === 'done' && (
-        <span className="quick-card__check">
-          <Icon name="check" />
-        </span>
-      )}
       <span className="card-text">
         <span className="card-label">{shortcut.label}</span>
         {(statusText(status) ?? shortcut.detail) && (

@@ -5,7 +5,7 @@ import { MiniPlayer } from './components/media/MiniPlayer';
 import { QuickActions } from './components/QuickActions';
 import { RoomView } from './components/RoomView';
 import { ROOMS } from './config/rooms';
-import { useFillViewport } from './hooks/useFillViewport';
+import { scrollParent, useFillViewport } from './hooks/useFillViewport';
 import { resolveRooms } from './lib/rooms';
 import type { DashboardConfig, HomeAssistant } from './types/hass';
 
@@ -34,7 +34,11 @@ export function App({ hass, config }: Props) {
       return;
     }
     const el = top.current;
-    if (el && el.getBoundingClientRect().top < 0) el.scrollIntoView({ block: 'start' });
+    if (!el) return;
+    const scroller = scrollParent(el);
+    const isPage = scroller === document.scrollingElement || scroller === document.documentElement;
+    const offset = el.getBoundingClientRect().top - (isPage ? 0 : scroller.getBoundingClientRect().top);
+    if (offset < 0) scroller.scrollBy({ top: offset });
   }, [roomId]);
 
   return (

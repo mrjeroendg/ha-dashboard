@@ -13,10 +13,14 @@ export function BottomNav({ rooms, active, onSelect }: Props) {
   const scroller = useRef<HTMLDivElement>(null);
 
   // Keep the active pill in view when the bar scrolls sideways.
+  // Only scroll the bar itself sideways. (scrollIntoView would also scroll the
+  // page vertically on iOS, which made the dashboard jump.)
   useEffect(() => {
-    scroller.current
-      ?.querySelector<HTMLElement>('[aria-current="page"]')
-      ?.scrollIntoView({ inline: 'center', block: 'nearest', behavior: 'smooth' });
+    const bar = scroller.current;
+    const pill = bar?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (!bar || !pill) return;
+    const left = pill.offsetLeft - (bar.clientWidth - pill.offsetWidth) / 2;
+    bar.scrollTo({ left: Math.max(0, left), behavior: 'smooth' });
   }, [active]);
 
   const items = [{ id: null, name: 'Thuis', icon: 'home' as const }, ...rooms];

@@ -14,6 +14,7 @@ src/
 ├── lib/houseStatus.ts  "Iedereen thuis · 3 lichten aan · 21,5° binnen"
 ├── lib/quickActions.ts Quick action rules + ENTITIES map (which actions, when, what they do)
 ├── components/MiniPlayer.tsx    Mini player on Thuis: Sonos + Chromecast pages (docs/design/media-card)
+├── components/SonosPage.tsx     Sonos page of the mini player (now playing + stream buttons)
 ├── components/CastPage.tsx      Chromecast page of the mini player
 ├── components/QuickActions.tsx  "Voorgesteld" card + "Snel" grid
 ├── components/BottomNav.tsx     Floating room navigation ("Thuis" + your rooms)

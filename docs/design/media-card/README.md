@@ -123,6 +123,7 @@ Source: [`expanded-player.html`](./expanded-player.html) (a static mockup; open 
   - **Idle:** the colour fade (dimmed), the TV's name, "Niets aan het casten", and an empty dimmed progress bar.
   - **Order is fixed:** Chromecast first, then Sonos. It never reorders, which replaces the "most recently started first" rule.
 - **No image from the cast app → the colour fade**, never a TV icon.
+- **The cast app's name sits under the title** ("VRT MAX", "Netflix") in muted text, on both the small and the large card. It comes from `app_name`. This replaces "title only". The generic "Default Media Receiver" is left out, and the episode and TV name are still not shown.
 - **Casting** means `playing`, `paused` or `buffering`, and not the "Backdrop" ambient screen. With no `media_duration` (live TV), the progress row shows a "● LIVE" pill.
 - **Built:** the mini player and the expanded player, both with Chromecast and Sonos pages.
 - **Idle pages in the expanded player:** the same layout as an active page, with the dimmed colour fade, "Niets aan het casten" / "Niets aan het spelen", an empty progress bar and a disabled play button. Volume still works.

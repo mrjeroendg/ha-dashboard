@@ -1,6 +1,6 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
 import { useMediaPlayer } from '../../hooks/useMediaPlayer';
-import { formatDuration, isCasting } from '../../lib/media';
+import { castApp, formatDuration, isCasting } from '../../lib/media';
 import type { HomeAssistant } from '../../types/hass';
 import { Icon } from '../Icon';
 import { LivePill, ProgressTrack } from './parts/Progress';
@@ -32,7 +32,10 @@ export function CastPage({ hass, player, onOpen }: Props) {
           )}
           <span className="mini-player__text">
             {casting ? (
-              <span className="cast-page__title">{String(player.attributes.media_title ?? name)}</span>
+              <>
+                <span className="cast-page__title">{String(player.attributes.media_title ?? name)}</span>
+                {castApp(player) && <span className="mini-player__subtitle">{castApp(player)}</span>}
+              </>
             ) : (
               <>
                 <span className="mini-player__title">{name}</span>

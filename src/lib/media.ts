@@ -36,6 +36,15 @@ export function nowPlaying(player: HassEntity): { title: string; subtitle: strin
   };
 }
 
+/**
+ * The cast app's name ("VRT MAX", "Netflix"), shown under the title. The
+ * generic Cast receiver name says nothing, so it's left out.
+ */
+export function castApp(cast: HassEntity): string | undefined {
+  const app = cast.attributes.app_name ? String(cast.attributes.app_name) : undefined;
+  return app && app !== 'Default Media Receiver' ? app : undefined;
+}
+
 /** States in which the Chromecast is actually casting something. */
 const CASTING = new Set(['playing', 'paused', 'buffering']);
 

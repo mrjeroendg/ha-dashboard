@@ -1,6 +1,6 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
 import { useMediaPlayer } from '../../hooks/useMediaPlayer';
-import { isCasting } from '../../lib/media';
+import { castApp, isCasting } from '../../lib/media';
 import type { HomeAssistant } from '../../types/hass';
 import { Controls, PlayButton, ProgressSlot, SideButton, TitleBlock } from './parts/ExpandedRows';
 import { VolumeSlider } from './parts/VolumeSlider';
@@ -27,10 +27,10 @@ export function CastExpanded({ hass, player }: Props) {
         )}
       </div>
 
-      {/* Title only: no app, episode or TV name (empty space below on purpose). */}
+      {/* Title with the cast app below it (no episode or TV name). */}
       <TitleBlock
         title={casting ? String(player.attributes.media_title ?? name) : name}
-        subtitle={casting ? undefined : 'Niets aan het casten'}
+        subtitle={casting ? castApp(player) : 'Niets aan het casten'}
       />
       <ProgressSlot media={media} active={casting} />
 

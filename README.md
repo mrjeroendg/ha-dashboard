@@ -160,7 +160,7 @@ Copy `dist\ha-dashboard.js` to `\\192.168.1.100\config\www\`. Then go to **Setti
 { label: 'Keuken', icon: 'bulb', entity: 'light.keuken', service: 'toggle' },
 ```
 
-A tap calls `<domain>.<service>` on the entity (default `turn_on`), with feedback: Bezig… → ✓, or "Dat lukte niet". A card whose entity is `on` is highlighted. An empty list shows no "Snel" section.
+A tap calls `<domain>.<service>` on the entity (default `turn_on`), and shows "Dat lukte niet" only if the call fails. A card whose entity is `on` is highlighted. An empty list shows no "Snel" section.
 
 ## Sonos mini player
 

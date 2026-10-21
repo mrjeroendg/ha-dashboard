@@ -1,5 +1,5 @@
 import { SHORTCUTS, type Shortcut } from '../config/shortcuts';
-import { useRunAction, type RunStatus } from '../hooks/useRunAction';
+import { useRunAction } from '../hooks/useRunAction';
 import type { HomeAssistant } from '../types/hass';
 import { Icon } from './Icon';
 
@@ -31,7 +31,7 @@ function ShortcutCard({ shortcut, hass }: { shortcut: Shortcut; hass: HomeAssist
   return (
     <button
       type="button"
-      className={`quick-card status-${status}${on ? ' is-active' : ''}`}
+      className={`quick-card${status === 'error' ? ' status-error' : ''}${on ? ' is-active' : ''}`}
       onClick={() =>
         run(() => hass.callService(domain, shortcut.service ?? 'turn_on', {}, { entity_id: shortcut.entity }))
       }
@@ -39,23 +39,14 @@ function ShortcutCard({ shortcut, hass }: { shortcut: Shortcut; hass: HomeAssist
       <span className="icon-tile">
         <Icon name={shortcut.icon} />
       </span>
-      {status === 'done' && (
-        <span className="quick-card__check">
-          <Icon name="check" />
-        </span>
-      )}
       <span className="card-text">
         <span className="card-label">{shortcut.label}</span>
-        {(statusText(status) ?? shortcut.detail) && (
-          <span className="card-detail">{statusText(status) ?? shortcut.detail}</span>
+        {status === 'error' ? (
+          <span className="card-detail">Dat lukte niet</span>
+        ) : (
+          shortcut.detail && <span className="card-detail">{shortcut.detail}</span>
         )}
       </span>
     </button>
   );
-}
-
-function statusText(status: RunStatus): string | undefined {
-  if (status === 'busy') return 'Bezig…';
-  if (status === 'error') return 'Dat lukte niet';
-  return undefined;
 }

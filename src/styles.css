@@ -153,13 +153,7 @@ button.quick-card:active { transform: scale(0.97); }
 .quick-card.is-active .icon-tile { background: var(--accent); color: #fff; }
 
 
-.quick-card__check {
-  position: absolute;
-  top: 16px;
-  right: 16px;
-  color: var(--accent);
-  display: grid;
-}
+
 
 .status-busy { opacity: 0.7; }
 .status-error .card-detail { color: var(--accent); }

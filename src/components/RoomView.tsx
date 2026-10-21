@@ -1,4 +1,4 @@
-import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
+import type { HassEntity } from 'home-assistant-js-websocket';
 import { useDebouncedCommit } from '../hooks/useDebouncedCommit';
 import { useRunAction } from '../hooks/useRunAction';
 import {
@@ -19,16 +19,15 @@ import { Icon } from './Icon';
 interface Props {
   room: ResolvedRoom;
   hass: HomeAssistant;
-  states: HassEntities;
 }
 
-export function RoomView({ room, hass, states }: Props) {
+export function RoomView({ room, hass }: Props) {
   return (
     <>
       <header className="header">
         <p className="header__date">Kamer</p>
         <h1 className="header__greeting">{room.name}</h1>
-        <p className="room-summary">{roomSummary(room, states)}</p>
+        <p className="room-summary">{roomSummary(room, hass.states)}</p>
       </header>
       <section className="row-group">
         {room.rows.map((row) => (

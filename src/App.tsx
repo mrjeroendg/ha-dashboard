@@ -52,7 +52,7 @@ export function App({ hass, config }: Props) {
         {/* A new key per page restarts the slide-in animation. */}
         <div key={room?.id ?? 'thuis'} className={direction ? `page page--${direction}` : 'page'}>
           {hass && room ? (
-            <RoomView room={room} hass={hass} states={hass.states} />
+            <RoomView room={room} hass={hass} />
           ) : (
             <>
               <Header hass={hass} config={config} />

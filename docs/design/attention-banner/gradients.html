@@ -1,0 +1,100 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Attention banner – mockup</title><style>
+body{margin:0;padding:40px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:flex;gap:32px;align-items:flex-start}
+.col{display:flex;flex-direction:column;gap:14px;align-items:center}
+.cap{font-size:15px;font-weight:600;color:#3d3c38;text-align:center}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px}
+.phone{position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12);
+--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.16);--track:rgba(245,244,239,.12);--danger:#e5534b}
+.in{padding:56px 24px 0}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:33px;line-height:1.15}
+.status{display:inline-flex;gap:10px;align-items:center;margin-top:16px;padding:10px 16px;font-size:15px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:22px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--soft);flex:none}
+.sec{margin:28px 4px 12px;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{padding:16px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);min-height:86px;display:flex;flex-direction:column;justify-content:space-between;gap:14px}
+.card b{font-size:15px}
+.ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--bg);color:var(--accent);flex:none}
+.ic.on{background:var(--accent);color:#fff}
+svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+/* banner */
+.att{margin-top:16px;border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.att .r{display:flex;align-items:center;gap:12px;padding:12px 12px 12px 14px}
+.att .ai{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;flex:none;background:var(--bg);color:var(--muted)}
+.att .ai svg{width:18px;height:18px}
+.att .t{flex:1;min-width:0}.att .t b{display:block;font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.att .t span{display:block;font-size:13px;color:var(--muted);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.act{height:32px;padding:0 13px;border-radius:999px;font-size:13px;font-weight:600;display:grid;place-items:center;background:var(--bg);box-shadow:inset 0 0 0 1px var(--border);flex:none;white-space:nowrap}
+.x{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;color:var(--muted);flex:none}.x svg{width:16px;height:16px}
+.att.warn{--c:var(--danger);--sub:#f0b3ae;--tint:16%;--edge:45%;background:color-mix(in srgb,var(--c) var(--tint),var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) var(--edge),transparent)}
+.att.warn .ai{background:var(--c);color:#fff}
+.att.warn .t span{color:var(--sub)}
+.att.warn .act{background:var(--c);color:#fff;box-shadow:none}
+.att.low .ai,.att.low .act{color:#2b1a0a}
+.att.low{--c:#e8913a;--sub:#f3c99a;--tint:13%;--edge:40%}
+.att.high{--c:#b42318;--sub:#f2a49c;--tint:30%;--edge:85%}
+.legend{display:flex;flex-direction:column;gap:14px;width:300px;margin-top:118px;font-size:14px;color:#3d3c38}
+.legend div{display:flex;gap:12px;align-items:flex-start}.legend i{width:22px;height:22px;border-radius:7px;flex:none}
+.legend b{display:block}.legend span{color:#73726c}
+.att .r+.r{box-shadow:inset 0 1px 0 var(--border)}
+.att.warn .more{color:#f0b3ae;box-shadow:inset 0 1px 0 color-mix(in srgb,var(--danger) 30%,transparent)}
+.more{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;box-shadow:inset 0 1px 0 var(--border);font-size:13px;color:var(--muted)}
+.more svg{width:16px;height:16px}
+.stack{position:relative}
+.stack::after{content:"";position:absolute;left:14px;right:14px;bottom:-6px;height:12px;border-radius:0 0 16px 16px;background:color-mix(in srgb,var(--danger) 10%,#2c2c2a);box-shadow:inset 0 -1px 0 color-mix(in srgb,var(--danger) 35%,transparent);z-index:-1}
+/* dock */
+.nav{position:absolute;left:0;right:0;bottom:0;padding:8px 16px 22px;background:linear-gradient(transparent,var(--bg) 30%)}
+.mini{display:flex;align-items:center;gap:12px;padding:12px;margin-bottom:6px;border-radius:24px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);flex-direction:column;align-items:stretch}
+.mini .top{display:flex;align-items:center;gap:12px}
+.thumb{width:112px;height:63px;border-radius:12px;background:#000;position:relative;overflow:hidden;flex:none}
+.thumb::after{content:"";position:absolute;left:44px;top:0;width:22px;height:63px;background:linear-gradient(180deg,#e50914,#b20710);transform:skewX(-14deg)}
+.mini .tt{flex:1}.mini .tt b{display:block;font-size:16px}.mini .tt span{font-size:13px;color:var(--muted)}
+.pb{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}.pb i{flex:1;height:4px;border-radius:2px;background:linear-gradient(to right,var(--accent) 17%,var(--track) 17%)}
+.dots{display:flex;justify-content:center;gap:6px;margin:4px 0 8px}.dots i{width:6px;height:6px;border-radius:3px;background:var(--track)}.dots i.on{width:16px;background:var(--text)}
+.pills{display:flex;gap:4px;padding:6px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.pill{display:flex;align-items:center;gap:7px;padding:10px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted)}.pill svg{width:18px;height:18px}.pill.on{background:var(--accent);color:#fff}
+/* sheet */
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background:var(--surface);padding:10px 16px 34px;box-shadow:0 -12px 40px rgba(0,0,0,.4)}
+.handle{width:36px;height:5px;border-radius:3px;background:var(--track);margin:0 auto 14px}
+.sheet h2{margin:0 4px 4px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:24px}
+.sheet p{margin:0 4px 14px;font-size:13px;color:var(--muted)}
+.sheet .att{margin-top:10px}
+.list{margin-top:16px;display:flex;flex-direction:column;gap:8px}.list .att{margin-top:0}
+
+/* gradient variants */
+.v-a .att.warn{background:linear-gradient(90deg,color-mix(in srgb,var(--c) calc(var(--tint) * 2.2),var(--surface)),color-mix(in srgb,var(--c) 4%,var(--surface)))}
+.v-b .att.warn{background:radial-gradient(130% 160% at 0% 0%,color-mix(in srgb,var(--c) calc(var(--tint) * 2.6),var(--surface)),var(--surface) 75%)}
+.v-c .att.warn{background:linear-gradient(135deg,color-mix(in srgb,var(--c) 92%,#000),color-mix(in srgb,var(--c) 48%,#000));box-shadow:inset 0 1px 0 rgba(255,255,255,.12)}
+.v-c .att.warn .t span{color:rgba(255,255,255,.78)}
+.v-c .att.warn .ai{background:rgba(255,255,255,.16);color:#fff}
+.v-c .att.warn .act{background:#fff;color:color-mix(in srgb,var(--c) 70%,#000)}
+.v-c .att.low .ai{color:#fff}
+.v-d .att.warn{border:1px solid transparent;box-shadow:none;background:linear-gradient(color-mix(in srgb,var(--c) 8%,var(--surface)),color-mix(in srgb,var(--c) 8%,var(--surface))) padding-box,linear-gradient(100deg,var(--c),color-mix(in srgb,var(--c) 10%,transparent) 70%) border-box}
+.v-d .att.warn .r{position:relative}
+</style></head><body></body>
+<script>
+const P={sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>',
+moon:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
+sofa:'<path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3M2 13a2 2 0 0 1 4 0v2h12v-2a2 2 0 0 1 4 0v5H2z"/>',
+home:'<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',
+upd:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5"/><path d="M12 8v5l3 2"/>',
+garage:'<path d="M3 21V9l9-5 9 5v12"/><path d="M7 21v-8h10v8M7 16h10"/>',
+window:'<rect x="4" y="3" width="16" height="18" rx="2"/><path d="M12 3v18M4 12h16"/>',
+x:'<path d="M6 6l12 12M18 6L6 18"/>',chev:'<path d="M9 6l6 6-6 6"/>',pause:'<path d="M9 6v12M15 6v12"/>'};
+const i=n=>`<svg viewBox="0 0 24 24">${P[n]}</svg>`;
+const page=(att)=>`<p class="lbl">Woensdag 21 oktober</p><h1>Goedenacht, Jeroen</h1>
+<div class="status"><span class="dot"></span>Iedereen thuis · 3 lichten aan</div>${att}
+<p class="sec">Snel</p><div class="grid"><div class="card"><div class="ic on">${i('bulb')}</div><b>Staanlamp</b></div><div class="card"><div class="ic">${i('moon')}</div><b>Centris</b></div><div class="card"><div class="ic">${i('sofa')}</div><b>Sfeer</b></div></div>`;
+const dock=`<div class="nav"><div class="mini"><div class="top"><div class="thumb"></div><div class="tt"><b>Netflix</b></div><span style="padding:0 10px">${i('pause')}</span></div><div class="pb"><span>9:12</span><i></i><span>−45:17</span></div></div>
+<div class="dots"><i class="on"></i><i></i></div><div class="pills"><div class="pill on">${i('home')}Thuis</div><div class="pill">${i('sofa')}Living</div></div></div>`;
+const row=(ic,t,s,act)=>`<div class="r">${'<div class="ai">'+i(ic)+'</div>'}<div class="t"><b>${t}</b><span>${s}</span></div><span class="act">${act}</span></div>`;
+const immich=row('upd','Update voor Immich','v3.3.1 → v3.3.4','Bekijk');
+const garage=row('garage','Garagepoort staat open','Al 25 min · 22:04','Sluiten');
+const win=row('window','Raam badkamer open','Al 40 min · buiten 6°','Bekijk');
+
+const L=(lvl,r)=>`<div class="att warn ${lvl}">${r}</div>`;
+const list=`<div class="list">${L('high',garage)}${L('',win)}${L('low',immich)}</div>`;
+const ph=v=>`<div class="phone ${v}"><div class="in">${page(list)}</div>${dock}</div>`;
+const S=[['A · Verloop naar rechts','Kleur links, vervaagt naar de kaart',ph('v-a')],['B · Gloed uit de hoek','Zachte radiale gloed linksboven',ph('v-b')],['C · Volle kleur','Verloop licht → donker, witte tekst',ph('v-c')],['D · Verlopende rand','Rustige kaart, rand kleurt van links',ph('v-d')]];
+document.body.innerHTML=S.map(([c,s,h])=>`<div class="col"><div class="cap">${c}<small>${s}</small></div>${h}</div>`).join('');
+</script></html>

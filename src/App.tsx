@@ -36,15 +36,8 @@ export function App({ hass, config }: Props) {
   const dock = useRef<HTMLDivElement>(null);
   useDock(top, dock);
 
-  // A new room starts at the top, but only scroll if you'd scrolled down
-  // within the dashboard; never on first load (that pushed HA's own top
-  // area out of view and made the page jump).
-  const firstRender = useRef(true);
+  // A new page starts at the top: if you'd scrolled down, scroll back up.
   useEffect(() => {
-    if (firstRender.current) {
-      firstRender.current = false;
-      return;
-    }
     const el = top.current;
     if (!el) return;
     const scroller = scrollParent(el);

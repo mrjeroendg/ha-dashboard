@@ -1,14 +1,54 @@
 # Home Assistant theme for the "Thuis" dashboard.
 # Gives the iPhone status bar (and HA's own surroundings) the dashboard's
 # background colour instead of black. Put this file in /homeassistant/themes/.
+#
+# The theme only sets colours; everything it doesn't set falls back to HA's
+# light defaults. So the inputs, dropdowns and dividers are set explicitly too,
+# otherwise HA's own screens get light text on light input boxes.
 Thuis:
+  # Page and cards
   app-header-background-color: "#262624"
   app-header-text-color: "#f5f4ef"
   primary-background-color: "#262624"
   secondary-background-color: "#262624"
   lovelace-background: "#262624"
   card-background-color: "#30302e"
+  ha-card-background: "#30302e"
+  mdc-theme-surface: "#30302e"
   primary-text-color: "#f5f4ef"
   secondary-text-color: "#a6a39b"
+  disabled-text-color: "#6f6d67"
+  divider-color: "rgba(245, 244, 239, 0.12)"
   primary-color: "#d97757"
   accent-color: "#d97757"
+
+  # Text fields (e.g. the resource URL)
+  input-fill-color: "#3a3a37"
+  input-disabled-fill-color: "#2c2c2a"
+  input-ink-color: "#f5f4ef"
+  input-label-ink-color: "#a6a39b"
+  input-disabled-ink-color: "#6f6d67"
+  input-idle-line-color: "#6f6d67"
+  input-hover-line-color: "#a6a39b"
+  input-disabled-line-color: "#4a4a46"
+  input-outlined-idle-border-color: "#6f6d67"
+  input-outlined-hover-border-color: "#a6a39b"
+  input-outlined-disabled-border-color: "#4a4a46"
+  input-dropdown-icon-color: "#a6a39b"
+  mdc-text-field-fill-color: "#3a3a37"
+  mdc-text-field-disabled-fill-color: "#2c2c2a"
+  mdc-text-field-ink-color: "#f5f4ef"
+  mdc-text-field-label-ink-color: "#a6a39b"
+  mdc-text-field-idle-line-color: "#6f6d67"
+  mdc-text-field-hover-line-color: "#a6a39b"
+
+  # Dropdowns
+  mdc-select-fill-color: "#3a3a37"
+  mdc-select-ink-color: "#f5f4ef"
+  mdc-select-label-ink-color: "#a6a39b"
+  mdc-select-idle-line-color: "#6f6d67"
+  mdc-select-hover-line-color: "#a6a39b"
+  mdc-select-dropdown-icon-color: "#a6a39b"
+
+  # YAML / code editors
+  code-editor-background-color: "#262624"

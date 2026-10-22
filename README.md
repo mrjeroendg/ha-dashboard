@@ -212,7 +212,7 @@ Add `temperature: 'sensor.…'` and/or `humidity: 'sensor.…'` to a room. The t
 
 ### Doors, windows and locks under the name
 
-Add `openings: [...]` to a room (entity IDs, or `{ entity, name }`). Under the room name you then see a green dot with "Alles gesloten", or an orange dot with what's open: "Achterdeur, garagepoort". Open means `on`, `open`, `opening` or `unlocked`. Display only. See `docs/design/room-openings`.
+Add `openings: [...]` to a room (entity IDs, or `{ entity, name }`). Under the room name you then see a green dot with "Alles gesloten", or a red dot with what's open: "Achterdeur, garagepoort". Open means `on`, `open`, `opening` or `unlocked`. Display only. See `docs/design/room-openings`.
 
 ### Sections (tabs)
 

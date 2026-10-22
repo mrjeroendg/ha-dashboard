@@ -354,7 +354,7 @@ button.quick-card:active { transform: scale(0.97); }
 }
 
 .room-openings.is-open { color: var(--text); }
-.room-openings.is-open .room-openings__dot { background: var(--accent); }
+.room-openings.is-open .room-openings__dot { background: #e5534b; }
 
 .room-header__climate {
   flex: none;

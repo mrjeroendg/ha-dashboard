@@ -24,9 +24,9 @@ svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke
 <script>
 const I={pause:'<path d="M9 6v12M15 6v12"/>'};
 const D={
- nf:'radial-gradient(circle at 38% 32%, #ff8a80, transparent 55%), linear-gradient(150deg, #e5383b, #5c0f14)',
- vrt:'radial-gradient(circle at 40% 35%, #9fe3d9, transparent 55%), linear-gradient(140deg, #2fa39a, #173d3f)',
- vtm:'radial-gradient(circle at 40% 32%, #ffe0a3, transparent 55%), linear-gradient(140deg, #e7a83e, #6b3d1e)'};
+ nf:'radial-gradient(circle at 38% 32%, color-mix(in srgb, #f0323b 45%, #fff), transparent 55%), linear-gradient(150deg, #f0323b, #e50914, #141414)',
+ vrt:'radial-gradient(circle at 38% 32%, color-mix(in srgb, #ff4f55 45%, #fff), transparent 55%), linear-gradient(150deg, #ff4f55, #f5333a, #f5333a, #1b1d52)',
+ vtm:'radial-gradient(circle at 38% 32%, color-mix(in srgb, #e555d9 45%, #fff), transparent 55%), linear-gradient(150deg, #e555d9, #fa077e, #f73849, #ff8518)'};
 const pills=`<div class="pills">${[['nf','Netflix'],['vrt','VRT MAX'],['vtm','VTM GO']].map(([k,l])=>`<div class="pill"><span class="dot" style="background:${D[k]}"></span>${l}</div>`).join('')}</div>`;
 const dots=`<div class="dots"><i class="on"></i><i></i></div>`;
 const now=`<div class="mp"><div class="top"><div class="thumb idle"></div><div class="txt"><b>Tv woonkamer</b><span>Niets aan het casten</span></div></div><div class="prog"><span></span><div class="track" style="opacity:.5"></div><span></span></div></div>${dots}`;
@@ -39,5 +39,5 @@ const S=[
  ['A · Tijdens casten','Ongewijzigd: voortgang zoals nu, geen knoppen',aCast],
  ['B · Altijd app-knoppen','Voortgang wordt een dun lijntje onder de titel, tijd als "−19:40"',bCast],
 ];
-document.body.innerHTML=S.map(([c,s,h])=>`<div><p class="cap">${c}<small>${s}</small></p><div class="stage">${h}</div></div>`).join('')+`<p class="note">Bolletjes in dezelfde stijl als Radio 1 / StuBru / Klara: rood voor Netflix, petrol voor VRT MAX, goud voor VTM GO. Een tik opent de app op de iPhone (nflx://, …).</p>`;
+document.body.innerHTML=S.map(([c,s,h])=>`<div><p class="cap">${c}<small>${s}</small></p><div class="stage">${h}</div></div>`).join('')+`<p class="note">Bolletjes in dezelfde stijl als Radio 1 / StuBru / Klara: kleuren uit de app-iconen: Netflix rood-zwart, VRT MAX rood-navy, VTM GO roze-oranje. Een tik opent de app op de iPhone (nflx://, …).</p>`;
 </script></html>

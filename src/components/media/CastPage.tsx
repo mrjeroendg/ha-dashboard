@@ -7,7 +7,17 @@ import type { HomeAssistant } from '../../types/hass';
 import { Icon } from '../Icon';
 import { LivePill, ProgressTrack } from './parts/Progress';
 
-/** Colour circles for the app buttons, by position (same style as the stream buttons). */
+/** A colour circle in the stream-button style, built from an app's house colour(s). */
+function dotFor(color: string | string[]) {
+  const [first, ...rest] = Array.isArray(color) ? color : [color];
+  // One colour: light to dark of that colour. Several: the gradient itself, like the app icon.
+  const body = rest.length
+    ? `linear-gradient(150deg, ${[first, ...rest].join(', ')})`
+    : `linear-gradient(150deg, color-mix(in srgb, ${first} 90%, #fff), ${first} 45%, color-mix(in srgb, ${first} 70%, #000))`;
+  return `radial-gradient(circle at 38% 32%, color-mix(in srgb, ${first} 45%, #fff), transparent 55%), ${body}`;
+}
+
+/** Fallback colour circles for apps without a colour, by position. */
 const DOTS = [
   'radial-gradient(circle at 38% 32%, #ff8a80, transparent 55%), linear-gradient(150deg, #e5383b, #5c0f14)',
   'radial-gradient(circle at 40% 35%, #9fe3d9, transparent 55%), linear-gradient(140deg, #2fa39a, #173d3f)',
@@ -85,7 +95,7 @@ export function CastPage({ hass, player, onOpen }: Props) {
                 window.open(app.url);
               }}
             >
-              <span className="stream-pill__logo" style={{ background: DOTS[i % DOTS.length] }} aria-hidden />
+              <span className="stream-pill__logo" style={{ background: app.color ? dotFor(app.color) : DOTS[i % DOTS.length] }} aria-hidden />
               <span className="stream-pill__label">{app.name}</span>
             </button>
           ))}

@@ -7,7 +7,6 @@ import {
   adjustTemperature,
   rowModel,
   sectionIsActive,
-  sectionSummary,
   setBrightness,
   setColor,
   type ColorChoice,
@@ -30,7 +29,6 @@ export function RoomView({ room, hass }: Props) {
   const sections = room.sections;
   const section = sections[Math.min(tab, sections.length - 1)];
   const tabs = sections.length > 1;
-  const summary = tabs ? sectionSummary(section.rows) : '';
 
   return (
     <>
@@ -58,7 +56,6 @@ export function RoomView({ room, hass }: Props) {
           ))}
         </div>
       )}
-      {summary && <p className="room-summary">{summary}</p>}
       <section className={`row-group${tabs ? ' row-group--tabbed' : ''}`}>
         {section.rows.map((row) => (
           <EntityRow key={row.entity.entity_id} entity={row.entity} name={row.name} hass={hass} />

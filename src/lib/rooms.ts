@@ -258,43 +258,7 @@ function readableState(entity: HassEntity): string {
 
 // ---------------------------------------------------------------- sections
 
-const SWITCHABLE = ['light', 'switch', 'fan', 'input_boolean'];
-const OPENINGS = ['window', 'door', 'garage_door', 'opening'];
-
 /** Something in the section is on (a light, the airco, an open cover, music…): the dot on its tab. */
 export function sectionIsActive(rows: Row[]): boolean {
   return rows.some((r) => rowModel(r.entity).on);
-}
-
-/** One quiet line about a section, e.g. "1 van 2 aan · 19,5° · 54% vochtigheid". */
-export function sectionSummary(rows: Row[]): string {
-  const entities = rows.map((r) => r.entity).filter((e) => !UNAVAILABLE.has(e.state));
-  const parts: string[] = [];
-
-  const switchable = entities.filter((e) => SWITCHABLE.includes(domainOf(e)));
-  if (switchable.length > 0) {
-    const on = switchable.filter((e) => e.state === 'on').length;
-    parts.push(on === 0 ? 'Alles uit' : `${on} van ${switchable.length} aan`);
-  }
-
-  const openings = entities.filter(
-    (e) =>
-      domainOf(e) === 'cover' ||
-      (domainOf(e) === 'binary_sensor' && OPENINGS.includes(String(e.attributes.device_class))),
-  );
-  if (openings.length > 0) {
-    const open = openings.filter((e) => ['open', 'opening', 'on'].includes(e.state)).length;
-    parts.push(open === 0 ? 'Alles dicht' : `${open} open`);
-  }
-
-  const sensor = (dc: string) => entities.find((e) => domainOf(e) === 'sensor' && e.attributes.device_class === dc);
-  const climate = entities.find((e) => domainOf(e) === 'climate');
-  const temperature = climate?.attributes.current_temperature ?? sensor('temperature')?.state;
-  const humidity = climate?.attributes.current_humidity ?? sensor('humidity')?.state;
-  if (temperature !== undefined && temperature !== null) parts.push(`${number(temperature)}°`);
-  if (humidity !== undefined && humidity !== null) parts.push(`${number(humidity, 0)}% vochtigheid`);
-
-  if (entities.some((e) => domainOf(e) === 'media_player' && e.state === 'playing')) parts.push('Speelt');
-
-  return parts.join(' · ');
 }

@@ -347,14 +347,7 @@ button.quick-card:active { transform: scale(0.97); }
 
 .room-tab[aria-selected='true'] .room-tab__dot { background: var(--bg); }
 
-.room-summary {
-  margin: 14px 4px 10px;
-  font-size: 13px;
-  color: var(--text-muted);
-}
-
 .row-group--tabbed { margin-top: 16px; }
-.room-summary + .row-group--tabbed { margin-top: 0; }
 
 .row-group {
   margin-top: 28px;

@@ -220,7 +220,6 @@ Instead of `entities`, a room can have `sections`. Each section becomes a tab un
 
 - Only the active tab's rows are shown. A room always opens on its first tab.
 - A small orange dot on a tab means something in it is on (a light, a switch, an open cover, music playing…).
-- Under the tabs, one line sums up the open tab: "1 van 2 aan" / "Alles uit" for lights and switches, "1 open" / "Alles dicht" for covers, windows and doors, plus the temperature and humidity ("19,5° · 64% vochtigheid") and "Speelt" for media.
 - A section whose entities don't exist is hidden. With only one section left, there are no tabs.
 
 ## Status line logic

@@ -9,8 +9,9 @@
  *   script's name in HA (friendly_name). Scripts that don't exist are hidden.
  * - CAST_APPS: buttons on the Chromecast page while nothing is casting (up to
  *   3). A tap opens the app on the iPhone through its URL scheme; from there
- *   you cast to the TV yourself. `color` is the app's house colour; the colour
- *   circle is built from it. Without one, they go by position: red, teal, gold.
+ *   you cast to the TV yourself. `color` is the app's house colour, or a list
+ *   of colours for an icon with a gradient (top left to bottom right); the
+ *   colour circle is built from it. Without one: red, teal, gold by position.
  */
 export const SONOS = 'media_player.living_room';
 
@@ -26,12 +27,12 @@ export interface CastApp {
   name: string;
   /** The app's URL scheme, e.g. 'nflx://' for Netflix. */
   url: string;
-  /** House colour as hex, e.g. '#e50914'. */
-  color?: string;
+  /** House colour as hex ('#e50914'), or several for a gradient. */
+  color?: string | string[];
 }
 
 export const CAST_APPS: CastApp[] = [
   { name: 'Netflix', url: 'nflx://', color: '#e50914' },
-  { name: 'VRT MAX', url: 'vrtmax://', color: '#1f1f1f' },
-  { name: 'VTM GO', url: 'vtmgo://', color: '#ee7f01' },
+  { name: 'VRT MAX', url: 'vrtmax://', color: '#ff4b4f' },
+  { name: 'VTM GO', url: 'vtmgo://', color: ['#e555d9', '#fa077e', '#f73849', '#ff8518'] },
 ];

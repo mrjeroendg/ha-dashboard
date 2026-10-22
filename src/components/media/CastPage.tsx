@@ -7,10 +7,15 @@ import type { HomeAssistant } from '../../types/hass';
 import { Icon } from '../Icon';
 import { LivePill, ProgressTrack } from './parts/Progress';
 
-/** A colour circle in the stream-button style, built from an app's house colour. */
-const dotFor = (c: string) =>
-  `radial-gradient(circle at 38% 32%, color-mix(in srgb, ${c} 45%, #fff), transparent 55%), ` +
-  `linear-gradient(150deg, color-mix(in srgb, ${c} 85%, #fff), color-mix(in srgb, ${c} 45%, #000))`;
+/** A colour circle in the stream-button style, built from an app's house colour(s). */
+function dotFor(color: string | string[]) {
+  const [first, ...rest] = Array.isArray(color) ? color : [color];
+  // One colour: light to dark of that colour. Several: the gradient itself, like the app icon.
+  const body = rest.length
+    ? `linear-gradient(150deg, ${[first, ...rest].join(', ')})`
+    : `linear-gradient(150deg, color-mix(in srgb, ${first} 90%, #fff), ${first} 45%, color-mix(in srgb, ${first} 70%, #000))`;
+  return `radial-gradient(circle at 38% 32%, color-mix(in srgb, ${first} 45%, #fff), transparent 55%), ${body}`;
+}
 
 /** Fallback colour circles for apps without a colour, by position. */
 const DOTS = [

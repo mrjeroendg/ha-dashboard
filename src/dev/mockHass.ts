@@ -17,6 +17,8 @@ const entity = (entity_id: string, state: string, attributes: Attrs = {}): HassE
   context: { id: 'mock', user_id: null, parent_id: null },
 });
 
+const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000).toISOString();
+
 const STREAM_NAMES = ['Radio 1', 'StuBru', 'Klara'];
 
 const DOWNSTAIRS = ['light.keuken', 'light.gang', 'light.woonkamer', 'light.eettafel'];
@@ -49,6 +51,9 @@ function baseStates(): HassEntities {
     entity('switch.koffiemachine', 'off', { friendly_name: 'Koffiemachine' }),
     entity('cover.rolluiken', 'closed', { friendly_name: 'Rolluiken' }),
     entity('lock.voordeur', 'locked', { friendly_name: 'Voordeur' }),
+    // Warnings (src/config/attention.ts): the garage has been open for 25 min.
+    { ...entity('cover.garagepoort', 'open', { friendly_name: 'Garagepoort', device_class: 'garage' }), last_changed: minutesAgo(25) },
+    entity('update.immich', 'on', { friendly_name: 'Immich update', title: 'Immich', installed_version: 'v3.3.1', latest_version: 'v3.3.4' }),
     entity('sensor.auto_batterij', '62', { unit_of_measurement: '%' }),
     entity('switch.auto_laden', 'off', { friendly_name: 'Auto laden' }),
     entity('media_player.woonkamer', 'idle', { friendly_name: 'Woonkamer' }),

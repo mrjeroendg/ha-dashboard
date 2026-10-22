@@ -13,6 +13,8 @@ src/
 ├── lib/greeting.ts     Time-of-day greeting + Dutch date (all logic in React, not HA templates)
 ├── lib/houseStatus.ts  "Iedereen thuis · 3 lichten aan · 21,5° binnen"
 ├── config/shortcuts.ts YOUR shortcuts on Thuis ("Snel"), in order (edit this)
+├── config/attention.ts YOUR warnings on Thuis, under the status line (edit this)
+├── components/Attention.tsx  Warning banners (docs/design/attention-banner)
 ├── components/media/            Media card (docs/design/media-card)
 │   ├── MiniPlayer.tsx           Small: Chromecast + Sonos pages, swipe, opens the large one
 │   ├── CastPage.tsx / SonosPage.tsx           Small pages
@@ -161,6 +163,22 @@ Copy `dist\ha-dashboard.js` to `\\192.168.1.100\config\www\`. Then go to **Setti
 ```
 
 A tap calls `<domain>.<service>` on the entity (default `turn_on`), and shows "Dat lukte niet" only if the call fails. A card whose entity is `on` is highlighted. An empty list shows no "Snel" section.
+
+## Warnings
+
+`src/config/attention.ts` lists what deserves a warning on Thuis. Each warning is a banner under the status line, and you can't close it: it disappears once the cause is gone.
+
+```ts
+{ entity: 'cover.garagepoort', level: 'high', after: 15, title: 'Garagepoort staat open', icon: 'garage',
+  action: { label: 'Sluiten', service: 'cover.close_cover' } },
+{ entity: 'update.*', level: 'low' },
+```
+
+- **level:** `high` (dark red: safety or damage), `medium` (red: needs attention today), `low` (orange: maintenance, such as updates). The highest level is at the top; within a level the newest is first.
+- **when:** the states that trigger it. Default: `open`/`opening` for a cover, `unlocked`/`open` for a lock, otherwise `on` (an `update.*` entity is `on` when there's a new version).
+- **after:** only show once the state has lasted this many minutes. The second line shows "Al 25 min · 22:04".
+- **action:** a button that fixes it right away. Without one, the button is "Bekijk" and opens HA's own dialog (for an update: the update dialog).
+- `entity` accepts `*` wildcards. Entities in `src/config/ignore.ts` are skipped.
 
 ## Sonos mini player
 

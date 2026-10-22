@@ -86,6 +86,13 @@ const PATHS = {
   volume: <path d="M4 9v6h4l5 4V5L8 9zM16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" />,
   rewind: <path d="M4 12a8 8 0 1 0 2.3-5.6M4 4v4h4" />,
   forward: <path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4" />,
+  update: (
+    <>
+      <path d="M21 12a9 9 0 1 1-3-6.7L21 8" />
+      <path d="M21 3v5h-5M12 8v5l3 2" />
+    </>
+  ),
+  garage: <path d="M3 21V9l9-5 9 5v12M7 21v-8h10v8M7 16h10" />,
 } as const;
 
 export type IconName = keyof typeof PATHS;

@@ -1,0 +1,42 @@
+import type { IconName } from '../components/Icon';
+
+/**
+ * Warnings on Thuis, under the status line (docs/design/attention-banner).
+ * A warning shows while its entity is in one of the `when` states, and can't
+ * be closed: it goes away by itself once the cause is gone.
+ *
+ * - entity: exact ID, or `*` as a wildcard ('update.*' = every update).
+ * - level: 'high' (dark red: safety, damage), 'medium' (red: today),
+ *          'low' (orange: maintenance, e.g. updates).
+ * - when: states that trigger it. Default: 'open'/'opening' for a cover,
+ *         'unlocked'/'open' for a lock, otherwise 'on'.
+ * - after: only show once the state has lasted this many minutes.
+ * - title / icon: defaults come from the entity (updates: "Update voor Immich").
+ * - action: a button that fixes it, e.g. { label: 'Sluiten', service: 'cover.close_cover' }.
+ *   Without one the button is "Bekijk", which opens HA's own dialog.
+ *
+ * Entities in src/config/ignore.ts are skipped.
+ */
+export type AttentionLevel = 'high' | 'medium' | 'low';
+
+export interface AttentionRule {
+  entity: string;
+  level: AttentionLevel;
+  when?: string[];
+  after?: number;
+  title?: string;
+  icon?: IconName;
+  action?: { label: string; service: string; data?: Record<string, unknown> };
+}
+
+export const ATTENTION: AttentionRule[] = [
+  {
+    entity: 'cover.garagepoort',
+    level: 'high',
+    after: 15,
+    title: 'Garagepoort staat open',
+    icon: 'garage',
+    action: { label: 'Sluiten', service: 'cover.close_cover' },
+  },
+  { entity: 'update.*', level: 'low' },
+];

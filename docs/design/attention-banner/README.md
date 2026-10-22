@@ -2,7 +2,9 @@
 
 Warnings that need you to act, shown on **Thuis** directly under the status line. Dark mode only.
 
-> ✅ **Approved (gradient A), not built yet.** The owner chose this design. Build it as described, and don't change colours, proportions or behaviour without asking first.
+> ✅ **Approved (gradient A) and built.** The owner chose this design. Don't change colours, proportions or behaviour without asking first.
+>
+> Code: `src/config/attention.ts` (rules), `src/lib/attention.ts` (which warnings are active), `src/components/Attention.tsx`, styles under `attention` in `src/styles.css`.
 
 ![Attention banner](./mockup.png)
 
@@ -46,19 +48,22 @@ box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) var(--edge), transparent
 
 The orange is deliberately yellower than the dashboard's accent (`#d97757`), so a low warning never looks like a normal shortcut.
 
-## Home Assistant mapping (proposal for the build)
+## Home Assistant mapping
 
-Warnings are defined in code, like the rooms and shortcuts. For example:
+Warnings are defined in `src/config/attention.ts`, like the rooms and shortcuts. For example:
 
 ```ts
-{ level: 'low', type: 'update', entity: 'update.immich' },
-{ level: 'high', entity: 'cover.garagepoort', when: 'open', after: 15,
+{ entity: 'update.*', level: 'low' },
+{ level: 'high', entity: 'cover.garagepoort', after: 15,
   title: 'Garagepoort staat open', action: { label: 'Sluiten', service: 'cover.close_cover' } },
 ```
 
 - **Updates:** `update.*` with state `on`. The second line is `installed_version → latest_version`, and "Bekijk" opens HA's update dialog.
 - **`after`** (minutes): the warning only appears once the state has lasted that long (from `last_changed`). The second line shows how long, plus the time it started.
 - **No `action`:** the button is "Bekijk", which opens the more-info dialog.
+- **`when`:** the states that trigger it. Default: `open`/`opening` for a cover, `unlocked`/`open` for a lock, otherwise `on`.
+- **Wildcards:** `entity` accepts `*`, and entities in `src/config/ignore.ts` are skipped. When two rules match one entity, the first one wins.
+- **Action fails:** the second line shows "Dat lukte niet" for a moment, like the shortcuts.
 
 ## Not chosen
 

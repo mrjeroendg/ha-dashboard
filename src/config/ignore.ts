@@ -1,3 +1,5 @@
+import { wildcard } from '../lib/wildcard';
+
 /**
  * Entities the dashboard should never count or show automatically, e.g. the
  * LED ring of a UniFi access point that HA exposes as a light.
@@ -13,9 +15,7 @@ export const IGNORED_ENTITIES: string[] = [
   'light.u7_pro_wall_led',
 ];
 
-const patterns = IGNORED_ENTITIES.map(
-  (p) => new RegExp('^' + p.replace(/[.+?^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*') + '$'),
-);
+const patterns = IGNORED_ENTITIES.map(wildcard);
 
 export function isIgnored(entityId: string): boolean {
   return patterns.some((re) => re.test(entityId));

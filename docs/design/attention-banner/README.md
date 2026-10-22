@@ -2,13 +2,13 @@
 
 Warnings that need you to act, shown on **Thuis** directly under the status line. Dark mode only.
 
-> ✅ **Approved (gradient A) and built.** The owner chose this design. Don't change colours, proportions or behaviour without asking first.
+> ✅ **Approved and built** (depth option A: even colour, lit from above). The owner chose this design. Don't change colours, proportions or behaviour without asking first.
 >
 > Code: `src/config/attention.ts` (rules), `src/lib/attention.ts` (which warnings are active), `src/components/Attention.tsx`, styles under `attention` in `src/styles.css`.
 
 ![Attention banner](./mockup.png)
 
-Source: [`mockup.html`](./mockup.html) (a static mockup; open it in a browser, not part of the build).
+Source: [`mockup.html`](./mockup.html) (a static mockup; open it in a browser, not part of the build). The mockup still shows the original left-to-right gradient and the buttons; the background was changed afterwards, see [Background](#background-depth-a) and [`depth.png`](./depth.png).
 
 ## Rules
 
@@ -24,27 +24,34 @@ One row (padding 12px 14px, radius 20px, 12px gap):
 
 | Part | Spec |
 |---|---|
-| Icon tile | 34px, radius 11px, filled with the level colour, 18px icon |
+| Icon tile | 34px, radius 11px, 18px icon. Raised: a vertical gradient of the level colour (lighter top, darker bottom), a 1px white highlight on top and a small drop shadow |
 | Title | 15px / 600, `--text`, one line with ellipsis |
 | Second line | 13px, a light tint of the level colour, one line with ellipsis (e.g. "Al 25 min · 22:04", "v3.3.1 → v3.3.4") |
 | Action button | Removed during the build (see Rules) |
 
-**Background (gradient A):** a horizontal gradient: the level colour is strong on the left, behind the icon, and fades towards the right, into the card colour:
+### Background (depth A)
+
+The level colour covers the **whole card evenly**, so the right side never turns dark. Depth comes from light: slightly lighter at the top, darker at the bottom, a thin highlight along the top edge and a soft shadow under the card.
 
 ```css
-background: linear-gradient(90deg,
-  color-mix(in srgb, var(--c) calc(var(--tint) * 2.2), var(--surface)),
-  color-mix(in srgb, var(--c) 4%, var(--surface)));
-box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c) var(--edge), transparent);
+background:
+  linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.14)),
+  color-mix(in srgb, var(--c) var(--tint), var(--surface));
+box-shadow:
+  inset 0 1px 0 rgba(255,255,255,.14),
+  inset 0 0 0 1px color-mix(in srgb, var(--c) var(--edge), transparent),
+  0 6px 16px -6px rgba(0,0,0,.6);
 ```
+
+*Decision during the build:* this replaces the original left-to-right gradient, because its right side faded to almost black. The alternatives are in [`depth.png`](./depth.png) ([`depth.html`](./depth.html)).
 
 ## Severity levels
 
-| Level | `--c` | Second line | `--tint` | `--edge` | Text on icon/button | For example |
+| Level | `--c` | Second line | `--tint` | `--edge` | Text on icon tile | For example |
 |---|---|---|---|---|---|---|
-| **Hoog** (`high`) | `#b42318` dark red | `#f2a49c` | 30% | 85% | white | Safety or damage: garage door open, smoke alarm, leak, front door unlocked |
-| **Middel** (`medium`) | `#e5534b` red | `#f0b3ae` | 16% | 45% | white | Needs attention today: window open while it's cold, battery almost empty |
-| **Laag** (`low`) | `#e8913a` orange | `#f3c99a` | 13% | 40% | dark `#2b1a0a` (white is unreadable on orange) | Maintenance, whenever it suits you: updates |
+| **Hoog** (`high`) | `#b42318` dark red | `#f2a49c` | 42% | 60% | white | Safety or damage: garage door open, smoke alarm, leak, front door unlocked |
+| **Middel** (`medium`) | `#e5534b` red | `#f0b3ae` | 26% | 32% | white | Needs attention today: window open while it's cold, battery almost empty |
+| **Laag** (`low`) | `#e8913a` orange | `#f3c99a` | 20% | 28% | dark `#2b1a0a` (white is unreadable on orange) | Maintenance, whenever it suits you: updates |
 
 The orange is deliberately yellower than the dashboard's accent (`#d97757`), so a low warning never looks like a normal shortcut.
 
@@ -64,7 +71,9 @@ Warnings are defined in `src/config/attention.ts`, like the rooms and shortcuts.
 
 ## Not chosen
 
-[`gradients.png`](./gradients.png) ([`gradients.html`](./gradients.html)) shows the gradient experiments:
+**Depth** ([`depth.png`](./depth.png)): B · diagonal (deep at the icon, lighter top right), C · spotlight on the right, D · two light sources with a coloured shadow, and E · full colour with white text (again made "Middel" look more urgent than "Hoog"). An earlier round of depth ideas (glow behind the icon, glass, sunken, stacked) all kept the dark right side.
+
+**Gradient** [`gradients.png`](./gradients.png) ([`gradients.html`](./gradients.html)) shows the gradient experiments:
 
 - **B · Glow from the corner:** too subtle; the three levels look too much alike.
 - **C · Full colour:** the most alarming, but "Middel" looked more urgent than the dark red "Hoog", and white text on orange was unreadable.

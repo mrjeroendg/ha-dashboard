@@ -29,4 +29,6 @@ export interface CastApp {
 
 export const CAST_APPS: CastApp[] = [
   { name: 'Netflix', url: 'nflx://' },
+  { name: 'VRT MAX', url: 'vrtmax://' },
+  { name: 'VTM Go', url: 'vtmgo://' }
 ];

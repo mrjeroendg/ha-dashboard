@@ -1,19 +1,5 @@
 import type { DotColor } from '../lib/dots';
 
-/**
- * Media on Thuis: the Sonos and Chromecast pages of the mini player.
- *
- * - entity: the media_player entity of each device.
- * - sonos.stations: the stream buttons. A tap runs the station's HA `script`
- *   (all the logic stays in HA). While the Sonos plays `stream` (its
- *   media_content_id), the card shows `name` as the title. `label` is a
- *   shorter text for the button; without it the button shows `name`.
- *   Stations whose script doesn't exist are hidden.
- * - chromecast.apps: buttons while nothing is casting (up to 3). A tap opens
- *   the app on the iPhone through its URL scheme.
- * - color: the colour circle on the button. One hex colour, or a list for a
- *   gradient (top left to bottom right). Without one: a colour by position.
- */
 export interface Station {
   name: string;
   label?: string;

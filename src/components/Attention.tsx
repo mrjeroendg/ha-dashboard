@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { ATTENTION } from '../config/attention';
 import { useNow } from '../hooks/useNow';
 import { activeWarnings, type Warning } from '../lib/attention';
@@ -19,25 +19,17 @@ export function Attention({ hass }: Props) {
   return (
     <div className="attention">
       {warnings.map((w) => (
-        <WarningBanner key={w.key} warning={w} hass={hass} />
+        <WarningBanner key={w.key} warning={w} />
       ))}
     </div>
   );
 }
 
-function WarningBanner({ warning, hass }: { warning: Warning; hass: HomeAssistant }) {
-  // A picture that doesn't load (e.g. no internet for HA's brand images) falls back to the icon.
-  const [failed, setFailed] = useState<string>();
-  const picture = warning.picture && warning.picture !== failed ? warning.picture : undefined;
-
+function WarningBanner({ warning }: { warning: Warning }) {
   return (
     <div className={`attention__item attention--${warning.level}`} role="alert">
-      <span className={`attention__icon${picture ? ' attention__icon--picture' : ''}`}>
-        {picture ? (
-          <img src={hass.hassUrl ? hass.hassUrl(picture) : picture} alt="" onError={() => setFailed(picture)} />
-        ) : (
-          <Icon name={warning.icon} />
-        )}
+      <span className="attention__icon">
+        <Icon name={warning.icon} />
       </span>
       <span className="attention__text">
         <span className="attention__title">{warning.title}</span>

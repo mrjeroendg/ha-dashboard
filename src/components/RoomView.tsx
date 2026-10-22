@@ -5,6 +5,7 @@ import { useRunAction } from '../hooks/useRunAction';
 import { haptic } from '../lib/haptic';
 import {
   adjustTemperature,
+  roomClimate,
   rowModel,
   setBrightness,
   setColor,
@@ -30,12 +31,21 @@ export function RoomView({ room, hass }: Props) {
   const sections = room.sections;
   const section = sections[Math.min(tab, sections.length - 1)];
   const tabs = sections.length > 1;
+  const climate = roomClimate(room, hass.states);
 
   return (
     <>
       <header className="header">
         <p className="header__date">Kamer</p>
-        <h1 className="header__greeting">{room.name}</h1>
+        <div className="room-header">
+          <h1 className="header__greeting">{room.name}</h1>
+          {climate && (
+            <div className="room-header__climate">
+              <span className="room-header__value">{climate.value}</span>
+              {climate.label && <span className="room-header__label">{climate.label}</span>}
+            </div>
+          )}
+        </div>
       </header>
       {tabs && (
         <div className="room-tabs" role="tablist">

@@ -24,6 +24,8 @@ export interface ResolvedRoom {
   id: string;
   name: string;
   icon: IconName;
+  temperature?: string;
+  humidity?: string;
   sections: ResolvedSection[];
 }
 
@@ -46,10 +48,12 @@ function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities)
  */
 export function resolveRooms(rooms: RoomConfig[], states: HassEntities): ResolvedRoom[] {
   return rooms
-    .map(({ id, name, icon, ...list }) => ({
+    .map(({ id, name, icon, temperature, humidity, ...list }) => ({
       id,
       name,
       icon,
+      temperature,
+      humidity,
       sections: (list.sections ?? [{ title: undefined, shortcuts: [], entities: list.entities ?? [] }])
         .map((s) => ({ title: s.title, shortcuts: s.shortcuts ?? [], rows: resolveRows(s.entities, states) }))
         .filter((s) => s.rows.length > 0 || s.shortcuts.length > 0),
@@ -288,4 +292,24 @@ function readableState(entity: HassEntity): string {
   const unit = entity.attributes.unit_of_measurement ? String(entity.attributes.unit_of_measurement) : '';
   if (!Number.isNaN(value)) return `${number(value)}${unit === '°C' ? '°' : unit === '%' ? '%' : unit ? ` ${unit}` : ''}`;
   return entity.state;
+}
+
+// ---------------------------------------------------------------- header
+
+/** A sensor's value as a number, or undefined when missing or unavailable. */
+function sensorValue(states: HassEntities, id?: string): number | undefined {
+  const value = id ? Number.parseFloat(states[id]?.state ?? '') : Number.NaN;
+  return Number.isNaN(value) ? undefined : value;
+}
+
+/** The room header's climate: "20,4°" large, "56% vochtigheid" below (docs/design/room-header). */
+export function roomClimate(room: ResolvedRoom, states: HassEntities) {
+  const temperature = sensorValue(states, room.temperature);
+  const humidity = sensorValue(states, room.humidity);
+  if (temperature === undefined && humidity === undefined) return undefined;
+  const pct = humidity === undefined ? undefined : `${number(humidity, 0)}%`;
+  // Without a temperature, the humidity takes the large spot.
+  return temperature !== undefined
+    ? { value: `${number(temperature)}°`, label: pct && `${pct} vochtigheid` }
+    : { value: pct!, label: 'vochtigheid' };
 }

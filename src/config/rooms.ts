@@ -9,18 +9,34 @@ import type { IconName } from '../components/Icon';
  *   scene, script) get a control; everything else (sensor, binary_sensor, …)
  *   is shown read-only. A room with only sensors is fine.
  * - Use `{ entity, name }` to give a row a shorter name than its friendly_name.
+ * - List `entities` for one plain list, or `sections` to split the room into
+ *   tabs (docs/design/room-tabs-airco), e.g.
+ *     sections: [
+ *       { title: 'Verlichting', entities: ['light.a', 'light.b'] },
+ *       { title: 'Klimaat', entities: ['climate.airco', 'sensor.vochtigheid'] },
+ *     ]
+ *   The room opens on the first tab. Empty sections are hidden, and with only
+ *   one section left there are no tabs.
  */
 export interface RoomEntity {
   entity: string;
   name?: string;
 }
 
-export interface RoomConfig {
+export interface RoomSection {
+  title: string;
+  entities: Array<string | RoomEntity>;
+}
+
+interface RoomBase {
   id: string;
   name: string;
   icon: IconName;
-  entities: Array<string | RoomEntity>;
 }
+
+export type RoomConfig =
+  | (RoomBase & { entities: Array<string | RoomEntity>; sections?: never })
+  | (RoomBase & { sections: RoomSection[]; entities?: never });
 
 export const ROOMS: RoomConfig[] = [
   {

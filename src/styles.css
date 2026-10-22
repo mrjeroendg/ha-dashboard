@@ -300,6 +300,55 @@ button.quick-card:active { transform: scale(0.97); }
 
 /* ---------------------------------------------------------------- room page */
 
+/* Tabs: one chip per section (docs/design/room-tabs-airco). */
+.room-tabs {
+  display: flex;
+  gap: 6px;
+  margin: 20px -24px 0;
+  padding: 0 24px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.room-tabs::-webkit-scrollbar { display: none; }
+
+.room-tab {
+  appearance: none;
+  border: 0;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  color: var(--text-muted);
+  font: 500 14px var(--font-sans);
+  white-space: nowrap;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 200ms ease, color 200ms ease;
+}
+
+.room-tab[aria-selected='true'] {
+  background: var(--text);
+  color: var(--bg);
+  box-shadow: none;
+}
+
+/* Something in this tab is on. */
+.room-tab__dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.room-tab[aria-selected='true'] .room-tab__dot { background: var(--bg); }
+
+.row-group--tabbed { margin-top: 16px; }
+
 .row-group {
   margin-top: 28px;
   border-radius: var(--radius-card);

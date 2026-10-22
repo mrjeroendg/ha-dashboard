@@ -1,9 +1,12 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
+import { useState } from 'react';
 import { useDebouncedCommit } from '../hooks/useDebouncedCommit';
 import { useRunAction } from '../hooks/useRunAction';
+import { haptic } from '../lib/haptic';
 import {
   adjustTemperature,
   rowModel,
+  sectionIsActive,
   setBrightness,
   setColor,
   type ColorChoice,
@@ -21,14 +24,40 @@ interface Props {
 }
 
 export function RoomView({ room, hass }: Props) {
+  // Always starts on the first tab: the page remounts for every room.
+  const [tab, setTab] = useState(0);
+  const sections = room.sections;
+  const section = sections[Math.min(tab, sections.length - 1)];
+  const tabs = sections.length > 1;
+
   return (
     <>
       <header className="header">
         <p className="header__date">Kamer</p>
         <h1 className="header__greeting">{room.name}</h1>
       </header>
-      <section className="row-group">
-        {room.rows.map((row) => (
+      {tabs && (
+        <div className="room-tabs" role="tablist">
+          {sections.map((s, i) => (
+            <button
+              key={s.title ?? i}
+              type="button"
+              role="tab"
+              className="room-tab"
+              aria-selected={s === section}
+              onClick={() => {
+                haptic('selection');
+                setTab(i);
+              }}
+            >
+              {s.title}
+              {sectionIsActive(s.rows) && <span className="room-tab__dot" aria-label="iets staat aan" />}
+            </button>
+          ))}
+        </div>
+      )}
+      <section className={`row-group${tabs ? ' row-group--tabbed' : ''}`}>
+        {section.rows.map((row) => (
           <EntityRow key={row.entity.entity_id} entity={row.entity} name={row.name} hass={hass} />
         ))}
       </section>

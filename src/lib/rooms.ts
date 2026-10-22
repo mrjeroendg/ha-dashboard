@@ -1,26 +1,48 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
-import type { RoomConfig } from '../config/rooms';
+import type { RoomConfig, RoomEntity } from '../config/rooms';
 import type { HomeAssistant } from '../types/hass';
 
-export interface ResolvedRoom extends RoomConfig {
-  rows: Array<{ entity: HassEntity; name: string }>;
+export type Row = { entity: HassEntity; name: string };
+
+export interface ResolvedSection {
+  /** Undefined for a room configured with a plain `entities` list. */
+  title?: string;
+  rows: Row[];
 }
 
-/** Rooms from the config whose entities exist in HA (rooms with none are dropped). */
+export interface ResolvedRoom {
+  id: string;
+  name: string;
+  icon: IconName;
+  sections: ResolvedSection[];
+}
+
+function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities): Row[] {
+  return entities
+    .map((e) => (typeof e === 'string' ? { entity: e } : e))
+    .filter((e) => e.entity in states)
+    .map((e) => ({
+      entity: states[e.entity],
+      name: e.name ?? String(states[e.entity].attributes.friendly_name ?? e.entity),
+    }));
+}
+
+/**
+ * Rooms from the config whose entities exist in HA. Sections without any are
+ * dropped, and so are rooms with no sections left.
+ */
 export function resolveRooms(rooms: RoomConfig[], states: HassEntities): ResolvedRoom[] {
   return rooms
-    .map((room) => ({
-      ...room,
-      rows: room.entities
-        .map((e) => (typeof e === 'string' ? { entity: e } : e))
-        .filter((e) => e.entity in states)
-        .map((e) => ({
-          entity: states[e.entity],
-          name: e.name ?? String(states[e.entity].attributes.friendly_name ?? e.entity),
-        })),
+    .map(({ id, name, icon, ...list }) => ({
+      id,
+      name,
+      icon,
+      sections: (list.sections ?? [{ title: undefined, entities: list.entities ?? [] }])
+        .map((s) => ({ title: s.title, rows: resolveRows(s.entities, states) }))
+        .filter((s) => s.rows.length > 0),
     }))
-    .filter((room) => room.rows.length > 0);
+    .filter((room) => room.sections.length > 0);
 }
 
 const domainOf = (e: HassEntity) => e.entity_id.split('.')[0];
@@ -232,4 +254,11 @@ function readableState(entity: HassEntity): string {
   const unit = entity.attributes.unit_of_measurement ? String(entity.attributes.unit_of_measurement) : '';
   if (!Number.isNaN(value)) return `${number(value)}${unit === '°C' ? '°' : unit === '%' ? '%' : unit ? ` ${unit}` : ''}`;
   return entity.state;
+}
+
+// ---------------------------------------------------------------- sections
+
+/** Something in the section is on (a light, the airco, an open cover, music…): the dot on its tab. */
+export function sectionIsActive(rows: Row[]): boolean {
+  return rows.some((r) => rowModel(r.entity).on);
 }

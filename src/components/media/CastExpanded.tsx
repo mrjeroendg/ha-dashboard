@@ -19,17 +19,22 @@ export function CastExpanded({ hass, player }: Props) {
 
   return (
     <section className={`xp-page${casting ? '' : ' is-idle'}`} aria-label="Chromecast">
-      <div className="xp-image">
-        {image ? (
+      {image ? (
+        // A video thumbnail is wide: it fills the image area.
+        <div className="xp-image">
           <img className="xp-image__fill" src={image} alt="" />
-        ) : (
-          <span className="xp-image__fill media-fade media-fade--cast" aria-hidden />
-        )}
-      </div>
+        </div>
+      ) : (
+        // No thumbnail: the same square-on-blur as the Sonos page, in the Chromecast colours.
+        <div className="xp-image xp-image--cover">
+          <span className="xp-image__blur media-fade media-fade--cast" aria-hidden />
+          <span className="xp-image__square media-fade media-fade--cast" aria-hidden />
+        </div>
+      )}
 
       {/* Title with the cast app below it (no episode or TV name). */}
       <TitleBlock
-        title={casting ? String(player.attributes.media_title ?? name) : name}
+        title={casting ? String(player.attributes.media_title ?? name) : 'Chromecast'}
         subtitle={casting ? castApp(player) : 'Niets aan het casten'}
       />
       <ProgressSlot media={media} active={casting} />

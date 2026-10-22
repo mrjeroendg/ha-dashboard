@@ -25,6 +25,4 @@ export interface DashboardConfig {
   type?: string;
   /** Override the name in the greeting (defaults to the logged-in HA user). */
   name?: string;
-  /** Sensor shown as indoor temperature in the status line. */
-  temperature_entity?: string;
 }

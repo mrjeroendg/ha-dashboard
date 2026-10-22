@@ -8,7 +8,7 @@ if (import.meta.env.DEV) {
   const el = document.querySelector('ha-dashboard') as HaDashboardElement;
 
   // Same config you'd put in the Lovelace YAML.
-  el.setConfig({ type: 'custom:ha-dashboard', temperature_entity: 'sensor.woonkamer_temperatuur' });
+  el.setConfig({ type: 'custom:ha-dashboard' });
 
   if (url && token) {
     const { connectHass } = await import('./haAdapter');

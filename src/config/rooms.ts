@@ -21,6 +21,7 @@ interface RoomBase {
   icon: IconName;
   temperature?: string;
   humidity?: string;
+  openings?: Array<string | RoomEntity>;
 }
 
 export type RoomConfig =

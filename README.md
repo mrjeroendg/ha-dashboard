@@ -209,6 +209,10 @@ Entities that don't exist in HA are skipped, and a room with none left is hidden
 
 Add `temperature: 'sensor.…'` and/or `humidity: 'sensor.…'` to a room. The temperature shows large on the right of the room name ("20,4°"), with "56% vochtigheid" below it. With only humidity, that takes the large spot. A sensor that doesn't exist or is unavailable is left out. See `docs/design/room-header`.
 
+### Doors, windows and locks under the name
+
+Add `openings: [...]` to a room (entity IDs, or `{ entity, name }`). Under the room name you then see a green dot with "Alles gesloten", or an orange dot with what's open: "Achterdeur, garagepoort". Open means `on`, `open`, `opening` or `unlocked`. Display only. See `docs/design/room-openings`.
+
 ### Sections (tabs)
 
 Instead of `entities`, a room can have `sections`. Each section becomes a tab under the room name:

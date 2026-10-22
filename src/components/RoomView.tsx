@@ -6,6 +6,7 @@ import { haptic } from '../lib/haptic';
 import {
   adjustTemperature,
   roomClimate,
+  roomOpenings,
   rowModel,
   setBrightness,
   setColor,
@@ -32,13 +33,22 @@ export function RoomView({ room, hass }: Props) {
   const section = sections[Math.min(tab, sections.length - 1)];
   const tabs = sections.length > 1;
   const climate = roomClimate(room, hass.states);
+  const openings = roomOpenings(room, hass.states);
 
   return (
     <>
       <header className="header">
         <p className="header__date">Kamer</p>
         <div className="room-header">
-          <h1 className="header__greeting">{room.name}</h1>
+          <div className="room-header__main">
+            <h1 className="header__greeting">{room.name}</h1>
+            {openings && (
+              <p className={`room-openings${openings.open ? ' is-open' : ''}`}>
+                <span className="room-openings__dot" aria-hidden />
+                {openings.text}
+              </p>
+            )}
+          </div>
           {climate && (
             <div className="room-header__climate">
               <span className="room-header__value">{climate.value}</span>

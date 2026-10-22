@@ -26,6 +26,7 @@ export interface ResolvedRoom {
   icon: IconName;
   temperature?: string;
   humidity?: string;
+  openings?: Array<string | RoomEntity>;
   sections: ResolvedSection[];
 }
 
@@ -48,12 +49,13 @@ function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities)
  */
 export function resolveRooms(rooms: RoomConfig[], states: HassEntities): ResolvedRoom[] {
   return rooms
-    .map(({ id, name, icon, temperature, humidity, ...list }) => ({
+    .map(({ id, name, icon, temperature, humidity, openings, ...list }) => ({
       id,
       name,
       icon,
       temperature,
       humidity,
+      openings,
       sections: (list.sections ?? [{ title: undefined, shortcuts: [], entities: list.entities ?? [] }])
         .map((s) => ({ title: s.title, shortcuts: s.shortcuts ?? [], rows: resolveRows(s.entities, states) }))
         .filter((s) => s.rows.length > 0 || s.shortcuts.length > 0),
@@ -312,4 +314,19 @@ export function roomClimate(room: ResolvedRoom, states: HassEntities) {
   return temperature !== undefined
     ? { value: `${number(temperature)}°`, label: pct && `${pct} vochtigheid` }
     : { value: pct!, label: 'vochtigheid' };
+}
+
+const OPEN = new Set(['on', 'open', 'opening', 'unlocked']);
+
+/**
+ * Doors, windows and locks under the room name (docs/design/room-openings):
+ * "Alles gesloten", or the names of what's open, e.g. "Achterdeur, garagepoort".
+ */
+export function roomOpenings(room: ResolvedRoom, states: HassEntities) {
+  const listed = resolveRows(room.openings ?? [], states).filter((r) => !UNAVAILABLE.has(r.entity.state));
+  if (listed.length === 0) return undefined;
+  const open = listed.filter((r) => OPEN.has(r.entity.state));
+  if (open.length === 0) return { open: false, text: 'Alles gesloten' };
+  const text = open.map((r, i) => (i === 0 ? r.name : r.name.charAt(0).toLowerCase() + r.name.slice(1))).join(', ');
+  return { open: true, text };
 }

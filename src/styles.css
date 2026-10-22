@@ -333,7 +333,28 @@ button.quick-card:active { transform: scale(0.97); }
   gap: 16px;
 }
 
-.room-header .header__greeting { min-width: 0; }
+.room-header__main { min-width: 0; }
+
+/* Doors, windows and locks under the room name (docs/design/room-openings). */
+.room-openings {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.room-openings__dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #199e70;
+}
+
+.room-openings.is-open { color: var(--text); }
+.room-openings.is-open .room-openings__dot { background: var(--accent); }
 
 .room-header__climate {
   flex: none;

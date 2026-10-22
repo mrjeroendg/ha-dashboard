@@ -70,9 +70,14 @@ export const ROOMS: RoomConfig[] = [
       },
       {
         title: "Screens",
+        shortcuts: [
+          { label: 'Alles open', icon: 'up', entity: 'cover.screen_side_facade', service: 'open_cover' },
+          { label: 'Alles dicht', icon: 'down', entity: 'cover.screen_side_facade', service: 'close_cover' }
+        ],
         entities: [
-          { entity: 'cover.rts_16750040', name: 'Linksvoor' },
-          { entity: 'cover.rts_16765494', name: 'Rolluik' }     
+          { entity: 'cover.rts_16774497', name: 'Linksvoor', myPosition: 'button.rts_16774497_my_position' },
+          { entity: 'cover.rts_16740619', name: 'Rechtsvoor', myPosition: 'button.rts_16740619_my_position' },
+          { entity: 'cover.rts_16750040', name: 'Zijkant', myPosition: 'button.rts_16750040_my_position' }
         ],
       }
     ],

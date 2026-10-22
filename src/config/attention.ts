@@ -1,3 +1,4 @@
+import type { HassEntity } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
 
 /**
@@ -8,8 +9,10 @@ import type { IconName } from '../components/Icon';
  * - entity: the exact entity ID. One rule per entity.
  * - level: 'high' (dark red: safety, damage), 'medium' (red: today),
  *          'low' (orange: maintenance, e.g. updates).
- * - when: states that trigger it. Default: 'open'/'opening' for a cover,
- *         'unlocked'/'open' for a lock, otherwise 'on'.
+ * - when: states that trigger it, e.g. ['open']. Default: 'open'/'opening' for
+ *         a cover, 'unlocked'/'open' for a lock, otherwise 'on'.
+ *         Or a function that gets the entity and returns true to show the
+ *         warning, e.g. a low battery: (e) => Number(e.state) <= 20.
  * - title / icon: defaults come from the entity (updates: "Update voor Immich").
  */
 export type AttentionLevel = 'high' | 'medium' | 'low';
@@ -17,7 +20,7 @@ export type AttentionLevel = 'high' | 'medium' | 'low';
 export interface AttentionRule {
   entity: string;
   level: AttentionLevel;
-  when?: string[];
+  when?: string[] | ((entity: HassEntity) => boolean);
   title?: string;
   icon?: IconName;
 }

@@ -47,7 +47,8 @@ const clock = (ms: number) => new Date(ms).toLocaleTimeString('nl-BE', { hour: '
 
 function warningFor(rule: AttentionRule, entity: HassEntity): Warning | undefined {
   const when = rule.when ?? triggerStates(entity);
-  if (!when.includes(entity.state)) return undefined;
+  const active = typeof when === 'function' ? when(entity) : when.includes(entity.state);
+  if (!active) return undefined;
 
   const since = Date.parse(entity.last_changed);
 

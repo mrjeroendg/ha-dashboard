@@ -174,6 +174,7 @@ A tap calls `<domain>.<service>` on the entity (default `turn_on`), and shows "D
 
 - **level:** `high` (dark red: safety or damage), `medium` (red: needs attention today), `low` (orange: maintenance, such as updates). The highest level is at the top; within a level the newest is first.
 - **when:** the states that trigger it. Default: `open`/`opening` for a cover, `unlocked`/`open` for a lock, otherwise `on` (an `update` entity is `on` when there's a new version).
+- **when as a function:** for anything a list of states can't express, give a function that gets the entity and returns `true` to show the warning. A low battery: `{ entity: 'sensor.iphone_16_pro_battery_level', level: 'low', title: 'iPhone bijna leeg', when: (e) => Number(e.state) <= 20 }`.
 - A warning shows as soon as the state matches. For a state, the second line shows how long it has lasted: "Al 25 min · 22:04".
 - A banner has no buttons: it only tells you something needs attention.
 - `entity` is always an exact entity ID, one rule per entity.

@@ -1,13 +1,21 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
 import type { RoomConfig, RoomEntity } from '../config/rooms';
+import type { Shortcut } from '../config/shortcuts';
 import type { HomeAssistant } from '../types/hass';
 
-export type Row = { entity: HassEntity; name: string; allowUnknownState?: boolean };
+export type Row = {
+  entity: HassEntity;
+  name: string;
+  allowUnknownState?: boolean;
+  /** Cover: the "My position" button entity, if it exists in HA. */
+  myPosition?: string;
+};
 
 export interface ResolvedSection {
   /** Undefined for a room configured with a plain `entities` list. */
   title?: string;
+  shortcuts: Shortcut[];
   rows: Row[];
 }
 
@@ -26,6 +34,7 @@ function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities)
       entity: states[e.entity],
       name: e.name ?? String(states[e.entity].attributes.friendly_name ?? e.entity),
       allowUnknownState: e.allowUnknownState,
+      myPosition: e.myPosition && e.myPosition in states ? e.myPosition : undefined,
     }));
 }
 
@@ -39,9 +48,9 @@ export function resolveRooms(rooms: RoomConfig[], states: HassEntities): Resolve
       id,
       name,
       icon,
-      sections: (list.sections ?? [{ title: undefined, entities: list.entities ?? [] }])
-        .map((s) => ({ title: s.title, rows: resolveRows(s.entities, states) }))
-        .filter((s) => s.rows.length > 0),
+      sections: (list.sections ?? [{ title: undefined, shortcuts: [], entities: list.entities ?? [] }])
+        .map((s) => ({ title: s.title, shortcuts: s.shortcuts ?? [], rows: resolveRows(s.entities, states) }))
+        .filter((s) => s.rows.length > 0 || s.shortcuts.length > 0),
     }))
     .filter((room) => room.sections.length > 0);
 }
@@ -52,7 +61,7 @@ const number = (value: unknown, digits = 1) =>
 
 // ---------------------------------------------------------------- rows
 
-export type RowKind = 'toggle' | 'action' | 'climate' | 'readonly';
+export type RowKind = 'toggle' | 'action' | 'climate' | 'cover' | 'readonly';
 
 export interface RowModel {
   kind: RowKind;
@@ -68,6 +77,8 @@ export interface RowModel {
   /** Present when the light is on and supports color or color temperature. */
   color?: LightColor;
   run?(hass: HomeAssistant): Promise<unknown>;
+  /** Cover buttons, from its supported_features. */
+  cover?: { open: boolean; stop: boolean; close: boolean };
 }
 
 const COLOR_MODES = ['hs', 'xy', 'rgb', 'rgbw', 'rgbww'];
@@ -127,11 +138,11 @@ export function setBrightness(hass: HomeAssistant, entity: HassEntity, pct: numb
 const UNAVAILABLE = new Set(['unavailable', 'unknown']);
 
 export function rowModel(entity: HassEntity, allowUnknownState = false): RowModel {
-  // E.g. RTS screens never report their position, so HA keeps them 'unknown'.
-  // Still give them a control, shown as off/closed until HA assumes a state.
-  if (allowUnknownState && entity.state === 'unknown') {
-    const assumed = domainOf(entity) === 'cover' ? 'closed' : 'off';
-    return { ...rowModel({ ...entity, state: assumed }), detail: 'Onbekend' };
+  // E.g. an RTS screen set up as a light never reports its state, so HA keeps
+  // it 'unknown'. Still give it a switch, shown as off until HA assumes a state.
+  // (Covers don't need this: their buttons work in any state.)
+  if (allowUnknownState && entity.state === 'unknown' && domainOf(entity) !== 'cover') {
+    return { ...rowModel({ ...entity, state: 'off' }), detail: 'Onbekend' };
   }
 
   const domain = domainOf(entity);
@@ -139,7 +150,9 @@ export function rowModel(entity: HassEntity, allowUnknownState = false): RowMode
   const a = entity.attributes;
   const target = { entity_id: id };
 
-  if (UNAVAILABLE.has(entity.state)) {
+  // A cover's buttons don't depend on its state, so an RTS screen stuck on 'unknown' still works.
+  const coverUnknown = domain === 'cover' && entity.state === 'unknown';
+  if (UNAVAILABLE.has(entity.state) && !coverUnknown) {
     return { kind: 'readonly', icon: iconFor(entity), detail: 'Niet beschikbaar', on: false };
   }
 
@@ -172,12 +185,15 @@ export function rowModel(entity: HassEntity, allowUnknownState = false): RowMode
     case 'cover': {
       const open = entity.state === 'open' || entity.state === 'opening';
       const pos = typeof a.current_position === 'number' ? ` · ${a.current_position}%` : '';
+      // OPEN 1, CLOSE 2, STOP 8; without supported_features, assume all three.
+      const f = typeof a.supported_features === 'number' ? a.supported_features : 1 | 2 | 8;
       return {
-        kind: 'toggle',
+        kind: 'cover',
         icon: 'blinds',
         on: open,
-        detail: (open ? 'Open' : 'Dicht') + (open ? pos : ''),
-        run: (h) => h.callService('cover', open ? 'close_cover' : 'open_cover', {}, target),
+        // Unknown (RTS): only the name, no second line.
+        detail: coverUnknown ? '' : (open ? 'Open' : 'Dicht') + (open ? pos : ''),
+        cover: { open: Boolean(f & 1), stop: Boolean(f & 8), close: Boolean(f & 2) },
       };
     }
     case 'lock': {

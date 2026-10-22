@@ -231,6 +231,31 @@ button.quick-card:active { transform: scale(0.97); }
 
 .quick-card.is-active .icon-tile { background: var(--accent); color: #fff; }
 
+/* Small "Snel" card in a room tab: icon and label on one line (docs/design/screens-snel). */
+.quick-row {
+  display: grid;
+  grid-template-columns: repeat(var(--n, 2), minmax(0, 1fr));
+  gap: 10px;
+}
+
+.quick-card--small {
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+  min-height: 52px;
+  padding: 10px 12px;
+  border-radius: 18px;
+}
+
+.quick-card--small .icon-tile { width: 32px; height: 32px; border-radius: 10px; }
+.quick-card--small .icon-tile .icon { width: 18px; height: 18px; }
+.quick-card--small .card-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.quick-card--small.is-active { background: color-mix(in srgb, var(--accent) 12%, var(--surface)); }
+
+.section-title--tab { margin: 20px 4px 10px; }
+.quick-row + .row-group { margin-top: 10px; }
+
 
 
 
@@ -337,6 +362,39 @@ button.quick-card:active { transform: scale(0.97); }
 }
 
 .row-group--tabbed { margin-top: 16px; }
+
+/* Cover: up / my position / stop / down under the name (docs/design/screens-snel). */
+.row-item .row:has(+ .cover-strip) { padding-bottom: 10px; }
+
+.cover-strip {
+  display: flex;
+  gap: 4px;
+  margin: 0 16px 14px 66px;
+  padding: 4px;
+  border-radius: 14px;
+  background: var(--bg);
+}
+
+.cover-strip__button {
+  appearance: none;
+  border: 0;
+  flex: 1;
+  display: grid;
+  place-items: center;
+  height: 36px;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 200ms ease, color 200ms ease, transform 120ms ease;
+}
+
+.cover-strip__button .icon { width: 18px; height: 18px; }
+.cover-strip__button:active { transform: scale(0.94); }
+.cover-strip__button.is-preset { color: var(--accent); }
+.cover-strip__button.is-pressed { background: var(--accent-soft); color: var(--accent); }
+.cover-strip__button.is-error { color: var(--accent); background: color-mix(in srgb, var(--accent) 8%, transparent); }
 
 .row-group {
   margin-top: 28px;

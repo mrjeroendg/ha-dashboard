@@ -2,7 +2,11 @@
 
 Controls for RTS screens on a room page, and a small "Snel" row of shortcuts at the top of any tab (e.g. "Alles open" / "Alles dicht"). Dark mode only. Builds on the room tabs (`docs/design/room-tabs-airco`).
 
-> ✅ **Approved, not built yet.** The owner chose this design. Build it as described, and don't change proportions or behaviour without asking first.
+> ✅ **Approved and built.** The owner chose this design. Don't change proportions or behaviour without asking first.
+>
+> Code: `QuickCard.tsx` (large + small Snel card), `CoverButton` / cover row in `RoomView.tsx`, `rowModel` (kind `cover`) and `resolveRooms` in `src/lib/rooms.ts`, styles `quick-card--small`, `quick-row`, `cover-strip`.
+>
+> *Decisions during the build:* every `cover.*` gets the strip (not only screens); each button only shows if the cover's `supported_features` allows it (up 1, down 2, stop 8; all three when the attribute is missing). A cover with a known state keeps its second line ("Open · 40%" / "Dicht"); an `unknown` one shows only the name.
 
 ![Screens tab with Snel](./mockup.png)
 

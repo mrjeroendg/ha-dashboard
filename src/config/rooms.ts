@@ -1,4 +1,5 @@
 import type { IconName } from '../components/Icon';
+import type { Shortcut } from './shortcuts';
 
 /**
  * Rooms shown in the bottom navigation, in this order. Only what's listed here
@@ -13,6 +14,9 @@ import type { IconName } from '../components/Icon';
  *   their position, so their state stays 'unknown'. They still get a control
  *   (shown as off/closed); any other entity in 'unknown' is shown as
  *   "Niet beschikbaar".
+ * - Covers (cover.*) get buttons instead of a switch: up, stop, down
+ *   (docs/design/screens-snel). Add `myPosition: 'button.…'` for an RTS
+ *   screen's "My position" button: that adds a ★ between up and stop.
  * - List `entities` for one plain list, or `sections` to split the room into
  *   tabs (docs/design/room-tabs-airco), e.g.
  *     sections: [
@@ -21,16 +25,23 @@ import type { IconName } from '../components/Icon';
  *     ]
  *   The room opens on the first tab. Empty sections are hidden, and with only
  *   one section left there are no tabs.
+ * - A section can have `shortcuts`: small "Snel" cards at the top of its tab,
+ *   with the same fields as src/config/shortcuts.ts, e.g.
+ *     shortcuts: [{ label: 'Alles dicht', icon: 'down', entity: 'script.screens_dicht' }]
  */
 export interface RoomEntity {
   entity: string;
   name?: string;
   /** Show a control even while the state is 'unknown' (e.g. RTS screens). */
   allowUnknownState?: boolean;
+  /** Cover only: the "My position" button entity of an RTS screen (adds ★). */
+  myPosition?: string;
 }
 
 export interface RoomSection {
   title: string;
+  /** Small "Snel" cards at the top of the tab. */
+  shortcuts?: Shortcut[];
   entities: Array<string | RoomEntity>;
 }
 

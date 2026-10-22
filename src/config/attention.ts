@@ -29,7 +29,7 @@ export interface AttentionRule {
 export const ATTENTION: AttentionRule[] = [
   {
     entity: 'update.irpi_admin_version',
-    level: 'high',
+    level: 'low',
     after: 15,
     title: 'Immich update beschikbaar',
     icon: 'garage'

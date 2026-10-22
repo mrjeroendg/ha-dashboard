@@ -337,6 +337,7 @@ button.quick-card:active { transform: scale(0.97); }
 
 /* Doors and smoke detectors under the room name (docs/design/room-safety). */
 .room-safety {
+  appearance: none;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -344,8 +345,11 @@ button.quick-card:active { transform: scale(0.97); }
   padding: 4px 8px 4px 0;
   border: 0;
   background: none;
+  font: inherit;
   font-size: 13px;
   color: var(--text-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .room-safety.is-lit { color: var(--text); }

@@ -60,7 +60,8 @@ export const ROOMS: RoomConfig[] = [
       {
         title: "Screens",
         entities: [
-          { entity: 'cover.rts_16750040', name: 'Screen linksvoor' }
+          { entity: 'cover.rts_16750040', name: 'Linksvoor' },
+          { entity: 'cover.rts_16765494', name: 'Rolluik' }     
         ],
       }
     ],

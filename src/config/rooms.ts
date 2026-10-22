@@ -33,6 +33,7 @@ export const ROOMS: RoomConfig[] = [
     id: 'living',
     name: 'Living',
     icon: 'sofa',
+    openings: ['binary_sensor.0x001788011004451e_contact', 'binary_sensor.0x00178801100445ff_contact'],
     sections: [
       {
         title: "Verlichting",

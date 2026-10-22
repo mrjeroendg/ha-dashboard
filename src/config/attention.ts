@@ -45,16 +45,30 @@ export const ATTENTION: AttentionRule[] = [
   },
   {
     entity: 'sensor.jeroens_ipad_battery_level',
-    level: 'low',
+    level: 'medium',
     title: 'iPad bijna leeg',
     icon: 'tablet',
-    when: (e) => Number(e.state) <= 20,
+    when: (e) => Number(e.state) <= 20 && Number(e.state) > 10,
   },
   {
     entity: 'sensor.iphone_16_pro_battery_level',
-    level: 'low',
+    level: 'medium',
     title: 'iPhone bijna leeg',
     icon: 'phone',
-    when: (e) => Number(e.state) <= 20,
+    when: (e) => Number(e.state) <= 20 && Number(e.state) > 10
+  },
+    {
+    entity: 'sensor.jeroens_ipad_battery_level',
+    level: 'high',
+    title: 'iPad bijna leeg',
+    icon: 'tablet',
+    when: (e) => Number(e.state) <= 10
+  },
+  {
+    entity: 'sensor.iphone_16_pro_battery_level',
+    level: 'high',
+    title: 'iPhone bijna leeg',
+    icon: 'phone',
+    when: (e) => Number(e.state) <= 10
   },
 ];

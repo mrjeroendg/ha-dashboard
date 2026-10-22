@@ -10,6 +10,8 @@ import type { Shortcut } from './shortcuts';
  *   scene, script) get a control; everything else (sensor, binary_sensor, …)
  *   is shown read-only. A room with only sensors is fine.
  * - Use `{ entity, name }` to give a row a shorter name than its friendly_name.
+ * - Add `simple: true` to a light you only switch on and off: no brightness
+ *   slider and no colours, even if the light supports them.
  * - Add `allowUnknownState: true` for e.g. an RTS screen: those never report
  *   their position, so their state stays 'unknown'. They still get a control
  *   (shown as off/closed); any other entity in 'unknown' is shown as
@@ -36,6 +38,8 @@ export interface RoomEntity {
   allowUnknownState?: boolean;
   /** Cover only: the "My position" button entity of an RTS screen (adds ★). */
   myPosition?: string;
+  /** Light only: just the on/off switch, without brightness slider or colours. */
+  simple?: boolean;
 }
 
 export interface RoomSection {

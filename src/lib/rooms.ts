@@ -8,6 +8,7 @@ export type Row = {
   entity: HassEntity;
   name: string;
   allowUnknownState?: boolean;
+  simple?: boolean;
   /** Cover: the "My position" button entity, if it exists in HA. */
   myPosition?: string;
 };
@@ -34,6 +35,7 @@ function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities)
       entity: states[e.entity],
       name: e.name ?? String(states[e.entity].attributes.friendly_name ?? e.entity),
       allowUnknownState: e.allowUnknownState,
+      simple: e.simple,
       myPosition: e.myPosition && e.myPosition in states ? e.myPosition : undefined,
     }));
 }
@@ -137,12 +139,19 @@ export function setBrightness(hass: HomeAssistant, entity: HassEntity, pct: numb
 
 const UNAVAILABLE = new Set(['unavailable', 'unknown']);
 
-export function rowModel(entity: HassEntity, allowUnknownState = false): RowModel {
+export interface RowOptions {
+  /** Give a switch even while the state is 'unknown'. */
+  allowUnknownState?: boolean;
+  /** Light: only the switch, no brightness or colours. */
+  simple?: boolean;
+}
+
+export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowOptions = {}): RowModel {
   // E.g. an RTS screen set up as a light never reports its state, so HA keeps
   // it 'unknown'. Still give it a switch, shown as off until HA assumes a state.
   // (Covers don't need this: their buttons work in any state.)
   if (allowUnknownState && entity.state === 'unknown' && domainOf(entity) !== 'cover') {
-    return { ...rowModel({ ...entity, state: 'off' }), detail: 'Onbekend' };
+    return { ...rowModel({ ...entity, state: 'off' }, { simple }), detail: 'Onbekend' };
   }
 
   const domain = domainOf(entity);
@@ -159,14 +168,15 @@ export function rowModel(entity: HassEntity, allowUnknownState = false): RowMode
   switch (domain) {
     case 'light': {
       const on = entity.state === 'on';
-      const pct = typeof a.brightness === 'number' ? Math.max(1, Math.round((a.brightness / 255) * 100)) : undefined;
+      const pct =
+        typeof a.brightness === 'number' && !simple ? Math.max(1, Math.round((a.brightness / 255) * 100)) : undefined;
       return {
         kind: 'toggle',
         icon: 'bulb',
         on,
         detail: on ? (pct !== undefined ? `Aan · ${pct}%` : 'Aan') : 'Uit',
-        brightness: on && lightFeatures(entity).brightness ? (pct ?? 100) : undefined,
-        color: lightColor(entity),
+        brightness: on && !simple && lightFeatures(entity).brightness ? (pct ?? 100) : undefined,
+        color: simple ? undefined : lightColor(entity),
         run: (h) => h.callService('light', 'toggle', {}, target),
       };
     }

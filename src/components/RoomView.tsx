@@ -10,6 +10,7 @@ import {
   setColor,
   type ColorChoice,
   type ResolvedRoom,
+  type RowOptions,
   type RGB,
 } from '../lib/rooms';
 import type { HomeAssistant } from '../types/hass';
@@ -72,7 +73,7 @@ export function RoomView({ room, hass }: Props) {
               key={row.entity.entity_id}
               entity={row.entity}
               name={row.name}
-              allowUnknownState={row.allowUnknownState}
+              options={{ allowUnknownState: row.allowUnknownState, simple: row.simple }}
               myPosition={row.myPosition}
               hass={hass}
             />
@@ -86,13 +87,13 @@ export function RoomView({ room, hass }: Props) {
 interface RowProps {
   entity: HassEntity;
   name: string;
-  allowUnknownState?: boolean;
+  options: RowOptions;
   myPosition?: string;
   hass: HomeAssistant;
 }
 
-function EntityRow({ entity, name, allowUnknownState, myPosition, hass }: RowProps) {
-  const model = rowModel(entity, allowUnknownState);
+function EntityRow({ entity, name, options, myPosition, hass }: RowProps) {
+  const model = rowModel(entity, options);
   const [status, run] = useRunAction();
   const [draft, setDraft] = useDebouncedCommit<number>((pct) => setBrightness(hass, entity, pct));
   const [colorDraft, setColorDraft] = useDebouncedCommit<ColorChoice>((c) => setColor(hass, entity, c), 150);

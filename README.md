@@ -30,7 +30,7 @@ src/
 ├── lib/moreInfo.ts     Opens HA's own more-info dialog for an entity
 ├── config/rooms.ts     YOUR rooms: name, icon, which entities (edit this)
 ├── config/media.ts     Sonos entity + stream scripts for the mini player (edit this)
-├── config/ignore.ts    Entities never counted automatically (e.g. an access point's LED "light")
+├── config/status.ts    YOUR entities for the status line on Thuis (edit this)
 ├── lib/rooms.ts        How each entity type is shown and what tapping it does
 ├── hooks/useNow.ts     Ticks every minute, refreshes when the app returns to foreground
 ├── styles.css          Warm neutrals, dark mode only
@@ -143,7 +143,6 @@ Copy `dist\ha-dashboard.js` to `\\192.168.1.100\config\www\`. Then go to **Setti
          - type: custom:ha-dashboard
            # optional:
            # name: Jeroen                                   # otherwise: your HA user name
-           # temperature_entity: sensor.woonkamer_temperature
    ```
 3. Save.
 
@@ -231,12 +230,22 @@ Instead of `entities`, a room can have `sections`. Each section becomes a tab un
 
 ## Status line logic
 
-Entities in `src/config/ignore.ts` are skipped in all of these. Use exact IDs.
+`src/config/status.ts` lists exactly which entities the status line on Thuis uses. Nothing is found automatically:
 
+```ts
+export const STATUS = {
+  people: ['person.jeroen', 'person.an'],
+  lights: ['switch.0x94a081fffe4fce2f', 'light.huecupboard'],
+  openings: ['sensor.garage_door_state_classification'],
+  temperature: 'sensor.woonkamer_temperatuur',
+};
+```
 
-`src/lib/houseStatus.ts` builds the status line from these parts:
+`src/lib/houseStatus.ts` builds the sentence from these parts:
 
-- **Presence:** `person.*` entities. Possible results are "Iedereen thuis", "Je bent thuis", "Jeroen thuis" and "Niemand thuis".
-- **Lights:** the number of `light.*` entities that are `on`.
-- **Doors and windows:** `binary_sensor.*` entities with device class door, window, garage_door or opening that are `on`. This part is only shown when something is open.
-- **Temperature:** only shown when `temperature_entity` is set in the card config.
+- **Presence** (`people`): "Iedereen thuis", "Je bent thuis", "Jeroen thuis" or "Niemand thuis".
+- **Lights** (`lights`): how many are `on`, e.g. "3 lichten aan" or "alle lichten uit". A switch that powers a lamp can be listed here too.
+- **Doors and windows** (`openings`): how many are `on`, `open` or `opening`. Only shown when something is open.
+- **Temperature** (`temperature`): "21,5° binnen".
+
+An empty list (or no temperature) hides that part. Entities that don't exist or are unavailable are skipped. With nothing listed at all, there's no status line.

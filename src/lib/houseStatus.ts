@@ -1,16 +1,16 @@
-import type { HassEntities } from 'home-assistant-js-websocket';
-import { isIgnored } from '../config/ignore';
-import type { DashboardConfig } from '../types/hass';
+import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
+import { STATUS } from '../config/status';
 
 const UNAVAILABLE = new Set(['unavailable', 'unknown']);
-const OPENING_CLASSES = new Set(['door', 'window', 'garage_door', 'opening']);
+const OPEN = new Set(['on', 'open', 'opening']);
 
-function entitiesOf(states: HassEntities, domain: string) {
-  return Object.values(states).filter((e) => e.entity_id.startsWith(`${domain}.`) && !isIgnored(e.entity_id));
+/** The listed entities that exist and are available. */
+function listed(states: HassEntities, ids: string[]): HassEntity[] {
+  return ids.map((id) => states[id]).filter((e): e is HassEntity => !!e && !UNAVAILABLE.has(e.state));
 }
 
 function presence(states: HassEntities): string | undefined {
-  const people = entitiesOf(states, 'person').filter((p) => !UNAVAILABLE.has(p.state));
+  const people = listed(states, STATUS.people);
   if (people.length === 0) return undefined;
   const home = people.filter((p) => p.state === 'home');
   if (home.length === 0) return 'Niemand thuis';
@@ -19,38 +19,35 @@ function presence(states: HassEntities): string | undefined {
   return `${names.join(' & ')} thuis`;
 }
 
-function lights(states: HassEntities): string {
-  const on = entitiesOf(states, 'light').filter((l) => l.state === 'on').length;
+function lights(states: HassEntities): string | undefined {
+  const all = listed(states, STATUS.lights);
+  if (all.length === 0) return undefined;
+  const on = all.filter((l) => l.state === 'on').length;
   if (on === 0) return 'alle lichten uit';
   return on === 1 ? '1 licht aan' : `${on} lichten aan`;
 }
 
 function openings(states: HassEntities): string | undefined {
-  const open = entitiesOf(states, 'binary_sensor').filter(
-    (s) => s.state === 'on' && OPENING_CLASSES.has(String(s.attributes.device_class)),
-  ).length;
+  const open = listed(states, STATUS.openings).filter((s) => OPEN.has(s.state)).length;
   if (open === 0) return undefined;
   return open === 1 ? '1 deur of raam open' : `${open} deuren of ramen open`;
 }
 
-function temperature(states: HassEntities, entityId?: string): string | undefined {
-  if (!entityId) return undefined;
-  const value = Number.parseFloat(states[entityId]?.state ?? '');
+function temperature(states: HassEntities): string | undefined {
+  const value = Number.parseFloat((STATUS.temperature && states[STATUS.temperature]?.state) ?? '');
   if (Number.isNaN(value)) return undefined;
   return `${value.toLocaleString('nl-BE', { maximumFractionDigits: 1 })}° binnen`;
 }
 
 /**
  * One short, calm sentence about the house, e.g.
- * "Iedereen thuis · 3 lichten aan · 21,5° binnen".
+ * "Iedereen thuis · 3 lichten aan · 21,5° binnen". Only the entities in
+ * src/config/status.ts count.
  */
-export function houseStatus(states: HassEntities, config: DashboardConfig): string {
-  const parts = [
-    presence(states),
-    lights(states),
-    openings(states),
-    temperature(states, config.temperature_entity),
-  ].filter((p): p is string => Boolean(p));
+export function houseStatus(states: HassEntities): string {
+  const parts = [presence(states), lights(states), openings(states), temperature(states)].filter(
+    (p): p is string => Boolean(p),
+  );
 
   const sentence = parts.join(' · ');
   return sentence.charAt(0).toUpperCase() + sentence.slice(1);

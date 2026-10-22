@@ -325,6 +325,32 @@ button.quick-card:active { transform: scale(0.97); }
 
 /* ---------------------------------------------------------------- room page */
 
+/* Room header: temperature large on the right of the name (docs/design/room-header). */
+.room-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.room-header .header__greeting { min-width: 0; }
+
+.room-header__climate {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.room-header__value {
+  font-family: var(--font-serif);
+  font-size: clamp(30px, 8.5vw, 38px);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+.room-header__label { margin-top: 2px; font-size: 13px; color: var(--text-muted); }
+
 /* Tabs: one chip per section (docs/design/room-tabs-airco). */
 .room-tabs {
   display: flex;

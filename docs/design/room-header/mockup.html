@@ -1,0 +1,35 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Room header</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,360px);gap:28px}
+.cap{font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px}
+.panel{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.18);
+background:var(--bg);color:var(--text);border-radius:28px;padding:22px 24px 22px}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:32px}
+svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.group{margin-top:22px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.row{display:flex;align-items:center;gap:14px;padding:14px 16px}
+.ic{width:36px;height:36px;border-radius:12px;background:var(--bg);color:var(--accent);display:grid;place-items:center}.ic svg{width:20px;height:20px}
+.t{flex:1}.t b{display:block;font-size:16px;font-weight:500}.t span{font-size:13px;color:var(--muted)}
+.sw{width:48px;height:30px;border-radius:999px;background:var(--border);position:relative}.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff}
+/* A */
+.line{margin-top:8px;font-size:15px;color:var(--muted);display:flex;gap:14px}
+.line span{display:inline-flex;align-items:center;gap:5px}.line svg{color:var(--accent)}
+/* B */
+.pill{display:inline-flex;align-items:center;gap:10px;margin-top:16px;padding:9px 15px;font-size:15px;color:var(--muted);background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);border-radius:22px}
+.pill span{display:inline-flex;align-items:center;gap:5px}.pill svg{color:var(--accent)}
+/* C */
+.big{display:flex;align-items:baseline;justify-content:space-between}
+.big .v{text-align:right}.big .v b{display:block;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:32px;line-height:1}
+.big .v span{font-size:13px;color:var(--muted)}
+</style></head><body></body>
+<script>
+const P={therm:'<path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/>',drop:'<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>',bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>'};
+const i=n=>`<svg viewBox="0 0 24 24">${P[n]}</svg>`;
+const rows=`<div class="group"><div class="row"><div class="ic">${i('bulb')}</div><div class="t"><b>Verlichting</b><span>Uit</span></div><div class="sw"></div></div></div>`;
+const vals=`<span>${i('therm')}20,4°</span><span>${i('drop')}56%</span>`;
+const A=`<p class="lbl">Kamer</p><h1>Bureau</h1><div class="line">${vals}</div>${rows}`;
+const B=`<p class="lbl">Kamer</p><h1>Bureau</h1><div class="pill">${vals}</div>${rows}`;
+const C=`<p class="lbl">Kamer</p><div class="big"><h1>Bureau</h1><div class="v"><b>20,4°</b><span>56% vochtigheid</span></div></div>${rows}`;
+const V=[['A · Regel onder de naam','Rustig, kleine iconen',A],['B · Pil zoals op Thuis','Zelfde stijl als de statusregel',B],['C · Groot rechts','Temperatuur in de titel-letter',C]];
+document.body.innerHTML=V.map(([t,s,h])=>`<div><p class="cap">${t}<small>${s}</small></p><div class="panel">${h}</div></div>`).join('');
+</script></html>

@@ -204,7 +204,11 @@ The bottom navigation shows **Thuis** plus the rooms in `src/config/rooms.ts`, i
 - **Lock:** shows "Op slot", or a button to lock it. Unlocking from the dashboard is intentionally not possible.
 - **Everything else** (sensor, binary_sensor, …): read-only. A room with only sensors is fine.
 
-Entities that don't exist in HA are skipped, and a room with none left is hidden. Use `{ entity, name }` for a shorter row name. Add `allowUnknownState: true` to e.g. an RTS screen: those always report `unknown`, and with the flag they still get a switch (starting as off/closed, second line "Onbekend"); without it, `unknown` shows as "Niet beschikbaar".
+Entities that don't exist in HA are skipped, and a room with none left is hidden. Use `{ entity, name }` for a shorter row name. Add `simple: true` to a light you only switch on and off: it then gets just the switch ("Aan" / "Uit"), without brightness slider, colours or coloured icon. Add `allowUnknownState: true` to e.g. an RTS screen: those always report `unknown`, and with the flag they still get a switch (starting as off/closed, second line "Onbekend"); without it, `unknown` shows as "Niet beschikbaar".
+
+### Temperature and humidity in the header
+
+Add `temperature: 'sensor.…'` and/or `humidity: 'sensor.…'` to a room. The temperature shows large on the right of the room name ("20,4°"), with "56% vochtigheid" below it. With only humidity, that takes the large spot. A sensor that doesn't exist or is unavailable is left out. See `docs/design/room-header`.
 
 ### Sections (tabs)
 

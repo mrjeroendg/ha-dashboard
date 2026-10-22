@@ -5,11 +5,13 @@ import { useRunAction } from '../hooks/useRunAction';
 import { haptic } from '../lib/haptic';
 import {
   adjustTemperature,
+  roomClimate,
   rowModel,
   setBrightness,
   setColor,
   type ColorChoice,
   type ResolvedRoom,
+  type RowOptions,
   type RGB,
 } from '../lib/rooms';
 import type { HomeAssistant } from '../types/hass';
@@ -29,12 +31,21 @@ export function RoomView({ room, hass }: Props) {
   const sections = room.sections;
   const section = sections[Math.min(tab, sections.length - 1)];
   const tabs = sections.length > 1;
+  const climate = roomClimate(room, hass.states);
 
   return (
     <>
       <header className="header">
         <p className="header__date">Kamer</p>
-        <h1 className="header__greeting">{room.name}</h1>
+        <div className="room-header">
+          <h1 className="header__greeting">{room.name}</h1>
+          {climate && (
+            <div className="room-header__climate">
+              <span className="room-header__value">{climate.value}</span>
+              {climate.label && <span className="room-header__label">{climate.label}</span>}
+            </div>
+          )}
+        </div>
       </header>
       {tabs && (
         <div className="room-tabs" role="tablist">
@@ -72,7 +83,7 @@ export function RoomView({ room, hass }: Props) {
               key={row.entity.entity_id}
               entity={row.entity}
               name={row.name}
-              allowUnknownState={row.allowUnknownState}
+              options={{ allowUnknownState: row.allowUnknownState, simple: row.simple }}
               myPosition={row.myPosition}
               hass={hass}
             />
@@ -86,13 +97,13 @@ export function RoomView({ room, hass }: Props) {
 interface RowProps {
   entity: HassEntity;
   name: string;
-  allowUnknownState?: boolean;
+  options: RowOptions;
   myPosition?: string;
   hass: HomeAssistant;
 }
 
-function EntityRow({ entity, name, allowUnknownState, myPosition, hass }: RowProps) {
-  const model = rowModel(entity, allowUnknownState);
+function EntityRow({ entity, name, options, myPosition, hass }: RowProps) {
+  const model = rowModel(entity, options);
   const [status, run] = useRunAction();
   const [draft, setDraft] = useDebouncedCommit<number>((pct) => setBrightness(hass, entity, pct));
   const [colorDraft, setColorDraft] = useDebouncedCommit<ColorChoice>((c) => setColor(hass, entity, c), 150);

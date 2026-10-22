@@ -1,0 +1,51 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Tab states</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,390px);gap:28px}
+.cap{font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px}
+.panel{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.16);
+background:var(--bg);color:var(--text);border-radius:28px;padding:22px 24px 18px}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:32px}
+.tabs{display:flex;gap:6px;margin-top:18px}
+.tab{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted);background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);white-space:nowrap}
+.group{margin-top:16px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.row{display:flex;align-items:center;gap:14px;padding:14px 16px}.row+.row{box-shadow:inset 0 1px 0 var(--border)}
+.ic{width:36px;height:36px;border-radius:12px;background:var(--bg);color:var(--accent);display:grid;place-items:center}
+.ic.on{background:var(--accent);color:#fff}
+svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.t{flex:1}.t b{display:block;font-size:16px;font-weight:500}.t span{font-size:13px;color:var(--muted)}
+.sw{width:48px;height:30px;border-radius:999px;background:var(--border);position:relative}.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff}
+.sw.on{background:var(--accent)}.sw.on::after{transform:translateX(18px)}
+.nav{display:flex;gap:4px;margin-top:22px;padding:6px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.pill{display:flex;align-items:center;gap:7px;padding:10px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted)}.pill svg{width:18px;height:18px}.pill.on{background:var(--accent);color:#fff}
+
+/* now */
+.v0 .tab.on{background:var(--text);color:var(--bg);box-shadow:none}
+/* A · accent tint */
+.vA .tab.on{background:var(--soft);color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent)}
+/* B · raised surface */
+.vB .tab{background:transparent;box-shadow:inset 0 0 0 1px var(--border)}
+.vB .tab.on{background:#454542;color:var(--text);box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 2px 6px rgba(0,0,0,.3)}
+/* C · segmented control */
+.vC .tabs{display:inline-flex;gap:2px;padding:4px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.vC .tab{background:transparent;box-shadow:none;padding:7px 14px}
+.vC .tab.on{background:#4a4a46;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.35)}
+/* D · underline */
+.vD .tabs{gap:22px;margin-top:20px;padding:0 4px;box-shadow:inset 0 -1px 0 var(--border)}
+.vD .tab{background:none;box-shadow:none;padding:0 0 10px;border-radius:0;font-size:15px}
+.vD .tab.on{color:var(--text);box-shadow:inset 0 -2px 0 var(--accent)}
+/* E · text only */
+.vE .tabs{gap:18px;padding:0 4px}
+.vE .tab{background:none;box-shadow:none;padding:4px 0;font-size:16px;color:#6f6d67}
+.vE .tab.on{color:var(--text);font-weight:600}
+</style></head><body></body>
+<script>
+const P={bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>',blinds:'<path d="M4 4h16M5 4v13M19 4v13M5 8h14M5 12h14M5 16h14M12 16v4"/>',home:'<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',sofa:'<path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3M2 13a2 2 0 0 1 4 0v2h12v-2a2 2 0 0 1 4 0v5H2z"/>'};
+const i=n=>`<svg viewBox="0 0 24 24">${P[n]}</svg>`;
+const body=`<p class="lbl">Kamer</p><h1>Living</h1>
+<div class="tabs"><span class="tab">Verlichting</span><span class="tab on">Screens</span><span class="tab">Klimaat</span></div>
+<div class="group"><div class="row"><div class="ic">${i('blinds')}</div><div class="t"><b>Screen linksvoor</b><span>Onbekend</span></div><div class="sw"></div></div>
+<div class="row"><div class="ic on">${i('blinds')}</div><div class="t"><b>Screen rechtsvoor</b><span>Aan</span></div><div class="sw on"></div></div></div>
+<div class="nav"><div class="pill">${i('home')}Thuis</div><div class="pill on">${i('sofa')}Living</div></div>`;
+const V=[['v0','Nu','Wit: springt het meest in het oog'],['vA','A · Accent-tint','Zachte oranje fill, oranje tekst en rand'],['vB','B · Opgelicht','Inactief transparant, actief iets lichter grijs'],['vC','C · Segmented control','Eén balk, het actieve deel licht op (iOS)'],['vD','D · Onderstreping','Alleen tekst, oranje lijn onder de actieve'],['vE','E · Alleen tekst','Actief helder en vet, de rest gedimd']];
+document.body.innerHTML=V.map(([c,t,s])=>`<div><p class="cap">${t}<small>${s}</small></p><div class="panel ${c}">${body}</div></div>`).join('');
+</script></html>

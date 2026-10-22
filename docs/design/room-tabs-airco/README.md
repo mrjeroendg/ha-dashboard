@@ -4,7 +4,7 @@ Room pages split into tabs, and the airco control for MELCloud units in the "Kli
 
 > ✅ **Approved (tabs + airco option A).** **Tabs: built.** **Airco: not built yet** (climate entities still use the plain − / + row). The owner chose this design. Don't change proportions or behaviour without asking first.
 >
-> Tabs code: `sections` in `src/config/rooms.ts`, `resolveRooms` / `sectionIsActive` in `src/lib/rooms.ts`, `RoomView.tsx`, styles under `room-tab` in `src/styles.css`.
+> Tabs code: `sections` in `src/config/rooms.ts`, `resolveRooms` in `src/lib/rooms.ts`, `RoomView.tsx`, styles under `room-tab` in `src/styles.css`.
 >
 > *Decision during the build:* the summary line under the tabs was built and then removed at the owner's request. There is no summary line.
 
@@ -14,9 +14,9 @@ Source: [`mockup.html`](./mockup.html) (a static mockup; open it in a browser, n
 
 ## Tabs
 
-- **Under the room title:** a row of chips, one per section, in the order of the config (e.g. Verlichting, Klimaat, Media). The active chip is light (`--text` background, `--bg` text). The others are `--surface` with a thin border. The row scrolls horizontally if it doesn't fit.
+- **Under the room title:** a row of chips, one per section, in the order of the config (e.g. Verlichting, Klimaat, Media). The active chip has an accent tint: `--accent-soft` background, `--accent` text and a 1px accent border at 45% (*decision during the build*: replaces the light `--text` chip, see [`tab-states.png`](./tab-states.png)). The others are `--surface` with a thin border. The row scrolls horizontally if it doesn't fit.
 - **Only the active tab's controls are visible**, in one card (the current row group).
-- **Dot on a chip:** a 6px accent dot when something in that tab is on (a light, a switch, the airco, a cover that's open, a media player that's playing). On the active chip, the dot is dark.
+- ~~**Dot on a chip:**~~ *(removed during the build at the owner's request; tabs have no dot)* a 6px accent dot when something in that tab is on (a light, a switch, the airco, a cover that's open, a media player that's playing). On the active chip, the dot is dark.
 - ~~**Summary line**~~ *(removed during the build, see above)* (13px, muted) between the chips and the card, for the active tab only:
   - lights and switches: "1 van 2 aan" or "Alles uit";
   - climate: "19,5° · 54% vochtigheid" (from the room's temperature and humidity);

@@ -9,6 +9,10 @@ import type { IconName } from '../components/Icon';
  *   scene, script) get a control; everything else (sensor, binary_sensor, …)
  *   is shown read-only. A room with only sensors is fine.
  * - Use `{ entity, name }` to give a row a shorter name than its friendly_name.
+ * - Add `allowUnknownState: true` for e.g. an RTS screen: those never report
+ *   their position, so their state stays 'unknown'. They still get a control
+ *   (shown as off/closed); any other entity in 'unknown' is shown as
+ *   "Niet beschikbaar".
  * - List `entities` for one plain list, or `sections` to split the room into
  *   tabs (docs/design/room-tabs-airco), e.g.
  *     sections: [
@@ -21,6 +25,8 @@ import type { IconName } from '../components/Icon';
 export interface RoomEntity {
   entity: string;
   name?: string;
+  /** Show a control even while the state is 'unknown' (e.g. RTS screens). */
+  allowUnknownState?: boolean;
 }
 
 export interface RoomSection {

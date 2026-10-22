@@ -202,7 +202,7 @@ The bottom navigation shows **Thuis** plus the rooms in `src/config/rooms.ts`, i
 - **Lock:** shows "Op slot", or a button to lock it. Unlocking from the dashboard is intentionally not possible.
 - **Everything else** (sensor, binary_sensor, …): read-only. A room with only sensors is fine.
 
-Entities that don't exist in HA are skipped, and a room with none left is hidden. Use `{ entity, name }` for a shorter row name.
+Entities that don't exist in HA are skipped, and a room with none left is hidden. Use `{ entity, name }` for a shorter row name. Add `allowUnknownState: true` to e.g. an RTS screen: those always report `unknown`, and with the flag they still get a switch (starting as off/closed, second line "Onbekend"); without it, `unknown` shows as "Niet beschikbaar".
 
 ### Sections (tabs)
 
@@ -219,7 +219,6 @@ Instead of `entities`, a room can have `sections`. Each section becomes a tab un
 ```
 
 - Only the active tab's rows are shown. A room always opens on its first tab.
-- A small orange dot on a tab means something in it is on (a light, a switch, an open cover, music playing…).
 - A section whose entities don't exist is hidden. With only one section left, there are no tabs.
 
 ## Status line logic

@@ -6,7 +6,6 @@ import { haptic } from '../lib/haptic';
 import {
   adjustTemperature,
   rowModel,
-  sectionIsActive,
   setBrightness,
   setColor,
   type ColorChoice,
@@ -51,14 +50,13 @@ export function RoomView({ room, hass }: Props) {
               }}
             >
               {s.title}
-              {sectionIsActive(s.rows) && <span className="room-tab__dot" aria-label="iets staat aan" />}
             </button>
           ))}
         </div>
       )}
       <section className={`row-group${tabs ? ' row-group--tabbed' : ''}`}>
         {section.rows.map((row) => (
-          <EntityRow key={row.entity.entity_id} entity={row.entity} name={row.name} hass={hass} />
+          <EntityRow key={row.entity.entity_id} entity={row.entity} name={row.name} allowUnknownState={row.allowUnknownState} hass={hass} />
         ))}
       </section>
     </>
@@ -68,11 +66,12 @@ export function RoomView({ room, hass }: Props) {
 interface RowProps {
   entity: HassEntity;
   name: string;
+  allowUnknownState?: boolean;
   hass: HomeAssistant;
 }
 
-function EntityRow({ entity, name, hass }: RowProps) {
-  const model = rowModel(entity);
+function EntityRow({ entity, name, allowUnknownState, hass }: RowProps) {
+  const model = rowModel(entity, allowUnknownState);
   const [status, run] = useRunAction();
   const [draft, setDraft] = useDebouncedCommit<number>((pct) => setBrightness(hass, entity, pct));
   const [colorDraft, setColorDraft] = useDebouncedCommit<ColorChoice>((c) => setColor(hass, entity, c), 150);

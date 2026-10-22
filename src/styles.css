@@ -113,7 +113,7 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 12px 12px 12px 14px;
+  padding: 12px 14px;
   border-radius: 20px;
   background: linear-gradient(
     90deg,
@@ -150,24 +150,6 @@
 
 .attention__title { font-size: 15px; font-weight: 600; }
 .attention__detail { margin-top: 1px; font-size: 13px; color: var(--sub); }
-
-.attention__action {
-  appearance: none;
-  border: 0;
-  flex: none;
-  height: 32px;
-  padding: 0 13px;
-  border-radius: 999px;
-  background: var(--c);
-  color: var(--on-c);
-  font: 600 13px var(--font-sans);
-  white-space: nowrap;
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform 120ms ease;
-}
-
-.attention__action:active { transform: scale(0.95); }
 
 /* ---------------------------------------------------------------- quick actions */
 

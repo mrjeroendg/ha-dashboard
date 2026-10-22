@@ -176,7 +176,7 @@ A tap calls `<domain>.<service>` on the entity (default `turn_on`), and shows "D
 - **level:** `high` (dark red: safety or damage), `medium` (red: needs attention today), `low` (orange: maintenance, such as updates). The highest level is at the top; within a level the newest is first.
 - **when:** the states that trigger it. Default: `open`/`opening` for a cover, `unlocked`/`open` for a lock, otherwise `on` (an `update.*` entity is `on` when there's a new version).
 - **after:** only show once the state has lasted this many minutes. The second line shows "Al 25 min · 22:04".
-- **Bekijk** opens HA's own dialog for the entity (for an update: the update dialog). There are no buttons that fix things directly.
+- A banner has no buttons: it only tells you something needs attention.
 - `entity` accepts `*` wildcards. Entities in `src/config/ignore.ts` are skipped.
 
 ## Sonos mini player

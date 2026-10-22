@@ -13,8 +13,6 @@ import type { IconName } from '../components/Icon';
  * - after: only show once the state has lasted this many minutes.
  * - title / icon: defaults come from the entity (updates: "Update voor Immich").
  *
- * The "Bekijk" button opens HA's own dialog for the entity.
- *
  * Entities in src/config/ignore.ts are skipped.
  */
 export type AttentionLevel = 'high' | 'medium' | 'low';

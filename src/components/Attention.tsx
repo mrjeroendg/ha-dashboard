@@ -2,7 +2,6 @@ import { useMemo } from 'react';
 import { ATTENTION } from '../config/attention';
 import { useNow } from '../hooks/useNow';
 import { activeWarnings, type Warning } from '../lib/attention';
-import { openMoreInfo } from '../lib/moreInfo';
 import type { HomeAssistant } from '../types/hass';
 import { Icon } from './Icon';
 
@@ -36,13 +35,6 @@ function WarningBanner({ warning }: { warning: Warning }) {
         <span className="attention__title">{warning.title}</span>
         <span className="attention__detail">{warning.detail}</span>
       </span>
-      <button
-        type="button"
-        className="attention__action"
-        onClick={(e) => openMoreInfo(e.currentTarget, warning.entityId)}
-      >
-        Bekijk
-      </button>
     </div>
   );
 }

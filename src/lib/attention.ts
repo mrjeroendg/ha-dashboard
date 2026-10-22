@@ -43,25 +43,13 @@ function defaultIcon(entity: HassEntity): IconName {
   return 'alert';
 }
 
-/** "25 min", "1 u 10 min", "3 dagen". */
-function duration(minutes: number): string {
-  if (minutes < 60) return `${Math.max(1, Math.floor(minutes))} min`;
-  if (minutes < 24 * 60) {
-    const h = Math.floor(minutes / 60);
-    const m = Math.floor(minutes % 60);
-    return m ? `${h} u ${m} min` : `${h} u`;
-  }
-  const d = Math.floor(minutes / (24 * 60));
-  return d === 1 ? '1 dag' : `${d} dagen`;
-}
-
 const clock = (ms: number) => new Date(ms).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' });
 
-function warningFor(rule: AttentionRule, entity: HassEntity, now: number): Warning | undefined {
+function warningFor(rule: AttentionRule, entity: HassEntity,): Warning | undefined {
   const when = rule.when ?? triggerStates(entity);
   if (!when.includes(entity.state)) return undefined;
 
-  const since = Date.parse(entity.last_changed) || now;
+  const since = Date.parse(entity.last_changed);
 
   const a = entity.attributes;
   const name = String(a.title ?? a.friendly_name ?? entity.entity_id);
@@ -81,9 +69,9 @@ function warningFor(rule: AttentionRule, entity: HassEntity, now: number): Warni
 }
 
 /** Every active warning: highest level first, newest first within a level. */
-export function activeWarnings(states: HassEntities, rules: AttentionRule[], now: number): Warning[] {
+export function activeWarnings(states: HassEntities, rules: AttentionRule[]): Warning[] {
   return rules
-    .map((rule) => states[rule.entity] && warningFor(rule, states[rule.entity], now))
+    .map((rule) => states[rule.entity] && warningFor(rule, states[rule.entity]))
     .filter((w): w is Warning => Boolean(w))
     .sort((a, b) => ORDER[a.level] - ORDER[b.level] || b.since - a.since);
 }

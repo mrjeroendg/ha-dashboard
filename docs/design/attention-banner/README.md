@@ -64,6 +64,7 @@ Warnings are defined in `src/config/attention.ts`, like the rooms and shortcuts.
 { level: 'high', entity: 'cover.garagepoort', after: 15, title: 'Garagepoort staat open', icon: 'garage' },
 ```
 
+- **Picture instead of icon:** when a rule sets no `icon` and the entity has an `entity_picture` (e.g. the app logo on an `update.*` entity), that picture fills the tile, on top of the level colour. If it fails to load, the tile falls back to the icon. *Decision during the build, at the owner's request.*
 - **Updates:** `update.*` with state `on`. The second line is `installed_version → latest_version`.
 - **`after`** (minutes): the warning only appears once the state has lasted that long (from `last_changed`). The second line shows how long, plus the time it started.
 - **`when`:** the states that trigger it. Default: `open`/`opening` for a cover, `unlocked`/`open` for a lock, otherwise `on`.

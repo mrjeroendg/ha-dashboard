@@ -28,8 +28,8 @@ export function SonosExpanded({ hass, player }: Props) {
           </>
         ) : (
           <>
-            <span className="xp-image__blur media-fade" aria-hidden />
-            <span className="xp-image__square media-fade" aria-hidden />
+            <span className="xp-image__blur media-fade media-fade--sonos" aria-hidden />
+            <span className="xp-image__square media-fade media-fade--sonos" aria-hidden />
           </>
         )}
       </div>

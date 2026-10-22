@@ -23,7 +23,7 @@ export function CastExpanded({ hass, player }: Props) {
         {image ? (
           <img className="xp-image__fill" src={image} alt="" />
         ) : (
-          <span className="xp-image__fill media-fade" aria-hidden />
+          <span className="xp-image__fill media-fade media-fade--cast" aria-hidden />
         )}
       </div>
 

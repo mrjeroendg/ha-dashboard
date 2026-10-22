@@ -124,7 +124,7 @@ function TopRow({ hass, player, starting, failed, onOpen }: TopRowProps) {
       <div className="mini-player__top">
         <button type="button" className="mini-player__open" onClick={onOpen} aria-label="Sonos openen">
           {/* Same colour fade as the idle Chromecast page, so both pages line up. */}
-          <span className={`sonos-thumb media-fade${starting ? '' : ' is-idle'}`} aria-hidden />
+          <span className={`sonos-thumb media-fade media-fade--sonos${starting ? '' : ' is-idle'}`} aria-hidden />
           <span className="mini-player__text">
             <span className={`mini-player__title${failed ? ' is-error' : ''}`}>{title}</span>
             <span className="mini-player__subtitle">{subtitle}</span>
@@ -143,7 +143,7 @@ function TopRow({ hass, player, starting, failed, onOpen }: TopRowProps) {
     <div className="mini-player__top">
       <button type="button" className="mini-player__open" onClick={onOpen} aria-label="Sonos openen">
         {/* Album art sits square in the middle of the fade, so the shape matches the Chromecast. */}
-        <span className="sonos-thumb media-fade" aria-hidden>
+        <span className="sonos-thumb media-fade media-fade--sonos" aria-hidden>
           {src && <img src={src} alt="" />}
         </span>
         <span className="mini-player__text">

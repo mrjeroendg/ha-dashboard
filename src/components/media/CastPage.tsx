@@ -43,7 +43,7 @@ export function CastPage({ hass, player, onOpen }: Props) {
             <img className="cast-page__thumb" src={src} alt="" />
           ) : (
             // No image from the app (or nothing casting): the soft colour fade.
-            <span className="cast-page__thumb media-fade" aria-hidden />
+            <span className="cast-page__thumb media-fade media-fade--cast" aria-hidden />
           )}
           <span className="mini-player__text">
             {casting ? (

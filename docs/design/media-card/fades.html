@@ -1,0 +1,32 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Media fades</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(2,390px);gap:28px}
+.cap{font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px}
+.stage{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);background:var(--bg);color:var(--text);border-radius:28px;padding:16px;display:flex;flex-direction:column;gap:12px}
+.mp{display:flex;flex-direction:column;gap:10px;box-sizing:border-box;height:122px;padding:12px;border-radius:24px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.top{display:flex;align-items:center;gap:12px}
+.th{flex:none;width:96px;height:54px;border-radius:12px;opacity:.8}
+.txt b{display:block;font-size:16px;font-weight:600}.txt span{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.pills{display:flex;gap:6px}
+.pill{flex:1;display:flex;align-items:center;gap:6px;height:34px;padding:0 10px 0 4px;border-radius:999px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--border);font-size:13px;font-weight:600}
+.dot{flex:none;width:26px;height:26px;border-radius:50%}
+/* now */
+.now{background:radial-gradient(circle at 70% 30%,#f2c48d,transparent 45%),radial-gradient(circle at 20% 80%,#3c6e8f,transparent 55%),linear-gradient(135deg,#7b4a3a,#1d2a33);opacity:.55}
+/* A: cool screen vs warm sound */
+.a-cast{background:radial-gradient(circle at 72% 28%,#9fd8ff,transparent 45%),radial-gradient(circle at 18% 82%,#7a5cff,transparent 55%),linear-gradient(135deg,#2b3f8f,#151a3a)}
+.a-sonos{background:radial-gradient(circle at 70% 30%,#ffd29a,transparent 45%),radial-gradient(circle at 20% 80%,#e0557a,transparent 55%),linear-gradient(135deg,#a8452f,#3a1a24)}
+/* B: violet vs green */
+.b-cast{background:radial-gradient(circle at 70% 30%,#f7a6e0,transparent 45%),radial-gradient(circle at 20% 80%,#6a4cd8,transparent 55%),linear-gradient(135deg,#5b2a7a,#1d1530)}
+.b-sonos{background:radial-gradient(circle at 70% 30%,#c9f2a8,transparent 45%),radial-gradient(circle at 20% 80%,#1f9e8a,transparent 55%),linear-gradient(135deg,#2f6b4a,#13261f)}
+/* C: TV light (teal/orange) vs vinyl (amber/plum) */
+.c-cast{background:radial-gradient(circle at 75% 25%,#ffb36b,transparent 40%),radial-gradient(circle at 20% 80%,#18b5c4,transparent 55%),linear-gradient(135deg,#1f5e7a,#0f1e2a)}
+.c-sonos{background:radial-gradient(circle at 70% 30%,#ffe08a,transparent 42%),radial-gradient(circle at 25% 80%,#b0479b,transparent 55%),linear-gradient(135deg,#7a3a5a,#24142a)}
+</style></head><body></body>
+<script>
+const D={nf:'radial-gradient(circle at 38% 32%, color-mix(in srgb, #f0323b 45%, #fff), transparent 55%), linear-gradient(150deg, #f0323b, #e50914, #141414)',vrt:'radial-gradient(circle at 38% 32%, color-mix(in srgb, #ff4f55 45%, #fff), transparent 55%), linear-gradient(150deg, #ff4f55, #f5333a, #f5333a, #1b1d52)',vtm:'radial-gradient(circle at 38% 32%, color-mix(in srgb, #e555d9 45%, #fff), transparent 55%), linear-gradient(150deg, #e555d9, #fa077e, #f73849, #ff8518)',
+r1:'radial-gradient(circle at 35% 30%, #f4d7a1, transparent 55%), linear-gradient(160deg, #e28a5c, #7a3b4b)',sb:'radial-gradient(circle at 50% 40%, #f1e3c6, transparent 55%), linear-gradient(135deg, #b9a07a, #5d5246)',kl:'radial-gradient(circle at 40% 35%, #c3b2f0, transparent 55%), linear-gradient(135deg, #7a64c9, #2f2a4f)'};
+const pills=(l)=>`<div class="pills">${l.map(([k,n])=>`<div class="pill"><span class="dot" style="background:${D[k]}"></span>${n}</div>`).join('')}</div>`;
+const card=(cls,t,s,p)=>`<div class="mp"><div class="top"><div class="th ${cls}"></div><div class="txt"><b>${t}</b><span>${s}</span></div></div>${p}</div>`;
+const pair=(c,s)=>card(c,'TV op Chromecast','Kies een app om te openen',pills([['nf','Netflix'],['vrt','VRT MAX'],['vtm','VTM GO']]))+card(s,'Muziek op Sonos','Kies een stream om te beginnen',pills([['r1','Radio 1'],['sb','StuBru'],['kl','Klara']]));
+const V=[['Nu','Zelfde vervaging, gedimd',pair('now','now')],['A · Scherm vs. klank','Chromecast koel blauw-violet, Sonos warm amber-roze',pair('a-cast','a-sonos')],['B · Violet vs. groen','Chromecast paars-roze, Sonos groen-petrol',pair('b-cast','b-sonos')],['C · Tv-licht vs. vinyl','Chromecast petrol met oranje gloed, Sonos pruim met goud',pair('c-cast','c-sonos')]];
+document.body.innerHTML=V.map(([t,s,h])=>`<div><p class="cap">${t}<small>${s}</small></p><div class="stage">${h}</div></div>`).join('');
+</script></html>

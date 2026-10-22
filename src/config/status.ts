@@ -6,6 +6,7 @@
  * - lights: everything that counts as a light that's on (`on`), so a switch
  *   that powers a lamp can be listed too.
  * - openings: doors, windows, the garage… counted while `on`, `open` or `opening`.
+ *   "1 deur of raam open", or "alles gesloten" when none are.
  * - temperature: the indoor temperature sensor.
  *
  * Leave a list empty (or the temperature out) to hide that part.

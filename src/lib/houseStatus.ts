@@ -28,8 +28,10 @@ function lights(states: HassEntities): string | undefined {
 }
 
 function openings(states: HassEntities): string | undefined {
-  const open = listed(states, STATUS.openings).filter((s) => OPEN.has(s.state)).length;
-  if (open === 0) return undefined;
+  const all = listed(states, STATUS.openings);
+  if (all.length === 0) return undefined;
+  const open = all.filter((s) => OPEN.has(s.state)).length;
+  if (open === 0) return 'alles gesloten';
   return open === 1 ? '1 deur of raam open' : `${open} deuren of ramen open`;
 }
 

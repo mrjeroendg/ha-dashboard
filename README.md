@@ -245,7 +245,7 @@ export const STATUS = {
 
 - **Presence** (`people`): "Iedereen thuis", "Je bent thuis", "Jeroen thuis" or "Niemand thuis".
 - **Lights** (`lights`): how many are `on`, e.g. "3 lichten aan" or "alle lichten uit". A switch that powers a lamp can be listed here too.
-- **Doors and windows** (`openings`): how many are `on`, `open` or `opening`. Only shown when something is open.
+- **Doors and windows** (`openings`): how many are `on`, `open` or `opening`, e.g. "1 deur of raam open", or "alles gesloten" when none are.
 - **Temperature** (`temperature`): "21,5° binnen".
 
 An empty list (or no temperature) hides that part. Entities that don't exist or are unavailable are skipped. With nothing listed at all, there's no status line.

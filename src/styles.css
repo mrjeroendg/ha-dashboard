@@ -732,6 +732,8 @@ button.row:active { background: var(--accent-soft); }
 }
 
 .stream-pill__logo--busy { background: var(--surface); }
+/* The colour circles (streams and apps) slightly darker, so they don't stand out too much. */
+.stream-pill__logo:not(.stream-pill__logo--busy) { filter: brightness(0.75) saturate(0.85); }
 .stream-pill__label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .spinner {

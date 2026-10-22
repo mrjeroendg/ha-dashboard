@@ -9,6 +9,11 @@ export interface RoomEntity {
   simple?: boolean;
 }
 
+export interface RoomOpening {
+  entity: string;
+  name?: string;
+}
+
 export interface RoomSection {
   title: string;
   shortcuts?: Shortcut[];
@@ -21,7 +26,7 @@ interface RoomBase {
   icon: IconName;
   temperature?: string;
   humidity?: string;
-  openings?: Array<string | RoomEntity>;
+  openings?: Array<string | RoomOpening>;
 }
 
 export type RoomConfig =

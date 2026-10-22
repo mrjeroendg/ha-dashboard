@@ -1,6 +1,6 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
-import type { RoomConfig, RoomEntity } from '../config/rooms';
+import type { RoomConfig, RoomEntity, RoomOpening } from '../config/rooms';
 import type { Shortcut } from '../config/shortcuts';
 import type { HomeAssistant } from '../types/hass';
 
@@ -26,7 +26,7 @@ export interface ResolvedRoom {
   icon: IconName;
   temperature?: string;
   humidity?: string;
-  openings?: Array<string | RoomEntity>;
+  openings?: Array<string | RoomOpening>;
   sections: ResolvedSection[];
 }
 

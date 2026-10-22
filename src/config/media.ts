@@ -33,6 +33,6 @@ export interface CastApp {
 
 export const CAST_APPS: CastApp[] = [
   { name: 'Netflix', url: 'nflx://', color: '#e50914' },
-  { name: 'VRT MAX', url: 'vrtmax://', color: '#ff4b4f' },
+  { name: 'VRT MAX', url: 'vrtmax://', color: ['#ff6a6d', '#ff4b4f', '#1b1d52'] },
   { name: 'VTM GO', url: 'vtmgo://', color: ['#e555d9', '#fa077e', '#f73849', '#ff8518'] },
 ];

@@ -14,6 +14,9 @@ import type { IconName } from '../components/Icon';
  *         Or a function that gets the entity and returns true to show the
  *         warning, e.g. a low battery: (e) => Number(e.state) <= 20.
  * - title / icon: defaults come from the entity (updates: "Update voor Immich").
+ * - detail: a function that gets the entity and returns the second line, e.g.
+ *           (e) => `${e.state}%`. Default: "Sinds 14:02", or the versions for
+ *           an update.
  */
 export type AttentionLevel = 'high' | 'medium' | 'low';
 
@@ -23,6 +26,7 @@ export interface AttentionRule {
   when?: string[] | ((entity: HassEntity) => boolean);
   title?: string;
   icon?: IconName;
+  detail?: (entity: HassEntity) => string;
 }
 
 export const ATTENTION: AttentionRule[] = [
@@ -49,6 +53,7 @@ export const ATTENTION: AttentionRule[] = [
     title: 'iPad bijna leeg',
     icon: 'tablet',
     when: (e) => Number(e.state) <= 20,
+    detail: (e) => `${e.state}%`,
   },
   {
     entity: 'sensor.iphone_16_pro_battery_level',
@@ -56,5 +61,6 @@ export const ATTENTION: AttentionRule[] = [
     title: 'iPhone bijna leeg',
     icon: 'phone',
     when: (e) => Number(e.state) <= 20,
+    detail: (e) => `${e.state}%`,
   },
 ];

@@ -62,9 +62,11 @@ function warningFor(rule: AttentionRule, entity: HassEntity): Warning | undefine
     level: rule.level,
     icon: rule.icon ?? defaultIcon(entity),
     title: rule.title ?? (isUpdate ? `Update voor ${name}` : name),
-    detail: isUpdate
-      ? `${a.installed_version ?? '?'} → ${a.latest_version ?? '?'}`
-      : `Sinds ${clock(since)}`,
+    detail: rule.detail
+      ? rule.detail(entity)
+      : isUpdate
+        ? `${a.installed_version ?? '?'} → ${a.latest_version ?? '?'}`
+        : `Sinds ${clock(since)}`,
     since,
   };
 }

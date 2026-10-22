@@ -9,9 +9,10 @@ export interface RoomEntity {
   simple?: boolean;
 }
 
-export interface RoomOpening {
+export interface RoomSafety {
   entity: string;
   name?: string;
+  battery?: string;
 }
 
 export interface RoomSection {
@@ -26,7 +27,7 @@ interface RoomBase {
   icon: IconName;
   temperature?: string;
   humidity?: string;
-  openings?: Array<string | RoomOpening>;
+  safety?: Array<string | RoomSafety>;
 }
 
 export type RoomConfig =
@@ -38,7 +39,7 @@ export const ROOMS: RoomConfig[] = [
     id: 'living',
     name: 'Living',
     icon: 'sofa',
-    openings: [
+    safety: [
       { entity: 'binary_sensor.0x001788011004451e_contact', 'name': 'Voordeur' },
       { entity: 'binary_sensor.0x001788011004452e_contact', 'name': 'Schuifraam' }],
     sections: [
@@ -80,6 +81,9 @@ export const ROOMS: RoomConfig[] = [
     icon: 'monitor',
     temperature: 'sensor.0x7c3e822f69dd0000_temperature',
     humidity: 'sensor.0x7c3e822f69dd0000_humidity',
+    safety: [
+      { entity: 'binary_sensor.0x0015bc003106406b_smoke', name: 'Rookmelder', battery: 'sensor.0x0015bc003106406b_battery' }
+    ],
     entities: [
       { entity: 'light.ceiling_light', name: 'Verlichting', simple: true },
       { entity: 'cover.rts_16765494', name: 'Rolluik', myPosition: 'button.rts_16765494_my_position' }

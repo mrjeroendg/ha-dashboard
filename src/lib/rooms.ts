@@ -1,6 +1,6 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
-import type { RoomConfig, RoomEntity, RoomOpening } from '../config/rooms';
+import type { RoomConfig, RoomEntity, RoomSafety } from '../config/rooms';
 import type { Shortcut } from '../config/shortcuts';
 import type { HomeAssistant } from '../types/hass';
 
@@ -26,7 +26,7 @@ export interface ResolvedRoom {
   icon: IconName;
   temperature?: string;
   humidity?: string;
-  openings?: Array<string | RoomOpening>;
+  safety?: Array<string | RoomSafety>;
   sections: ResolvedSection[];
 }
 
@@ -49,13 +49,13 @@ function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities)
  */
 export function resolveRooms(rooms: RoomConfig[], states: HassEntities): ResolvedRoom[] {
   return rooms
-    .map(({ id, name, icon, temperature, humidity, openings, ...list }) => ({
+    .map(({ id, name, icon, temperature, humidity, safety, ...list }) => ({
       id,
       name,
       icon,
       temperature,
       humidity,
-      openings,
+      safety,
       sections: (list.sections ?? [{ title: undefined, shortcuts: [], entities: list.entities ?? [] }])
         .map((s) => ({ title: s.title, shortcuts: s.shortcuts ?? [], rows: resolveRows(s.entities, states) }))
         .filter((s) => s.rows.length > 0 || s.shortcuts.length > 0),
@@ -316,17 +316,59 @@ export function roomClimate(room: ResolvedRoom, states: HassEntities) {
     : { value: pct!, label: 'vochtigheid' };
 }
 
-const OPEN = new Set(['on', 'open', 'opening', 'unlocked']);
+/** 'high' is red, 'medium' orange; undefined means in orde. */
+export type SafetyLevel = 'high' | 'medium';
+
+export interface SafetyItem {
+  id: string;
+  name: string;
+  icon: IconName;
+  state: string;
+  level?: SafetyLevel;
+}
+
+/** A door: "Open" (red) or "Dicht". */
+function doorItem(entity: HassEntity): Pick<SafetyItem, 'icon' | 'state' | 'level'> {
+  const open = entity.state === 'on';
+  return open ? { icon: 'door', state: 'Open', level: 'high' } : { icon: 'door', state: 'Dicht' };
+}
+
+/** A smoke detector: "Rook" (red), a low battery (orange under 15%, red under 10%), or "Ok". */
+function smokeItem(entity: HassEntity, battery?: number): Pick<SafetyItem, 'icon' | 'state' | 'level'> {
+  if (entity.state === 'on') return { icon: 'smoke', state: 'Rook', level: 'high' };
+  if (battery === undefined || battery >= 15) return { icon: 'smoke', state: 'Ok' };
+  const level = battery < 10 ? 'high' : 'medium';
+  return { icon: 'smoke', state: `Batterij ${number(battery, 0)}%`, level };
+}
 
 /**
- * Doors, windows and locks under the room name (docs/design/room-openings):
- * "Alles gesloten", or the names of what's open, e.g. "Achterdeur, garagepoort".
+ * Doors and smoke detectors of a room (docs/design/room-safety), told apart by
+ * their device class. Missing or unavailable entities, and other device
+ * classes, are left out.
  */
-export function roomOpenings(room: ResolvedRoom, states: HassEntities) {
-  const listed = resolveRows(room.openings ?? [], states).filter((r) => !UNAVAILABLE.has(r.entity.state));
-  if (listed.length === 0) return undefined;
-  const open = listed.filter((r) => OPEN.has(r.entity.state));
-  if (open.length === 0) return { open: false, text: 'Alles gesloten' };
-  const text = open.map((r, i) => (i === 0 ? r.name : r.name.charAt(0).toLowerCase() + r.name.slice(1))).join(', ');
-  return { open: true, text };
+export function roomSafety(room: ResolvedRoom, states: HassEntities) {
+  const items: SafetyItem[] = (room.safety ?? [])
+    .map((s) => (typeof s === 'string' ? { entity: s } : s))
+    .filter((s) => s.entity in states && !UNAVAILABLE.has(states[s.entity].state))
+    .flatMap((s) => {
+      const entity = states[s.entity];
+      const deviceClass = entity.attributes.device_class;
+      const name = s.name ?? String(entity.attributes.friendly_name ?? s.entity);
+      if (deviceClass === 'door') return [{ id: s.entity, name, ...doorItem(entity) }];
+      if (deviceClass === 'smoke') return [{ id: s.entity, name, ...smokeItem(entity, sensorValue(states, s.battery)) }];
+      return [];
+    });
+  if (items.length === 0) return undefined;
+
+  const red = items.filter((i) => i.level === 'high');
+  const orange = items.filter((i) => i.level === 'medium');
+  const attention = [...red, ...orange];
+  const ok = items.filter((i) => !i.level);
+  const level: SafetyLevel | undefined = red.length ? 'high' : orange.length ? 'medium' : undefined;
+  const summary =
+    attention.length === 0
+      ? 'Alles in orde'
+      : `${attention.length} ${attention.length === 1 ? 'vraagt' : 'vragen'} aandacht`;
+
+  return { items, attention, ok, level, summary };
 }

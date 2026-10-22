@@ -105,6 +105,13 @@ const PATHS = {
     </>
   ),
   star: <path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z" />,
+  smoke: (
+    <>
+      <circle cx="12" cy="12" r="8.5" />
+      <circle cx="12" cy="12" r="3" />
+      <path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof PATHS;

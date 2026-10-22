@@ -2,9 +2,7 @@
 
 One quiet line under the room name that says whether the room's doors, windows and locks are closed. Dark mode only. Sits next to the temperature from `docs/design/room-header`.
 
-> ✅ **Approved (option A, with a green dot) and built.** Don't change proportions or behaviour without asking first.
->
-> Code: `openings` on a room in `src/config/rooms.ts`, `roomOpenings` in `src/lib/rooms.ts`, the header in `RoomView.tsx`, styles under `room-openings` in `src/styles.css`.
+> ⛔ **Replaced by [`room-safety`](../room-safety/README.md).** `openings` became `safety`; the line now counts ("1 vraagt aandacht") and opens a sheet. Kept for history.
 
 ![Design](./mockup.png)
 

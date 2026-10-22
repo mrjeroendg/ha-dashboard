@@ -6,7 +6,7 @@ import { haptic } from '../lib/haptic';
 import {
   adjustTemperature,
   roomClimate,
-  roomOpenings,
+  roomSafety,
   rowModel,
   setBrightness,
   setColor,
@@ -20,6 +20,7 @@ import { BrightnessSlider } from './BrightnessSlider';
 import { ColorPicker } from './ColorPicker';
 import { Icon, type IconName } from './Icon';
 import { QuickCard } from './QuickCard';
+import { SafetySheet } from './SafetySheet';
 
 interface Props {
   room: ResolvedRoom;
@@ -29,11 +30,12 @@ interface Props {
 export function RoomView({ room, hass }: Props) {
   // Always starts on the first tab: the page remounts for every room.
   const [tab, setTab] = useState(0);
+  const [safetyOpen, setSafetyOpen] = useState(false);
   const sections = room.sections;
   const section = sections[Math.min(tab, sections.length - 1)];
   const tabs = sections.length > 1;
   const climate = roomClimate(room, hass.states);
-  const openings = roomOpenings(room, hass.states);
+  const safety = roomSafety(room, hass.states);
 
   return (
     <>
@@ -42,11 +44,19 @@ export function RoomView({ room, hass }: Props) {
         <div className="room-header">
           <div className="room-header__main">
             <h1 className="header__greeting">{room.name}</h1>
-            {openings && (
-              <p className={`room-openings${openings.open ? ' is-open' : ''}`}>
-                <span className="room-openings__dot" aria-hidden />
-                {openings.text}
-              </p>
+            {safety && (
+              <button
+                type="button"
+                className={`room-safety${safety.level ? ' is-lit' : ''}`}
+                onClick={() => {
+                  haptic('selection');
+                  setSafetyOpen(true);
+                }}
+              >
+                <span className={`safety-dot${safety.level ? ` is-${safety.level}` : ''}`} aria-hidden />
+                {safety.summary}
+                <Icon name="chevron" />
+              </button>
             )}
           </div>
           {climate && (
@@ -100,6 +110,7 @@ export function RoomView({ room, hass }: Props) {
           ))}
         </section>
       )}
+      {safety && safetyOpen && <SafetySheet room={room.name} {...safety} onClose={() => setSafetyOpen(false)} />}
     </>
   );
 }

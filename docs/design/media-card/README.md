@@ -6,6 +6,7 @@ One card on **Thuis** for all media: Sonos and Chromecast, plus stream buttons t
 |---|---|
 | [Mini player](#mini-player--approved-final) | ✅ **Approved: final.** Build exactly as designed. |
 | [Expanded player](#expanded-player--approved-final) | ✅ **Approved: final.** Build exactly as designed. |
+| [App buttons on the Chromecast page](#app-buttons-on-the-chromecast-page--approved-built) | ✅ **Approved (option A) and built.** |
 
 ---
 
@@ -114,6 +115,24 @@ Source: [`expanded-player.html`](./expanded-player.html) (a static mockup; open 
 | Stop (Chromecast) | `media_player.media_stop` |
 
 ---
+
+## App buttons on the Chromecast page: approved, built
+
+> ✅ **Approved (option A) and built** (`CAST_APPS` in `src/config/media.ts`, `CastPage.tsx`). Don't change proportions or behaviour without asking first.
+>
+> *Decisions during the build:* the link is opened with `window.open(url)`, the same way HA's own `url` tap action does it. Colours go by position (red, teal, gold), like the stream buttons. Netflix (`nflx://`) is the first app.
+
+![App buttons](./cast-apps.png)
+
+Source: [`cast-apps.html`](./cast-apps.html). The approved screens are **"A · Idle"** and **"A · Tijdens casten"**; "B" was not chosen.
+
+- **Only while nothing is casting.** The app buttons take the place of the empty, dimmed progress bar of the idle Chromecast page. The subtitle reads "Kies een app om te openen". While something is casting, the page is unchanged: progress bar or LIVE pill, no buttons.
+- **Same pills as the Sonos stream buttons:** 34px high, a 26px colour circle (same 3D gradient style, **no logos**), a short name in 13px/600, equal width, 6px gap.
+- **Idle thumbnail 96×54** (instead of 112×63) so the buttons fit the fixed 122px card. While casting it stays 112×63.
+- **A tap opens the app on the iPhone** through its URL scheme (e.g. `nflx://`), not on the TV. Light haptic tick on tap. Nothing to wait for, so no spinner and no "Dat lukte niet".
+- **Config** in `src/config/media.ts`, e.g. `CAST_APPS = [{ name: 'Netflix', url: 'nflx://' }, { name: 'VRT MAX', url: '…' }, { name: 'VTM GO', url: '…' }]`. Up to 3 apps.
+- **Colours:** red for Netflix, teal blue for VRT MAX, gold for VTM GO in the mockup.
+- **Open before building:** confirm that the HA Companion app hands `nflx://`-style links to iOS (test with a Button card, `tap_action: action: url, url_path: nflx://`), and find the URL schemes for VRT MAX and VTM GO. Fallback if links don't work: an iOS Shortcut per app (`shortcuts://run-shortcut?name=Netflix`), same buttons.
 
 ## Decisions during the build
 

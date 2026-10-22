@@ -1,0 +1,43 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Cast apps</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,390px);gap:28px 28px}
+.cap{font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px}
+.stage{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.18);
+background:var(--bg);color:var(--text);border-radius:28px;padding:20px 16px 16px}
+svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.mp{display:flex;flex-direction:column;gap:10px;box-sizing:border-box;height:122px;padding:12px;border-radius:24px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border),0 8px 24px rgba(0,0,0,.1)}
+.top{display:flex;align-items:center;gap:12px;min-width:0}
+.thumb{flex:none;width:112px;height:63px;border-radius:12px;background:radial-gradient(circle at 70% 30%,#f2c48d,transparent 45%),radial-gradient(circle at 20% 80%,#3c6e8f,transparent 55%),linear-gradient(135deg,#7b4a3a,#1d2a33)}
+.thumb.sm{width:96px;height:54px}
+.thumb.idle{opacity:.55}
+.thumb.nf{background:#000;position:relative;overflow:hidden}.thumb.nf::after{content:"";position:absolute;left:42%;top:0;width:20%;height:100%;background:linear-gradient(180deg,#e50914,#b20710);transform:skewX(-14deg)}
+.txt{flex:1;min-width:0}.txt b{display:block;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.txt span{display:block;font-size:13px;color:var(--muted);margin-top:2px}
+.rb{width:40px;height:40px;display:grid;place-items:center;flex:none}
+.prog{display:flex;align-items:center;gap:10px;margin-top:auto;font-size:12px;color:var(--muted)}
+.track{flex:1;height:4px;border-radius:2px;background:rgba(245,244,239,.12);position:relative;overflow:hidden}.track i{position:absolute;inset:0 auto 0 0;background:var(--accent);border-radius:2px}
+.line{height:3px;border-radius:2px;background:rgba(245,244,239,.12);margin-top:7px;position:relative;overflow:hidden}.line i{position:absolute;inset:0 auto 0 0;background:var(--accent)}
+.pills{display:flex;gap:6px;margin-top:auto}
+.pill{flex:1;min-width:0;display:flex;align-items:center;gap:6px;height:34px;padding:0 10px 0 4px;border-radius:999px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--border);font-size:13px;font-weight:600}
+.dot{flex:none;width:26px;height:26px;border-radius:50%}
+.dots{display:flex;justify-content:center;gap:6px;margin-top:8px}.dots i{width:6px;height:6px;border-radius:3px;background:rgba(245,244,239,.2)}.dots i.on{width:16px;background:var(--text)}
+.note{grid-column:1/-1;font-size:13px;color:#73726c;margin:-8px 0 0}
+</style></head><body></body>
+<script>
+const I={pause:'<path d="M9 6v12M15 6v12"/>'};
+const D={
+ nf:'radial-gradient(circle at 38% 32%, #ff8a80, transparent 55%), linear-gradient(150deg, #e5383b, #5c0f14)',
+ vrt:'radial-gradient(circle at 40% 35%, #9fe3d9, transparent 55%), linear-gradient(140deg, #2fa39a, #173d3f)',
+ vtm:'radial-gradient(circle at 40% 32%, #ffe0a3, transparent 55%), linear-gradient(140deg, #e7a83e, #6b3d1e)'};
+const pills=`<div class="pills">${[['nf','Netflix'],['vrt','VRT MAX'],['vtm','VTM GO']].map(([k,l])=>`<div class="pill"><span class="dot" style="background:${D[k]}"></span>${l}</div>`).join('')}</div>`;
+const dots=`<div class="dots"><i class="on"></i><i></i></div>`;
+const now=`<div class="mp"><div class="top"><div class="thumb idle"></div><div class="txt"><b>Tv woonkamer</b><span>Niets aan het casten</span></div></div><div class="prog"><span></span><div class="track" style="opacity:.5"></div><span></span></div></div>${dots}`;
+const aIdle=`<div class="mp"><div class="top"><div class="thumb sm idle"></div><div class="txt"><b>Tv woonkamer</b><span>Kies een app om te openen</span></div></div>${pills}</div>${dots}`;
+const aCast=`<div class="mp"><div class="top"><div class="thumb nf"></div><div class="txt"><b>Planet Earth III</b><span>Netflix</span></div><div class="rb"><svg viewBox="0 0 24 24">${I.pause}</svg></div></div><div class="prog"><span>32:10</span><div class="track"><i style="width:62%"></i></div><span>−19:40</span></div></div>${dots}`;
+const bCast=`<div class="mp"><div class="top"><div class="thumb sm nf"></div><div class="txt"><b>Planet Earth III</b><span>Netflix · −19:40</span><div class="line"><i style="width:62%"></i></div></div><div class="rb"><svg viewBox="0 0 24 24">${I.pause}</svg></div></div>${pills}</div>${dots}`;
+const S=[
+ ['Nu · idle','Ter vergelijking',now],
+ ['A · Idle: app-knoppen','Waar nu de lege balk staat; thumbnail iets kleiner zodat het in 122 px past',aIdle],
+ ['A · Tijdens casten','Ongewijzigd: voortgang zoals nu, geen knoppen',aCast],
+ ['B · Altijd app-knoppen','Voortgang wordt een dun lijntje onder de titel, tijd als "−19:40"',bCast],
+];
+document.body.innerHTML=S.map(([c,s,h])=>`<div><p class="cap">${c}<small>${s}</small></p><div class="stage">${h}</div></div>`).join('')+`<p class="note">Bolletjes in dezelfde stijl als Radio 1 / StuBru / Klara: rood voor Netflix, petrol voor VRT MAX, goud voor VTM GO. Een tik opent de app op de iPhone (nflx://, …).</p>`;
+</script></html>

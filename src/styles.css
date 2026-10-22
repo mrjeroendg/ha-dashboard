@@ -778,6 +778,9 @@ button.row:active { background: var(--accent-soft); }
 
 .cast-page.is-idle .media-fade { opacity: 0.55; }
 
+/* Idle with app buttons: a smaller thumbnail so the buttons fit the 122px card. */
+.cast-page.has-apps .cast-page__thumb { width: 96px; height: 54px; }
+
 .cast-page__title {
   display: -webkit-box;
   -webkit-line-clamp: 2;

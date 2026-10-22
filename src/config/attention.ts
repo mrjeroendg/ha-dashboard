@@ -10,7 +10,6 @@ import type { IconName } from '../components/Icon';
  *          'low' (orange: maintenance, e.g. updates).
  * - when: states that trigger it. Default: 'open'/'opening' for a cover,
  *         'unlocked'/'open' for a lock, otherwise 'on'.
- * - after: only show once the state has lasted this many minutes.
  * - title / icon: defaults come from the entity (updates: "Update voor Immich").
  *
  * Entities in src/config/ignore.ts are skipped.
@@ -21,7 +20,6 @@ export interface AttentionRule {
   entity: string;
   level: AttentionLevel;
   when?: string[];
-  after?: number;
   title?: string;
   icon?: IconName;
 }
@@ -30,7 +28,6 @@ export const ATTENTION: AttentionRule[] = [
   {
     entity: 'cover.garagepoort',
     level: 'high',
-    after: 15,
     title: 'Garagepoort staat open',
     icon: 'garage',
   },

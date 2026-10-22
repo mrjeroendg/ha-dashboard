@@ -11,7 +11,7 @@ interface Props {
 
 /** Warnings under the status line. They can't be closed; they go away once fixed. */
 export function Attention({ hass }: Props) {
-  // Re-evaluated every minute too, so "Al 25 min" and `after` keep up.
+  // Re-evaluated every minute too, so "Al 25 min" keeps up.
   const now = useNow();
   const warnings = useMemo(() => activeWarnings(hass.states, ATTENTION, now.getTime()), [hass.states, now]);
   if (warnings.length === 0) return null;

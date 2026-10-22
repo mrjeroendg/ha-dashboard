@@ -60,15 +60,15 @@ The orange is deliberately yellower than the dashboard's accent (`#d97757`), so 
 Warnings are defined in `src/config/attention.ts`, like the rooms and shortcuts. For example:
 
 ```ts
-{ entity: 'update.*', level: 'low' },
+{ entity: 'update.immich', level: 'low' },
 { level: 'high', entity: 'cover.garagepoort', title: 'Garagepoort staat open', icon: 'garage' },
 ```
 
 - **Icons only:** the tile always shows an icon (from the rule, or one that fits the entity). *Decision during the build:* using the entity's own picture (e.g. the Immich logo) was tried and dropped; HA serves those logos from `/api/brands/…`, which refuses a plain `<img>` without a login (403).
-- **Updates:** `update.*` with state `on`. The second line is `installed_version → latest_version`.
+- **Updates:** an `update` entity with state `on`. The second line is `installed_version → latest_version`.
 - **Shown immediately:** a warning appears as soon as the state matches. The second line shows how long it has lasted (from `last_changed`), plus the time it started. *Decision during the build:* an `after` delay (only show after N minutes) was built and dropped as too complex.
 - **`when`:** the states that trigger it. Default: `open`/`opening` for a cover, `unlocked`/`open` for a lock, otherwise `on`.
-- **Wildcards:** `entity` accepts `*`, and entities in `src/config/ignore.ts` are skipped. When two rules match one entity, the first one wins.
+- **Exact entity IDs only**, one rule per entity. *Decision during the build:* `*` wildcards (e.g. `update.*`) were built and dropped; the owner wants every warning listed explicitly.
 
 ## Not chosen
 

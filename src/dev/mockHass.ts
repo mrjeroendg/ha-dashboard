@@ -52,8 +52,8 @@ function baseStates(): HassEntities {
     entity('cover.rolluiken', 'closed', { friendly_name: 'Rolluiken' }),
     entity('lock.voordeur', 'locked', { friendly_name: 'Voordeur' }),
     // Warnings (src/config/attention.ts): the garage has been open for 25 min.
-    { ...entity('cover.garagepoort', 'open', { friendly_name: 'Garagepoort', device_class: 'garage' }), last_changed: minutesAgo(25) },
-    entity('update.immich', 'on', { friendly_name: 'Immich update', title: 'Immich', installed_version: 'v3.3.1', latest_version: 'v3.3.4' }),
+    { ...entity('sensor.garage_door_state_classification', 'open', { friendly_name: 'Garage door' }), last_changed: minutesAgo(25) },
+    entity('update.irpi_admin_version', 'on', { friendly_name: 'Immich version', title: 'Immich', installed_version: 'v3.3.1', latest_version: 'v3.3.4' }),
     entity('sensor.auto_batterij', '62', { unit_of_measurement: '%' }),
     entity('switch.auto_laden', 'off', { friendly_name: 'Auto laden' }),
     entity('media_player.woonkamer', 'idle', { friendly_name: 'Woonkamer' }),

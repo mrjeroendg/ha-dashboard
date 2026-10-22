@@ -5,14 +5,12 @@ import type { IconName } from '../components/Icon';
  * A warning shows while its entity is in one of the `when` states, and can't
  * be closed: it goes away by itself once the cause is gone.
  *
- * - entity: exact ID, or `*` as a wildcard ('update.*' = every update).
+ * - entity: the exact entity ID. One rule per entity.
  * - level: 'high' (dark red: safety, damage), 'medium' (red: today),
  *          'low' (orange: maintenance, e.g. updates).
  * - when: states that trigger it. Default: 'open'/'opening' for a cover,
  *         'unlocked'/'open' for a lock, otherwise 'on'.
  * - title / icon: defaults come from the entity (updates: "Update voor Immich").
- *
- * Entities in src/config/ignore.ts are skipped.
  */
 export type AttentionLevel = 'high' | 'medium' | 'low';
 

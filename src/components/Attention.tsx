@@ -1,7 +1,6 @@
-import { useMemo, type MouseEvent } from 'react';
+import { useMemo } from 'react';
 import { ATTENTION } from '../config/attention';
 import { useNow } from '../hooks/useNow';
-import { useRunAction } from '../hooks/useRunAction';
 import { activeWarnings, type Warning } from '../lib/attention';
 import { openMoreInfo } from '../lib/moreInfo';
 import type { HomeAssistant } from '../types/hass';
@@ -21,22 +20,13 @@ export function Attention({ hass }: Props) {
   return (
     <div className="attention">
       {warnings.map((w) => (
-        <WarningBanner key={w.key} warning={w} hass={hass} />
+        <WarningBanner key={w.key} warning={w} />
       ))}
     </div>
   );
 }
 
-function WarningBanner({ warning, hass }: { warning: Warning; hass: HomeAssistant }) {
-  const [status, run] = useRunAction();
-  const { action, entityId } = warning;
-
-  const onClick = (e: MouseEvent<HTMLButtonElement>) => {
-    if (!action) return openMoreInfo(e.currentTarget, entityId);
-    const [domain, service] = action.service.split('.');
-    run(() => hass.callService(domain, service, action.data ?? {}, { entity_id: entityId }));
-  };
-
+function WarningBanner({ warning }: { warning: Warning }) {
   return (
     <div className={`attention__item attention--${warning.level}`} role="alert">
       <span className="attention__icon">
@@ -44,10 +34,14 @@ function WarningBanner({ warning, hass }: { warning: Warning; hass: HomeAssistan
       </span>
       <span className="attention__text">
         <span className="attention__title">{warning.title}</span>
-        <span className="attention__detail">{status === 'error' ? 'Dat lukte niet' : warning.detail}</span>
+        <span className="attention__detail">{warning.detail}</span>
       </span>
-      <button type="button" className="attention__action" onClick={onClick} disabled={status === 'busy'}>
-        {action?.label ?? 'Bekijk'}
+      <button
+        type="button"
+        className="attention__action"
+        onClick={(e) => openMoreInfo(e.currentTarget, warning.entityId)}
+      >
+        Bekijk
       </button>
     </div>
   );

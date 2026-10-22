@@ -164,11 +164,10 @@
   white-space: nowrap;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
-  transition: transform 120ms ease, opacity 200ms ease;
+  transition: transform 120ms ease;
 }
 
 .attention__action:active { transform: scale(0.95); }
-.attention__action:disabled { opacity: 0.6; }
 
 /* ---------------------------------------------------------------- quick actions */
 

@@ -15,7 +15,7 @@ Source: [`mockup.html`](./mockup.html) (a static mockup; open it in a browser, n
 - **Never closable.** There is no × anywhere. A warning disappears only when its cause is gone: the update is installed, the garage door is closed, the window is shut.
 - **Always all of them, in a list.** Every active warning gets its own banner, stacked under the status line with 8px between them. There's no "+2 more" row and no sheet. With many warnings, "Snel" simply moves down.
 - **Order:** highest level first; within a level, the newest first.
-- **Every warning has an action button.** It either fixes the problem directly ("Sluiten" closes the garage door) or opens HA's own more-info dialog ("Bekijk"), for things the dashboard can't fix itself, like an update or an open window.
+- **Every warning has a "Bekijk" button** that opens HA's own more-info dialog for the entity (for an update: HA's update dialog). *Decision during the build:* buttons that fix the problem directly ("Sluiten" for the garage door, as in the mockup) were built and then removed at the owner's request.
 - With no warnings, nothing is shown: no empty space, no "all good" card.
 
 ## Banner
@@ -54,16 +54,13 @@ Warnings are defined in `src/config/attention.ts`, like the rooms and shortcuts.
 
 ```ts
 { entity: 'update.*', level: 'low' },
-{ level: 'high', entity: 'cover.garagepoort', after: 15,
-  title: 'Garagepoort staat open', action: { label: 'Sluiten', service: 'cover.close_cover' } },
+{ level: 'high', entity: 'cover.garagepoort', after: 15, title: 'Garagepoort staat open', icon: 'garage' },
 ```
 
 - **Updates:** `update.*` with state `on`. The second line is `installed_version → latest_version`, and "Bekijk" opens HA's update dialog.
 - **`after`** (minutes): the warning only appears once the state has lasted that long (from `last_changed`). The second line shows how long, plus the time it started.
-- **No `action`:** the button is "Bekijk", which opens the more-info dialog.
 - **`when`:** the states that trigger it. Default: `open`/`opening` for a cover, `unlocked`/`open` for a lock, otherwise `on`.
 - **Wildcards:** `entity` accepts `*`, and entities in `src/config/ignore.ts` are skipped. When two rules match one entity, the first one wins.
-- **Action fails:** the second line shows "Dat lukte niet" for a moment, like the shortcuts.
 
 ## Not chosen
 

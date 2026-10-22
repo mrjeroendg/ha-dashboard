@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState } from 'react';
-import { CHROMECAST } from '../../config/media';
+import { MEDIA } from '../../config/media';
 import { usePager } from '../../hooks/usePager';
 import type { HomeAssistant } from '../../types/hass';
 import { CastPage } from './CastPage';
@@ -45,7 +45,7 @@ export function MiniPlayer({ hass }: Props) {
     <div className="media-card">
       <div className="media-card__pages" ref={pager.ref} onScroll={pager.onScroll}>
         <div className="media-card__page">
-          <CastPage hass={hass} player={hass.states[CHROMECAST]} onOpen={() => open(0)} />
+          <CastPage hass={hass} player={hass.states[MEDIA.chromecast.entity]} onOpen={() => open(0)} />
         </div>
         <div className="media-card__page">
           <SonosPage hass={hass} onOpen={() => open(1)} />

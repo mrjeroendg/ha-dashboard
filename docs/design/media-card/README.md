@@ -118,7 +118,7 @@ Source: [`expanded-player.html`](./expanded-player.html) (a static mockup; open 
 
 ## App buttons on the Chromecast page: approved, built
 
-> ✅ **Approved (option A) and built** (`CAST_APPS` in `src/config/media.ts`, `CastPage.tsx`). Don't change proportions or behaviour without asking first.
+> ✅ **Approved (option A) and built** (`MEDIA.chromecast.apps` in `src/config/media.ts`, `CastPage.tsx`). Don't change proportions or behaviour without asking first.
 >
 > *Decisions during the build:* the link is opened with `window.open(url)`, the same way HA's own `url` tap action does it. Each app has its house colour (`color`), from which the colour circle is built (Netflix red with a touch of black: `#f0323b` → `#e50914` → `#141414`; VTM GO a gradient like its icon: `#e555d9` → `#fa077e` → `#f73849` → `#ff8518`; VRT MAX red with a touch of navy: `#ff4f55` → `#f5333a` → `#f5333a` → `#1b1d52`, from its logo); without one they go by position (red, teal, gold). Netflix (`nflx://`) is the first app.
 
@@ -130,7 +130,7 @@ Source: [`cast-apps.html`](./cast-apps.html). The approved screens are **"A · I
 - **Same pills as the Sonos stream buttons:** 34px high, a 26px colour circle (same 3D gradient style, **no logos**), a short name in 13px/600, equal width, 6px gap.
 - **Idle thumbnail 96×54** (instead of 112×63) so the buttons fit the fixed 122px card. While casting it stays 112×63.
 - **A tap opens the app on the iPhone** through its URL scheme (e.g. `nflx://`), not on the TV. Light haptic tick on tap. Nothing to wait for, so no spinner and no "Dat lukte niet".
-- **Config** in `src/config/media.ts`, e.g. `CAST_APPS = [{ name: 'Netflix', url: 'nflx://' }, { name: 'VRT MAX', url: '…' }, { name: 'VTM GO', url: '…' }]`. Up to 3 apps.
+- **Config** in `src/config/media.ts`: `MEDIA.chromecast.apps`, e.g. `{ name: 'Netflix', url: 'nflx://', color: [...] }`. Up to 3 apps.
 - **Colours:** red for Netflix, teal blue for VRT MAX, gold for VTM GO in the mockup.
 - **Open before building:** confirm that the HA Companion app hands `nflx://`-style links to iOS (test with a Button card, `tap_action: action: url, url_path: nflx://`), and find the URL schemes for VRT MAX and VTM GO. Fallback if links don't work: an iOS Shortcut per app (`shortcuts://run-shortcut?name=Netflix`), same buttons.
 
@@ -148,8 +148,9 @@ Source: [`cast-apps.html`](./cast-apps.html). The approved screens are **"A · I
 - **Idle pages in the expanded player:** the same layout as an active page, with the dimmed colour fade, "Niets aan het casten" / "Niets aan het spelen", an empty progress bar and a disabled play button. Volume still works.
 - **No image → colour fade** everywhere. For Sonos it's a faded square on a blurred fade, the same build as a real cover.
 - **Previous/next and ±10/30 s** are enabled only when `supported_features` allows them *and* there's a duration. You can't skip in a live stream, even if the player claims it can. If seeking isn't supported at all, ±10/30 s are hidden but keep their space.
+- **Expanded Chromecast without a thumbnail** uses the same square-on-blur as the Sonos page (in the Chromecast colours), and the idle title is "Chromecast" instead of the TV's name. A real video thumbnail still fills the 16:9 area.
 - **Each device its own colour fade (option A "Scherm vs. klank"):** the Chromecast fade is cool blue-violet with a light-blue glow, the Sonos fade warm amber-red with pink, in the mini and the expanded player. Idle pages dim it to 80% (was 55%). Options in [`fades.png`](./fades.png).
-- **Stream colours from the VRT players (option B, with coral):** each stream script has its own `color` in `STREAM_SCRIPTS`. Radio 1 `#ff4942` → `#0068d8` → `#002a66` (blue), StuBru `#ff4942` → `#7e31aa` → `#331a5c` (purple), Klara `#ff4942` → `#c0b06c` → `#434540` (gold, ready as `KLARA`). The coral is the play button of the VRT players. Options in [`stations.png`](./stations.png).
+- **Stream colours from the VRT players (option B, with coral):** each station in `MEDIA.sonos.stations` has its own `color`. Radio 1 `#ff4942` → `#0068d8` → `#002a66` (blue), StuBru `#ff4942` → `#7e31aa` → `#331a5c` (purple), Tijdloze (was planned for Klara) `#ff4942` → `#c0b06c` → `#434540` (gold). The coral is the play button of the VRT players. Options in [`stations.png`](./stations.png).
 - **Colour circles a bit darker:** the circles on the stream and app buttons get `brightness(0.75) saturate(0.85)`, so they don't stand out as much (owner's request). The colours in the config stay the same.
 - **Idle Chromecast title is "TV op Chromecast"**, fixed, like "Muziek op Sonos" (instead of the TV's name in HA). The expanded player still shows the TV's name.
 - **Sonos uses the same image as the Chromecast:** instead of the radio icon tile (54px), the Sonos page shows the same 96×54 colour fade as the idle Chromecast page (dimmed while idle), so both pages line up. Album art, when there is any, sits square in the middle of that fade.
@@ -158,3 +159,4 @@ Source: [`cast-apps.html`](./cast-apps.html). The approved screens are **"A · I
 ## Open questions
 
 - **Entity IDs:** the owner fills in the Sonos and Chromecast entities in `src/config/media.ts`.
+- **One media config:** the entities, stations and apps live in one `MEDIA` object in `src/config/media.ts`. A station holds its script, stream URL, name, optional button `label` and colour, so the separate station-name list is gone, and button labels come from the config instead of the script's name in HA.

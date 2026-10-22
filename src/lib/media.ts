@@ -1,5 +1,5 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
-import { STREAM_NAMES, type StreamScript } from '../config/media';
+import { MEDIA, type Station } from '../config/media';
 import type { DotColor } from './dots';
 
 export interface StreamButton {
@@ -8,15 +8,11 @@ export interface StreamButton {
   color?: DotColor;
 }
 
-/** Configured stream scripts that exist in HA, labelled with their HA name. */
-export function streamButtons(scripts: StreamScript[], states: HassEntities): StreamButton[] {
-  return scripts
+/** Configured stations whose script exists in HA. */
+export function streamButtons(stations: Station[], states: HassEntities): StreamButton[] {
+  return stations
     .filter(({ script }) => script in states)
-    .map(({ script, color }) => ({
-      script,
-      label: String(states[script].attributes.friendly_name ?? script.split('.')[1]),
-      color,
-    }));
+    .map(({ script, name, label, color }) => ({ script, label: label ?? name, color }));
 }
 
 /** "Playing" includes paused: there is something loaded you can resume. */
@@ -30,8 +26,10 @@ export function hasMedia(player?: HassEntity): boolean {
  */
 export function nowPlaying(player: HassEntity): { title: string; subtitle: string } {
   const a = player.attributes;
-  // A bare stream URL has no station name: take it from STREAM_NAMES.
-  const channel = a.media_channel ? String(a.media_channel) : STREAM_NAMES[String(a.media_content_id)];
+  // A bare stream URL has no station name: take it from the configured stations.
+  const channel = a.media_channel
+    ? String(a.media_channel)
+    : MEDIA.sonos.stations.find((s) => s.stream === a.media_content_id)?.name;
   const title = a.media_title ? String(a.media_title) : undefined;
   const artist = a.media_artist ? String(a.media_artist) : undefined;
 

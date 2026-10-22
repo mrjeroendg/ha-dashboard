@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { HassEntity } from 'home-assistant-js-websocket';
-import { SONOS, STREAM_SCRIPTS } from '../../config/media';
+import { MEDIA } from '../../config/media';
 import { dotFor } from '../../lib/dots';
 import { hasMedia, imageUrl, nowPlaying, streamButtons } from '../../lib/media';
 import type { HomeAssistant } from '../../types/hass';
@@ -31,8 +31,8 @@ const mediaKey = (p?: HassEntity) =>
 
 /** Sonos page of the mini player: what's playing on top, stream buttons below. */
 export function SonosPage({ hass, onOpen }: Props) {
-  const player = hass.states[SONOS];
-  const buttons = useMemo(() => streamButtons(STREAM_SCRIPTS, hass.states), [hass.states]);
+  const player = hass.states[MEDIA.sonos.entity];
+  const buttons = useMemo(() => streamButtons(MEDIA.sonos.stations, hass.states), [hass.states]);
 
   const [starting, setStarting] = useState<Starting>(null);
   const [failed, setFailed] = useState(false);

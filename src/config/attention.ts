@@ -42,5 +42,19 @@ export const ATTENTION: AttentionRule[] = [
     entity: 'update.garage_paperless_software',
     level: 'low',
     title: 'Paperless update'
-  } 
+  },
+  {
+    entity: 'sensor.jeroens_ipad_battery_level',
+    level: 'low',
+    title: 'iPad bijna leeg',
+    icon: 'tablet',
+    when: (e) => Number(e.state) <= 20,
+  },
+  {
+    entity: 'sensor.iphone_16_pro_battery_level',
+    level: 'low',
+    title: 'iPhone bijna leeg',
+    icon: 'phone',
+    when: (e) => Number(e.state) <= 20,
+  },
 ];

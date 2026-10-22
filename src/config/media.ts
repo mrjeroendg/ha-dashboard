@@ -30,6 +30,7 @@ export const STREAM_SCRIPTS: string[] = [
  */
 export const STREAM_NAMES: Record<string, string> = {
   'http://icecast.vrtcdn.be/radio1-high.mp3': 'Radio 1',
+  'http://icecast.vrtcdn.be/stubru-high.mp3': 'Studio Brussel',
 };
 
 export interface CastApp {

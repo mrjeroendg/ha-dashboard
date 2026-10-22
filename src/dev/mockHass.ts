@@ -53,7 +53,7 @@ function baseStates(): HassEntities {
     entity('lock.voordeur', 'locked', { friendly_name: 'Voordeur' }),
     // Warnings (src/config/attention.ts): the garage has been open for 25 min.
     { ...entity('cover.garagepoort', 'open', { friendly_name: 'Garagepoort', device_class: 'garage' }), last_changed: minutesAgo(25) },
-    entity('update.immich', 'on', { friendly_name: 'Immich update', title: 'Immich', installed_version: 'v3.3.1', latest_version: 'v3.3.4' }),
+    entity('update.immich', 'on', { friendly_name: 'Immich update', title: 'Immich', entity_picture: 'https://brands.home-assistant.io/_/immich/icon.png', installed_version: 'v3.3.1', latest_version: 'v3.3.4' }),
     entity('sensor.auto_batterij', '62', { unit_of_measurement: '%' }),
     entity('switch.auto_laden', 'off', { friendly_name: 'Auto laden' }),
     entity('media_player.woonkamer', 'idle', { friendly_name: 'Woonkamer' }),

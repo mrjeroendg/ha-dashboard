@@ -177,6 +177,7 @@ A tap calls `<domain>.<service>` on the entity (default `turn_on`), and shows "D
 - **when:** the states that trigger it. Default: `open`/`opening` for a cover, `unlocked`/`open` for a lock, otherwise `on` (an `update.*` entity is `on` when there's a new version).
 - **after:** only show once the state has lasted this many minutes. The second line shows "Al 25 min · 22:04".
 - A banner has no buttons: it only tells you something needs attention.
+- **icon:** without one, the entity's own picture is used if it has one (`entity_picture`, e.g. the app logo on an `update.*` entity), otherwise an icon that fits the entity. If the picture doesn't load, you get the icon.
 - `entity` accepts `*` wildcards. Entities in `src/config/ignore.ts` are skipped.
 
 ## Sonos mini player

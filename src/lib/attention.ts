@@ -8,7 +8,10 @@ export interface Warning {
   key: string;
   entityId: string;
   level: AttentionLevel;
+  /** Fallback when there's no picture, or it fails to load. */
   icon: IconName;
+  /** The entity's own picture (entity_picture), used when the rule sets no icon. */
+  picture?: string;
   title: string;
   detail: string;
   /** When the state started (ms), for sorting newest first. */
@@ -76,6 +79,7 @@ function warningFor(rule: AttentionRule, entity: HassEntity, now: number): Warni
     entityId: entity.entity_id,
     level: rule.level,
     icon: rule.icon ?? defaultIcon(entity),
+    picture: !rule.icon && a.entity_picture ? String(a.entity_picture) : undefined,
     title: rule.title ?? (isUpdate ? `Update voor ${name}` : name),
     detail: isUpdate
       ? `${a.installed_version ?? '?'} → ${a.latest_version ?? '?'}`

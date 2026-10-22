@@ -11,7 +11,10 @@ import type { IconName } from '../components/Icon';
  * - when: states that trigger it. Default: 'open'/'opening' for a cover,
  *         'unlocked'/'open' for a lock, otherwise 'on'.
  * - after: only show once the state has lasted this many minutes.
- * - title / icon: defaults come from the entity (updates: "Update voor Immich").
+ * - title: defaults to the entity's name (updates: "Update voor Immich").
+ * - icon: without one, the entity's own picture (entity_picture, e.g. the
+ *         Immich logo on its update) is used if it has one, else an icon
+ *         that fits the entity.
  *
  * Entities in src/config/ignore.ts are skipped.
  */

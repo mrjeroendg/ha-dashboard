@@ -15,7 +15,7 @@ Source: [`mockup.html`](./mockup.html). As built (dev mode, mock data):
 ## Design
 
 - **All closed:** a 6px **green** dot (`#199e70`) and "Alles gesloten" in muted 13px text.
-- **Something open:** a 6px **orange** (accent) dot and the names of what's open, comma-separated, in regular text colour: "Achterdeur, garagepoort". No "open" after the names; the dot says it.
+- **Something open:** a 6px **red** dot (`#e5534b`, the red of a "middel" warning; *changed during the build from orange at the owner's request*) and the names of what's open, comma-separated, in regular text colour: "Achterdeur, garagepoort". No "open" after the names; the dot says it.
 - Names come from `name` in the config, otherwise the entity's `friendly_name`. Only the first name keeps its capital.
 - **Open** means `on`, `open`, `opening` or `unlocked` (the same as the status line on Thuis, plus unlocked locks).
 - Missing or unavailable entities are left out. With none left, there is no line.

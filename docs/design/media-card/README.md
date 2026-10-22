@@ -120,7 +120,7 @@ Source: [`expanded-player.html`](./expanded-player.html) (a static mockup; open 
 
 > ✅ **Approved (option A) and built** (`CAST_APPS` in `src/config/media.ts`, `CastPage.tsx`). Don't change proportions or behaviour without asking first.
 >
-> *Decisions during the build:* the link is opened with `window.open(url)`, the same way HA's own `url` tap action does it. Colours go by position (red, teal, gold), like the stream buttons. Netflix (`nflx://`) is the first app.
+> *Decisions during the build:* the link is opened with `window.open(url)`, the same way HA's own `url` tap action does it. Each app has its house colour (`color`), from which the colour circle is built (Netflix `#e50914`, VTM GO `#ee7f01`, VRT MAX dark `#1f1f1f`); without one they go by position (red, teal, gold). Netflix (`nflx://`) is the first app.
 
 ![App buttons](./cast-apps.png)
 

@@ -32,7 +32,7 @@ export const ATTENTION: AttentionRule[] = [
   },
   {
     entity: 'update.irpi_admin_version',
-    level: 'media',
+    level: 'low',
     title: 'Immich update'
   },
   {

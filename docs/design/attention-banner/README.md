@@ -68,7 +68,8 @@ Warnings are defined in `src/config/attention.ts`, like the rooms and shortcuts.
 - **Updates:** an `update` entity with state `on`. The second line is `installed_version → latest_version`.
 - **Shown immediately:** a warning appears as soon as the state matches. The second line shows how long it has lasted (from `last_changed`), plus the time it started. *Decision during the build:* an `after` delay (only show after N minutes) was built and dropped as too complex.
 - **`when`:** the states that trigger it. Default: `open`/`opening` for a cover, `unlocked`/`open` for a lock, otherwise `on`.
-- **`when` as a function** (*decision during the build*): instead of a list of states, a function `(entity) => boolean`, e.g. `(e) => Number(e.state) <= 20` for a low battery. Chosen over specific options like `below`, so new conditions need no new properties.
+- **`when` as a function** (*decision during the build*): instead of a list of states, a function `(entity, states) => boolean` (all states, to look at other entities, e.g. skip a low battery while its `…_battery_state` is `Charging`), e.g. `(e) => Number(e.state) <= 20` for a low battery. Chosen over specific options like `below`, so new conditions need no new properties.
+- **`detail` as a function** (*decision during the build*): an optional `(entity) => string` for the second line, e.g. a battery's percentage ("15%") instead of "Sinds 14:02".
 - **Exact entity IDs only**, one rule per entity. *Decision during the build:* `*` wildcards (e.g. `update.*`) were built and dropped; the owner wants every warning listed explicitly.
 
 ## Not chosen

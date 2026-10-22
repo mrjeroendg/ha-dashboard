@@ -45,9 +45,9 @@ function defaultIcon(entity: HassEntity): IconName {
 
 const clock = (ms: number) => new Date(ms).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' });
 
-function warningFor(rule: AttentionRule, entity: HassEntity): Warning | undefined {
+function warningFor(rule: AttentionRule, entity: HassEntity, states: HassEntities): Warning | undefined {
   const when = rule.when ?? triggerStates(entity);
-  const active = typeof when === 'function' ? when(entity) : when.includes(entity.state);
+  const active = typeof when === 'function' ? when(entity, states) : when.includes(entity.state);
   if (!active) return undefined;
 
   const since = Date.parse(entity.last_changed);
@@ -62,9 +62,11 @@ function warningFor(rule: AttentionRule, entity: HassEntity): Warning | undefine
     level: rule.level,
     icon: rule.icon ?? defaultIcon(entity),
     title: rule.title ?? (isUpdate ? `Update voor ${name}` : name),
-    detail: isUpdate
-      ? `${a.installed_version ?? '?'} → ${a.latest_version ?? '?'}`
-      : `Sinds ${clock(since)}`,
+    detail: rule.detail
+      ? rule.detail(entity, states)
+      : isUpdate
+        ? `${a.installed_version ?? '?'} → ${a.latest_version ?? '?'}`
+        : `Sinds ${clock(since)}`,
     since,
   };
 }
@@ -72,7 +74,7 @@ function warningFor(rule: AttentionRule, entity: HassEntity): Warning | undefine
 /** Every active warning: highest level first, newest first within a level. */
 export function activeWarnings(states: HassEntities, rules: AttentionRule[]): Warning[] {
   return rules
-    .map((rule) => states[rule.entity] && warningFor(rule, states[rule.entity]))
+    .map((rule) => states[rule.entity] && warningFor(rule, states[rule.entity], states))
     .filter((w): w is Warning => Boolean(w))
     .sort((a, b) => ORDER[a.level] - ORDER[b.level] || b.since - a.since);
 }

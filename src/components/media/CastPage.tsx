@@ -62,7 +62,8 @@ export function CastPage({ hass, player, onOpen }: Props) {
               </>
             ) : (
               <>
-                <span className="mini-player__title">{name}</span>
+                {/* Fixed, like "Muziek op Sonos" on the Sonos page. */}
+                <span className="mini-player__title">TV op Chromecast</span>
                 <span className="mini-player__subtitle">
                   {apps.length ? 'Kies een app om te openen' : 'Niets aan het casten'}
                 </span>

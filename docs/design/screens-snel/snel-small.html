@@ -1,0 +1,81 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Screen control</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(2,390px);gap:28px}
+.cap{font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px}
+.panel{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.18);
+background:var(--bg);color:var(--text);border-radius:28px;padding:22px 24px 22px}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:32px}
+.tabs{display:flex;gap:6px;margin-top:18px}
+.tab{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted);background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.tab.on{background:var(--soft);color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent)}
+.group{margin-top:16px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.item+.item{box-shadow:inset 0 1px 0 var(--border)}
+.row{display:flex;align-items:center;gap:14px;padding:14px 16px}
+.ic{width:36px;height:36px;border-radius:12px;background:var(--bg);color:var(--accent);display:grid;place-items:center;flex:none}
+svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.t{flex:1;min-width:0}.t b{display:block;font-size:16px;font-weight:500}.t span{font-size:13px;color:var(--muted)}
+/* round buttons */
+.btns{display:flex;gap:6px}
+.rb{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--accent);flex:none}
+.rb svg{width:18px;height:18px}
+.rb.stop{background:var(--accent);color:#fff}
+/* B: segmented strip */
+.item .row{padding-bottom:10px}
+.strip{display:flex;gap:4px;margin:0 16px 14px 66px;padding:4px;border-radius:14px;background:var(--bg)}
+.strip div{flex:1;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--muted)}
+.strip div svg{width:18px;height:18px}
+.strip div.my{color:var(--accent)}
+.strip div.press{background:var(--soft);color:var(--accent)}
+/* all row */
+.all .ic{background:var(--soft)}
+.note{font-size:12px;color:var(--muted);margin:12px 4px 0}
+
+.allrow .ic{background:var(--soft)}
+.strip.text div{font-size:14px;font-weight:600;gap:8px;display:flex;align-items:center;justify-content:center;color:var(--text)}
+.strip.text div svg{color:var(--accent)}
+.qa{display:flex;gap:8px;margin-top:16px}
+.qa div{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:42px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);font-size:14px;font-weight:600}
+.qa div svg{width:18px;height:18px;color:var(--accent)}
+.qa+.group{margin-top:10px}
+.qc{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.qc div{padding:14px;border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);display:flex;align-items:center;gap:12px;font-size:15px;font-weight:600}
+.qc .ic{width:34px;height:34px;border-radius:11px}
+.qc+.group{margin-top:10px}
+
+/* small variant of the Snel quick-card: same surface, radius and icon tile, laid out in one line */
+.qs{display:grid;grid-template-columns:repeat(var(--n,2),1fr);gap:10px;margin-top:16px}
+.qs .card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:18px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);font-size:15px;font-weight:600;min-width:0}
+.qs .card span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qs .ic{width:32px;height:32px;border-radius:10px}
+.qs .ic svg{width:18px;height:18px}
+.qs .card.pressed{background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.qs .card.pressed .ic{background:var(--accent);color:#fff}
+.qs+.group{margin-top:10px}
+/* the big one, for comparison */
+.big{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.big div{display:flex;flex-direction:column;justify-content:space-between;gap:18px;min-height:112px;padding:16px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);font-size:15px;font-weight:600;box-sizing:border-box}
+.sec{margin:26px 4px 12px;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+</style></head><body></body>
+<script>
+const P={blinds:'<path d="M4 4h16M5 4v13M19 4v13M5 8h14M5 12h14M5 16h14M12 16v4"/>',up:'<path d="M12 19V5M6 11l6-6 6 6"/>',down:'<path d="M12 5v14M6 13l6 6 6-6"/>',stop:'<rect x="7" y="7" width="10" height="10" rx="1.5" fill="currentColor" stroke="none"/>',star:'<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/>',stack:'<path d="M4 7h16M4 12h16M4 17h16"/>'};
+const i=n=>`<svg viewBox="0 0 24 24">${P[n]}</svg>`;
+const head=`<p class="lbl">Kamer</p><h1>Living</h1><div class="tabs"><span class="tab">Verlichting</span><span class="tab on">Screens</span><span class="tab">Klimaat</span></div>`;
+const screen=(n,{my=true,press=-1}={})=>{
+  const acts=[['up','Omhoog'],...(my?[['star','Mijn positie']]:[]),['stop','Stop'],['down','Omlaag']];
+  return `<div class="item"><div class="row"><div class="ic">${i('blinds')}</div><div class="t"><b>${n}</b></div></div>
+  <div class="strip">${acts.map(([a],k)=>`<div class="${a==='star'?'my':''} ${k===press?'press':''}">${i(a)}</div>`).join('')}</div></div>`;
+};
+P.bulb='<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>';
+P.power='<path d="M12 3v9M6.3 7.5a8 8 0 1 0 11.4 0"/>';P.sofa='<path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3M2 13a2 2 0 0 1 4 0v2h12v-2a2 2 0 0 1 4 0v5H2z"/>';
+P.moon='<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>';
+const list=`${screen('Screen side facade')}${screen('Screen linksvoor')}`;
+const card=(ic,l,c='')=>`<div class="card ${c}"><span class="ic">${i(ic)}</span><span>${l}</span></div>`;
+const A=`<div class="qs">${card('up','Alles open')}${card('down','Alles dicht')}</div><div class="group">${list}</div>`;
+const B=`<div class="qs" style="--n:3">${card('up','Open')}${card('star','Mijn','pressed')}${card('down','Dicht')}</div><div class="group">${list}</div>`;
+const tabs2=`<p class="lbl">Kamer</p><h1>Living</h1><div class="tabs"><span class="tab on">Verlichting</span><span class="tab">Screens</span><span class="tab">Klimaat</span></div>`;
+const C=`<p class="sec">Snel · groot (nu, op Thuis)</p><div class="big"><div><span class="ic">${i('sofa')}</span>Garagedeur</div><div><span class="ic">${i('moon')}</span>Centris</div></div>
+<p class="sec">Klein (nieuw)</p><div class="qs" style="margin-top:0">${card('sofa','Garagedeur')}${card('moon','Centris')}</div>`;
+const D=`<div class="qs" style="--n:1">${card('power','Alles uit')}</div><div class="group"><div class="item row"><div class="ic">${i('bulb')}</div><div class="t"><b>Staanlamp</b><span>Aan</span></div></div><div class="item row"><div class="ic">${i('bulb')}</div><div class="t"><b>Hue Play Bars</b><span>Uit</span></div></div></div>`;
+const V=[['Klein · twee acties','Screens: Alles open / Alles dicht',A,head],['Klein · drie acties','Korte labels; middelste net getikt',B,head],['Groot vs. klein','Zelfde kaart, één regel in plaats van twee',C,''],['Klein · één actie','Werkt in elke tab, bv. "Alles uit"',D,tabs2]];
+document.body.innerHTML=V.map(([t,s,h,hd])=>`<div><p class="cap">${t}<small>${s}</small></p><div class="panel">${hd}${h}</div></div>`).join('');
+</script></html>

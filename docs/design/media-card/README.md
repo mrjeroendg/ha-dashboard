@@ -148,6 +148,7 @@ Source: [`cast-apps.html`](./cast-apps.html). The approved screens are **"A · I
 - **Idle pages in the expanded player:** the same layout as an active page, with the dimmed colour fade, "Niets aan het casten" / "Niets aan het spelen", an empty progress bar and a disabled play button. Volume still works.
 - **No image → colour fade** everywhere. For Sonos it's a faded square on a blurred fade, the same build as a real cover.
 - **Previous/next and ±10/30 s** are enabled only when `supported_features` allows them *and* there's a duration. You can't skip in a live stream, even if the player claims it can. If seeking isn't supported at all, ±10/30 s are hidden but keep their space.
+- **Sonos uses the same image as the Chromecast:** instead of the radio icon tile (54px), the Sonos page shows the same 96×54 colour fade as the idle Chromecast page (dimmed while idle), so both pages line up. Album art, when there is any, sits square in the middle of that fade.
 - **Closing returns to the same page:** the mini player shows the device that was last in view in the expanded player.
 
 ## Open questions

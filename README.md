@@ -202,7 +202,26 @@ The bottom navigation shows **Thuis** plus the rooms in `src/config/rooms.ts`, i
 - **Lock:** shows "Op slot", or a button to lock it. Unlocking from the dashboard is intentionally not possible.
 - **Everything else** (sensor, binary_sensor, …): read-only. A room with only sensors is fine.
 
-Entities that don't exist in HA are skipped, and a room with none left is hidden. Use `{ entity, name }` for a shorter row name.
+Entities that don't exist in HA are skipped, and a room with none left is hidden.
+
+### Sections (tabs)
+
+Instead of `entities`, a room can have `sections`. Each section becomes a tab under the room name:
+
+```ts
+{
+  id: 'living', name: 'Living', icon: 'sofa',
+  sections: [
+    { title: 'Verlichting', entities: ['switch.0x94a081fffe4fce2f', 'light.huecupboard'] },
+    { title: 'Klimaat', entities: ['climate.airco_living', 'sensor.living_vochtigheid'] },
+  ],
+},
+```
+
+- Only the active tab's rows are shown. A room always opens on its first tab.
+- A small orange dot on a tab means something in it is on (a light, a switch, an open cover, music playing…).
+- Under the tabs, one line sums up the open tab: "1 van 2 aan" / "Alles uit" for lights and switches, "1 open" / "Alles dicht" for covers, windows and doors, plus the temperature and humidity ("19,5° · 64% vochtigheid") and "Speelt" for media.
+- A section whose entities don't exist is hidden. With only one section left, there are no tabs. Use `{ entity, name }` for a shorter row name.
 
 ## Status line logic
 

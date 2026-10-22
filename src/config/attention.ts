@@ -28,10 +28,16 @@ export interface AttentionRule {
 
 export const ATTENTION: AttentionRule[] = [
   {
+    entity: 'sensor.garage_door_state_classification',
+    level: 'high',
+    when: ['open'],
+    after: 15,
+    title: 'Immich update beschikbaar'
+  },
+  {
     entity: 'update.irpi_admin_version',
     level: 'low',
     after: 15,
-    title: 'Immich update beschikbaar',
-    icon: 'garage'
+    title: 'Immich update beschikbaar'
   }
 ];

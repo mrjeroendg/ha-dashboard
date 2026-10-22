@@ -22,10 +22,9 @@ export interface Shortcut {
 }
 
 export const SHORTCUTS: Shortcut[] = [
-  { label: 'Pré slaapje', icon: 'sofa', entity: 'scene.pre_sleep' },
+  { label: 'Pré slaapje', icon: 'baby', entity: 'scene.pre_sleep' },
   { label: 'Garagedeur', icon: 'sofa', entity: 'script.garage_door_toggle' },
   // { label: 'Staanlamp', icon: 'bulb', entity: 'switch.0x94a081fffe4fce2f', service: 'toggle' },
   { label: 'Centris', icon: 'moon', entity: 'light.centris', service: 'toggle' },
-  { label: 'Sfeer', icon: 'sofa', entity: 'scene.living_mood_lighting' },
-  { label: 'Pré slaapje', icon: 'baby', entity: 'scene.pre_sleep' },
+  { label: 'Sfeer', icon: 'sofa', entity: 'scene.living_mood_lighting' }
 ];

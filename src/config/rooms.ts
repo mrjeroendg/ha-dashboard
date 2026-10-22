@@ -81,5 +81,14 @@ export const ROOMS: RoomConfig[] = [
         ],
       }
     ],
+  },
+  {
+    id: 'bureau',
+    name: "Bureau",
+    icon: 'monitor',
+    entities: [
+      { entity: 'light.ceiling_light', name: 'Verlichting' },  
+      { entity: 'cover.rts_16765494', name: 'Rolluik', myPosition: 'button.rts_16765494_my_position' }
+    ],
   }
 ];

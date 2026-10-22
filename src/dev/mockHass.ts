@@ -73,7 +73,7 @@ function baseStates(): HassEntities {
     entity('scene.weekendochtend', 'scening'),
     entity('scene.gezellige_avond', 'scening'),
     entity('scene.film', 'scening'),
-    ...STREAM_SCRIPTS.map((id, i) => entity(id, 'off', { friendly_name: STREAM_NAMES[i % STREAM_NAMES.length] })),
+    ...STREAM_SCRIPTS.map(({ script }, i) => entity(script, 'off', { friendly_name: STREAM_NAMES[i % STREAM_NAMES.length] })),
     entity('script.slaapwel', 'off'),
     entity('script.vertrekken', 'off'),
     entity('script.sproeier', 'off'),
@@ -151,7 +151,7 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     { media_channel: 'Klara', media_artist: 'Bach', media_title: 'Goldbergvariaties' },
   ];
   const STREAMS: Record<string, Attrs> = Object.fromEntries(
-    STREAM_SCRIPTS.map((id, i) => [id, NOW_ON[i % NOW_ON.length]]),
+    STREAM_SCRIPTS.map(({ script }, i) => [script, NOW_ON[i % NOW_ON.length]]),
   );
   const startStream = (id: string) =>
     setTimeout(() => {

@@ -1,3 +1,5 @@
+import type { DotColor } from '../lib/dots';
+
 /**
  * Mini media player on Thuis.
  *
@@ -7,6 +9,7 @@
  * - STREAM_SCRIPTS: HA scripts that send a stream URL to the Sonos. All the
  *   logic stays in HA; the dashboard only starts them. The button label is the
  *   script's name in HA (friendly_name). Scripts that don't exist are hidden.
+ *   `color` works like for CAST_APPS (the station's colours, from its player).
  * - CAST_APPS: buttons on the Chromecast page while nothing is casting (up to
  *   3). A tap opens the app on the iPhone through its URL scheme; from there
  *   you cast to the TV yourself. `color` is the app's house colour, or a list
@@ -17,10 +20,21 @@ export const SONOS = 'media_player.living_room';
 
 export const CHROMECAST = 'media_player.living_living';
 
-export const STREAM_SCRIPTS: string[] = [
-  'script.speel_radio1_op_chromecast',
-  'script.speel_studiobrussel_op_chromecast',
-  'script.play_radio_1_on_sonos_duplicate'
+/** Colours from the VRT players, with the coral of their play button. */
+const RADIO_1: DotColor = ['#ff4942', '#0068d8', '#002a66'];
+const STUBRU: DotColor = ['#ff4942', '#7e31aa', '#331a5c'];
+/** Ready for a Klara script: { script: 'script.…', color: KLARA }. */
+export const KLARA: DotColor = ['#ff4942', '#c0b06c', '#434540'];
+
+export interface StreamScript {
+  script: string;
+  color?: DotColor;
+}
+
+export const STREAM_SCRIPTS: StreamScript[] = [
+  { script: 'script.speel_radio1_op_chromecast', color: RADIO_1 },
+  { script: 'script.speel_studiobrussel_op_chromecast', color: STUBRU },
+  { script: 'script.play_radio_1_on_sonos_duplicate', color: RADIO_1 },
 ];
 
 /**
@@ -38,7 +52,7 @@ export interface CastApp {
   /** The app's URL scheme, e.g. 'nflx://' for Netflix. */
   url: string;
   /** House colour as hex ('#e50914'), or several for a gradient. */
-  color?: string | string[];
+  color?: DotColor;
 }
 
 export const CAST_APPS: CastApp[] = [

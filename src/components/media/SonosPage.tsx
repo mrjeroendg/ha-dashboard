@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { HassEntity } from 'home-assistant-js-websocket';
 import { SONOS, STREAM_SCRIPTS } from '../../config/media';
+import { dotFor } from '../../lib/dots';
 import { hasMedia, imageUrl, nowPlaying, streamButtons } from '../../lib/media';
 import type { HomeAssistant } from '../../types/hass';
 import { Icon } from '../Icon';
@@ -9,7 +10,7 @@ import { Icon } from '../Icon';
 const START_TIMEOUT = 10_000;
 const ERROR_VISIBLE = 3_000;
 
-/** Decorative "logo" dots for the stream buttons, by position. */
+/** Fallback colour circles for streams without a colour, by position. */
 const DOTS = [
   'radial-gradient(circle at 35% 30%, #f4d7a1, transparent 55%), linear-gradient(160deg, #e28a5c, #7a3b4b)',
   'radial-gradient(circle at 50% 40%, #f1e3c6, transparent 55%), linear-gradient(135deg, #b9a07a, #5d5246)',
@@ -93,7 +94,7 @@ export function SonosPage({ hass, onOpen }: Props) {
                   <span className="spinner" />
                 </span>
               ) : (
-                <span className="stream-pill__logo" style={{ background: DOTS[i % DOTS.length] }} aria-hidden />
+                <span className="stream-pill__logo" style={{ background: b.color ? dotFor(b.color) : DOTS[i % DOTS.length] }} aria-hidden />
               )}
               <span className="stream-pill__label">{b.label}</span>
             </button>

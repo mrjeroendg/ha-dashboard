@@ -182,7 +182,7 @@ A tap calls `<domain>.<service>` on the entity (default `turn_on`), and shows "D
 
 On Thuis, docked above the room navigation (built from the approved design in `docs/design/media-card/`):
 
-- Set your Sonos entity in `SONOS` in `src/config/media.ts`, and list your stream scripts in `STREAM_SCRIPTS`. Each button is labelled with the script's name in HA, and scripts that don't exist are hidden.
+- Set your Sonos entity in `SONOS` in `src/config/media.ts`, and list your stream scripts in `STREAM_SCRIPTS`, e.g. `{ script: 'script.speel_radio1', color: RADIO_1 }`. `color` is the station's colours (one hex or a list for a gradient); without it, the circles go by position. Each button is labelled with the script's name in HA, and scripts that don't exist are hidden.
 - **Station names:** a bare stream URL (e.g. `http://icecast.vrtcdn.be/radio1-high.mp3`) gives the Sonos no station name. List it in `STREAM_NAMES` in `src/config/media.ts` (`URL: 'Radio 1'`) and the card shows that name instead of "Sonos". The URL must match `media_content_id` exactly.
 - **Nothing playing:** "Muziek op Sonos" plus the stream buttons. **Playing or paused:** cover, station or title, current track, and a play/pause button.
 - **Tapping a stream button** runs `script.turn_on`. The button shows a spinner until the Sonos plays something new, and "Dat lukte niet" if that doesn't happen within 10 s.

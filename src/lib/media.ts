@@ -1,16 +1,22 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
-import { STREAM_NAMES } from '../config/media';
+import { STREAM_NAMES, type StreamScript } from '../config/media';
+import type { DotColor } from './dots';
 
 export interface StreamButton {
   script: string;
   label: string;
+  color?: DotColor;
 }
 
 /** Configured stream scripts that exist in HA, labelled with their HA name. */
-export function streamButtons(scripts: string[], states: HassEntities): StreamButton[] {
+export function streamButtons(scripts: StreamScript[], states: HassEntities): StreamButton[] {
   return scripts
-    .filter((id) => id in states)
-    .map((id) => ({ script: id, label: String(states[id].attributes.friendly_name ?? id.split('.')[1]) }));
+    .filter(({ script }) => script in states)
+    .map(({ script, color }) => ({
+      script,
+      label: String(states[script].attributes.friendly_name ?? script.split('.')[1]),
+      color,
+    }));
 }
 
 /** "Playing" includes paused: there is something loaded you can resume. */

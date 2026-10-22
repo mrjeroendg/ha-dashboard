@@ -11,8 +11,14 @@
  * Leave a list empty (or the temperature out) to hide that part.
  */
 export const STATUS = {
-  people: [] as string[],
-  lights: ['switch.0x94a081fffe4fce2f', 'light.huecupboard', 'light.centris'],
-  openings: ['sensor.garage_door_state_classification'],
+  people: ['person.jeroen', 'person.eline'] as string[],
+  lights: ['light.huecupboard', 'light.centris'],
+  openings: [
+    'binary_sensor.0x0017880110044edb_contact', // back door
+    'binary_sensor.0x001788011004451e_contact', // front door
+    'binary_sensor.0x001788011004452e_contact', // sliding window living
+    'binary_sensor.0x00178801100445ff_contact', // sliding window kitchen,
+    'sensor.garage_door_state_classification'
+  ],
   temperature: undefined as string | undefined,
 };

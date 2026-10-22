@@ -1,8 +1,6 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
 import type { AttentionLevel, AttentionRule } from '../config/attention';
-import { isIgnored } from '../config/ignore';
-import { wildcard } from './wildcard';
 
 export interface Warning {
   key: string;
@@ -85,15 +83,8 @@ function warningFor(rule: AttentionRule, entity: HassEntity, now: number): Warni
 
 /** Every active warning: highest level first, newest first within a level. */
 export function activeWarnings(states: HassEntities, rules: AttentionRule[], now: number): Warning[] {
-  const found = new Map<string, Warning>();
-  for (const rule of rules) {
-    const re = wildcard(rule.entity);
-    for (const entity of Object.values(states)) {
-      // The first rule that matches an entity wins.
-      if (found.has(entity.entity_id) || !re.test(entity.entity_id) || isIgnored(entity.entity_id)) continue;
-      const warning = warningFor(rule, entity, now);
-      if (warning) found.set(entity.entity_id, warning);
-    }
-  }
-  return [...found.values()].sort((a, b) => ORDER[a.level] - ORDER[b.level] || b.since - a.since);
+  return rules
+    .map((rule) => states[rule.entity] && warningFor(rule, states[rule.entity], now))
+    .filter((w): w is Warning => Boolean(w))
+    .sort((a, b) => ORDER[a.level] - ORDER[b.level] || b.since - a.since);
 }

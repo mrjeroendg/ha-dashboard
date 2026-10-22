@@ -170,14 +170,14 @@ A tap calls `<domain>.<service>` on the entity (default `turn_on`), and shows "D
 
 ```ts
 { entity: 'cover.garagepoort', level: 'high', title: 'Garagepoort staat open', icon: 'garage' },
-{ entity: 'update.*', level: 'low' },
+{ entity: 'update.immich', level: 'low' },
 ```
 
 - **level:** `high` (dark red: safety or damage), `medium` (red: needs attention today), `low` (orange: maintenance, such as updates). The highest level is at the top; within a level the newest is first.
-- **when:** the states that trigger it. Default: `open`/`opening` for a cover, `unlocked`/`open` for a lock, otherwise `on` (an `update.*` entity is `on` when there's a new version).
+- **when:** the states that trigger it. Default: `open`/`opening` for a cover, `unlocked`/`open` for a lock, otherwise `on` (an `update` entity is `on` when there's a new version).
 - A warning shows as soon as the state matches. For a state, the second line shows how long it has lasted: "Al 25 min · 22:04".
 - A banner has no buttons: it only tells you something needs attention.
-- `entity` accepts `*` wildcards. Entities in `src/config/ignore.ts` are skipped.
+- `entity` is always an exact entity ID, one rule per entity.
 
 ## Sonos mini player
 
@@ -206,7 +206,7 @@ Entities that don't exist in HA are skipped, and a room with none left is hidden
 
 ## Status line logic
 
-Entities in `src/config/ignore.ts` are skipped in all of these. Use exact IDs or `*` wildcards.
+Entities in `src/config/ignore.ts` are skipped in all of these. Use exact IDs.
 
 
 `src/lib/houseStatus.ts` builds the status line from these parts:

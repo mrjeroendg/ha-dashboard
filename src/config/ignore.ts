@@ -1,5 +1,3 @@
-import { wildcard } from '../lib/wildcard';
-
 /**
  * Entities the dashboard should never count or show automatically, e.g. the
  * LED ring of a UniFi access point that HA exposes as a light.
@@ -9,14 +7,12 @@ import { wildcard } from '../lib/wildcard';
  * quick action. Rooms and other quick actions only use entities you list
  * yourself, so they don't need this.
  *
- * Use exact entity IDs, or `*` as a wildcard: 'light.u7_pro_wall_*'.
+ * Use exact entity IDs.
  */
 export const IGNORED_ENTITIES: string[] = [
   'light.u7_pro_wall_led',
 ];
 
-const patterns = IGNORED_ENTITIES.map(wildcard);
-
 export function isIgnored(entityId: string): boolean {
-  return patterns.some((re) => re.test(entityId));
+  return IGNORED_ENTITIES.includes(entityId);
 }

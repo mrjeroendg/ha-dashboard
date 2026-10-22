@@ -11,6 +11,7 @@ import type { IconName } from '../components/Icon';
  *
  * Icons: sun coffee blinds leave thermometer car sofa tv moon lock power
  * window music sprout home bulb plug door monitor droplet gauge play radio
+ * alert update garage up down stop star baby
  */
 export interface Shortcut {
   label: string;
@@ -25,4 +26,5 @@ export const SHORTCUTS: Shortcut[] = [
   { label: 'Staanlamp', icon: 'bulb', entity: 'switch.0x94a081fffe4fce2f', service: 'toggle' },
   { label: 'Centris', icon: 'moon', entity: 'light.centris', service: 'toggle' },
   { label: 'Sfeer', icon: 'sofa', entity: 'scene.living_mood_lighting' },
+  { label: 'Pré slaapje', icon: 'baby', entity: 'scene.pre_sleep' },
 ];

@@ -4,14 +4,59 @@ Three cameras on **Thuis**: Garage, Achterdeur and Zijpad. Dark mode only. Build
 
 | Part | Status |
 |---|---|
-| Layout, tiles, live sheet, actions, events, placeholder | ✅ **Approved: final.** Build exactly as designed. |
-| Streaming technique (how live video is delivered) | 🗣️ **Open, to be discussed later.** See [Streaming](#streaming--open). |
+| Layout, tiles, live sheet, actions, events, placeholder | ✅ **Approved: final. Built** (branch `claude/cameras`), not yet tested against the real cameras. |
+| Streaming technique (how live video is delivered) | 🛠️ **Built with HA's own streams** (see [As built](#as-built)). Still open for the go2rtc discussion. |
 
 > ✅ **The design is final.** The owner approved it. Don't change layout, proportions or content without asking first.
 
 ![Cameras](./cameras.png)
 
 Source: [`cameras.html`](./cameras.html) (a static mockup; open it in a browser, not part of the build).
+
+---
+
+## As built
+
+As built (dev mode, mock data). Thuis, then the sheet on Garage, Achterdeur and Zijpad:
+
+![Thuis](./built-thuis.png)
+
+![Sheet](./built-sheet.png)
+
+### Config
+
+`src/config/cameras.ts`, in display order (the first camera is the large tile). Cameras missing in HA are left out; with none left, there is no section.
+
+```ts
+{
+  entity: 'camera.garage',
+  name: 'Garage',
+  frigate: 'garage',
+  actions: [{ label: 'Garagepoort', icon: 'garage', script: 'script.garagepoort' }],
+},
+```
+
+- `entity`: the HA camera entity. **The IDs in the config are placeholders** (`camera.garage`, `camera.achterdeur`, `camera.zijpad`) until the real ones are known.
+- `frigate`: the camera's name in Frigate. With it, "Vandaag" shows Frigate's events; without it, the placeholder.
+- `actions`: empty for now. A `script.` is started, an `automation.` is triggered.
+
+### Streaming
+
+Everything goes through Home Assistant, so it works wherever `hass` works (also away from home, with HA's auth):
+
+1. **Tiles:** the camera's `entity_picture`, refreshed every 10 s while Thuis is visible (paused while the sheet is open). The time is when the image loaded.
+2. **Live, where the browser plays HLS itself** (iPhone/iPad Companion app, Safari): HA's HLS stream (`camera/stream`) in a native `<video>`, muted, inline. Needs HA's `stream` integration (on by default).
+3. **Otherwise, or if HLS fails:** HA's MJPEG stream (`/api/camera_proxy_stream`) in an `<img>`. No extra library needed.
+4. **If that fails too:** the still image.
+
+Only the camera in view streams; the others show their still. The time pill on the live image is the current time, ticking every second.
+
+### Frigate events
+
+Via the Frigate integration's websocket command `frigate/events/get` (instance `frigate`, today since midnight, newest first, max 50). Thumbnails come from `/api/frigate/frigate/thumbnail/<id>`, signed with `auth/sign_path` so an `<img>` can load them. Labels in Dutch: Persoon, Auto, Fiets, Motor, Hond, Kat, Vogel, Pakje; anything else as Frigate names it.
+
+- **Quiet day** (Frigate, but nothing yet today): the placeholder with *"Nog niets gebeurd vandaag."* (the suggestion below).
+- **Frigate not reachable:** the placeholder with *"Frigate is niet bereikbaar."*
 
 ---
 

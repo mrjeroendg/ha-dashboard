@@ -21,6 +21,12 @@ const entity = (entity_id: string, state: string, attributes: Attrs = {}): HassE
   context: { id: 'mock', user_id: null, parent_id: null },
 });
 
+/** A fake camera image: a dark gradient, as a data URL. The trailing "#" keeps a cache-buster harmless. */
+const cameraImage = (a: string, b: string, glow: string) => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient><radialGradient id="r" cx=".35" cy=".75" r=".5"><stop offset="0" stop-color="${glow}" stop-opacity=".55"/><stop offset="1" stop-color="${glow}" stop-opacity="0"/></radialGradient></defs><rect width="640" height="360" fill="url(#g)"/><rect width="640" height="360" fill="url(#r)"/></svg>`;
+  return `data:image/svg+xml;base64,${btoa(svg)}#`;
+};
+
 const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000).toISOString();
 
 const DOWNSTAIRS = ['light.keuken', 'light.gang', 'light.woonkamer', 'light.eettafel'];
@@ -45,6 +51,9 @@ function baseStates(): HassEntities {
     entity('light.slaapkamer', 'off', { friendly_name: 'Slaapkamer', supported_color_modes: ['hs'], color_mode: 'hs', rgb_color: [255, 147, 41] }),
     entity('light.bureau', 'off', { friendly_name: 'Bureau', supported_color_modes: ['onoff'] }),
     entity('binary_sensor.raam_badkamer', 'off', { friendly_name: 'Raam badkamer', device_class: 'window' }),
+    entity('camera.garage', 'idle', { friendly_name: 'Garage', entity_picture: cameraImage('#3a3d40', '#1f2123', '#a09682') }),
+    entity('camera.achterdeur', 'idle', { friendly_name: 'Achterdeur', entity_picture: cameraImage('#2f3a33', '#1a201c', '#788c6e') }),
+    entity('camera.zijpad', 'idle', { friendly_name: 'Zijpad', entity_picture: cameraImage('#34322f', '#1c1b1a', '#8c8278') }),
     entity('sensor.woonkamer_temperatuur', '19.5', { unit_of_measurement: '°C', device_class: 'temperature' }),
     entity('sensor.slaapkamer_temperatuur', '18.2', { unit_of_measurement: '°C', device_class: 'temperature', friendly_name: 'Temperatuur' }),
     entity('sensor.badkamer_temperatuur', '20.1', { unit_of_measurement: '°C', device_class: 'temperature' }),
@@ -242,8 +251,22 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     emit();
   };
 
-  const callWS = async <T,>(msg: { type: string }) => {
+  // Today's Frigate events for the garage, as text like the integration sends them.
+  const frigateEvents = () => {
+    const midnight = new Date().setHours(0, 0, 0, 0);
+    const events = [
+      { id: 'e1', label: 'person', start_time: (Date.now() - 60_000) / 1000 },
+      { id: 'e2', label: 'car', start_time: (Date.now() - 131 * 60_000) / 1000 },
+      { id: 'e3', label: 'person', start_time: (Date.now() - 689 * 60_000) / 1000 },
+    ].filter((e) => e.start_time * 1000 > midnight);
+    return JSON.stringify(events);
+  };
+
+  const callWS = async <T,>(msg: { type: string; [key: string]: unknown }) => {
     console.info('[mock] callWS', msg);
+    if (msg.type === 'frigate/events/get') return frigateEvents() as T;
+    if (msg.type === 'auth/sign_path') return { path: cameraImage('#4a4d50', '#2a2c2e', '#c0b49a') } as T;
+    if (msg.type === 'camera/stream') throw new Error('No stream in mock mode');
     return undefined as T;
   };
 

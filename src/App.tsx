@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Attention } from './components/Attention';
 import { BottomNav } from './components/BottomNav';
+import { Cameras } from './components/cameras/Cameras';
 import { Header } from './components/Header';
 import { MiniPlayer } from './components/media/MiniPlayer';
 import { QuickActions } from './components/QuickActions';
@@ -59,6 +60,7 @@ export function App({ hass, config }: Props) {
               <Header hass={hass} config={config} />
               {hass && <Attention hass={hass} />}
               {hass && <QuickActions hass={hass} />}
+              {hass && <Cameras hass={hass} />}
             </>
           )}
         </div>

@@ -53,7 +53,12 @@ export const ATTENTION: AttentionRule[] = [
     level: 'low',
     title: 'iPad bijna leeg',
     icon: 'tablet',
-    when: (e, states) => Number(e.state) <= 20 && states['sensor.jeroens_ipad_battery_state']?.state !== 'Charging',
+    when: (e, states) => {
+      const batteryPercentage = Number(e.state);
+      const chargingState = states['sensor.jeroens_ipad_battery_state']?.state;
+
+      return batteryPercentage <= 20 && chargingState !== 'Charging';
+    },
     detail: (e) => `${e.state}%`,
   },
   {
@@ -61,7 +66,12 @@ export const ATTENTION: AttentionRule[] = [
     level: 'low',
     title: 'iPhone bijna leeg',
     icon: 'phone',
-    when: (e, states) => Number(e.state) <= 20 && states['sensor.iphone_16_pro_battery_state']?.state !== 'Charging',
+    when: (e, states) => {
+      const batteryPercentage = Number(e.state);
+      const chargingState = states['sensor.iphone_16_pro_battery_state']?.state;
+
+      return batteryPercentage <= 20 && chargingState !== 'Charging';
+    },
     detail: (e) => `${e.state}%`,
   },
 ];

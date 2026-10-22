@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef, useState, type PointerEvent } from 'react';
-import { CHROMECAST, SONOS } from '../../config/media';
+import { MEDIA } from '../../config/media';
 import { usePager } from '../../hooks/usePager';
 import type { HomeAssistant } from '../../types/hass';
 import { CastExpanded } from './CastExpanded';
@@ -73,10 +73,10 @@ export function ExpandedPlayer({ hass, initialPage, onPageChange, onClose }: Pro
 
       <div className="media-card__pages" ref={pager.ref} onScroll={pager.onScroll}>
         <div className="media-card__page">
-          <CastExpanded hass={hass} player={hass.states[CHROMECAST]} />
+          <CastExpanded hass={hass} player={hass.states[MEDIA.chromecast.entity]} />
         </div>
         <div className="media-card__page">
-          <SonosExpanded hass={hass} player={hass.states[SONOS]} />
+          <SonosExpanded hass={hass} player={hass.states[MEDIA.sonos.entity]} />
         </div>
       </div>
     </div>

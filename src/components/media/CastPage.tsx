@@ -1,5 +1,5 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
-import { CAST_APPS } from '../../config/media';
+import { MEDIA } from '../../config/media';
 import { useMediaPlayer } from '../../hooks/useMediaPlayer';
 import { dotFor } from '../../lib/dots';
 import { haptic } from '../../lib/haptic';
@@ -30,7 +30,7 @@ export function CastPage({ hass, player, onOpen }: Props) {
   const name = String(player.attributes.friendly_name ?? 'Chromecast');
   const src = casting ? media.image : undefined;
   // App buttons only while nothing is casting (docs/design/media-card).
-  const apps = casting ? [] : CAST_APPS.slice(0, 3);
+  const apps = casting ? [] : MEDIA.chromecast.apps.slice(0, 3);
 
   return (
     <section

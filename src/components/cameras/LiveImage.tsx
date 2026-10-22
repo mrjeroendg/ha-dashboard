@@ -1,67 +1,46 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
-import { useEffect, useState } from 'react';
-import { canPlayHls, hlsUrl, mjpegUrl, stillUrl } from '../../lib/cameras';
+import { useEffect, useRef, useState } from 'react';
+import type { StreamMedia } from '../../hooks/useCameraStream';
+import { stillUrl } from '../../lib/cameras';
 import type { HomeAssistant } from '../../types/hass';
 
 interface Props {
   hass: HomeAssistant;
   entity: HassEntity;
-  live: boolean;
+  media?: StreamMedia;
+  onFirstFrame(): void;
+  onMediaError(): void;
 }
 
-type Source = { kind: 'hls'; url: string } | { kind: 'mjpeg'; url: string } | { kind: 'still' };
-
-/**
- * The live image. Where the browser plays HLS itself (iPhone, iPad, Safari),
- * HA's HLS stream in a native <video>; otherwise HA's MJPEG stream in an
- * <img>. If both fail, the still image. Not live: the still image, and no
- * stream is open.
- */
-export function LiveImage({ hass, entity, live }: Props) {
-  const [source, setSource] = useState<Source>({ kind: 'still' });
+/** The live image: the stream the hook found, with the still image behind it until the first frame. */
+export function LiveImage({ hass, entity, media, onFirstFrame, onMediaError }: Props) {
   const [stamp] = useState(() => Date.now());
-  const id = entity.entity_id;
+  const still = stillUrl(hass, entity, stamp);
+  const video = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (!live) {
-      setSource({ kind: 'still' });
-      return;
-    }
-    let cancelled = false;
-    const mjpeg = (): Source => {
-      const url = mjpegUrl(hass, entity);
-      return url ? { kind: 'mjpeg', url } : { kind: 'still' };
-    };
-    if (canPlayHls()) {
-      hlsUrl(hass, id)
-        .then((url) => !cancelled && setSource({ kind: 'hls', url }))
-        .catch(() => !cancelled && setSource(mjpeg()));
-    } else {
-      setSource(mjpeg());
-    }
-    return () => {
-      cancelled = true;
-    };
-    // A new stream only when the camera or `live` changes, not on every state update.
-  }, [id, live]);
+    if (video.current && media?.kind === 'webrtc') video.current.srcObject = media.stream;
+  }, [media]);
 
-  const still = stillUrl(hass, entity, stamp);
-
-  if (source.kind === 'hls') {
-    return (
-      <video
-        className="camera-live__media"
-        src={source.url}
-        poster={still}
-        autoPlay
-        muted
-        playsInline
-        onError={() => setSource({ kind: 'still' })}
-      />
-    );
-  }
-  if (source.kind === 'mjpeg') {
-    return <img className="camera-live__media" src={source.url} alt="" onError={() => setSource({ kind: 'still' })} />;
-  }
-  return still ? <img className="camera-live__media" src={still} alt="" /> : null;
+  return (
+    <>
+      {still && <img className="camera-live__media" src={still} alt="" />}
+      {(media?.kind === 'webrtc' || media?.kind === 'hls') && (
+        <video
+          key={media.kind === 'hls' ? media.url : 'webrtc'}
+          ref={video}
+          className="camera-live__media"
+          src={media.kind === 'hls' ? media.url : undefined}
+          autoPlay
+          muted
+          playsInline
+          onPlaying={onFirstFrame}
+          onError={onMediaError}
+        />
+      )}
+      {media?.kind === 'mjpeg' && (
+        <img className="camera-live__media" src={media.url} alt="" onLoad={onFirstFrame} onError={onMediaError} />
+      )}
+    </>
+  );
 }

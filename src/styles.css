@@ -1513,3 +1513,54 @@ button.row:active { background: var(--accent-soft); }
 .camera-placeholder__icon .icon { width: 24px; height: 24px; }
 .camera-placeholder b { font-size: 15px; font-weight: 600; }
 .camera-placeholder > span:last-child { max-width: 240px; font-size: 13px; line-height: 1.4; color: var(--text-muted); }
+
+/* Stream status under the live image (docs/design/cameras, option C3). */
+.stream-status { height: 31px; margin: 10px 4px 0; }
+
+.stream-status__line {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 20px;
+  font-size: 13px;
+  color: var(--text);
+}
+
+.stream-status__line .spinner { width: 12px; height: 12px; border-color: rgba(245, 244, 239, 0.2); border-top-color: var(--text); }
+
+.stream-status__line em {
+  margin-left: auto;
+  font-style: normal;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+  color: var(--text-muted);
+}
+
+.stream-status__dot { flex: none; width: 6px; height: 6px; margin: 0 3px; border-radius: 50%; background: #199e70; }
+.stream-status.is-playing .stream-status__line,
+.stream-status.is-still .stream-status__line { color: var(--text-muted); }
+.stream-status.is-still .stream-status__dot { background: var(--text-muted); }
+
+.stream-status__bar {
+  height: 3px;
+  margin-top: 8px;
+  border-radius: 2px;
+  background: rgba(245, 244, 239, 0.12);
+  overflow: hidden;
+}
+
+.stream-status__bar i {
+  display: block;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--accent);
+  animation: stream-fill linear forwards;
+}
+
+.stream-status.is-playing .stream-status__bar i { width: 100%; background: #199e70; animation: none; }
+
+@keyframes stream-fill { from { width: 0; } to { width: 100%; } }
+
+.camera-live-pill.is-waiting { background: rgba(245, 244, 239, 0.08); color: var(--text-muted); }
+.camera-live-pill.is-waiting::before { background: var(--text-muted); }
+.camera-live.is-connecting .camera-live__media { filter: brightness(0.45) saturate(0.6); transition: filter 200ms ease; }

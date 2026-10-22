@@ -5,7 +5,7 @@ Three cameras on **Thuis**: Garage, Achterdeur and Zijpad. Dark mode only. Build
 | Part | Status |
 |---|---|
 | Layout, tiles, live sheet, actions, events, placeholder | ✅ **Approved: final. Built** (branch `claude/cameras`), not yet tested against the real cameras. |
-| Streaming technique (how live video is delivered) | 🛠️ **Built with HA's own streams** (see [As built](#as-built)). Still open for the go2rtc discussion. |
+| Streaming technique (how live video is delivered) | ✅ **Decided and built:** HA's order, WebRTC → HLS → MJPEG → still, with a visible stream status (option C3). See [Streaming](#streaming). |
 
 > ✅ **The design is final.** The owner approved it. Don't change layout, proportions or content without asking first.
 
@@ -42,14 +42,36 @@ As built (dev mode, mock data). Thuis, then the sheet on Garage, Achterdeur and 
 
 ### Streaming
 
-Everything goes through Home Assistant, so it works wherever `hass` works (also away from home, with HA's auth):
+The same order as HA's own player, so it behaves like HA's cards. Everything goes through Home Assistant: the video comes from HA's go2rtc (or Frigate's, if HA is pointed at it), and the agreement goes over HA's websocket.
 
-1. **Tiles:** the camera's `entity_picture`, refreshed every 10 s while Thuis is visible (paused while the sheet is open). The time is when the image loaded.
-2. **Live, where the browser plays HLS itself** (iPhone/iPad Companion app, Safari): HA's HLS stream (`camera/stream`) in a native `<video>`, muted, inline. Needs HA's `stream` integration (on by default).
-3. **Otherwise, or if HLS fails:** HA's MJPEG stream (`/api/camera_proxy_stream`) in an `<img>`. No extra library needed.
-4. **If that fails too:** the still image.
+1. **Ask HA** what the camera supports (`camera/capabilities`).
+2. **WebRTC** (fast, ~0.5 s): at home straight over WiFi, away from home via Nabu Casa's TURN relay (HA hands it out through `camera/webrtc/get_client_config`). Up to **8 s**, with a new attempt if one fails early.
+3. **HLS** (1–5 s delay), only where the browser plays it itself (iOS, Safari): up to **15 s**, because HA first has to build the stream.
+4. **MJPEG** (`/api/camera_proxy_stream`) in every other browser: up to **8 s**.
+5. **Still image** if none of these work.
 
-Only the camera in view streams; the others show their still. The time pill on the live image is the current time, ticking every second.
+Only the camera in view streams; swiping or closing stops it. Video starts muted (iOS requires that for autoplay); there's no sound button. Tiles on Thuis stay still images, refreshed every 10 s while Thuis is visible.
+
+### Stream status: option C3 ✅
+
+One fixed line under the live image shows only the **active** phase; nothing is kept. Below it, a bar fills up until that phase gives up. The layout never moves.
+
+![Stream status](./stream-status.png)
+
+Source: [`stream-status.html`](./stream-status.html). Approved: **C3** (bottom row). Not chosen: C1 (line only), C2 (phase bar), and the earlier A/B/C ([`stream-status-options.png`](./stream-status-options.png)): a log in the image, a centred status, a persisted step list.
+
+| Phase | Line | Right | Bar |
+|---|---|---|---|
+| WebRTC | spinner · "WebRTC proberen…" | "poging 1 · 3 s" | orange, fills over 8 s |
+| HLS / MJPEG | spinner · "Overschakelen naar HLS…" | "iOS · 2 s" (detected device) | orange, restarts and fills over that phase's time |
+| Connected | green dot · "WebRTC · relay" (route: lokaal / direct / relay), or "HLS" / "MJPEG" | time to first frame, "0,6 s" | full, green |
+| Nothing worked | grey dot · "Stilstaand beeld" | "geen stream" | empty |
+
+- While connecting, the image is dimmed and the pill reads **"Verbinden"** (grey). It turns into **"LIVE"** once the first frame plays; **"Stilstaand"** if it ends on the still image.
+
+As built (dev mode, mock data: WebRTC never answers, then MJPEG):
+
+![Built](./built-stream-status.png)
 
 ### Frigate events
 
@@ -111,9 +133,9 @@ Via the Frigate integration's websocket command `frigate/events/get` (instance `
 
 ---
 
-## Streaming: open
+## Streaming: the earlier discussion
 
-To be decided later. The design doesn't depend on it. The options discussed so far:
+Decided: see [Streaming](#streaming) above (HA's own route, with Nabu Casa's relay away from home). The options discussed before:
 
 | Option | Pros | Cons |
 |---|---|---|

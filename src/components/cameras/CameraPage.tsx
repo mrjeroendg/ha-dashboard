@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Camera, CameraAction } from '../../config/cameras';
+import { useCameraStream } from '../../hooks/useCameraStream';
 import { useRunAction } from '../../hooks/useRunAction';
 import { useTicker } from '../../hooks/useTicker';
 import { clock, runCameraAction, todaysEvents, type CameraEvent } from '../../lib/cameras';
@@ -7,6 +8,7 @@ import { haptic } from '../../lib/haptic';
 import type { HomeAssistant } from '../../types/hass';
 import { Icon } from '../Icon';
 import { LiveImage } from './LiveImage';
+import { StreamStatus } from './StreamStatus';
 
 interface Props {
   hass: HomeAssistant;
@@ -18,16 +20,27 @@ interface Props {
 /** One camera in the live sheet: image, name with LIVE, actions, and "Vandaag". */
 export function CameraPage({ hass, camera, live }: Props) {
   const now = useTicker(live);
+  const entity = hass.states[camera.entity];
+  const stream = useCameraStream(hass, entity, live);
+  const isLive = stream.state.status === 'playing';
+  const pill = isLive ? 'Live' : stream.state.status === 'still' ? 'Stilstaand' : 'Verbinden';
 
   return (
     <div className="camera-page">
-      <div className="camera-live">
-        <LiveImage hass={hass} entity={hass.states[camera.entity]} live={live} />
+      <div className={`camera-live${stream.state.status === 'trying' ? ' is-connecting' : ''}`}>
+        <LiveImage
+          hass={hass}
+          entity={entity}
+          media={stream.state.media}
+          onFirstFrame={stream.onFirstFrame}
+          onMediaError={stream.onMediaError}
+        />
         <span className="camera-time">{clock(new Date(now), true)}</span>
       </div>
+      <StreamStatus state={stream.state} platform={stream.platform} />
       <div className="camera-page__header">
         <h2 className="camera-page__name">{camera.name}</h2>
-        <span className="camera-live-pill">Live</span>
+        <span className={`camera-live-pill${isLive ? '' : ' is-waiting'}`}>{pill}</span>
       </div>
       {camera.actions.length > 0 && (
         <div className="camera-actions">

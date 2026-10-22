@@ -1,4 +1,4 @@
-import type { HassEntities, HassServiceTarget } from 'home-assistant-js-websocket';
+import type { Connection, HassEntities, HassServiceTarget } from 'home-assistant-js-websocket';
 
 /**
  * The subset of Home Assistant's `hass` object this dashboard relies on.
@@ -18,6 +18,8 @@ export interface HomeAssistant {
     target?: HassServiceTarget,
   ): Promise<unknown>;
   callWS<T>(msg: { type: string; [key: string]: unknown }): Promise<T>;
+  /** The websocket itself, for subscriptions (e.g. WebRTC). Missing in mock mode. */
+  connection?: Connection;
 }
 
 /** Card config as written in the Lovelace YAML (`type: custom:ha-dashboard`). */

@@ -1,7 +1,7 @@
 // DEV ONLY. A fake `hass` with sample entities, used by `npm run dev` when
 // .env.local has no token. States start out matching the current moment of day. callService mutates the fake states so tapping a
 // card visibly does something.
-import type { HassEntities, HassEntity, HassServiceTarget } from 'home-assistant-js-websocket';
+import type { Connection, HassEntities, HassEntity, HassServiceTarget } from 'home-assistant-js-websocket';
 import { MEDIA } from '../config/media';
 
 const SONOS = MEDIA.sonos.entity;
@@ -51,9 +51,9 @@ function baseStates(): HassEntities {
     entity('light.slaapkamer', 'off', { friendly_name: 'Slaapkamer', supported_color_modes: ['hs'], color_mode: 'hs', rgb_color: [255, 147, 41] }),
     entity('light.bureau', 'off', { friendly_name: 'Bureau', supported_color_modes: ['onoff'] }),
     entity('binary_sensor.raam_badkamer', 'off', { friendly_name: 'Raam badkamer', device_class: 'window' }),
-    entity('camera.garage', 'idle', { friendly_name: 'Garage', entity_picture: cameraImage('#3a3d40', '#1f2123', '#a09682') }),
-    entity('camera.achterdeur', 'idle', { friendly_name: 'Achterdeur', entity_picture: cameraImage('#2f3a33', '#1a201c', '#788c6e') }),
-    entity('camera.zijpad', 'idle', { friendly_name: 'Zijpad', entity_picture: cameraImage('#34322f', '#1c1b1a', '#8c8278') }),
+    entity('camera.garage', 'idle', { friendly_name: 'Garage', entity_picture: cameraImage('#3a3d40', '#1f2123', '#a09682'), access_token: 'mock' }),
+    entity('camera.achterdeur', 'idle', { friendly_name: 'Achterdeur', entity_picture: cameraImage('#2f3a33', '#1a201c', '#788c6e'), access_token: 'mock' }),
+    entity('camera.zijpad', 'idle', { friendly_name: 'Zijpad', entity_picture: cameraImage('#34322f', '#1c1b1a', '#8c8278'), access_token: 'mock' }),
     entity('sensor.woonkamer_temperatuur', '19.5', { unit_of_measurement: '°C', device_class: 'temperature' }),
     entity('sensor.slaapkamer_temperatuur', '18.2', { unit_of_measurement: '°C', device_class: 'temperature', friendly_name: 'Temperatuur' }),
     entity('sensor.badkamer_temperatuur', '20.1', { unit_of_measurement: '°C', device_class: 'temperature' }),
@@ -267,6 +267,8 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     if (msg.type === 'frigate/events/get') return frigateEvents() as T;
     if (msg.type === 'auth/sign_path') return { path: cameraImage('#4a4d50', '#2a2c2e', '#c0b49a') } as T;
     if (msg.type === 'camera/stream') throw new Error('No stream in mock mode');
+    if (msg.type === 'camera/capabilities') return { frontend_stream_types: ['web_rtc', 'hls'] } as T;
+    if (msg.type === 'camera/webrtc/get_client_config') return { configuration: { iceServers: [] } } as T;
     return undefined as T;
   };
 
@@ -275,9 +277,15 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
       states,
       user: { id: 'mock', name: 'Jeroen', is_admin: true },
       language: 'nl',
-      hassUrl: (path = '') => path,
+      // The MJPEG stream "plays" the camera's still image.
+      hassUrl: (path = '') => {
+        const mjpeg = path.match(/^\/api\/camera_proxy_stream\/([^?]+)/);
+        return mjpeg ? String(states[mjpeg[1]]?.attributes.entity_picture ?? path) : path;
+      },
       callService,
       callWS,
+      // WebRTC offers go nowhere: no answer ever comes, so it times out like a blocked network.
+      connection: { subscribeMessage: async () => async () => undefined } as unknown as Connection,
     });
 
   for (const [id, value] of Object.entries(SCENARIOS[scenarioFor(new Date())])) {

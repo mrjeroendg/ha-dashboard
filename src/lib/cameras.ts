@@ -55,6 +55,19 @@ export function mjpegUrl(hass: HomeAssistant, entity: HassEntity): string | unde
 /** Safari and the iOS Companion app play HLS in a plain <video>; most desktop browsers don't. */
 export const canPlayHls = () => document.createElement('video').canPlayType('application/vnd.apple.mpegurl') !== '';
 
+/** The device or browser, for the stream status: "iOS", "Chrome", … */
+export function platformName(): string {
+  const ua = navigator.userAgent;
+  const iPadAsMac = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1;
+  if (/iPhone|iPad|iPod/.test(ua) || iPadAsMac) return 'iOS';
+  if (/Android/.test(ua)) return 'Android';
+  if (/Edg\//.test(ua)) return 'Edge';
+  if (/Firefox\//.test(ua)) return 'Firefox';
+  if (/Chrome\//.test(ua)) return 'Chrome';
+  if (/Safari\//.test(ua)) return 'Safari';
+  return 'browser';
+}
+
 /** Ask HA for an HLS stream of the camera (needs the `stream` integration). */
 export async function hlsUrl(hass: HomeAssistant, entityId: string): Promise<string> {
   const { url } = await hass.callWS<{ url: string }>({ type: 'camera/stream', entity_id: entityId, format: 'hls' });

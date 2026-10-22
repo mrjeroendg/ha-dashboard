@@ -7,6 +7,9 @@
  * - STREAM_SCRIPTS: HA scripts that send a stream URL to the Sonos. All the
  *   logic stays in HA; the dashboard only starts them. The button label is the
  *   script's name in HA (friendly_name). Scripts that don't exist are hidden.
+ * - CAST_APPS: buttons on the Chromecast page while nothing is casting (up to
+ *   3). A tap opens the app on the iPhone through its URL scheme; from there
+ *   you cast to the TV yourself. Colour circles go by position: red, teal, gold.
  */
 export const SONOS = 'media_player.living_room';
 
@@ -16,4 +19,14 @@ export const STREAM_SCRIPTS: string[] = [
   'script.speel_radio1_op_chromecast',
   'script.speel_studiobrussel_op_chromecast',
   'script.play_radio_1_on_sonos_duplicate'
+];
+
+export interface CastApp {
+  name: string;
+  /** The app's URL scheme, e.g. 'nflx://' for Netflix. */
+  url: string;
+}
+
+export const CAST_APPS: CastApp[] = [
+  { name: 'Netflix', url: 'nflx://' },
 ];

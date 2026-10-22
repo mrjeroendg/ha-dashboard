@@ -6,7 +6,7 @@ One card on **Thuis** for all media: Sonos and Chromecast, plus stream buttons t
 |---|---|
 | [Mini player](#mini-player--approved-final) | ✅ **Approved: final.** Build exactly as designed. |
 | [Expanded player](#expanded-player--approved-final) | ✅ **Approved: final.** Build exactly as designed. |
-| [App buttons on the Chromecast page](#app-buttons-on-the-chromecast-page--approved-not-built) | ✅ **Approved (option A), not built yet.** |
+| [App buttons on the Chromecast page](#app-buttons-on-the-chromecast-page--approved-built) | ✅ **Approved (option A) and built.** |
 
 ---
 
@@ -116,9 +116,11 @@ Source: [`expanded-player.html`](./expanded-player.html) (a static mockup; open 
 
 ---
 
-## App buttons on the Chromecast page: approved, not built
+## App buttons on the Chromecast page: approved, built
 
-> ✅ **Approved (option A), not built yet.** Build it as described, and don't change proportions or behaviour without asking first.
+> ✅ **Approved (option A) and built** (`CAST_APPS` in `src/config/media.ts`, `CastPage.tsx`). Don't change proportions or behaviour without asking first.
+>
+> *Decisions during the build:* the link is opened with `window.open(url)`, the same way HA's own `url` tap action does it. Colours go by position (red, teal, gold), like the stream buttons. Netflix (`nflx://`) is the first app.
 
 ![App buttons](./cast-apps.png)
 

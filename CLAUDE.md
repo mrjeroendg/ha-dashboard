@@ -19,5 +19,3 @@ Instructions for Claude when working in this repository.
   ```
 
   A one-liner is fine when there's only one value, e.g. ``detail: (e) => `${e.state}%` ``.
-- **Keep logic where it's used.** Write a rule's callback inline in that rule;
-  don't move it into a separate helper or file.

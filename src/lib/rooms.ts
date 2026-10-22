@@ -3,7 +3,7 @@ import type { IconName } from '../components/Icon';
 import type { RoomConfig, RoomEntity } from '../config/rooms';
 import type { HomeAssistant } from '../types/hass';
 
-export type Row = { entity: HassEntity; name: string; screen?: boolean };
+export type Row = { entity: HassEntity; name: string; allowUnknownState?: boolean };
 
 export interface ResolvedSection {
   /** Undefined for a room configured with a plain `entities` list. */
@@ -25,7 +25,7 @@ function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities)
     .map((e) => ({
       entity: states[e.entity],
       name: e.name ?? String(states[e.entity].attributes.friendly_name ?? e.entity),
-      screen: e.screen,
+      allowUnknownState: e.allowUnknownState,
     }));
 }
 
@@ -126,10 +126,10 @@ export function setBrightness(hass: HomeAssistant, entity: HassEntity, pct: numb
 
 const UNAVAILABLE = new Set(['unavailable', 'unknown']);
 
-export function rowModel(entity: HassEntity, screen = false): RowModel {
-  // RTS screens never report their position, so HA keeps them 'unknown'.
+export function rowModel(entity: HassEntity, allowUnknownState = false): RowModel {
+  // E.g. RTS screens never report their position, so HA keeps them 'unknown'.
   // Still give them a control, shown as off/closed until HA assumes a state.
-  if (screen && entity.state === 'unknown') {
+  if (allowUnknownState && entity.state === 'unknown') {
     const assumed = domainOf(entity) === 'cover' ? 'closed' : 'off';
     return { ...rowModel({ ...entity, state: assumed }), detail: 'Onbekend' };
   }
@@ -268,5 +268,5 @@ function readableState(entity: HassEntity): string {
 
 /** Something in the section is on (a light, the airco, an open cover, music…): the dot on its tab. */
 export function sectionIsActive(rows: Row[]): boolean {
-  return rows.some((r) => rowModel(r.entity, r.screen).on);
+  return rows.some((r) => rowModel(r.entity, r.allowUnknownState).on);
 }

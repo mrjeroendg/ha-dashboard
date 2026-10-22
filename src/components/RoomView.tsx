@@ -58,7 +58,7 @@ export function RoomView({ room, hass }: Props) {
       )}
       <section className={`row-group${tabs ? ' row-group--tabbed' : ''}`}>
         {section.rows.map((row) => (
-          <EntityRow key={row.entity.entity_id} entity={row.entity} name={row.name} screen={row.screen} hass={hass} />
+          <EntityRow key={row.entity.entity_id} entity={row.entity} name={row.name} allowUnknownState={row.allowUnknownState} hass={hass} />
         ))}
       </section>
     </>
@@ -68,12 +68,12 @@ export function RoomView({ room, hass }: Props) {
 interface RowProps {
   entity: HassEntity;
   name: string;
-  screen?: boolean;
+  allowUnknownState?: boolean;
   hass: HomeAssistant;
 }
 
-function EntityRow({ entity, name, screen, hass }: RowProps) {
-  const model = rowModel(entity, screen);
+function EntityRow({ entity, name, allowUnknownState, hass }: RowProps) {
+  const model = rowModel(entity, allowUnknownState);
   const [status, run] = useRunAction();
   const [draft, setDraft] = useDebouncedCommit<number>((pct) => setBrightness(hass, entity, pct));
   const [colorDraft, setColorDraft] = useDebouncedCommit<ColorChoice>((c) => setColor(hass, entity, c), 150);

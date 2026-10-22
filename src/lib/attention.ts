@@ -62,7 +62,6 @@ function warningFor(rule: AttentionRule, entity: HassEntity, now: number): Warni
   if (!when.includes(entity.state)) return undefined;
 
   const since = Date.parse(entity.last_changed) || now;
-  const minutes = (now - since) / 60_000;
 
   const a = entity.attributes;
   const name = String(a.title ?? a.friendly_name ?? entity.entity_id);

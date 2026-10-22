@@ -23,6 +23,15 @@ export const STREAM_SCRIPTS: string[] = [
   'script.play_radio_1_on_sonos_duplicate'
 ];
 
+/**
+ * Station names for plain stream URLs. A bare stream (e.g. an Icecast mp3)
+ * gives the Sonos no station name, so the card shows this name when the
+ * Sonos's media_content_id is exactly one of these URLs.
+ */
+export const STREAM_NAMES: Record<string, string> = {
+  'http://icecast.vrtcdn.be/radio1-high.mp3': 'Radio 1',
+};
+
 export interface CastApp {
   name: string;
   /** The app's URL scheme, e.g. 'nflx://' for Netflix. */

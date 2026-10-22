@@ -1,4 +1,5 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
+import { STREAM_NAMES } from '../config/media';
 
 export interface StreamButton {
   script: string;
@@ -23,7 +24,8 @@ export function hasMedia(player?: HassEntity): boolean {
  */
 export function nowPlaying(player: HassEntity): { title: string; subtitle: string } {
   const a = player.attributes;
-  const channel = a.media_channel ? String(a.media_channel) : undefined;
+  // A bare stream URL has no station name: take it from STREAM_NAMES.
+  const channel = a.media_channel ? String(a.media_channel) : STREAM_NAMES[String(a.media_content_id)];
   const title = a.media_title ? String(a.media_title) : undefined;
   const artist = a.media_artist ? String(a.media_artist) : undefined;
 

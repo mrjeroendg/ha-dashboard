@@ -31,12 +31,10 @@ export interface AttentionRule {
 
 export const ATTENTION: AttentionRule[] = [
   {
-    entity: 'cover.garagepoort',
+    entity: 'update.irpi_admin_version',
     level: 'high',
     after: 15,
-    title: 'Garagepoort staat open',
-    icon: 'garage',
-    action: { label: 'Sluiten', service: 'cover.close_cover' },
-  },
-  { entity: 'update.*', level: 'low' },
+    title: 'Immich update beschikbaar',
+    icon: 'garage'
+  }
 ];

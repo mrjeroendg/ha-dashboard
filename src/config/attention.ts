@@ -1,4 +1,4 @@
-import type { HassEntity } from 'home-assistant-js-websocket';
+import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
 
 /**
@@ -11,8 +11,9 @@ import type { IconName } from '../components/Icon';
  *          'low' (orange: maintenance, e.g. updates).
  * - when: states that trigger it, e.g. ['open']. Default: 'open'/'opening' for
  *         a cover, 'unlocked'/'open' for a lock, otherwise 'on'.
- *         Or a function that gets the entity and returns true to show the
- *         warning, e.g. a low battery: (e) => Number(e.state) <= 20.
+ *         Or a function that gets the entity (and all states, to look at
+ *         other entities) and returns true to show the warning, e.g. a low
+ *         battery: (e) => Number(e.state) <= 20.
  * - title / icon: defaults come from the entity (updates: "Update voor Immich").
  * - detail: a function that gets the entity and returns the second line, e.g.
  *           (e) => `${e.state}%`. Default: "Sinds 14:02", or the versions for
@@ -23,11 +24,15 @@ export type AttentionLevel = 'high' | 'medium' | 'low';
 export interface AttentionRule {
   entity: string;
   level: AttentionLevel;
-  when?: string[] | ((entity: HassEntity) => boolean);
+  when?: string[] | ((entity: HassEntity, states: HassEntities) => boolean);
   title?: string;
   icon?: IconName;
-  detail?: (entity: HassEntity) => string;
+  detail?: (entity: HassEntity, states: HassEntities) => string;
 }
+
+/** Battery at 20% or less, unless its `…_battery_state` sensor says it's charging. */
+const lowBattery = (stateSensor: string) => (e: HassEntity, states: HassEntities) =>
+  Number(e.state) <= 20 && states[stateSensor]?.state !== 'Charging';
 
 export const ATTENTION: AttentionRule[] = [
   {
@@ -52,7 +57,7 @@ export const ATTENTION: AttentionRule[] = [
     level: 'low',
     title: 'iPad bijna leeg',
     icon: 'tablet',
-    when: (e) => Number(e.state) <= 20,
+    when: lowBattery('sensor.jeroens_ipad_battery_state'),
     detail: (e) => `${e.state}%`,
   },
   {
@@ -60,7 +65,7 @@ export const ATTENTION: AttentionRule[] = [
     level: 'low',
     title: 'iPhone bijna leeg',
     icon: 'phone',
-    when: (e) => Number(e.state) <= 20,
+    when: lowBattery('sensor.iphone_16_pro_battery_state'),
     detail: (e) => `${e.state}%`,
   },
 ];

@@ -30,10 +30,6 @@ export interface AttentionRule {
   detail?: (entity: HassEntity, states: HassEntities) => string;
 }
 
-/** Battery at 20% or less, unless its `…_battery_state` sensor says it's charging. */
-const lowBattery = (stateSensor: string) => (e: HassEntity, states: HassEntities) =>
-  Number(e.state) <= 20 && states[stateSensor]?.state !== 'Charging';
-
 export const ATTENTION: AttentionRule[] = [
   {
     entity: 'sensor.garage_door_state_classification',
@@ -57,7 +53,7 @@ export const ATTENTION: AttentionRule[] = [
     level: 'low',
     title: 'iPad bijna leeg',
     icon: 'tablet',
-    when: lowBattery('sensor.jeroens_ipad_battery_state'),
+    when: (e, states) => Number(e.state) <= 20 && states['sensor.jeroens_ipad_battery_state']?.state !== 'Charging',
     detail: (e) => `${e.state}%`,
   },
   {
@@ -65,7 +61,7 @@ export const ATTENTION: AttentionRule[] = [
     level: 'low',
     title: 'iPhone bijna leeg',
     icon: 'phone',
-    when: lowBattery('sensor.iphone_16_pro_battery_state'),
+    when: (e, states) => Number(e.state) <= 20 && states['sensor.iphone_16_pro_battery_state']?.state !== 'Charging',
     detail: (e) => `${e.state}%`,
   },
 ];

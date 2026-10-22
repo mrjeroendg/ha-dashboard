@@ -38,7 +38,9 @@ export const ROOMS: RoomConfig[] = [
     id: 'living',
     name: 'Living',
     icon: 'sofa',
-    openings: ['binary_sensor.0x001788011004451e_contact', 'binary_sensor.0x00178801100445ff_contact'],
+    openings: [
+      { entity: 'binary_sensor.0x001788011004451e_contact', 'name': 'Voordeur' },
+      { entity: 'binary_sensor.0x001788011004452e_contact', 'name': 'Schuifraam' }],
     sections: [
       {
         title: "Verlichting",
@@ -61,14 +63,14 @@ export const ROOMS: RoomConfig[] = [
       }
     ],
   },
-    {
+  {
     id: 'marielou',
     name: "Marielou",
     icon: 'baby',
     temperature: 'sensor.0xf044d3fffecd20d8_temperature',
     humidity: 'sensor.0xf044d3fffecd20d8_humidity',
     entities: [
-      { entity: 'light.bedroom_marielou_herstal_light_switch', name: 'Herstal' },  
+      { entity: 'light.bedroom_marielou_herstal_light_switch', name: 'Herstal' },
       { entity: 'cover.rts_16767817', name: 'Rolluik', myPosition: 'button.rts_16767817_my_position' }
     ],
   },
@@ -79,7 +81,7 @@ export const ROOMS: RoomConfig[] = [
     temperature: 'sensor.0x7c3e822f69dd0000_temperature',
     humidity: 'sensor.0x7c3e822f69dd0000_humidity',
     entities: [
-      { entity: 'light.ceiling_light', name: 'Verlichting', simple: true },  
+      { entity: 'light.ceiling_light', name: 'Verlichting', simple: true },
       { entity: 'cover.rts_16765494', name: 'Rolluik', myPosition: 'button.rts_16765494_my_position' }
     ],
   }

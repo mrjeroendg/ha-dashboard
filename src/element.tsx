@@ -4,10 +4,6 @@ import { App } from './App';
 import styles from './styles.css?inline';
 import type { DashboardConfig, HomeAssistant } from './types/hass';
 
-/**
- * <ha-dashboard> — usable as a Lovelace card (`type: custom:ha-dashboard`).
- * HA sets `hass` on every state change; we re-render React with it.
- */
 export class HaDashboardElement extends HTMLElement {
   private root?: Root;
   private _hass?: HomeAssistant;
@@ -22,7 +18,6 @@ export class HaDashboardElement extends HTMLElement {
     return this._hass;
   }
 
-  /** Called by Lovelace with the card's YAML config. */
   setConfig(config: DashboardConfig) {
     this._config = { ...config };
     this.renderApp();
@@ -45,8 +40,6 @@ export class HaDashboardElement extends HTMLElement {
   }
 
   disconnectedCallback() {
-    // HA detaches/re-attaches cards when switching views; unmount lazily so a
-    // quick re-attach doesn't rebuild the tree.
     queueMicrotask(() => {
       if (!this.isConnected && this.root) {
         this.root.unmount();

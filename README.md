@@ -194,7 +194,8 @@ On Thuis, docked above the room navigation (built from the approved design in `d
 
 The bottom navigation shows **Thuis** plus the rooms in `src/config/rooms.ts`, in that order. You define them yourself; HA areas aren't used. Each room lists its entities:
 
-- **Controllable** (light, switch, fan, input_boolean, cover, media_player): a row with a switch.
+- **Controllable** (light, switch, fan, input_boolean, media_player): a row with a switch.
+- **Covers** (`cover.*`, e.g. RTS screens): the name with a strip of buttons under it: ↑ up, ■ stop, ↓ down (only the ones the cover supports). Add `myPosition: 'button.…'` to add a ★ for the screen's "My position" button. Works while the state is `unknown`; then the row shows only the name. A tapped button lights up briefly; nothing stays selected.
 - **Dimmable lights** (`supported_color_modes` contains anything other than `onoff`): also a brightness slider while the light is on. The value is sent to HA 300 ms after you stop dragging (one `light.turn_on` with `brightness_pct`), not on every movement.
 - **Color lights** (`hs`, `xy`, `rgb`, `rgbw`, `rgbww` in `supported_color_modes`): color swatches under the slider, plus a rainbow swatch that opens **HA's own light dialog** (color wheel, temperature, brightness) via the `hass-more-info` event. In `npm run dev` there is no HA frontend to open that dialog, so there the rainbow swatch uses the browser's native color picker instead. Lights with `color_temp` also get warm, neutral and cool white. The light's icon takes its current color.
 - **Climate:** −/+ buttons that change the target temperature by 0.5°.
@@ -219,7 +220,9 @@ Instead of `entities`, a room can have `sections`. Each section becomes a tab un
 ```
 
 - Only the active tab's rows are shown. A room always opens on its first tab.
-- A section whose entities don't exist is hidden. With only one section left, there are no tabs.
+- A section can have `shortcuts` (same fields as `src/config/shortcuts.ts`): small "Snel" cards at the top of its tab, e.g. `{ label: 'Alles dicht', icon: 'down', entity: 'script.screens_dicht' }`.
+- A section whose entities don't exist (and without shortcuts) is hidden. With only one section left, there are no tabs.
+- Cover buttons and "Snel" cards (also on Thuis) give haptic feedback in the Companion app: a light tick on tap, a failure pattern if the call fails.
 
 ## Status line logic
 

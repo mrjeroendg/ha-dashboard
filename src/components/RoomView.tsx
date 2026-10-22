@@ -1,5 +1,5 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { useDebouncedCommit } from '../hooks/useDebouncedCommit';
 import { useRunAction } from '../hooks/useRunAction';
 import { haptic } from '../lib/haptic';
@@ -15,7 +15,8 @@ import {
 import type { HomeAssistant } from '../types/hass';
 import { BrightnessSlider } from './BrightnessSlider';
 import { ColorPicker } from './ColorPicker';
-import { Icon } from './Icon';
+import { Icon, type IconName } from './Icon';
+import { QuickCard } from './QuickCard';
 
 interface Props {
   room: ResolvedRoom;
@@ -54,11 +55,30 @@ export function RoomView({ room, hass }: Props) {
           ))}
         </div>
       )}
-      <section className={`row-group${tabs ? ' row-group--tabbed' : ''}`}>
-        {section.rows.map((row) => (
-          <EntityRow key={row.entity.entity_id} entity={row.entity} name={row.name} allowUnknownState={row.allowUnknownState} hass={hass} />
-        ))}
-      </section>
+      {section.shortcuts.length > 0 && (
+        <>
+          <h2 className="section-title section-title--tab">Snel</h2>
+          <div className="quick-row" style={{ '--n': section.shortcuts.length } as CSSProperties}>
+            {section.shortcuts.map((s) => (
+              <QuickCard key={`${s.entity}-${s.label}`} shortcut={s} hass={hass} size="small" />
+            ))}
+          </div>
+        </>
+      )}
+      {section.rows.length > 0 && (
+        <section className={`row-group${tabs ? ' row-group--tabbed' : ''}`}>
+          {section.rows.map((row) => (
+            <EntityRow
+              key={row.entity.entity_id}
+              entity={row.entity}
+              name={row.name}
+              allowUnknownState={row.allowUnknownState}
+              myPosition={row.myPosition}
+              hass={hass}
+            />
+          ))}
+        </section>
+      )}
     </>
   );
 }
@@ -67,10 +87,11 @@ interface RowProps {
   entity: HassEntity;
   name: string;
   allowUnknownState?: boolean;
+  myPosition?: string;
   hass: HomeAssistant;
 }
 
-function EntityRow({ entity, name, allowUnknownState, hass }: RowProps) {
+function EntityRow({ entity, name, allowUnknownState, myPosition, hass }: RowProps) {
   const model = rowModel(entity, allowUnknownState);
   const [status, run] = useRunAction();
   const [draft, setDraft] = useDebouncedCommit<number>((pct) => setBrightness(hass, entity, pct));
@@ -89,7 +110,7 @@ function EntityRow({ entity, name, allowUnknownState, hass }: RowProps) {
       </span>
       <span className="card-text">
         <span className="row__name">{name}</span>
-        <span className={`card-detail${status === 'error' ? ' is-error' : ''}`}>{detail}</span>
+        {detail && <span className={`card-detail${status === 'error' ? ' is-error' : ''}`}>{detail}</span>}
       </span>
     </>
   );
@@ -118,6 +139,29 @@ function EntityRow({ entity, name, allowUnknownState, hass }: RowProps) {
             onPick={setColorDraft}
           />
         )}
+      </div>
+    );
+  }
+
+  if (model.kind === 'cover' && model.cover) {
+    const id = entity.entity_id;
+    const cover = (service: string) => () => hass.callService('cover', service, {}, { entity_id: id });
+    const buttons: Array<[IconName, string, () => Promise<unknown>, boolean]> = [
+      ['up', 'Omhoog', cover('open_cover'), model.cover.open],
+      ['star', 'Mijn positie', () => hass.callService('button', 'press', {}, { entity_id: myPosition }), !!myPosition],
+      ['stop', 'Stop', cover('stop_cover'), model.cover.stop],
+      ['down', 'Omlaag', cover('close_cover'), model.cover.close],
+    ];
+    return (
+      <div className="row-item">
+        <div className="row">{label}</div>
+        <div className="cover-strip">
+          {buttons
+            .filter(([, , , shown]) => shown)
+            .map(([icon, text, action]) => (
+              <CoverButton key={icon} icon={icon} label={`${name}: ${text}`} action={action} />
+            ))}
+        </div>
       </div>
     );
   }
@@ -151,6 +195,30 @@ function EntityRow({ entity, name, allowUnknownState, hass }: RowProps) {
   }
 
   return <div className="row-item row">{label}</div>;
+}
+
+/** One button of a cover's strip: lights up briefly after a tap, nothing stays selected. */
+function CoverButton({ icon, label, action }: { icon: IconName; label: string; action: () => Promise<unknown> }) {
+  const [status, run] = useRunAction();
+  const pressed = status === 'busy' || status === 'done';
+  return (
+    <button
+      type="button"
+      className={`cover-strip__button${pressed ? ' is-pressed' : ''}${status === 'error' ? ' is-error' : ''}${icon === 'star' ? ' is-preset' : ''}`}
+      aria-label={label}
+      onClick={() => {
+        haptic('light');
+        run(() =>
+          action().catch((err) => {
+            haptic('failure');
+            throw err;
+          }),
+        );
+      }}
+    >
+      <Icon name={icon} />
+    </button>
+  );
 }
 
 /** Color the light's icon tile with the light's current color. */

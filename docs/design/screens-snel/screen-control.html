@@ -1,0 +1,46 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Screen control</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(2,390px);gap:28px}
+.cap{font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px}
+.panel{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.18);
+background:var(--bg);color:var(--text);border-radius:28px;padding:22px 24px 22px}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:32px}
+.tabs{display:flex;gap:6px;margin-top:18px}
+.tab{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted);background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.tab.on{background:var(--soft);color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent)}
+.group{margin-top:16px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.item+.item{box-shadow:inset 0 1px 0 var(--border)}
+.row{display:flex;align-items:center;gap:14px;padding:14px 16px}
+.ic{width:36px;height:36px;border-radius:12px;background:var(--bg);color:var(--accent);display:grid;place-items:center;flex:none}
+svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.t{flex:1;min-width:0}.t b{display:block;font-size:16px;font-weight:500}.t span{font-size:13px;color:var(--muted)}
+/* round buttons */
+.btns{display:flex;gap:6px}
+.rb{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:var(--soft);color:var(--accent);flex:none}
+.rb svg{width:18px;height:18px}
+.rb.stop{background:var(--accent);color:#fff}
+/* B: segmented strip */
+.item .row{padding-bottom:10px}
+.strip{display:flex;gap:4px;margin:0 16px 14px 66px;padding:4px;border-radius:14px;background:var(--bg)}
+.strip div{flex:1;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--muted)}
+.strip div svg{width:18px;height:18px}
+.strip div.my{color:var(--accent)}
+.strip div.press{background:var(--soft);color:var(--accent)}
+/* all row */
+.all .ic{background:var(--soft)}
+.note{font-size:12px;color:var(--muted);margin:12px 4px 0}
+</style></head><body></body>
+<script>
+const P={blinds:'<path d="M4 4h16M5 4v13M19 4v13M5 8h14M5 12h14M5 16h14M12 16v4"/>',up:'<path d="M12 19V5M6 11l6-6 6 6"/>',down:'<path d="M12 5v14M6 13l6 6 6-6"/>',stop:'<rect x="7" y="7" width="10" height="10" rx="1.5" fill="currentColor" stroke="none"/>',star:'<path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z"/>',stack:'<path d="M4 7h16M4 12h16M4 17h16"/>'};
+const i=n=>`<svg viewBox="0 0 24 24">${P[n]}</svg>`;
+const head=`<p class="lbl">Kamer</p><h1>Living</h1><div class="tabs"><span class="tab">Verlichting</span><span class="tab on">Screens</span><span class="tab">Klimaat</span></div>`;
+const screen=(n,{my=true,press=-1}={})=>{
+  const acts=[['up','Omhoog'],...(my?[['star','Mijn positie']]:[]),['stop','Stop'],['down','Omlaag']];
+  return `<div class="item"><div class="row"><div class="ic">${i('blinds')}</div><div class="t"><b>${n}</b></div></div>
+  <div class="strip">${acts.map(([a],k)=>`<div class="${a==='star'?'my':''} ${k===press?'press':''}">${i(a)}</div>`).join('')}</div></div>`;
+};
+const A=`<div class="group">${screen('Screen side facade')}${screen('Screen linksvoor')}${screen('Screen rechtsvoor')}</div>`;
+const B=`<div class="group">${screen('Screen side facade',{press:3})}${screen('Screen linksvoor')}${screen('Screen keuken',{my:false})}</div>`;
+const V=[['B · Rust','Enkel de naam, vier acties eronder',A],['Na een tik + zonder mijn positie','Bovenste: net op ↓ getikt (kort oplichten). Onderste: geen myPosition → drie knoppen',B]];
+document.body.innerHTML=V.map(([t,s,h])=>`<div><p class="cap">${t}<small>${s}</small></p><div class="panel">${head}${h}</div></div>`).join('');
+</script></html>

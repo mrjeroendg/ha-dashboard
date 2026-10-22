@@ -27,11 +27,17 @@ export const ATTENTION: AttentionRule[] = [
     entity: 'sensor.garage_door_state_classification',
     level: 'high',
     when: ['open'],
-    title: 'Gargepoort staat open'
+    title: 'Garagepoort staat open',
+    icon: 'garage'
   },
   {
     entity: 'update.irpi_admin_version',
+    level: 'media',
+    title: 'Immich update'
+  },
+  {
+    entity: 'update.garage_paperless_software',
     level: 'low',
-    title: 'Immich update beschikbaar'
-  }
+    title: 'Paperless update'
+  } 
 ];

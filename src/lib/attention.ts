@@ -45,7 +45,7 @@ function defaultIcon(entity: HassEntity): IconName {
 
 const clock = (ms: number) => new Date(ms).toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' });
 
-function warningFor(rule: AttentionRule, entity: HassEntity,): Warning | undefined {
+function warningFor(rule: AttentionRule, entity: HassEntity): Warning | undefined {
   const when = rule.when ?? triggerStates(entity);
   if (!when.includes(entity.state)) return undefined;
 

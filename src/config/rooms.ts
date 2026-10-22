@@ -29,7 +29,8 @@ export const ROOMS: RoomConfig[] = [
     icon: 'sofa',
     entities: [
       { entity: 'switch.0x94a081fffe4fce2f', name: 'Staanlamp' },
-      { entity: 'light.huecupboard', name: 'Hue Play Bars' }      
+      { entity: 'light.huecupboard', name: 'Hue Play Bars' },
+      { entity: 'cover.rts_16750040', name: 'Screen linksvoor' }  
     ],
   }
 ];

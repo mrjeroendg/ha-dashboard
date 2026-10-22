@@ -331,9 +331,9 @@ button.quick-card:active { transform: scale(0.97); }
 }
 
 .room-tab[aria-selected='true'] {
-  background: var(--text);
-  color: var(--bg);
-  box-shadow: none;
+  background: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
 }
 
 .row-group--tabbed { margin-top: 16px; }

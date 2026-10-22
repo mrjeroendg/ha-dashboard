@@ -12,8 +12,8 @@ import type { IconName } from '../components/Icon';
  *         'unlocked'/'open' for a lock, otherwise 'on'.
  * - after: only show once the state has lasted this many minutes.
  * - title / icon: defaults come from the entity (updates: "Update voor Immich").
- * - action: a button that fixes it, e.g. { label: 'Sluiten', service: 'cover.close_cover' }.
- *   Without one the button is "Bekijk", which opens HA's own dialog.
+ *
+ * The "Bekijk" button opens HA's own dialog for the entity.
  *
  * Entities in src/config/ignore.ts are skipped.
  */
@@ -26,7 +26,6 @@ export interface AttentionRule {
   after?: number;
   title?: string;
   icon?: IconName;
-  action?: { label: string; service: string; data?: Record<string, unknown> };
 }
 
 export const ATTENTION: AttentionRule[] = [
@@ -36,7 +35,6 @@ export const ATTENTION: AttentionRule[] = [
     after: 15,
     title: 'Garagepoort staat open',
     icon: 'garage',
-    action: { label: 'Sluiten', service: 'cover.close_cover' },
   },
   { entity: 'update.*', level: 'low' },
 ];

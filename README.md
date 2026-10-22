@@ -169,15 +169,14 @@ A tap calls `<domain>.<service>` on the entity (default `turn_on`), and shows "D
 `src/config/attention.ts` lists what deserves a warning on Thuis. Each warning is a banner under the status line, and you can't close it: it disappears once the cause is gone.
 
 ```ts
-{ entity: 'cover.garagepoort', level: 'high', after: 15, title: 'Garagepoort staat open', icon: 'garage',
-  action: { label: 'Sluiten', service: 'cover.close_cover' } },
+{ entity: 'cover.garagepoort', level: 'high', after: 15, title: 'Garagepoort staat open', icon: 'garage' },
 { entity: 'update.*', level: 'low' },
 ```
 
 - **level:** `high` (dark red: safety or damage), `medium` (red: needs attention today), `low` (orange: maintenance, such as updates). The highest level is at the top; within a level the newest is first.
 - **when:** the states that trigger it. Default: `open`/`opening` for a cover, `unlocked`/`open` for a lock, otherwise `on` (an `update.*` entity is `on` when there's a new version).
 - **after:** only show once the state has lasted this many minutes. The second line shows "Al 25 min · 22:04".
-- **action:** a button that fixes it right away. Without one, the button is "Bekijk" and opens HA's own dialog (for an update: the update dialog).
+- **Bekijk** opens HA's own dialog for the entity (for an update: the update dialog). There are no buttons that fix things directly.
 - `entity` accepts `*` wildcards. Entities in `src/config/ignore.ts` are skipped.
 
 ## Sonos mini player

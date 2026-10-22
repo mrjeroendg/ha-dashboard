@@ -13,7 +13,6 @@ export interface Warning {
   detail: string;
   /** When the state started (ms), for sorting newest first. */
   since: number;
-  action?: AttentionRule['action'];
 }
 
 const ORDER: Record<AttentionLevel, number> = { high: 0, medium: 1, low: 2 };
@@ -82,7 +81,6 @@ function warningFor(rule: AttentionRule, entity: HassEntity, now: number): Warni
       ? `${a.installed_version ?? '?'} → ${a.latest_version ?? '?'}`
       : `Al ${duration(minutes)} · ${clock(since)}`,
     since,
-    action: rule.action,
   };
 }
 

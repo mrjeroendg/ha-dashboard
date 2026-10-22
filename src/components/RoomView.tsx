@@ -6,7 +6,6 @@ import { haptic } from '../lib/haptic';
 import {
   adjustTemperature,
   rowModel,
-  sectionIsActive,
   setBrightness,
   setColor,
   type ColorChoice,
@@ -51,7 +50,6 @@ export function RoomView({ room, hass }: Props) {
               }}
             >
               {s.title}
-              {sectionIsActive(s.rows) && <span className="room-tab__dot" aria-label="iets staat aan" />}
             </button>
           ))}
         </div>

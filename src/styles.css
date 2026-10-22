@@ -318,7 +318,6 @@ button.quick-card:active { transform: scale(0.97); }
   flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 7px;
   padding: 8px 14px;
   border-radius: 999px;
   background: var(--surface);
@@ -336,16 +335,6 @@ button.quick-card:active { transform: scale(0.97); }
   color: var(--bg);
   box-shadow: none;
 }
-
-/* Something in this tab is on. */
-.room-tab__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-.room-tab[aria-selected='true'] .room-tab__dot { background: var(--bg); }
 
 .row-group--tabbed { margin-top: 16px; }
 

@@ -263,10 +263,3 @@ function readableState(entity: HassEntity): string {
   if (!Number.isNaN(value)) return `${number(value)}${unit === '°C' ? '°' : unit === '%' ? '%' : unit ? ` ${unit}` : ''}`;
   return entity.state;
 }
-
-// ---------------------------------------------------------------- sections
-
-/** Something in the section is on (a light, the airco, an open cover, music…): the dot on its tab. */
-export function sectionIsActive(rows: Row[]): boolean {
-  return rows.some((r) => rowModel(r.entity, r.allowUnknownState).on);
-}

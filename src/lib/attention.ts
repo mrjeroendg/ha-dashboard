@@ -78,7 +78,7 @@ function warningFor(rule: AttentionRule, entity: HassEntity, now: number): Warni
     title: rule.title ?? (isUpdate ? `Update voor ${name}` : name),
     detail: isUpdate
       ? `${a.installed_version ?? '?'} → ${a.latest_version ?? '?'}`
-      : `Al ${duration(minutes)} · ${clock(since)}`,
+      : `Sinds ${clock(since)}`,
     since,
   };
 }

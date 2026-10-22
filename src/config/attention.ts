@@ -29,7 +29,7 @@ export const ATTENTION: AttentionRule[] = [
     entity: 'sensor.garage_door_state_classification',
     level: 'high',
     when: ['open'],
-    title: 'Immich update beschikbaar'
+    title: 'Gargepoort staat open'
   },
   {
     entity: 'update.irpi_admin_version',

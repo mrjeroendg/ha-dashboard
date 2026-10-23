@@ -47,7 +47,8 @@ export const ROOMS: RoomConfig[] = [
     icon: 'sofa',
     safety: [
       { entity: 'binary_sensor.0x001788011004451e_contact', 'name': 'Voordeur' },
-      { entity: 'binary_sensor.0x001788011004452e_contact', 'name': 'Schuifraam' }],
+      { entity: 'binary_sensor.0x001788011004452e_contact', 'name': 'Schuifraam' }
+    ],
     sections: [
       {
         title: "Verlichting",
@@ -76,6 +77,9 @@ export const ROOMS: RoomConfig[] = [
     icon: 'baby',
     temperature: 'sensor.0xf044d3fffecd20d8_temperature',
     humidity: 'sensor.0xf044d3fffecd20d8_humidity',
+    safety: [
+      { entity: 'binary_sensor.0x001788011004451e_contact', 'name': 'Rookmelder' },
+    ],
     entities: [
       { entity: 'light.bedroom_marielou_herstal_light_switch', name: 'Herstal' },
       { entity: 'cover.rts_16767817', name: 'Rolluik', myPosition: 'button.rts_16767817_my_position' }
@@ -101,6 +105,18 @@ export const ROOMS: RoomConfig[] = [
         ]
       },
       { entity: 'cover.rts_16765494', name: 'Rolluik', myPosition: 'button.rts_16765494_my_position' }
+    ],
+  },
+  {
+    id: 'garage',
+    name: "Garage",
+    icon: 'garage',
+    safety: [
+      { entity: 'binary_sensor.0x0015bc003106405f_smoke', name: 'Rookmelder', battery: 'sensor.0x0015bc003106405f_battery' }
+    ],
+    entities: [
+      { entity: 'light.storage_switch', name: 'Berging' },
+      { entity: 'script.garage_door_impuls', name: 'Garagedeur' }
     ],
   }
 ];

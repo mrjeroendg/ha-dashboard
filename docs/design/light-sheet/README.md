@@ -62,7 +62,9 @@ Scenes are listed explicitly per light, in display order:
 }
 ```
 
-Colour picker: [`@uiw/react-color-wheel`](https://www.npmjs.com/package/@uiw/react-color-wheel) (MIT), styled to match. It works in hue/saturation, like HA's `hs_color`.
+Colour picker: [`@uiw/react-color-wheel`](https://www.npmjs.com/package/@uiw/react-color-wheel) (MIT), styled to match (+9 kB in the bundle). It works in hue/saturation, like HA's `hs_color`; red sits at 3 o'clock and the hues run clockwise, as in the mockup.
+
+All controls send their value **once, on release** (a tap counts too), and keep it until HA reports a clearly different value. Small differences from HA's rounding are ignored: 1% brightness, 60 K warmth, 3° hue and 3% saturation (HA converts colours to the light's xy and back). On the Kleur page you swipe between pages outside the disc; on the disc itself, dragging picks a colour.
 
 ## Not chosen
 

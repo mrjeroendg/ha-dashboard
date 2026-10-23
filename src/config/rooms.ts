@@ -7,6 +7,12 @@ export interface RoomEntity {
   allowUnknownState?: boolean;
   myPosition?: string;
   simple?: boolean;
+  members?: RoomLightMember[];
+}
+
+export interface RoomLightMember {
+  entity: string;
+  name: string;
 }
 
 export interface RoomSafety {
@@ -85,7 +91,15 @@ export const ROOMS: RoomConfig[] = [
       { entity: 'binary_sensor.0x0015bc003106406b_smoke', name: 'Rookmelder', battery: 'sensor.0x0015bc003106406b_battery' }
     ],
     entities: [
-      { entity: 'light.ceiling_light', name: 'Verlichting', simple: true },
+      {
+        entity: 'light.ceiling_light',
+        name: 'Verlichting',
+        members: [
+          { entity: 'light.ceiling_light', name: 'Samen' },
+          { entity: 'light.0x54ef4410012089f2_rgb', name: 'Ring' },
+          { entity: 'light.0x54ef4410012089f2_white', name: 'Lamp' }
+        ]
+      },
       { entity: 'cover.rts_16765494', name: 'Rolluik', myPosition: 'button.rts_16765494_my_position' }
     ],
   }

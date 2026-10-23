@@ -11,7 +11,14 @@ export type Row = {
   simple?: boolean;
   /** Cover: the "My position" button entity, if it exists in HA. */
   myPosition?: string;
+  /** Light: the pills of its sheet (docs/design/light-sheet), those that exist in HA. */
+  members?: LightMember[];
 };
+
+export interface LightMember {
+  entity: HassEntity;
+  name: string;
+}
 
 export interface ResolvedSection {
   /** Undefined for a room configured with a plain `entities` list. */
@@ -40,6 +47,9 @@ function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities)
       allowUnknownState: e.allowUnknownState,
       simple: e.simple,
       myPosition: e.myPosition && e.myPosition in states ? e.myPosition : undefined,
+      members: e.members
+        ?.filter((m) => m.entity in states)
+        .map((m) => ({ entity: states[m.entity], name: m.name })),
     }));
 }
 
@@ -82,6 +92,8 @@ export interface RowModel {
   actionLabel?: string;
   /** Brightness 1–100 when the light is on and dimmable; shows a slider. */
   brightness?: number;
+  /** White temperature, while the light is in white mode. */
+  kelvin?: number;
   /** Present when the light is on and supports color or color temperature. */
   color?: LightColor;
   run?(hass: HomeAssistant): Promise<unknown>;
@@ -138,6 +150,51 @@ function lightColor(entity: HassEntity): LightColor | undefined {
   };
 }
 
+// ---------------------------------------------------------------- light sheet
+
+/** The lights a light stands for: a group's members (its `entity_id` list), or the light itself. */
+function lightsOf(entity: HassEntity, states: HassEntities): HassEntity[] {
+  const ids = entity.attributes.entity_id;
+  if (!Array.isArray(ids)) return [entity];
+  return ids.map((id) => states[String(id)]).filter((e): e is HassEntity => !!e);
+}
+
+/**
+ * Whether a pill can set the warmth (docs/design/light-sheet): a light needs
+ * `color_temp`; a group only when every light in it has it, since the group
+ * itself reports what its members can do combined.
+ */
+export function canSetWarmth(entity: HassEntity, states: HassEntities): boolean {
+  const lights = lightsOf(entity, states);
+  return lights.length > 0 && lights.every((l) => lightFeatures(l).colorTemp);
+}
+
+/** The kelvin range every light behind the pill can reach. */
+export function warmthRange(entity: HassEntity, states: HassEntities) {
+  const lights = lightsOf(entity, states);
+  const min = Math.max(...lights.map((l) => Number(l.attributes.min_color_temp_kelvin ?? 2000)));
+  const max = Math.min(...lights.map((l) => Number(l.attributes.max_color_temp_kelvin ?? 6500)));
+  return { min, max: Math.max(min, max) };
+}
+
+/** The light's current white temperature, only while it's in white mode. */
+export function currentKelvin(entity: HassEntity): number | undefined {
+  const a = entity.attributes;
+  return a.color_mode === 'color_temp' && typeof a.color_temp_kelvin === 'number' ? a.color_temp_kelvin : undefined;
+}
+
+/** "Warm wit", "Neutraal wit" or "Koel wit", like the white swatches. */
+export function warmthName(kelvin: number): string {
+  if (kelvin < 3300) return 'Warm wit';
+  if (kelvin < 4500) return 'Neutraal wit';
+  return 'Koel wit';
+}
+
+/** Set the white temperature; turns the light on if needed. */
+export function setWarmth(hass: HomeAssistant, entity: HassEntity, kelvin: number) {
+  return hass.callService('light', 'turn_on', { color_temp_kelvin: kelvin }, { entity_id: entity.entity_id });
+}
+
 /** Set a light's brightness (1–100%); turns it on if needed. */
 export function setBrightness(hass: HomeAssistant, entity: HassEntity, pct: number) {
   return hass.callService('light', 'turn_on', { brightness_pct: pct }, { entity_id: entity.entity_id });
@@ -176,11 +233,18 @@ export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowO
       const on = entity.state === 'on';
       const pct =
         typeof a.brightness === 'number' && !simple ? Math.max(1, Math.round((a.brightness / 255) * 100)) : undefined;
+      // Only in white mode: in colour mode HA reports no meaningful kelvin.
+      const kelvin =
+        a.color_mode === 'color_temp' && typeof a.color_temp_kelvin === 'number' && !simple
+          ? Math.round(a.color_temp_kelvin)
+          : undefined;
+      const parts = ['Aan', pct !== undefined && `${pct}%`, kelvin !== undefined && `${kelvin} K`].filter(Boolean);
       return {
         kind: 'toggle',
         icon: 'bulb',
         on,
-        detail: on ? (pct !== undefined ? `Aan · ${pct}%` : 'Aan') : 'Uit',
+        detail: on ? parts.join(' · ') : 'Uit',
+        kelvin: on ? kelvin : undefined,
         brightness: on && !simple && lightFeatures(entity).brightness ? (pct ?? 100) : undefined,
         color: simple ? undefined : lightColor(entity),
         run: (h) => h.callService('light', 'toggle', {}, target),

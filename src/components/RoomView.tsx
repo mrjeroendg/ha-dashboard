@@ -1,7 +1,7 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
-import { useState, type CSSProperties } from 'react';
+import { useState, type CSSProperties, type ReactNode } from 'react';
 import { useDebouncedCommit } from '../hooks/useDebouncedCommit';
-import { useRunAction } from '../hooks/useRunAction';
+import { useRunAction, type RunStatus } from '../hooks/useRunAction';
 import { haptic } from '../lib/haptic';
 import {
   adjustTemperature,
@@ -11,6 +11,7 @@ import {
   setBrightness,
   setColor,
   type ColorChoice,
+  type LightMember,
   type ResolvedRoom,
   type RowOptions,
   type RGB,
@@ -19,6 +20,7 @@ import type { HomeAssistant } from '../types/hass';
 import { BrightnessSlider } from './BrightnessSlider';
 import { ColorPicker } from './ColorPicker';
 import { Icon, type IconName } from './Icon';
+import { LightSheet } from './LightSheet';
 import { QuickCard } from './QuickCard';
 import { SafetySheet } from './SafetySheet';
 
@@ -105,6 +107,7 @@ export function RoomView({ room, hass }: Props) {
               name={row.name}
               options={{ allowUnknownState: row.allowUnknownState, simple: row.simple }}
               myPosition={row.myPosition}
+              members={row.members}
               hass={hass}
             />
           ))}
@@ -120,10 +123,11 @@ interface RowProps {
   name: string;
   options: RowOptions;
   myPosition?: string;
+  members?: LightMember[];
   hass: HomeAssistant;
 }
 
-function EntityRow({ entity, name, options, myPosition, hass }: RowProps) {
+function EntityRow({ entity, name, options, myPosition, members, hass }: RowProps) {
   const model = rowModel(entity, options);
   const [status, run] = useRunAction();
   const [draft, setDraft] = useDebouncedCommit<number>((pct) => setBrightness(hass, entity, pct));
@@ -131,7 +135,11 @@ function EntityRow({ entity, name, options, myPosition, hass }: RowProps) {
   const busy = status === 'busy';
   const brightness = model.brightness !== undefined ? (draft ?? model.brightness) : undefined;
   const detail =
-    status === 'error' ? 'Dat lukte niet' : brightness !== undefined ? `Aan · ${brightness}%` : model.detail;
+    status === 'error'
+      ? 'Dat lukte niet'
+      : brightness !== undefined
+        ? ['Aan', `${brightness}%`, model.kelvin !== undefined && `${model.kelvin} K`].filter(Boolean).join(' · ')
+        : model.detail;
 
   const tint = model.color ? tintFor(colorDraft, model.color.rgb) : undefined;
 
@@ -146,6 +154,21 @@ function EntityRow({ entity, name, options, myPosition, hass }: RowProps) {
       </span>
     </>
   );
+
+  if (model.kind === 'toggle' && model.run && members?.length) {
+    return (
+      <SheetRow
+        hass={hass}
+        name={name}
+        label={label}
+        on={model.on}
+        toggle={model.run}
+        members={members}
+        status={status}
+        run={run}
+      />
+    );
+  }
 
   if (model.kind === 'toggle' && model.run) {
     const toggle = model.run;
@@ -227,6 +250,56 @@ function EntityRow({ entity, name, options, myPosition, hass }: RowProps) {
   }
 
   return <div className="row-item row">{label}</div>;
+}
+
+interface SheetRowProps {
+  hass: HomeAssistant;
+  name: string;
+  label: ReactNode;
+  on: boolean;
+  toggle(hass: HomeAssistant): Promise<unknown>;
+  members: LightMember[];
+  status: RunStatus;
+  run(fn: () => Promise<unknown>): void;
+}
+
+/**
+ * A light with `members` (docs/design/light-sheet): only the switch turns it
+ * on and off; the rest of the row opens the light sheet.
+ */
+function SheetRow({ hass, name, label, on, toggle, members, status, run }: SheetRowProps) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <div className="row-item">
+      <div className={`row row--sheet status-${status}`}>
+        <button
+          type="button"
+          className="row__open"
+          onClick={() => {
+            haptic('selection');
+            setOpen(true);
+          }}
+        >
+          {label}
+          <span className="row__chevron">
+            <Icon name="chevron" />
+          </span>
+        </button>
+        <button
+          type="button"
+          className="row__switch"
+          role="switch"
+          aria-checked={on}
+          aria-label={name}
+          onClick={() => run(() => toggle(hass))}
+        >
+          <span className={`switch${on ? ' is-on' : ''}`} aria-hidden />
+        </button>
+      </div>
+      {open && <LightSheet hass={hass} name={name} members={members} onClose={() => setOpen(false)} />}
+    </div>
+  );
 }
 
 /** One button of a cover's strip: lights up briefly after a tap, nothing stays selected. */

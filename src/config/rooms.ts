@@ -54,7 +54,14 @@ export const ROOMS: RoomConfig[] = [
         title: "Verlichting",
         entities: [
           { entity: 'light.living_switch_dining_table', name: 'Staanlamp' },
-          { entity: 'light.huecupboard', name: 'CB3' }
+          {
+            entity: 'light.huecupboard',
+            name: 'CB3',
+            members: [
+              { entity: 'light.0x001788010efb449a', name: 'Links' },
+              { entity: 'light.0x001788010efb4490', name: 'Rechts' }
+            ]
+          },
         ],
       },
       {

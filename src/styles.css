@@ -1282,14 +1282,13 @@ button.row:active { background: var(--accent-soft); }
 }
 
 .row__open:active { background: var(--accent-soft); }
-.row__open .card-detail { display: inline-flex; align-items: center; gap: 3px; }
-.row__open .card-detail .icon { width: 12px; height: 12px; }
+.row__divider { flex: none; align-self: stretch; width: 1px; background: var(--border); }
 
 .row__switch {
   appearance: none;
   flex: none;
   display: grid;
-  padding: 14px 16px 14px 10px;
+  padding: 14px 16px;
   border: 0;
   background: transparent;
   cursor: pointer;

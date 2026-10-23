@@ -1,0 +1,110 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Light sheet</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(4,390px);gap:36px 28px}
+.cap{min-height:52px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.18);--track:rgba(245,244,239,.12);
+position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:56px 24px 0}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:32px}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tabs{display:flex;gap:6px;margin-top:18px}
+.tab{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted);background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.tab.on{background:var(--soft);color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent)}
+.group{margin-top:16px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.row{display:flex;align-items:center;gap:14px;padding:14px 16px}.row+.row{box-shadow:inset 0 1px 0 var(--border)}
+.row.tap{background:rgba(245,244,239,.05)}
+.ic{width:36px;height:36px;border-radius:12px;background:var(--bg);color:var(--accent);display:grid;place-items:center;flex:none}.ic svg{width:20px;height:20px}
+.ic.on{background:var(--accent);color:#fff}
+.t{flex:1;min-width:0}.t b{display:block;font-size:16px;font-weight:500}.t span{font-size:13px;color:var(--muted)}
+.chev{width:16px;height:16px;color:var(--muted);flex:none;margin-right:-4px}
+.sw{width:48px;height:30px;border-radius:999px;background:var(--border);position:relative;flex:none}.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff}
+.sw.on{background:var(--accent)}.sw.on::after{left:auto;right:3px}
+.nav{position:absolute;left:0;right:0;bottom:0;padding:24px 16px 22px;background:linear-gradient(transparent,var(--bg) 30%)}
+.pills{display:flex;gap:4px;padding:6px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.pill{display:flex;align-items:center;gap:7px;padding:10px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted)}.pill svg{width:18px;height:18px}.pill.on{background:var(--accent);color:#fff}
+.note{position:absolute;left:24px;right:24px;top:470px;font-size:12px;color:var(--muted);line-height:1.5}
+.note b{color:var(--text);font-weight:600}
+/* sheet */
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;height:560px;border-radius:28px 28px 0 0;background:#2b2b29;padding:10px 20px 34px;box-shadow:0 -12px 40px rgba(0,0,0,.4);box-sizing:border-box;display:flex;flex-direction:column}
+.handle{width:36px;height:5px;border-radius:3px;background:var(--track);margin:0 auto 8px}
+.dots{display:flex;justify-content:center;gap:6px;margin-bottom:12px;height:6px}
+.dots i{width:6px;height:6px;border-radius:3px;background:rgba(245,244,239,.22)}.dots i.on{width:16px;background:var(--text)}
+.top{display:flex;align-items:center;gap:12px}
+.top .t b{font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:24px}
+.top .t span{display:block;margin-top:2px}
+.power{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:#fff;flex:none}.power svg{width:20px;height:20px}
+.page-title{margin:18px 2px 0;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+/* A: vertical slider */
+.vwrap{flex:1;display:flex;align-items:center;justify-content:center;gap:28px;padding-top:6px}
+.vslider{position:relative;width:120px;height:300px;border-radius:34px;background:rgba(245,244,239,.08);overflow:hidden;box-shadow:inset 0 0 0 1px var(--border)}
+.vslider i{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(to top,#ffb36b,#ffd3a3)}
+.vslider .sun{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);color:#5a3a20}.vslider .sun svg{width:26px;height:26px}
+.big{font-family:ui-serif,"New York",Georgia,serif;font-size:52px;line-height:1}.big small{font-size:22px;color:var(--muted)}
+/* B: horizontal slider */
+.hwrap{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px}
+.hbig{text-align:center}
+.hslider{position:relative;height:72px;border-radius:24px;background:rgba(245,244,239,.08);overflow:hidden;box-shadow:inset 0 0 0 1px var(--border)}
+.hslider i{position:absolute;left:0;top:0;bottom:0;background:linear-gradient(to right,#ffb36b,#ffd3a3)}
+.hslider .sun{position:absolute;left:20px;top:50%;transform:translateY(-50%);color:#5a3a20}.hslider .sun svg{width:26px;height:26px}
+/* colour page */
+.cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px 10px;margin-top:14px}
+.c{display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+.c span{width:60px;height:60px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.c.sel span{box-shadow:0 0 0 3px #2b2b29,0 0 0 5px var(--text)}
+.c.sel{color:var(--text)}
+.sub{font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 2px 0}
+.empty{grid-column:1/-1}
+.vslider.temp{background:linear-gradient(to top,#ffb46b,#ffe4ce 50%,#dfe8ff)}
+.vslider .knob{position:absolute;left:10px;right:10px;height:6px;border-radius:3px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.ends{display:flex;flex-direction:column;justify-content:space-between;height:300px;font-size:12px;color:var(--muted)}
+.bigk{font-family:ui-serif,"New York",Georgia,serif;font-size:40px;line-height:1}.bigk small{display:block;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:13px;color:var(--muted);margin-top:6px}
+.side{display:flex;flex-direction:column;gap:6px}
+.scenes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+.scene{display:flex;align-items:center;gap:12px;padding:12px;border-radius:18px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);font-size:15px;font-weight:500}
+.scene i{width:36px;height:36px;border-radius:50%;flex:none}
+.scene.on{background:var(--soft);box-shadow:inset 0 0 0 1.5px var(--accent)}
+.pages{display:flex;justify-content:center;gap:14px;margin:-4px 0 10px;font-size:11px;color:var(--muted)}
+.pages b{color:var(--text);font-weight:600}
+.wheelwrap{flex:1;display:flex;align-items:center;justify-content:center}
+.disc{position:relative;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,#fff 0,rgba(255,255,255,0) 70%),conic-gradient(from 90deg,#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1)}
+.ring{position:relative;width:300px;height:300px;border-radius:50%;background:conic-gradient(from 90deg,#ff0000,#ffff00,#00ff00,#00ffff,#0000ff,#ff00ff,#ff0000);-webkit-mask:radial-gradient(circle,transparent 104px,#000 105px);mask:radial-gradient(circle,transparent 104px,#000 105px)}
+.ringbox{position:relative;width:300px;height:300px}
+.center{position:absolute;inset:70px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}
+.wknob{position:absolute;width:34px;height:34px;margin:-17px 0 0 -17px;border-radius:50%;box-shadow:0 0 0 3px #fff,0 2px 10px rgba(0,0,0,.5)}
+</style></head><body></body>
+<script>
+const P={bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>',chev:'<path d="M9 6l6 6-6 6"/>',home:'<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/>',sofa:'<path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3M2 13a2 2 0 0 1 4 0v2h12v-2a2 2 0 0 1 4 0v5H2z"/>',monitor:'<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M8 20h8M12 16v4"/>',power:'<path d="M12 3v9M6.3 7.5a8 8 0 1 0 11.4 0"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'};
+const i=n=>`<svg viewBox="0 0 24 24">${P[n]}</svg>`;
+const nav=`<div class="nav"><div class="pills"><div class="pill">${i('home')}Thuis</div><div class="pill on">${i('sofa')}Living</div><div class="pill">${i('monitor')}Bureau</div></div></div>`;
+const row=(name,detail,on,tap,sheet=true)=>`<div class="row ${tap?'tap':''}"><div class="ic ${on?'on':''}">${i('bulb')}</div><div class="t"><b>${name}</b><span>${detail}</span></div>${sheet?i('chev').replace('<svg','<svg class="chev"'):''}<div class="sw ${on?'on':''}"></div></div>`;
+const room=(tap='')=>`<p class="lbl">Kamer</p><h1>Living</h1><div class="tabs"><span class="tab on">Verlichting</span><span class="tab">Screens</span></div>
+<div class="group">${row('Staanlamp','Aan · 70%',true,tap==='Staanlamp')}${row('CB3','Aan · 40% · 3000 K',true,tap==='CB3')}${row('Gang','Uit',false,false,false)}</div>`;
+const phone=(inner,extra='')=>`<div class="phone"><div class="in">${inner}</div>${nav}${extra}</div>`;
+const head=(name)=>`<div class="top"><div class="t"><b>${name}</b></div></div>`;
+const sheet=(dots,inner)=>`<div class="dim"></div><div class="sheet"><div class="handle"></div><div class="dots">${dots}</div>${inner}</div>`;
+const d=(n,of)=>of<2?'':Array.from({length:of},(_,k)=>`<i class="${k===n?'on':''}"></i>`).join('');
+const pages=()=>'';
+const bright=(dots,lbls,n,name,detail,pct)=>sheet(dots,pages(lbls,n)+head(name,detail)+`<p class="page-title">Helderheid</p><div class="vwrap"><div class="vslider"><i style="height:${pct}%"></i><span class="sun">${i('sun')}</span></div><div class="big">${pct}<small>%</small></div></div>`);
+const warmth=(dots,lbls,n,name,detail)=>sheet(dots,pages(lbls,n)+head(name,detail)+`<p class="page-title">Warmte</p><div class="vwrap"><div class="ends"><span>Koel</span><span>Warm</span></div><div class="vslider temp"><span class="knob" style="bottom:28%"></span></div><div class="side"><div class="bigk">3000 K<small>Warm wit</small></div></div></div>`);
+const sw=(name,c,sel)=>`<div class="c ${sel?'sel':''}"><span style="background:${c}"></span>${name}</div>`;
+const pos=(deg,r)=>{const a=deg*Math.PI/180;return `left:${150+Math.cos(a)*r}px;top:${150+Math.sin(a)*r}px`;};
+const rgb=(dots,lbls,n,name,detail,sel)=>sheet(dots,head(name)+`<p class="page-title">Kleur</p><div class="wheelwrap"><div class="disc"><span class="wknob" style="${sel?pos(32,120)+';background:#ff9329':pos(222,125)+';background:#3d7bff'}"></span></div></div>`);
+const sc=(name,g,on)=>`<div class="scene ${on?'on':''}"><i style="background:${g}"></i>${name}</div>`;
+const scenes=(dots,name)=>sheet(dots,head(name)+`<p class="page-title">Scènes</p><div class="scenes">
+${sc('Ontspannen','radial-gradient(circle at 35% 35%,#ffd59a,#ff9a4d)')}${sc('Lezen','radial-gradient(circle at 35% 35%,#fff1dc,#ffd29a)')}
+${sc('Concentreren','radial-gradient(circle at 35% 35%,#f4f7ff,#cfdcff)')}${sc('Energie','radial-gradient(circle at 35% 35%,#e8f0ff,#9db8ff)')}
+${sc('Gedimd','radial-gradient(circle at 35% 35%,#c9864d,#5a3420)')}${sc('Nachtlampje','radial-gradient(circle at 35% 35%,#d0603a,#3a1a10)')}
+${sc('Zonsondergang','linear-gradient(135deg,#ff9329,#ff5e4d,#9b59ff)')}${sc('Tropisch','linear-gradient(135deg,#2ec4c4,#3fbf6a,#ff69b4)')}</div>`);
+const S=[
+ ['Kamer','Alleen de schakelaar zet aan/uit. Tik op de rij → sheet. Gang (alleen aan/uit, geen scènes) heeft geen sheet en geen ›.',phone(room())],
+ ['1 · Scènes','Altijd de eerste pagina, als er scènes in de config staan. Tik = scène starten; geen markering van de actieve.',phone(room('CB3'),scenes(d(0,4),'CB3'))],
+ ['2 · Helderheid','Daarna de bediening die de lamp kan. CB3 kan alles: vier stipjes.',phone(room('CB3'),bright(d(1,4),[],0,'CB3','',40))],
+ ['3 · Warmte','Alleen als de lamp color_temp kan.',phone(room('CB3'),warmth(d(2,4),[],0,'CB3',''))],
+ ['4 · Kleur','Alleen als de lamp RGB kan. Kleurenschijf: kleurtoon rondom, wit in het midden. De knop staat op de kleur die HA meldt.',phone(room('CB3'),rgb(d(3,4),[],0,'CB3','','Amber'))],
+ ['Helderheid, geen scènes','Eén pagina: geen stipjes.',phone(room('Staanlamp'),bright('',[],0,'Staanlamp','',70))],
+ ['Scènes + helderheid + warmte','Drie pagina’s.',phone(room('Staanlamp'),warmth(d(2,3),[],0,'Spots',''))],
+ ['Helderheid + kleur, geen scènes','Twee pagina’s: start op Helderheid.',phone(room('CB3'),rgb(d(1,2),[],0,'Ledstrip','',''))],
+];
+document.body.innerHTML=S.map(([c,s,h])=>`<div>${c?`<p class="cap">${c}<small>${s}</small></p>`:''}${h}</div>`).join('');
+</script></html>

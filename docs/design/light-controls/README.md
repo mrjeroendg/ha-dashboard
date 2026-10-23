@@ -2,7 +2,7 @@
 
 How a dimmable colour light looks on a room page. Dark mode only. It builds on the current room rows (`src/components/RoomView.tsx`, `BrightnessSlider`, `ColorPicker`).
 
-> ✅ **Approved (option B), not built yet.** The owner chose this design. Build it as described, and don't change proportions or behaviour without asking first.
+> ⛔ **Replaced by [`light-sheet`](../light-sheet/README.md)** before it was built. Kept for history.
 
 ![Light controls](./mockup.png)
 

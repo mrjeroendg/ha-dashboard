@@ -31,17 +31,41 @@ Source: [`mockup.html`](./mockup.html).
 - One page: no dots. No pages at all: no sheet.
 - Vertical sliders, so dragging a slider can't be confused with swiping between pages.
 
+## Groups
+
+A light group (e.g. CB3 = two Hue Play bars) is **one row** on the room page; its switch turns the whole group on and off. In the sheet, **pills** under the name choose what the pages control:
+
+![Group](./group.png)
+
+Source: [`group.html`](./group.html).
+
+- The **first pill is always the group itself** ("Samen") and is selected when the sheet opens.
+- The **other pills are configured by hand** (`members`), in that order. Tapping one makes the same pages control only that light.
+- **On/off is always the group:** no switch per light, no "Lampen" page.
+- Without `members`, there are no pills.
+
 ## Config
 
 Scenes are listed explicitly per light, in display order:
 
 ```ts
-{ entity: 'light.huecupboard', name: 'CB3', scenes: ['scene.cb3_ontspannen', 'scene.cb3_lezen'] }
+{
+  entity: 'light.huecupboard',
+  name: 'CB3',
+  scenes: ['scene.cb3_ontspannen', 'scene.cb3_lezen'],
+  members: [
+    { entity: 'light.play_links', name: 'Play links' },
+    { entity: 'light.play_rechts', name: 'Play rechts' },
+  ],
+}
 ```
+
+Colour picker: [`@uiw/react-color-wheel`](https://www.npmjs.com/package/@uiw/react-color-wheel) (MIT), styled to match. It works in hue/saturation, like HA's `hs_color`.
 
 ## Not chosen
 
 - Horizontal sliders (B): clash with swiping between pages.
 - Page names above the title, an on/off button and a subtitle in the sheet: dropped (KISS).
 - Colour swatches on the Kleur page, and a ring (B) instead of a disc ([`color-picker-options.png`](./color-picker-options.png)): the disc matches the HA and Hue apps.
+- A "Lampen" page with a switch per member light: on/off is always the whole group.
 - Colour names on the row ("Aan · 40% · Amber"): that would be a guess.

@@ -29,7 +29,7 @@ const WARMTH_TRACK = 'linear-gradient(to top, #ffb46b, #ffe4ce 50%, #dfe8ff)';
  * warmth is dimmed, and the first one that can is selected.
  */
 export function LightSheet({ hass, name, members, onClose }: Props) {
-  const usable = members.map((m) => canSetWarmth(m.entity, hass.states));
+  const usable = members.map((m) => canSetWarmth(m.entity));
   const [chosen, setChosen] = useState(() => usable.indexOf(true));
   const member = chosen >= 0 ? members[chosen] : undefined;
 
@@ -94,7 +94,7 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
 }
 
 function WarmthControl({ hass, member }: { hass: HomeAssistant; member?: LightMember }) {
-  const range = member ? warmthRange(member.entity, hass.states) : { min: 2700, max: 6500 };
+  const range = member ? warmthRange(member.entity) : { min: 2700, max: 6500 };
 
   const currentKelvinFromEntity = member ? currentKelvin(member.entity) : undefined;
   const [kelvin, setKelvin] = useState(currentKelvinFromEntity);

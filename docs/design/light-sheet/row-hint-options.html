@@ -1,0 +1,32 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Sheet affordance</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(2,420px);gap:28px}
+.cap{font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px;line-height:1.35}
+.panel{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.18);
+background:var(--bg);color:var(--text);border-radius:28px;padding:20px}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.group{border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.row{display:flex;align-items:center;gap:14px;padding:14px 16px;position:relative}.row+.row{box-shadow:inset 0 1px 0 var(--border)}
+.ic{width:36px;height:36px;border-radius:12px;display:grid;place-items:center;flex:none;background:var(--accent);color:#fff}.ic svg{width:20px;height:20px}
+.ic.off{background:var(--bg);color:var(--accent)}
+.t{flex:1;min-width:0}.t b{display:block;font-size:16px;font-weight:500}.t span{font-size:13px;color:var(--muted)}
+.sw{width:48px;height:30px;border-radius:999px;background:var(--accent);position:relative;flex:none}.sw::after{content:"";position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;background:#fff}
+.sw.off{background:var(--border)}.sw.off::after{right:auto;left:3px}
+.chev{width:16px;height:16px;color:var(--muted);flex:none}
+.div{width:1px;align-self:stretch;margin:-14px 0;background:var(--border);flex:none}
+.tune{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--bg);color:var(--muted);box-shadow:inset 0 0 0 1px var(--border);flex:none}.tune svg{width:17px;height:17px}
+.bar{height:3px;border-radius:2px;background:rgba(245,244,239,.12);margin-top:7px;max-width:150px;overflow:hidden}.bar i{display:block;height:100%;width:69%;background:linear-gradient(to right,#ffb36b,#ffd3a3);border-radius:2px}
+.inl{display:inline-flex;align-items:center;gap:3px}.inl svg{width:12px;height:12px}
+</style></head><body></body>
+<script>
+const P={bulb:'<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2V16h5v-.1c0-.8.4-1.5 1-2A6 6 0 0 0 12 3z"/>',chev:'<path d="M9 6l6 6-6 6"/>',tune:'<path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12M20 18h0"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/>'};
+const i=(n,c='')=>`<svg class="${c}" viewBox="0 0 24 24">${P[n]}</svg>`;
+const plain=`<div class="row"><div class="ic off">${i('bulb')}</div><div class="t"><b>Berging</b><span>Uit</span></div><div class="sw off"></div></div>`;
+const opts=[
+ ['Nu','De › los tussen tekst en schakelaar.',`<div class="row"><div class="ic">${i('bulb')}</div><div class="t"><b>Verlichting</b><span>Aan · 69% · 3676 K</span></div>${i('chev','chev')}<div class="sw"></div></div>`],
+ ['A · Scheidingslijn','Een dunne verticale lijn: links opent de sheet, rechts is de schakelaar. Geen extra icoon.',`<div class="row"><div class="ic">${i('bulb')}</div><div class="t"><b>Verlichting</b><span>Aan · 69% · 3676 K</span></div><div class="div"></div><div class="sw"></div></div>`],
+ ['B · Knop met schuifjes','Een eigen rond knopje naast de schakelaar: duidelijk "instellingen". De hele rij blijft ook tikbaar.',`<div class="row"><div class="ic">${i('bulb')}</div><div class="t"><b>Verlichting</b><span>Aan · 69% · 3676 K</span></div><div class="tune">${i('tune')}</div><div class="sw"></div></div>`],
+ ['C · Helderheidsbalkje','Een dun balkje onder de tekst toont de helderheid en suggereert dat je meer kunt regelen.',`<div class="row"><div class="ic">${i('bulb')}</div><div class="t"><b>Verlichting</b><span>Aan · 69% · 3676 K</span><div class="bar"><i></i></div></div><div class="sw"></div></div>`],
+ ['D · › in de tekst','De › achter de detailregel, klein, in dezelfde grijze kleur.',`<div class="row"><div class="ic">${i('bulb')}</div><div class="t"><b>Verlichting</b><span class="inl">Aan · 69% · 3676 K ${i('chev')}</span></div><div class="sw"></div></div>`],
+];
+document.body.innerHTML=opts.map(([c,s,r])=>`<div><p class="cap">${c}<small>${s}</small></p><div class="panel"><div class="group">${r}${plain}</div></div></div>`).join('');
+</script></html>

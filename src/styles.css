@@ -1282,8 +1282,8 @@ button.row:active { background: var(--accent-soft); }
 }
 
 .row__open:active { background: var(--accent-soft); }
-.row__chevron { display: grid; color: var(--text-muted); }
-.row__chevron .icon { width: 16px; height: 16px; }
+.row__open .card-detail { display: inline-flex; align-items: center; gap: 3px; }
+.row__open .card-detail .icon { width: 12px; height: 12px; }
 
 .row__switch {
   appearance: none;

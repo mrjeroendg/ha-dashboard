@@ -143,8 +143,6 @@ function EntityRow({ entity, name, options, myPosition, members, hass }: RowProp
 
   const tint = model.color ? tintFor(colorDraft, model.color.rgb) : undefined;
 
-  const opensLightSheet = model.kind === 'toggle' && !!members?.length;
-
   const label = (
     <>
       <span className={`icon-tile${model.on ? ' is-on' : ''}`} style={tint}>
@@ -152,13 +150,7 @@ function EntityRow({ entity, name, options, myPosition, members, hass }: RowProp
       </span>
       <span className="card-text">
         <span className="row__name">{name}</span>
-        {detail && (
-          <span className={`card-detail${status === 'error' ? ' is-error' : ''}`}>
-            {detail}
-            {/* docs/design/light-sheet: a small › at the end of the detail line shows the row opens a sheet. */}
-            {opensLightSheet && <Icon name="chevron" />}
-          </span>
-        )}
+        {detail && <span className={`card-detail${status === 'error' ? ' is-error' : ''}`}>{detail}</span>}
       </span>
     </>
   );
@@ -291,6 +283,8 @@ function SheetRow({ hass, name, label, on, toggle, members, status, run }: Sheet
         >
           {label}
         </button>
+        {/* docs/design/light-sheet: the divider shows the left part does something else than the switch. */}
+        <span className="row__divider" aria-hidden />
         <button
           type="button"
           className="row__switch"

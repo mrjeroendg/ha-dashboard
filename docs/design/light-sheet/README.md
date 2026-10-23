@@ -12,8 +12,8 @@ Source: [`mockup.html`](./mockup.html).
 
 - No controls under the row anymore: every light is one row.
 - **Only the switch** turns the light on and off. Tapping the rest of the row **opens the sheet**.
-- The row shows it opens a sheet with a small **"›" at the end of the detail line** ("Aan · 69% · 3676 K ›"), in the same muted colour (option D in [`row-hint-options.png`](./row-hint-options.png); not chosen: a divider, a sliders button, a brightness bar).
-- With nothing to show (only on/off, no scenes), tapping does nothing and the row has no "›".
+- The row shows it opens a sheet with a thin **vertical divider** between the text and the switch (option A in [`row-hint-options.png`](./row-hint-options.png)). *Changed during the build:* first a "›" between text and switch, then a "›" at the end of the detail line (D), which sat misaligned on the phone. Not chosen: a sliders button (B), a brightness bar (C).
+- With nothing to show (only on/off, no scenes), tapping does nothing and the row has no divider.
 - Detail line: "Aan · 40%", plus the kelvin in white mode: "Aan · 40% · 3000 K". In colour mode HA reports no kelvin, so it stays "Aan · 40%". No colour names: the dashboard doesn't guess.
 
 ## The sheet

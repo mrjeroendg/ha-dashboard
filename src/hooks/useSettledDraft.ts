@@ -4,10 +4,10 @@ import { useEffect, useState } from 'react';
 const MAX_WAIT_MS = 3000;
 
 /**
- * Bridges the gap between "HA accepted the call" and "HA reports the new
- * state": after a draft is sent, keep showing it until `reported` comes close
- * (or 3 s pass). Without this, a slider jumps back to the old value for a
- * moment before settling on the new one.
+ * Bridges the gap between "the value was sent" and "HA reports the new state":
+ * once the draft ends (finger lifted), keep showing it until `reported` comes
+ * close (or 3 s pass). Without this, a slider jumps back to the old value for
+ * a moment before settling on the new one.
  */
 export function useSettledDraft(draft: number | null, reported: number | undefined, tolerance: number) {
   const [held, setHeld] = useState<number | undefined>(undefined);

@@ -1,5 +1,4 @@
 import { useRef, useState, type PointerEvent } from 'react';
-import { useDebouncedCommit } from '../hooks/useDebouncedCommit';
 import { useSettledDraft } from '../hooks/useSettledDraft';
 import { haptic } from '../lib/haptic';
 import {
@@ -96,7 +95,12 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
 }
 
 function WarmthControl({ hass, member }: { hass: HomeAssistant; member?: LightMember }) {
-  const [draft, setDraft] = useDebouncedCommit<number>((k) => setWarmth(hass, member!.entity, k), 200);
+  // The knob follows the finger; the value goes to HA once, on release.
+  const [draft, setDraft] = useState<number | null>(null);
+  const commit = (k: number) => {
+    setDraft(null);
+    if (member) setWarmth(hass, member.entity, k).catch((err) => console.error(err));
+  };
   const range = member ? warmthRange(member.entity, hass.states) : { min: 2700, max: 6500 };
   // HA stores the warmth in mireds, so the reported kelvin is rarely exactly what was sent.
   const kelvin = useSettledDraft(draft, member ? currentKelvin(member.entity) : undefined, 60);
@@ -116,6 +120,7 @@ function WarmthControl({ hass, member }: { hass: HomeAssistant; member?: LightMe
         disabled={!member}
         background={WARMTH_TRACK}
         onInput={setDraft}
+        onCommit={commit}
       />
       <div className="light-warmth__value">
         {kelvin !== undefined && (

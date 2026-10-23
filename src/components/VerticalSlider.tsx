@@ -11,19 +11,22 @@ interface Props {
   disabled?: boolean;
   /** Track background, e.g. the warm-to-cool gradient. */
   background: string;
+  /** While dragging: move the knob. */
   onInput(value: number): void;
+  /** On release (finger or mouse up): send the value. A tap counts too. */
+  onCommit(value: number): void;
 }
 
 /**
  * Tall pill slider (docs/design/light-sheet): drag anywhere on it, bottom is
  * `min`, top is `max`. Vertical so it never fights the sheet's sideways swipe.
  */
-export function VerticalSlider({ value, min, max, step = 1, label, disabled, background, onInput }: Props) {
+export function VerticalSlider({ value, min, max, step = 1, label, disabled, background, onInput, onCommit }: Props) {
   const fromPointer = (e: PointerEvent<HTMLDivElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
     const fraction = 1 - Math.min(1, Math.max(0, (e.clientY - rect.top) / rect.height));
     const raw = min + fraction * (max - min);
-    onInput(Math.min(max, Math.max(min, Math.round(raw / step) * step)));
+    return Math.min(max, Math.max(min, Math.round(raw / step) * step));
   };
 
   const position = value === undefined ? undefined : (value - min) / (max - min || 1);
@@ -41,10 +44,17 @@ export function VerticalSlider({ value, min, max, step = 1, label, disabled, bac
       onPointerDown={(e) => {
         if (disabled) return;
         e.currentTarget.setPointerCapture(e.pointerId);
-        fromPointer(e);
+        onInput(fromPointer(e));
       }}
       onPointerMove={(e) => {
-        if (!disabled && e.currentTarget.hasPointerCapture(e.pointerId)) fromPointer(e);
+        if (!disabled && e.currentTarget.hasPointerCapture(e.pointerId)) onInput(fromPointer(e));
+      }}
+      onPointerUp={(e) => {
+        if (!disabled && e.currentTarget.hasPointerCapture(e.pointerId)) onCommit(fromPointer(e));
+      }}
+      // The browser took the gesture over: treat it as letting go.
+      onPointerCancel={(e) => {
+        if (!disabled) onCommit(fromPointer(e));
       }}
     >
       {position !== undefined && (

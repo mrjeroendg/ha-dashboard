@@ -95,28 +95,39 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
 
 function WarmthControl({ hass, member }: { hass: HomeAssistant; member?: LightMember }) {
   const range = member ? warmthRange(member.entity, hass.states) : { min: 2700, max: 6500 };
-  const reported = member ? currentKelvin(member.entity) : undefined;
-  // One value for the knob: your finger while you drag, otherwise what HA reports.
-  const [kelvin, setKelvin] = useState(reported);
-  const dragging = useRef(false);
 
-  // HA reports a different kelvin: follow it, unless your finger is on the slider.
+  const currentKelvinFromEntity = member ? currentKelvin(member.entity) : undefined;
+  const [kelvin, setKelvin] = useState(currentKelvinFromEntity);
+
+  const isDragging = useRef(false);
   useEffect(() => {
-    if (!dragging.current) setKelvin(reported);
-  }, [reported]);
+
+    if (isDragging.current) return;
+
+    setKelvin((currentKelvinInApp) => {
+      if (currentKelvinFromEntity !== undefined && currentKelvinInApp !== undefined) {
+        const differenceAppAndHass = Math.abs(currentKelvinFromEntity - currentKelvinInApp);
+        const allowedDifferenceBetweenAppAndHass = 60;
+        const isDifferenceMarginal = differenceAppAndHass <= allowedDifferenceBetweenAppAndHass;
+
+        return isDifferenceMarginal ? currentKelvinInApp : currentKelvinFromEntity;
+      }
+
+      return currentKelvinFromEntity;
+    });
+  }, [currentKelvinFromEntity]);
 
   const drag = (k: number) => {
-    dragging.current = true;
+    isDragging.current = true;
     setKelvin(k);
   };
-  // On release the knob keeps your value until HA reports a different one.
+
   const release = (k: number) => {
-    dragging.current = false;
+    isDragging.current = false;
     setKelvin(k);
     if (!member) return;
-    setWarmth(hass, member.entity, k).catch((err) => {
-      console.error(err);
-      setKelvin(reported);
+    setWarmth(hass, member.entity, k).catch(() => {
+      setKelvin(currentKelvinFromEntity);
     });
   };
 

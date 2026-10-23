@@ -1371,6 +1371,8 @@ button.row:active { background: var(--accent-soft); }
 }
 
 .light-warmth__ends {
+  flex: none;
+  width: 40px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -1379,8 +1381,9 @@ button.row:active { background: var(--accent-soft); }
   color: var(--text-muted);
 }
 
-.light-warmth__value { display: flex; flex-direction: column; gap: 6px; min-width: 120px; }
-.light-warmth__kelvin { font-family: var(--font-serif); font-size: 40px; line-height: 1; }
+/* Fixed width and equal-width digits: a changing value must not shift the centred slider. */
+.light-warmth__value { flex: none; width: 140px; display: flex; flex-direction: column; gap: 6px; white-space: nowrap; }
+.light-warmth__kelvin { font-family: var(--font-serif); font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
 .light-warmth__name { font-size: 13px; color: var(--text-muted); }
 
 .vslider {

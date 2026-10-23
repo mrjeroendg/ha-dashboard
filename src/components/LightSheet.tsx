@@ -108,14 +108,6 @@ function WarmthControl({ hass, member }: { hass: HomeAssistant; member?: LightMe
         const differenceAppAndHass = Math.abs(currentKelvinFromEntity - currentKelvinInApp);
         const allowedDifferenceBetweenAppAndHass = 60;
         const isDifferenceMarginal = differenceAppAndHass <= allowedDifferenceBetweenAppAndHass;
-        console.log("-------------")
-
-        console.log(currentKelvinInApp)
-        console.log(currentKelvinFromEntity)
-
-        console.log(differenceAppAndHass)
-
-        console.log(isDifferenceMarginal)
         return isDifferenceMarginal ? currentKelvinInApp : currentKelvinFromEntity;
       }
 

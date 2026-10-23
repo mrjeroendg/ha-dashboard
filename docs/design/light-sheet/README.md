@@ -20,7 +20,8 @@ Source: [`mockup.html`](./mockup.html).
 ## The sheet
 
 - Opens from the bottom over the dimmed page; swipe down or tap beside it to close (like the expanded player).
-- Only the light's name (serif), the page dots, the page heading and the control. **No subtitle, no on/off button, no page names.**
+- **The title is the page in view** (serif: Helderheid, Warmte, Kleur); it changes as you swipe. **The light's name** sits small and grey **in front of the page dots** (option B in [`name-options.png`](./name-options.png); not chosen: a label above the title, one muted serif line, a chip with the row's icon). Then the pills and the control. *Changed during the build:* first the light's name was the title with the page heading under the pills, then next to it. **No subtitle, no on/off button.**
+- **The control is centred** horizontally and vertically in the space under the pills ([`centred-slider.png`](./centred-slider.png)). The columns left and right of a slider are equally wide (110px: "Koel/Warm" against the slider, the value on the other side), so the slider sits exactly in the middle and in the same place on every page.
 - Pages, swiped sideways like Chromecast ↔ Sonos, in this order and **only when available**:
 
 | # | Page | When | Control |

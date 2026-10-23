@@ -90,6 +90,7 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
   const pager = usePager();
   const [chosenMemberIndex, setChosenMemberIndex] = useState(0);
   const availablePages = LIGHT_PAGES.filter((page) => members.some((member) => page.canControl(member.entity)));
+  const pageInView = Math.min(pager.page, availablePages.length - 1);
 
   const [dragDistance, setDragDistance] = useState(0);
   const dragStartY = useRef<number | null>(null);
@@ -124,15 +125,17 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
           onPointerCancel={releaseHandle}
         >
           <span className="xp__handle" />
-          {availablePages.length > 1 && (
-            <div className="page-dots page-dots--top" aria-hidden>
-              {availablePages.map((page, pageIndex) => (
-                <i key={page.id} className={pager.page === pageIndex ? 'is-active' : undefined} />
+          {/* The light's name sits small in front of the page dots (option B); the title is the page. */}
+          <div className="light-sheet__name-and-dots">
+            <span className="light-sheet__light-name">{name}</span>
+            {availablePages.length > 1 &&
+              availablePages.map((page, pageIndex) => (
+                <i key={page.id} className={pageInView === pageIndex ? 'is-active' : undefined} aria-hidden />
               ))}
-            </div>
-          )}
+          </div>
         </div>
-        <h2 className="light-sheet__title">{name}</h2>
+        {/* The page in view; it changes as you swipe. */}
+        <h2 className="light-sheet__title">{availablePages[pageInView]?.title}</h2>
         <div className="media-card__pages light-sheet__pages" ref={pager.ref} onScroll={pager.onScroll}>
           {availablePages.map((page) => {
             const chosenMemberCanControlPage = page.canControl(members[chosenMemberIndex].entity);
@@ -148,7 +151,6 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
                   selectedMemberIndex={memberIndexOnPage}
                   onSelect={setChosenMemberIndex}
                 />
-                <h3 className="light-sheet__page-title">{page.title}</h3>
                 {/* A new key per light: each light starts from its own value. */}
                 {page.id === 'brightness' && (
                   <BrightnessControl key={memberOnPage.entity.entity_id} hass={hass} light={memberOnPage.entity} />

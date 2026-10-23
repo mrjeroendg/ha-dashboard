@@ -1,5 +1,4 @@
-import { useRef, useState, type PointerEvent } from 'react';
-import { useSettledValue } from '../hooks/useSettledValue';
+import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import { haptic } from '../lib/haptic';
 import {
   canSetWarmth,
@@ -97,16 +96,29 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
 function WarmthControl({ hass, member }: { hass: HomeAssistant; member?: LightMember }) {
   const range = member ? warmthRange(member.entity, hass.states) : { min: 2700, max: 6500 };
   const reported = member ? currentKelvin(member.entity) : undefined;
-  // HA stores the warmth in mireds, so the reported kelvin is rarely exactly what was sent.
-  const [held, hold] = useSettledValue(reported, 60);
-  // The knob follows the finger; the value goes to HA once, on release.
-  const [draft, setDraft] = useState<number | null>(null);
-  const commit = (k: number) => {
-    hold(k);
-    setDraft(null);
-    if (member) setWarmth(hass, member.entity, k).catch((err) => console.error(err));
+  // One value for the knob: your finger while you drag, otherwise what HA reports.
+  const [kelvin, setKelvin] = useState(reported);
+  const dragging = useRef(false);
+
+  // HA reports a different kelvin: follow it, unless your finger is on the slider.
+  useEffect(() => {
+    if (!dragging.current) setKelvin(reported);
+  }, [reported]);
+
+  const drag = (k: number) => {
+    dragging.current = true;
+    setKelvin(k);
   };
-  const kelvin = draft ?? held ?? reported;
+  // On release the knob keeps your value until HA reports a different one.
+  const release = (k: number) => {
+    dragging.current = false;
+    setKelvin(k);
+    if (!member) return;
+    setWarmth(hass, member.entity, k).catch((err) => {
+      console.error(err);
+      setKelvin(reported);
+    });
+  };
 
   return (
     <div className="light-warmth">
@@ -122,8 +134,8 @@ function WarmthControl({ hass, member }: { hass: HomeAssistant; member?: LightMe
         label="Warmte"
         disabled={!member}
         background={WARMTH_TRACK}
-        onInput={setDraft}
-        onCommit={commit}
+        onInput={drag}
+        onCommit={release}
       />
       <div className="light-warmth__value">
         {kelvin !== undefined && (

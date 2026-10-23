@@ -152,6 +152,19 @@ function lightColor(entity: HassEntity): LightColor | undefined {
 
 // ---------------------------------------------------------------- light sheet
 
+/** Whether a pill's light can be dimmed (docs/design/light-sheet). */
+export function canSetBrightness(light: HassEntity): boolean {
+  return lightFeatures(light).brightness;
+}
+
+/** The light's brightness as 1–100%, only while it's on (HA reports none when off). */
+export function currentBrightnessPercentage(light: HassEntity): number | undefined {
+  const brightnessFromEntity = light.attributes.brightness;
+  const isOnWithBrightness = light.state === 'on' && typeof brightnessFromEntity === 'number';
+
+  return isOnWithBrightness ? Math.max(1, Math.round((brightnessFromEntity / 255) * 100)) : undefined;
+}
+
 /** Whether a pill's light can set the warmth (docs/design/light-sheet). */
 export function canSetWarmth(entity: HassEntity): boolean {
   return lightFeatures(entity).colorTemp;

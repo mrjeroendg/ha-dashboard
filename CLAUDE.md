@@ -10,12 +10,27 @@ Instructions for Claude when working in this repository.
   Avoid packing everything into one long expression.
 
   ```ts
-  when: (e, states) => {
-    const batteryPercentage = Number(e.state);
+  when: (batteryEntity, states) => {
+    const batteryPercentage = Number(batteryEntity.state);
     const chargingState = states['sensor.jeroens_ipad_battery_state']?.state;
 
     return batteryPercentage <= 20 && chargingState !== 'Charging';
   },
   ```
 
-  A one-liner is fine when there's only one value, e.g. ``detail: (e) => `${e.state}%` ``.
+  A one-liner is fine when there's only one value, e.g. ``detail: (batteryEntity) => `${batteryEntity.state}%` ``.
+
+- **Descriptive names, even when long.** Name a variable after what it holds
+  and where it comes from, so the code reads without comments. No
+  abbreviations or single letters (`k`, `v`, `pct`, `e`, `m`), also not in
+  callbacks. Booleans read as a question: `is…`, `has…`, `can…`.
+
+  ```ts
+  const differenceAppAndHass = Math.abs(currentKelvinFromEntity - currentKelvinInApp);
+  const allowedDifferenceBetweenAppAndHass = 60;
+  const isDifferenceMarginal = differenceAppAndHass <= allowedDifferenceBetweenAppAndHass;
+
+  return isDifferenceMarginal ? currentKelvinInApp : currentKelvinFromEntity;
+  ```
+
+  Applies to new and changed code; existing code is renamed when it's touched.

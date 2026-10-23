@@ -1,14 +1,21 @@
-import { useEffect, useRef, useState, type PointerEvent } from 'react';
+import type { HassEntity } from 'home-assistant-js-websocket';
+import { useRef, useState, type PointerEvent } from 'react';
+import { usePager } from '../hooks/usePager';
+import { useSliderValue } from '../hooks/useSliderValue';
 import { haptic } from '../lib/haptic';
 import {
+  canSetBrightness,
   canSetWarmth,
+  currentBrightnessPercentage,
   currentKelvin,
+  setBrightness,
   setWarmth,
   warmthName,
   warmthRange,
   type LightMember,
 } from '../lib/rooms';
 import type { HomeAssistant } from '../types/hass';
+import { Icon } from './Icon';
 import { VerticalSlider } from './VerticalSlider';
 
 interface Props {
@@ -21,136 +28,222 @@ interface Props {
 /** How far you have to drag the handle down before the sheet closes. */
 const CLOSE_DISTANCE = 90;
 
+const BRIGHTNESS_TRACK = 'rgba(245, 244, 239, 0.08)';
+const BRIGHTNESS_FILL = 'linear-gradient(to top, #ffb36b, #ffd3a3)';
 const WARMTH_TRACK = 'linear-gradient(to top, #ffb46b, #ffe4ce 50%, #dfe8ff)';
 
+/** HA stores brightness as 0–255, so the percentage it reports back can be 1% off. */
+const ALLOWED_BRIGHTNESS_DIFFERENCE_BETWEEN_APP_AND_HASS = 1;
+/** HA stores the warmth in mireds, so the kelvin it reports back is rarely exactly what was sent. */
+const ALLOWED_KELVIN_DIFFERENCE_BETWEEN_APP_AND_HASS = 60;
+
+type LightPageId = 'brightness' | 'warmth';
+
+interface LightPage {
+  id: LightPageId;
+  title: string;
+  canControl(light: HassEntity): boolean;
+}
+
+/** In this order; a page only shows when at least one pill's light can use it. */
+const LIGHT_PAGES: LightPage[] = [
+  { id: 'brightness', title: 'Helderheid', canControl: canSetBrightness },
+  { id: 'warmth', title: 'Warmte', canControl: canSetWarmth },
+];
+
 /**
- * Light sheet (docs/design/light-sheet), first step: only the Warmte page.
- * The pills come from `members` in the config; a pill that can't set the
- * warmth is dimmed, and the first one that can is selected.
+ * Light sheet (docs/design/light-sheet): one page per thing the lights can do,
+ * swiped sideways like the media card. Every page has the same pills (from
+ * `members` in the config); a pill whose light can't do that page is dimmed.
+ * The chosen pill carries over between pages; where it can't, the page uses
+ * the first pill that can.
  */
 export function LightSheet({ hass, name, members, onClose }: Props) {
-  const usable = members.map((m) => canSetWarmth(m.entity));
-  const [chosen, setChosen] = useState(() => usable.indexOf(true));
-  const member = chosen >= 0 ? members[chosen] : undefined;
+  const pager = usePager();
+  const [chosenMemberIndex, setChosenMemberIndex] = useState(0);
+  const availablePages = LIGHT_PAGES.filter((page) => members.some((member) => page.canControl(member.entity)));
 
-  const [drag, setDrag] = useState(0);
-  const dragStart = useRef<number | null>(null);
-  const onPointerDown = (e: PointerEvent) => {
-    dragStart.current = e.clientY;
-    e.currentTarget.setPointerCapture(e.pointerId);
+  const [dragDistance, setDragDistance] = useState(0);
+  const dragStartY = useRef<number | null>(null);
+  const startDraggingHandle = (pointerEvent: PointerEvent) => {
+    dragStartY.current = pointerEvent.clientY;
+    pointerEvent.currentTarget.setPointerCapture(pointerEvent.pointerId);
   };
-  const onPointerMove = (e: PointerEvent) => {
-    if (dragStart.current !== null) setDrag(Math.max(0, e.clientY - dragStart.current));
+  const followHandle = (pointerEvent: PointerEvent) => {
+    if (dragStartY.current !== null) setDragDistance(Math.max(0, pointerEvent.clientY - dragStartY.current));
   };
-  const onPointerUp = () => {
-    const distance = drag;
-    dragStart.current = null;
-    setDrag(0);
-    if (distance > CLOSE_DISTANCE) onClose();
+  const releaseHandle = () => {
+    const isDraggedFarEnough = dragDistance > CLOSE_DISTANCE;
+    dragStartY.current = null;
+    setDragDistance(0);
+    if (isDraggedFarEnough) onClose();
   };
 
   return (
     <>
       <div className="light-backdrop" onClick={onClose} />
       <div
-        className={`light-sheet${drag ? ' is-dragging' : ''}`}
-        style={drag ? { transform: `translateY(${drag}px)` } : undefined}
+        className={`light-sheet${dragDistance ? ' is-dragging' : ''}`}
+        style={dragDistance ? { transform: `translateY(${dragDistance}px)` } : undefined}
         role="dialog"
         aria-label={name}
       >
         <div
           className="light-sheet__grab"
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
+          onPointerDown={startDraggingHandle}
+          onPointerMove={followHandle}
+          onPointerUp={releaseHandle}
+          onPointerCancel={releaseHandle}
         >
           <span className="xp__handle" />
+          {availablePages.length > 1 && (
+            <div className="page-dots page-dots--top" aria-hidden>
+              {availablePages.map((page, pageIndex) => (
+                <i key={page.id} className={pager.page === pageIndex ? 'is-active' : undefined} />
+              ))}
+            </div>
+          )}
         </div>
         <h2 className="light-sheet__title">{name}</h2>
-        <div className="light-pills">
-          {members.map((m, i) => (
-            <button
-              key={m.entity.entity_id}
-              type="button"
-              className="light-pill"
-              aria-pressed={i === chosen}
-              disabled={!usable[i]}
-              onClick={() => {
-                haptic('selection');
-                setChosen(i);
-              }}
-            >
-              {m.name}
-            </button>
-          ))}
+        <div className="media-card__pages light-sheet__pages" ref={pager.ref} onScroll={pager.onScroll}>
+          {availablePages.map((page) => {
+            const chosenMemberCanControlPage = page.canControl(members[chosenMemberIndex].entity);
+            const firstMemberThatCanControlPage = members.findIndex((member) => page.canControl(member.entity));
+            const memberIndexOnPage = chosenMemberCanControlPage ? chosenMemberIndex : firstMemberThatCanControlPage;
+            const memberOnPage = members[memberIndexOnPage];
+
+            return (
+              <div key={page.id} className="media-card__page light-sheet__page">
+                <MemberPills
+                  members={members}
+                  page={page}
+                  selectedMemberIndex={memberIndexOnPage}
+                  onSelect={setChosenMemberIndex}
+                />
+                <h3 className="light-sheet__page-title">{page.title}</h3>
+                {/* A new key per light: each light starts from its own value. */}
+                {page.id === 'brightness' && (
+                  <BrightnessControl key={memberOnPage.entity.entity_id} hass={hass} light={memberOnPage.entity} />
+                )}
+                {page.id === 'warmth' && (
+                  <WarmthControl key={memberOnPage.entity.entity_id} hass={hass} light={memberOnPage.entity} />
+                )}
+              </div>
+            );
+          })}
         </div>
-        <h3 className="light-sheet__page">Warmte</h3>
-        {/* A new key per pill: each light gets its own draft. */}
-        <WarmthControl key={member?.entity.entity_id ?? 'none'} hass={hass} member={member} />
       </div>
     </>
   );
 }
 
-function WarmthControl({ hass, member }: { hass: HomeAssistant; member?: LightMember }) {
-  const range = member ? warmthRange(member.entity) : { min: 2700, max: 6500 };
+interface MemberPillsProps {
+  members: LightMember[];
+  page: LightPage;
+  selectedMemberIndex: number;
+  onSelect(memberIndex: number): void;
+}
 
-  const currentKelvinFromEntity = member ? currentKelvin(member.entity) : undefined;
-  const [kelvin, setKelvin] = useState(currentKelvinFromEntity);
+function MemberPills({ members, page, selectedMemberIndex, onSelect }: MemberPillsProps) {
+  return (
+    <div className="light-pills">
+      {members.map((member, memberIndex) => (
+        <button
+          key={member.entity.entity_id}
+          type="button"
+          className="light-pill"
+          aria-pressed={memberIndex === selectedMemberIndex}
+          disabled={!page.canControl(member.entity)}
+          onClick={() => {
+            haptic('selection');
+            onSelect(memberIndex);
+          }}
+        >
+          {member.name}
+        </button>
+      ))}
+    </div>
+  );
+}
 
-  const isDragging = useRef(false);
-  useEffect(() => {
-    if (isDragging.current) return;
+function BrightnessControl({ hass, light }: { hass: HomeAssistant; light: HassEntity }) {
+  const brightnessSlider = useSliderValue(
+    currentBrightnessPercentage(light),
+    ALLOWED_BRIGHTNESS_DIFFERENCE_BETWEEN_APP_AND_HASS,
+  );
+  const brightnessInApp = brightnessSlider.currentValueInApp;
 
-    setKelvin((currentKelvinInApp) => {
-      if (currentKelvinFromEntity !== undefined && currentKelvinInApp !== undefined) {
-        const differenceAppAndHass = Math.abs(currentKelvinFromEntity - currentKelvinInApp);
-        const allowedDifferenceBetweenAppAndHass = 60;
-        const isDifferenceMarginal = differenceAppAndHass <= allowedDifferenceBetweenAppAndHass;
-        return isDifferenceMarginal ? currentKelvinInApp : currentKelvinFromEntity;
-      }
-
-      return currentKelvinFromEntity;
-    });
-  }, [currentKelvinFromEntity]);
-
-  const drag = (k: number) => {
-    isDragging.current = true;
-    setKelvin(k);
-  };
-
-  const release = (k: number) => {
-    isDragging.current = false;
-    setKelvin(k);
-    if (!member) return;
-    setWarmth(hass, member.entity, k).catch(() => {
-      setKelvin(currentKelvinFromEntity);
+  const sendBrightnessOnRelease = (releasedBrightness: number) => {
+    brightnessSlider.keepAfterRelease(releasedBrightness);
+    setBrightness(hass, light, releasedBrightness).catch((error) => {
+      console.error(error);
+      brightnessSlider.showValueFromEntity();
     });
   };
 
   return (
-    <div className="light-warmth">
-      <div className="light-warmth__ends" aria-hidden>
+    <div className="light-control">
+      {/* Same width as Warmte's "Koel/Warm" column, so the slider sits in the same place on both pages. */}
+      <div className="light-control__ends" aria-hidden />
+      <VerticalSlider
+        look="fill"
+        value={brightnessInApp}
+        min={1}
+        max={100}
+        label="Helderheid"
+        background={BRIGHTNESS_TRACK}
+        fillBackground={BRIGHTNESS_FILL}
+        icon={<Icon name="sun" />}
+        onInput={brightnessSlider.showWhileDragging}
+        onCommit={sendBrightnessOnRelease}
+      />
+      <div className="light-control__value">
+        {brightnessInApp !== undefined && (
+          <span className="light-control__number">
+            {brightnessInApp}
+            <small>%</small>
+          </span>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function WarmthControl({ hass, light }: { hass: HomeAssistant; light: HassEntity }) {
+  const kelvinRange = warmthRange(light);
+  const kelvinSlider = useSliderValue(currentKelvin(light), ALLOWED_KELVIN_DIFFERENCE_BETWEEN_APP_AND_HASS);
+  const kelvinInApp = kelvinSlider.currentValueInApp;
+
+  const sendKelvinOnRelease = (releasedKelvin: number) => {
+    kelvinSlider.keepAfterRelease(releasedKelvin);
+    setWarmth(hass, light, releasedKelvin).catch((error) => {
+      console.error(error);
+      kelvinSlider.showValueFromEntity();
+    });
+  };
+
+  return (
+    <div className="light-control">
+      <div className="light-control__ends" aria-hidden>
         <span>Koel</span>
         <span>Warm</span>
       </div>
       <VerticalSlider
-        value={kelvin}
-        min={range.min}
-        max={range.max}
+        look="knob"
+        value={kelvinInApp}
+        min={kelvinRange.min}
+        max={kelvinRange.max}
         step={50}
         label="Warmte"
-        disabled={!member}
         background={WARMTH_TRACK}
-        onInput={drag}
-        onCommit={release}
+        onInput={kelvinSlider.showWhileDragging}
+        onCommit={sendKelvinOnRelease}
       />
-      <div className="light-warmth__value">
-        {kelvin !== undefined && (
+      <div className="light-control__value">
+        {kelvinInApp !== undefined && (
           <>
-            <span className="light-warmth__kelvin">{Math.round(kelvin)} K</span>
-            <span className="light-warmth__name">{warmthName(kelvin)}</span>
+            <span className="light-control__number">{Math.round(kelvinInApp)} K</span>
+            <span className="light-control__name">{warmthName(kelvinInApp)}</span>
           </>
         )}
       </div>

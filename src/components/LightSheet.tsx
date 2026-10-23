@@ -90,6 +90,7 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
   const pager = usePager();
   const [chosenMemberIndex, setChosenMemberIndex] = useState(0);
   const availablePages = LIGHT_PAGES.filter((page) => members.some((member) => page.canControl(member.entity)));
+  const pageInView = Math.min(pager.page, availablePages.length - 1);
 
   const [dragDistance, setDragDistance] = useState(0);
   const dragStartY = useRef<number | null>(null);
@@ -132,7 +133,11 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
             </div>
           )}
         </div>
-        <h2 className="light-sheet__title">{name}</h2>
+        <div className="light-sheet__header">
+          <h2 className="light-sheet__title">{name}</h2>
+          {/* The page in view, next to the light's name; it changes as you swipe. */}
+          <span className="light-sheet__page-title">{availablePages[pageInView]?.title}</span>
+        </div>
         <div className="media-card__pages light-sheet__pages" ref={pager.ref} onScroll={pager.onScroll}>
           {availablePages.map((page) => {
             const chosenMemberCanControlPage = page.canControl(members[chosenMemberIndex].entity);
@@ -148,7 +153,6 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
                   selectedMemberIndex={memberIndexOnPage}
                   onSelect={setChosenMemberIndex}
                 />
-                <h3 className="light-sheet__page-title">{page.title}</h3>
                 {/* A new key per light: each light starts from its own value. */}
                 {page.id === 'brightness' && (
                   <BrightnessControl key={memberOnPage.entity.entity_id} hass={hass} light={memberOnPage.entity} />

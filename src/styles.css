@@ -1355,8 +1355,11 @@ button.row:active { background: var(--accent-soft); }
 .light-sheet__pages { margin: 0 -20px; }
 .light-sheet__page { padding: 0 20px; }
 
+.light-sheet__header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 4px; }
+.light-sheet__header .light-sheet__title { margin: 0; }
+
 .light-sheet__page-title {
-  margin: 18px 2px 0;
+  flex: none;
   font-size: 12px;
   font-weight: 500;
   letter-spacing: 0.06em;

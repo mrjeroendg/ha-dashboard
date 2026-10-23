@@ -20,7 +20,7 @@ Source: [`mockup.html`](./mockup.html).
 ## The sheet
 
 - Opens from the bottom over the dimmed page; swipe down or tap beside it to close (like the expanded player).
-- Only the light's name (serif), the page dots, the page heading and the control. **No subtitle, no on/off button, no page names.**
+- Only the light's name (serif) with the **page in view on the same line** (right-aligned, small grey capitals: HELDERHEID, WARMTE, KLEUR), the page dots, the pills and the control. *Changed during the build:* the page heading first sat under the pills. **No subtitle, no on/off button.**
 - Pages, swiped sideways like Chromecast ↔ Sonos, in this order and **only when available**:
 
 | # | Page | When | Control |

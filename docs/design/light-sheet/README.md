@@ -37,11 +37,11 @@ A light group (e.g. CB3 = two Hue Play bars) is **one row** on the room page; it
 
 ![Group](./group.png)
 
-Source: [`group.html`](./group.html).
+Source: [`group.html`](./group.html). The mockup still shows a "Samen" pill; that was dropped (see below).
 
-- The **first pill is always the group itself** ("Samen") and is selected when the sheet opens.
-- The **other pills are configured by hand** (`members`), in that order. Tapping one makes the same pages control only that light.
-- **On/off is always the group:** no switch per light, no "Lampen" page.
+- **Pills are the individual lights only**, configured by hand (`members`), in that order. The first is selected when the sheet opens. *Changed during the build:* a "Samen" pill for the group itself was dropped. A HA light group reports the average of its members, so while they update one after the other its kelvin is a value no light has, and the knob jumped (HA's own control does the same).
+- A pill whose light can't do the current page is **dimmed**, from that light's own `supported_color_modes`.
+- **On/off is always the group:** the row's switch. No switch per light, no "Lampen" page.
 - Without `members`, there are no pills.
 
 ## Config

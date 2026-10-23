@@ -99,7 +99,6 @@ export const ROOMS: RoomConfig[] = [
         entity: 'light.ceiling_light',
         name: 'Verlichting',
         members: [
-          { entity: 'light.ceiling_light', name: 'Samen' },
           { entity: 'light.0x54ef4410012089f2_rgb', name: 'Ring' },
           { entity: 'light.0x54ef4410012089f2_white', name: 'Lamp' }
         ]

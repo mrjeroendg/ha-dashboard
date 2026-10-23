@@ -152,28 +152,15 @@ function lightColor(entity: HassEntity): LightColor | undefined {
 
 // ---------------------------------------------------------------- light sheet
 
-/** The lights a light stands for: a group's members (its `entity_id` list), or the light itself. */
-function lightsOf(entity: HassEntity, states: HassEntities): HassEntity[] {
-  const ids = entity.attributes.entity_id;
-  if (!Array.isArray(ids)) return [entity];
-  return ids.map((id) => states[String(id)]).filter((e): e is HassEntity => !!e);
+/** Whether a pill's light can set the warmth (docs/design/light-sheet). */
+export function canSetWarmth(entity: HassEntity): boolean {
+  return lightFeatures(entity).colorTemp;
 }
 
-/**
- * Whether a pill can set the warmth (docs/design/light-sheet): a light needs
- * `color_temp`; a group only when every light in it has it, since the group
- * itself reports what its members can do combined.
- */
-export function canSetWarmth(entity: HassEntity, states: HassEntities): boolean {
-  const lights = lightsOf(entity, states);
-  return lights.length > 0 && lights.every((l) => lightFeatures(l).colorTemp);
-}
-
-/** The kelvin range every light behind the pill can reach. */
-export function warmthRange(entity: HassEntity, states: HassEntities) {
-  const lights = lightsOf(entity, states);
-  const min = Math.max(...lights.map((l) => Number(l.attributes.min_color_temp_kelvin ?? 2000)));
-  const max = Math.min(...lights.map((l) => Number(l.attributes.max_color_temp_kelvin ?? 6500)));
+/** The light's kelvin range. */
+export function warmthRange(entity: HassEntity) {
+  const min = Number(entity.attributes.min_color_temp_kelvin ?? 2000);
+  const max = Number(entity.attributes.max_color_temp_kelvin ?? 6500);
   return { min, max: Math.max(min, max) };
 }
 

@@ -12,6 +12,7 @@ import {
   setColor,
   type ColorChoice,
   type LightMember,
+  turnOnLight,
   type ResolvedRoom,
   type RowOptions,
   type RGB,
@@ -159,6 +160,7 @@ function EntityRow({ entity, name, options, myPosition, members, hass }: RowProp
     return (
       <SheetRow
         hass={hass}
+        light={entity}
         name={name}
         label={label}
         on={model.on}
@@ -254,21 +256,35 @@ function EntityRow({ entity, name, options, myPosition, members, hass }: RowProp
 
 interface SheetRowProps {
   hass: HomeAssistant;
+  light: HassEntity;
   name: string;
   label: ReactNode;
   on: boolean;
   toggle(hass: HomeAssistant): Promise<unknown>;
   members: LightMember[];
   status: RunStatus;
-  run(fn: () => Promise<unknown>): void;
+  run(action: () => Promise<unknown>): void;
 }
 
 /**
  * A light with `members` (docs/design/light-sheet): only the switch turns it
- * on and off; the rest of the row opens the light sheet.
+ * on and off; the rest of the row opens the light sheet. An off light is
+ * turned on first, so every control in the sheet starts from a lit lamp.
  */
-function SheetRow({ hass, name, label, on, toggle, members, status, run }: SheetRowProps) {
-  const [open, setOpen] = useState(false);
+function SheetRow({ hass, light, name, label, on, toggle, members, status, run }: SheetRowProps) {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const openSheet = () => {
+    haptic('selection');
+    if (on) {
+      setIsSheetOpen(true);
+      return;
+    }
+    run(async () => {
+      await turnOnLight(hass, light);
+      setIsSheetOpen(true);
+    });
+  };
 
   return (
     <div className="row-item">
@@ -276,10 +292,7 @@ function SheetRow({ hass, name, label, on, toggle, members, status, run }: Sheet
         <button
           type="button"
           className="row__open"
-          onClick={() => {
-            haptic('selection');
-            setOpen(true);
-          }}
+          onClick={openSheet}
         >
           {label}
         </button>
@@ -296,7 +309,7 @@ function SheetRow({ hass, name, label, on, toggle, members, status, run }: Sheet
           <span className={`switch${on ? ' is-on' : ''}`} aria-hidden />
         </button>
       </div>
-      {open && <LightSheet hass={hass} name={name} members={members} onClose={() => setOpen(false)} />}
+      {isSheetOpen && <LightSheet hass={hass} name={name} members={members} onClose={() => setIsSheetOpen(false)} />}
     </div>
   );
 }

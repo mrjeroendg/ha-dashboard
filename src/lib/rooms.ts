@@ -195,6 +195,11 @@ export function setWarmth(hass: HomeAssistant, entity: HassEntity, kelvin: numbe
   return hass.callService('light', 'turn_on', { color_temp_kelvin: kelvin }, { entity_id: entity.entity_id });
 }
 
+/** Turn a light on, keeping its last brightness and colour. */
+export function turnOnLight(hass: HomeAssistant, light: HassEntity) {
+  return hass.callService('light', 'turn_on', {}, { entity_id: light.entity_id });
+}
+
 /** Set a light's brightness (1–100%); turns it on if needed. */
 export function setBrightness(hass: HomeAssistant, entity: HassEntity, pct: number) {
   return hass.callService('light', 'turn_on', { brightness_pct: pct }, { entity_id: entity.entity_id });

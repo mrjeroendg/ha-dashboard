@@ -125,19 +125,17 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
           onPointerCancel={releaseHandle}
         >
           <span className="xp__handle" />
-          {availablePages.length > 1 && (
-            <div className="page-dots page-dots--top" aria-hidden>
-              {availablePages.map((page, pageIndex) => (
-                <i key={page.id} className={pager.page === pageIndex ? 'is-active' : undefined} />
+          {/* The light's name sits small in front of the page dots (option B); the title is the page. */}
+          <div className="light-sheet__name-and-dots">
+            <span className="light-sheet__light-name">{name}</span>
+            {availablePages.length > 1 &&
+              availablePages.map((page, pageIndex) => (
+                <i key={page.id} className={pageInView === pageIndex ? 'is-active' : undefined} aria-hidden />
               ))}
-            </div>
-          )}
+          </div>
         </div>
-        <div className="light-sheet__header">
-          <h2 className="light-sheet__title">{name}</h2>
-          {/* The page in view, next to the light's name; it changes as you swipe. */}
-          <span className="light-sheet__page-title">{availablePages[pageInView]?.title}</span>
-        </div>
+        {/* The page in view; it changes as you swipe. */}
+        <h2 className="light-sheet__title">{availablePages[pageInView]?.title}</h2>
         <div className="media-card__pages light-sheet__pages" ref={pager.ref} onScroll={pager.onScroll}>
           {availablePages.map((page) => {
             const chosenMemberCanControlPage = page.canControl(members[chosenMemberIndex].entity);

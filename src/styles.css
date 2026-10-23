@@ -1309,7 +1309,7 @@ button.row:active { background: var(--accent-soft); }
   right: 0;
   bottom: 0;
   z-index: 4;
-  padding: 0 20px calc(34px + env(safe-area-inset-bottom));
+  padding: 0 20px calc(16px + env(safe-area-inset-bottom));
   border-radius: 28px 28px 0 0;
   background: #2b2b29;
   box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.4);
@@ -1355,40 +1355,46 @@ button.row:active { background: var(--accent-soft); }
 .light-sheet__pages { margin: 0 -20px; }
 .light-sheet__page { padding: 0 20px; }
 
-.light-sheet__header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-top: 4px; }
-.light-sheet__header .light-sheet__title { margin: 0; }
+.light-sheet__name-and-dots { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.light-sheet__light-name { margin-right: 6px; font-size: 12px; color: var(--text-muted); }
 
-.light-sheet__page-title {
-  flex: none;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
+.light-sheet__name-and-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--text) 22%, transparent);
+  transition: width 200ms ease, background-color 200ms ease;
 }
 
+.light-sheet__name-and-dots i.is-active { width: 16px; background: var(--text); }
+
+/* Every page as tall as the tallest control, with the control centred in the space under the pills. */
+.light-sheet__page { display: flex; flex-direction: column; min-height: 400px; }
+
 .light-control {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
-  padding: 20px 0 8px;
+  gap: 20px;
+  padding: 16px 0;
 }
 
 .light-control__ends {
   flex: none;
-  width: 40px;
+  width: 110px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: flex-end;
   height: 300px;
   font-size: 12px;
   color: var(--text-muted);
 }
 
 /* Fixed width and equal-width digits: a changing value must not shift the centred slider. */
-.light-control__value { flex: none; width: 140px; display: flex; flex-direction: column; gap: 6px; white-space: nowrap; }
-.light-control__number { font-family: var(--font-serif); font-size: 40px; line-height: 1; font-variant-numeric: tabular-nums; }
+.light-control__value { flex: none; width: 110px; display: flex; flex-direction: column; gap: 6px; white-space: nowrap; }
+.light-control__number { font-family: var(--font-serif); font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
 .light-control__number small { font-size: 0.45em; color: var(--text-muted); }
 .light-control__name { font-size: 13px; color: var(--text-muted); }
 

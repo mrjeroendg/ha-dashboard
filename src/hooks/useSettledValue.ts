@@ -5,16 +5,15 @@ const MAX_WAIT_MS = 3000;
 
 /**
  * Bridges the gap between "the value was sent" and "HA reports the new state":
- * once the draft ends (finger lifted), keep showing it until `reported` comes
+ * `hold(value)` on release keeps showing that value until `reported` comes
  * close (or 3 s pass). Without this, a slider jumps back to the old value for
  * a moment before settling on the new one.
  */
-export function useSettledDraft(draft: number | null, reported: number | undefined, tolerance: number) {
+export function useSettledValue(
+  reported: number | undefined,
+  tolerance: number,
+): [number | undefined, (value: number) => void] {
   const [held, setHeld] = useState<number | undefined>(undefined);
-
-  useEffect(() => {
-    if (draft !== null) setHeld(draft);
-  }, [draft]);
 
   useEffect(() => {
     if (held === undefined) return;
@@ -27,5 +26,5 @@ export function useSettledDraft(draft: number | null, reported: number | undefin
     return () => window.clearTimeout(timer);
   }, [held, reported, tolerance]);
 
-  return draft ?? held ?? reported;
+  return [held, setHeld];
 }

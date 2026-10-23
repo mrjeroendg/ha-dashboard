@@ -1,17 +1,22 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
-import { useRef, useState, type PointerEvent } from 'react';
+import Wheel from '@uiw/react-color-wheel';
+import { useEffect, useRef, useState, type PointerEvent } from 'react';
 import { usePager } from '../hooks/usePager';
-import { useSliderValue } from '../hooks/useSliderValue';
+import { useControlValue } from '../hooks/useControlValue';
 import { haptic } from '../lib/haptic';
 import {
   canSetBrightness,
+  canSetColor,
   canSetWarmth,
   currentBrightnessPercentage,
+  currentHueSaturation,
   currentKelvin,
   setBrightness,
+  setHueSaturation,
   setWarmth,
   warmthName,
   warmthRange,
+  type HueSaturation,
   type LightMember,
 } from '../lib/rooms';
 import type { HomeAssistant } from '../types/hass';
@@ -36,8 +41,30 @@ const WARMTH_TRACK = 'linear-gradient(to top, #ffb46b, #ffe4ce 50%, #dfe8ff)';
 const ALLOWED_BRIGHTNESS_DIFFERENCE_BETWEEN_APP_AND_HASS = 1;
 /** HA stores the warmth in mireds, so the kelvin it reports back is rarely exactly what was sent. */
 const ALLOWED_KELVIN_DIFFERENCE_BETWEEN_APP_AND_HASS = 60;
+/** HA converts the colour to the light's own colour space (xy) and back, so hue and saturation drift a little. */
+const ALLOWED_HUE_DIFFERENCE_BETWEEN_APP_AND_HASS = 3;
+const ALLOWED_SATURATION_DIFFERENCE_BETWEEN_APP_AND_HASS = 3;
 
-type LightPageId = 'brightness' | 'warmth';
+const COLOR_WHEEL_SIZE = 280;
+
+const isNumberDifferenceMarginal = (allowedDifferenceBetweenAppAndHass: number) => (valueFromEntity: number, valueInApp: number) => {
+  const differenceAppAndHass = Math.abs(valueFromEntity - valueInApp);
+
+  return differenceAppAndHass <= allowedDifferenceBetweenAppAndHass;
+};
+
+const isColorDifferenceMarginal = (colorFromEntity: HueSaturation, colorInApp: HueSaturation) => {
+  const hueDistance = Math.abs(colorFromEntity.hue - colorInApp.hue);
+  // Hue goes round: 359° and 1° are 2° apart.
+  const hueDifferenceAppAndHass = Math.min(hueDistance, 360 - hueDistance);
+  const saturationDifferenceAppAndHass = Math.abs(colorFromEntity.saturation - colorInApp.saturation);
+  const isHueMarginal = hueDifferenceAppAndHass <= ALLOWED_HUE_DIFFERENCE_BETWEEN_APP_AND_HASS;
+  const isSaturationMarginal = saturationDifferenceAppAndHass <= ALLOWED_SATURATION_DIFFERENCE_BETWEEN_APP_AND_HASS;
+
+  return isHueMarginal && isSaturationMarginal;
+};
+
+type LightPageId = 'brightness' | 'warmth' | 'color';
 
 interface LightPage {
   id: LightPageId;
@@ -49,6 +76,7 @@ interface LightPage {
 const LIGHT_PAGES: LightPage[] = [
   { id: 'brightness', title: 'Helderheid', canControl: canSetBrightness },
   { id: 'warmth', title: 'Warmte', canControl: canSetWarmth },
+  { id: 'color', title: 'Kleur', canControl: canSetColor },
 ];
 
 /**
@@ -128,6 +156,9 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
                 {page.id === 'warmth' && (
                   <WarmthControl key={memberOnPage.entity.entity_id} hass={hass} light={memberOnPage.entity} />
                 )}
+                {page.id === 'color' && (
+                  <ColorControl key={memberOnPage.entity.entity_id} hass={hass} light={memberOnPage.entity} />
+                )}
               </div>
             );
           })}
@@ -167,9 +198,9 @@ function MemberPills({ members, page, selectedMemberIndex, onSelect }: MemberPil
 }
 
 function BrightnessControl({ hass, light }: { hass: HomeAssistant; light: HassEntity }) {
-  const brightnessSlider = useSliderValue(
+  const brightnessSlider = useControlValue(
     currentBrightnessPercentage(light),
-    ALLOWED_BRIGHTNESS_DIFFERENCE_BETWEEN_APP_AND_HASS,
+    isNumberDifferenceMarginal(ALLOWED_BRIGHTNESS_DIFFERENCE_BETWEEN_APP_AND_HASS),
   );
   const brightnessInApp = brightnessSlider.currentValueInApp;
 
@@ -211,7 +242,10 @@ function BrightnessControl({ hass, light }: { hass: HomeAssistant; light: HassEn
 
 function WarmthControl({ hass, light }: { hass: HomeAssistant; light: HassEntity }) {
   const kelvinRange = warmthRange(light);
-  const kelvinSlider = useSliderValue(currentKelvin(light), ALLOWED_KELVIN_DIFFERENCE_BETWEEN_APP_AND_HASS);
+  const kelvinSlider = useControlValue(
+    currentKelvin(light),
+    isNumberDifferenceMarginal(ALLOWED_KELVIN_DIFFERENCE_BETWEEN_APP_AND_HASS),
+  );
   const kelvinInApp = kelvinSlider.currentValueInApp;
 
   const sendKelvinOnRelease = (releasedKelvin: number) => {
@@ -247,6 +281,62 @@ function WarmthControl({ hass, light }: { hass: HomeAssistant; light: HassEntity
           </>
         )}
       </div>
+    </div>
+  );
+}
+
+function ColorControl({ hass, light }: { hass: HomeAssistant; light: HassEntity }) {
+  const colorWheel = useControlValue(currentHueSaturation(light), isColorDifferenceMarginal);
+  const colorInApp = colorWheel.currentValueInApp;
+  // The wheel reports every move but not the release, so the latest colour is kept here for that moment.
+  const latestDraggedColor = useRef<HueSaturation | undefined>(undefined);
+
+  const sendColorOnRelease = () => {
+    const releasedColor = latestDraggedColor.current;
+    latestDraggedColor.current = undefined;
+    if (!releasedColor) return;
+
+    colorWheel.keepAfterRelease(releasedColor);
+    setHueSaturation(hass, light, releasedColor).catch((error) => {
+      console.error(error);
+      colorWheel.showValueFromEntity();
+    });
+  };
+
+  // Listen for the release on the whole window: the finger may end up outside the wheel.
+  useEffect(() => {
+    window.addEventListener('pointerup', sendColorOnRelease);
+    window.addEventListener('pointercancel', sendColorOnRelease);
+    return () => {
+      window.removeEventListener('pointerup', sendColorOnRelease);
+      window.removeEventListener('pointercancel', sendColorOnRelease);
+    };
+  });
+
+  return (
+    <div className="light-control">
+      <Wheel
+        className="light-color-wheel"
+        width={COLOR_WHEEL_SIZE}
+        height={COLOR_WHEEL_SIZE}
+        direction="clockwise"
+        angle={0}
+        color={colorInApp ? { h: colorInApp.hue, s: colorInApp.saturation, v: 100, a: 1 } : undefined}
+        pointer={({ style, color: pointerColor }) =>
+          colorInApp ? (
+            <div style={style}>
+              <span className="light-color-wheel__knob" style={{ background: pointerColor }} />
+            </div>
+          ) : (
+            <span />
+          )
+        }
+        onChange={(changedColor) => {
+          const draggedColor = { hue: changedColor.hsva.h, saturation: changedColor.hsva.s };
+          latestDraggedColor.current = draggedColor;
+          colorWheel.showWhileDragging(draggedColor);
+        }}
+      />
     </div>
   );
 }

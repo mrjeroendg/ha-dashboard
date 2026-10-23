@@ -165,6 +165,32 @@ export function currentBrightnessPercentage(light: HassEntity): number | undefin
   return isOnWithBrightness ? Math.max(1, Math.round((brightnessFromEntity / 255) * 100)) : undefined;
 }
 
+/** A colour as HA's `hs_color`: hue 0–360°, saturation 0–100%. */
+export interface HueSaturation {
+  hue: number;
+  saturation: number;
+}
+
+/** Whether a pill's light can show colours (docs/design/light-sheet). */
+export function canSetColor(light: HassEntity): boolean {
+  return lightFeatures(light).color;
+}
+
+/** The colour HA reports for the light, only while it's on. */
+export function currentHueSaturation(light: HassEntity): HueSaturation | undefined {
+  const hueSaturationFromEntity = light.attributes.hs_color;
+  const isOnWithColor = light.state === 'on' && Array.isArray(hueSaturationFromEntity);
+
+  return isOnWithColor
+    ? { hue: Number(hueSaturationFromEntity[0]), saturation: Number(hueSaturationFromEntity[1]) }
+    : undefined;
+}
+
+/** Set the light's colour; turns it on if needed. */
+export function setHueSaturation(hass: HomeAssistant, light: HassEntity, color: HueSaturation) {
+  return hass.callService('light', 'turn_on', { hs_color: [color.hue, color.saturation] }, { entity_id: light.entity_id });
+}
+
 /** Whether a pill's light can set the warmth (docs/design/light-sheet). */
 export function canSetWarmth(entity: HassEntity): boolean {
   return lightFeatures(entity).colorTemp;

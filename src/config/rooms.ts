@@ -124,5 +124,19 @@ export const ROOMS: RoomConfig[] = [
       { entity: 'light.storage_switch', name: 'Berging' },
       { entity: 'script.garage_door_impuls', name: 'Garagedeur' }
     ],
+  },
+  {
+    id: 'gasten',
+    name: "Gasten",
+    icon: 'garage',
+    safety: [
+      {
+        entity: 'binary_sensor.0x0015bc003106405c_smoke', name: 'Rookmelder',
+        battery: 'sensor.0x0015bc003106405c_battery'
+      }
+    ],
+    entities: [
+      { entity: 'cover.rts_16722417', name: 'Rolluik', myPosition: 'button.rts_16722417_my_position' }
+    ],
   }
 ];

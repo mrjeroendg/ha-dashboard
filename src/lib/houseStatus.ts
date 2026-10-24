@@ -1,8 +1,24 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import { STATUS } from '../config/status';
+import type { HomeAssistant } from '../types/hass';
 
 const UNAVAILABLE = new Set(['unavailable', 'unknown']);
 const OPEN = new Set(['on', 'open', 'opening']);
+
+/** Jeroen's office days at Banqup (docs/design/commute). */
+const COMMUTE = {
+  travelTimeHome: 'sensor.commuting_home_travel_time_jeroen',
+  person: 'person.jeroen',
+  userId: '948e49d9b8eb426aa1f994c353e0aad9',
+  officeZone: 'Banqup',
+  /** Tuesday and Wednesday (Sunday is 0). */
+  officeDays: [2, 3],
+  fromHour: 16,
+  untilHour: 18,
+};
+
+/** Opens Waze on the phone and starts the route to the "Home" favourite saved in Waze. */
+export const WAZE_ROUTE_HOME = 'https://waze.com/ul?favorite=home&navigate=yes';
 
 /** The listed entities that exist and are available. */
 function listed(states: HassEntities, ids: string[]): HassEntity[] {
@@ -39,6 +55,23 @@ function temperature(states: HassEntities): string | undefined {
   const value = Number.parseFloat((STATUS.temperature && states[STATUS.temperature]?.state) ?? '');
   if (Number.isNaN(value)) return undefined;
   return `${value.toLocaleString('nl-BE', { maximumFractionDigits: 1 })}° binnen`;
+}
+
+/**
+ * "34 min naar huis", put in front of the status line. Only for Jeroen, on his
+ * office days between 16:00 and 18:00, while he's at Banqup; otherwise nothing.
+ */
+export function commute(hass: HomeAssistant, now: Date): string | undefined {
+  const isCommuterLoggedIn = hass.user?.id === COMMUTE.userId;
+  const isOfficeDay = COMMUTE.officeDays.includes(now.getDay());
+  const isTimeToHeadHome = now.getHours() >= COMMUTE.fromHour && now.getHours() < COMMUTE.untilHour;
+  const isAtOffice = hass.states[COMMUTE.person]?.state === COMMUTE.officeZone;
+  const travelTimeInMinutes = Number.parseFloat(hass.states[COMMUTE.travelTimeHome]?.state ?? '');
+  const hasTravelTime = !Number.isNaN(travelTimeInMinutes);
+
+  const isCommuting = isCommuterLoggedIn && isOfficeDay && isTimeToHeadHome && isAtOffice && hasTravelTime;
+
+  return isCommuting ? `${Math.round(travelTimeInMinutes)} min naar huis` : undefined;
 }
 
 /**

@@ -60,7 +60,7 @@ export const ATTENTION: AttentionRule[] = [
     icon: 'phone',
     when: (e, states) => {
       const batteryPercentage = Number(e.state);
-      const chargingState = states['sensor.jeroens_ipad_battery_state']?.state
+      const chargingState = states['sensor.iphone_16_pro_battery_state']?.state
 
       return batteryPercentage <= 14 && chargingState !== 'Charging'
     }, detail: (e) => `${e.state}%`,

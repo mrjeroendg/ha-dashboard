@@ -23,37 +23,32 @@ const AIRCO_MODES: AircoOption[] = [
 
 const FAN_SPEEDS: AircoOption[] = [
   { value: 'auto', name: 'Auto', icon: 'auto' },
-  { value: '1', name: 'Snelheid 1', icon: 'fanSpeed1' },
-  { value: '2', name: 'Snelheid 2', icon: 'fanSpeed2' },
-  { value: '3', name: 'Snelheid 3', icon: 'fanSpeed3' },
-  { value: '4', name: 'Snelheid 4', icon: 'fanSpeed4' },
-  { value: '5', name: 'Snelheid 5', icon: 'fanSpeed5' },
+  { value: 'speed_1', name: 'Snelheid 1', icon: 'fanSpeed1' },
+  { value: 'speed_2', name: 'Snelheid 2', icon: 'fanSpeed2' },
+  { value: 'speed_3', name: 'Snelheid 3', icon: 'fanSpeed3' },
+  { value: 'speed_4', name: 'Snelheid 4', icon: 'fanSpeed4' },
+  { value: 'speed_5', name: 'Snelheid 5', icon: 'fanSpeed5' },
 ];
 
-/** MELCloud may call the outer positions "1_up" and "5_down"; both spellings are listed. */
+/** `swing_modes`: position 1 blows straight out, 5 straight down. */
 const UP_DOWN_POSITIONS: AircoOption[] = [
   { value: 'auto', name: 'Auto', icon: 'auto' },
-  { value: '1', name: 'Stand 1', icon: 'vaneUpDown1' },
-  { value: '1_up', name: 'Stand 1', icon: 'vaneUpDown1' },
-  { value: '2', name: 'Stand 2', icon: 'vaneUpDown2' },
-  { value: '3', name: 'Stand 3', icon: 'vaneUpDown3' },
-  { value: '4', name: 'Stand 4', icon: 'vaneUpDown4' },
-  { value: '5', name: 'Stand 5', icon: 'vaneUpDown5' },
-  { value: '5_down', name: 'Stand 5', icon: 'vaneUpDown5' },
+  { value: 'position_1', name: 'Stand 1', icon: 'vaneUpDown1' },
+  { value: 'position_2', name: 'Stand 2', icon: 'vaneUpDown2' },
+  { value: 'position_3', name: 'Stand 3', icon: 'vaneUpDown3' },
+  { value: 'position_4', name: 'Stand 4', icon: 'vaneUpDown4' },
+  { value: 'position_5', name: 'Stand 5', icon: 'vaneUpDown5' },
   { value: 'swing', name: 'Swing', icon: 'vaneUpDownSwing' },
 ];
 
-/** MELCloud may call the outer positions "1_left" and "5_right"; both spellings are listed. */
+/** `swing_horizontal_modes`, from far left to far right. */
 const LEFT_RIGHT_POSITIONS: AircoOption[] = [
   { value: 'auto', name: 'Auto', icon: 'auto' },
-  { value: '1', name: 'Stand 1', icon: 'vaneLeftRight1' },
-  { value: '1_left', name: 'Stand 1', icon: 'vaneLeftRight1' },
-  { value: '2', name: 'Stand 2', icon: 'vaneLeftRight2' },
-  { value: '3', name: 'Stand 3', icon: 'vaneLeftRight3' },
-  { value: '4', name: 'Stand 4', icon: 'vaneLeftRight4' },
-  { value: '5', name: 'Stand 5', icon: 'vaneLeftRight5' },
-  { value: '5_right', name: 'Stand 5', icon: 'vaneLeftRight5' },
-  { value: 'split', name: 'Split', icon: 'vaneLeftRightSplit' },
+  { value: 'left', name: 'Links', icon: 'vaneLeftRight1' },
+  { value: 'left_centre', name: 'Links-midden', icon: 'vaneLeftRight2' },
+  { value: 'centre', name: 'Midden', icon: 'vaneLeftRight3' },
+  { value: 'right_centre', name: 'Rechts-midden', icon: 'vaneLeftRight4' },
+  { value: 'right', name: 'Rechts', icon: 'vaneLeftRight5' },
   { value: 'swing', name: 'Swing', icon: 'vaneLeftRightSwing' },
 ];
 
@@ -139,13 +134,11 @@ export interface AircoSetting {
   hasTallerButtons?: boolean;
 }
 
-/** The options HA lists for this airco, in HA's order; values without an icon are left out. */
+/** The options HA lists for this airco, in the design's order (not HA's); values without an icon are left out. */
 function offeredOptions(airco: HassEntity, listAttribute: string, knownOptions: AircoOption[]): AircoOption[] {
   const valuesFromEntity = (airco.attributes[listAttribute] as string[] | undefined) ?? [];
 
-  return valuesFromEntity
-    .map((valueFromEntity) => knownOptions.find((knownOption) => knownOption.value === valueFromEntity))
-    .filter((knownOption): knownOption is AircoOption => knownOption !== undefined);
+  return knownOptions.filter((knownOption) => valuesFromEntity.includes(knownOption.value));
 }
 
 /**
@@ -155,13 +148,12 @@ function offeredOptions(airco: HassEntity, listAttribute: string, knownOptions: 
 export function aircoSettings(airco: HassEntity): AircoSetting[] {
   const target = aircoTarget(airco);
   const currentValue = (attribute: string) => airco.attributes[attribute] as string | undefined;
-  const modesFromEntity = (airco.attributes.hvac_modes as string[] | undefined) ?? [];
 
   return [
     {
       title: 'Modus',
-      // In the design's order, not HA's; "off" isn't one of them: that's the switch.
-      options: AIRCO_MODES.filter((aircoMode) => modesFromEntity.includes(aircoMode.value)),
+      // "off" isn't one of them: that's the switch.
+      options: offeredOptions(airco, 'hvac_modes', AIRCO_MODES),
       chosenValue: airco.state,
       choose: (hass, chosenMode) => hass.callService('climate', 'set_hvac_mode', { hvac_mode: chosenMode }, target),
       hasTallerButtons: true,
@@ -185,13 +177,12 @@ export function aircoSettings(airco: HassEntity): AircoSetting[] {
       },
     },
     {
-      // MELCloud only: not every unit has these (docs/design/airco-sheet).
       title: 'Lamellen · links en rechts',
-      options: offeredOptions(airco, 'vane_horizontal_positions', LEFT_RIGHT_POSITIONS),
-      chosenValue: currentValue('vane_horizontal'),
+      options: offeredOptions(airco, 'swing_horizontal_modes', LEFT_RIGHT_POSITIONS),
+      chosenValue: currentValue('swing_horizontal_mode'),
       choose: async (hass, chosenPosition) => {
         await turnOnIfOff(hass, airco);
-        return hass.callService('melcloud', 'set_vane_horizontal', { position: chosenPosition }, target);
+        return hass.callService('climate', 'set_swing_horizontal_mode', { swing_horizontal_mode: chosenPosition }, target);
       },
     },
   ];

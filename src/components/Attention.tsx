@@ -137,6 +137,8 @@ function WarningBanner({ warning, onView, hiddenCount, isBehindFront }: WarningB
         <span className="attention__title">{warning.title}</span>
         <span className="attention__detail">{warning.detail}</span>
       </span>
+      {/* Before "Bekijk", so "Bekijk" always sits on the right edge. */}
+      {hiddenCount !== undefined && <span className="attention__more">+{hiddenCount}</span>}
       {onView && (
         <button
           type="button"
@@ -150,7 +152,6 @@ function WarningBanner({ warning, onView, hiddenCount, isBehindFront }: WarningB
           Bekijk
         </button>
       )}
-      {hiddenCount !== undefined && <span className="attention__more">+{hiddenCount}</span>}
     </div>
   );
 }

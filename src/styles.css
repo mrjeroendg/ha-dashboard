@@ -233,10 +233,19 @@
   font-size: 12px;
   font-weight: 700;
   color: #fff;
-  transition: opacity 180ms ease, transform 180ms ease;
+  overflow: hidden;
+  max-width: 60px;
+  transition: opacity 180ms ease, transform 180ms ease, max-width var(--stack-motion), padding var(--stack-motion), margin var(--stack-motion);
 }
 
-.attention-stack:not(.is-stacked) .attention__more { opacity: 0; transform: scale(0.6); }
+/* In the open list it folds away completely, so it leaves no gap before "Bekijk". */
+.attention-stack:not(.is-stacked) .attention__more {
+  max-width: 0;
+  padding: 0;
+  margin-left: -12px;
+  opacity: 0;
+  transform: scale(0.6);
+}
 
 /* "Minder": stacks the list again. Fades in as the cards arrive. */
 .attention__less {

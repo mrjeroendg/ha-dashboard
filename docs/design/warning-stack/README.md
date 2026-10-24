@@ -15,7 +15,7 @@ Source: [`mockup.html`](./mockup.html). As built (dev mode, mock data with four 
 ## Behaviour
 
 - **One warning:** a normal banner, as before. No badge, no stack.
-- **Two or more, stacked:** the most important warning in front (same order as the list), with **"+N"** on the right for the warnings behind it. Up to two narrower cards peek out underneath, each in its own warning's colour.
+- **Two or more, stacked:** the most important warning in front (same order as the list), with **"+N"** for the warnings behind it, on the right but before "Bekijk": "Bekijk" always sits on the right edge. Up to two narrower cards peek out underneath, each in its own warning's colour.
 - **Tap the stack:** all warnings in a list, exactly like before.
 - **"Minder"** (centred, under the list) stacks them again. Opening the app again starts stacked; nothing is remembered.
 - **"Bekijk"** on the front warning still opens that warning's sheet; it doesn't open the list.

@@ -60,8 +60,8 @@ function baseStates(): HassEntities {
     entity('sensor.jeroen_dg2_gmail_com_jaqueline_blade_runtime_since_reset', '47.9166666666667', { unit_of_measurement: 'h' }),
     entity('sensor.jeroen_dg2_gmail_com_jaqueline_distance_driven_total', '49.345', { unit_of_measurement: 'km' }),
     entity('select.jeroen_dg2_gmail_com_jaqueline_zone', 'unknown', { options: ['1', '2', '3'] }),
-    // A MELCloud airco (docs/design/airco-sheet); the ID is the placeholder in src/config/rooms.ts.
-    entity('climate.slaapkamer_airco', 'heat', {
+    // A MELCloud airco (docs/design/airco-sheet); the ID is the real one from src/config/rooms.ts.
+    entity('climate.bedroom_marielou_airco', 'heat', {
       friendly_name: 'Airco',
       hvac_modes: ['heat_cool', 'heat', 'cool', 'dry', 'fan_only', 'off'],
       current_temperature: 19.5,

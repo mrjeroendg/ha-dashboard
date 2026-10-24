@@ -85,7 +85,7 @@ function RefreshButton({ hass }: Pick<WarningSheetProps, 'hass'>) {
       disabled={isRefreshing}
       onClick={() => {
         haptic('light');
-        runRefresh(() => hass.callService('automation', 'trigger', {}, { entity_id: BABYSIT.refreshAutomation }));
+        runRefresh(() => hass.callService('automation', 'trigger', {}, { entity_id: 'automation.scan_google_calendar_for_babysit_requirements' }));
       }}
     >
       {isRefreshing ? <span className="spinner" aria-hidden /> : <Icon name={refreshStatus === 'done' ? 'check' : 'refresh'} />}

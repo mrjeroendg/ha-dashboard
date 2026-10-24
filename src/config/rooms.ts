@@ -151,5 +151,13 @@ export const ROOMS: RoomConfig[] = [
     entities: [
       { entity: 'cover.rts_16722417', name: 'Rolluik', myPosition: 'button.rts_16722417_my_position' }
     ],
+  },
+    {
+    id: 'badkamer',
+    name: "Badkamer",
+    icon: 'garage',
+    entities: [
+      { entity: 'cover.velux', name: 'Velux', myPosition: 'button.velux_my_position' }
+    ],
   }
 ];

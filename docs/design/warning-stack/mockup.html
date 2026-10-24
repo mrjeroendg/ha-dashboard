@@ -1,0 +1,65 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Warning stack</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,390px);gap:34px 28px}
+.cap{min-height:52px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;
+position:relative;width:390px;height:700px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:56px 24px 0}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:33px;line-height:1.15}
+.status{display:inline-flex;gap:10px;align-items:center;margin-top:16px;padding:10px 16px;font-size:15px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:22px}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.att{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.item{--c:#e5534b;--sub:#f0b3ae;--tint:26%;--edge:32%;--on-c:#fff;position:relative;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;
+background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.14)),color-mix(in srgb,var(--c) var(--tint),var(--surface));
+box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 0 0 1px color-mix(in srgb,var(--c) var(--edge),transparent),0 6px 16px -6px rgba(0,0,0,.6)}
+.high{--c:#b42318;--sub:#f2a49c;--tint:42%;--edge:60%}
+.low{--c:#e8913a;--sub:#f3c99a;--tint:20%;--edge:28%;--on-c:#2b1a0a}
+.babysit{--c:#e0559b;--sub:#f5bdd8;--tint:24%;--edge:34%}
+.ic{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:11px;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 85%,#fff),var(--c) 55%,color-mix(in srgb,var(--c) 85%,#000));color:var(--on-c);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 6px rgba(0,0,0,.35)}
+.ic svg{width:18px;height:18px}
+.tx{flex:1;min-width:0;display:flex;flex-direction:column}.tx b,.tx span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tx b{font-size:15px;font-weight:600}.tx span{margin-top:1px;font-size:13px;color:var(--sub)}
+.btn{flex:none;height:32px;padding:0 14px;border-radius:999px;display:grid;place-items:center;font-size:13px;font-weight:600;color:#fff;background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.more{flex:none;height:26px;padding:0 10px;border-radius:999px;display:grid;place-items:center;font-size:12px;font-weight:700;color:#fff;background:rgba(0,0,0,.28)}
+/* stack */
+.stack{position:relative;margin-top:16px;padding-bottom:16px}
+.stack .item{z-index:3}
+.peek{position:absolute;left:0;right:0;height:60px;border-radius:20px}
+.peek.p1{bottom:8px;left:8px;right:8px;z-index:2;opacity:.85}
+.peek.p2{bottom:0;left:16px;right:16px;z-index:1;opacity:.6}
+.peek.babysit,.peek.high,.peek.low{background:color-mix(in srgb,var(--c) var(--tint),var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) var(--edge),transparent)}
+.less{align-self:center;margin-top:4px;font-size:13px;font-weight:600;color:var(--muted);display:flex;align-items:center;gap:4px}.less svg{width:14px;height:14px}
+/* summary */
+.sum{margin-top:16px;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.sum b{flex:1;font-size:15px;font-weight:600}
+.dots{display:flex;gap:4px}.dots i{width:8px;height:8px;border-radius:50%}
+.sum .chev{width:16px;height:16px;color:var(--muted)}
+.sec{margin:30px 4px 12px;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{height:100px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background:#2b2b29;padding:10px 20px 26px;box-shadow:0 -12px 40px rgba(0,0,0,.4)}
+.handle{width:36px;height:5px;border-radius:3px;background:rgba(245,244,239,.18);margin:0 auto 14px}
+.sheet h2{margin:0 0 14px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:24px}
+</style></head><body></body>
+<script>
+const P={garage:'<path d="M3 21V9l9-5 9 5v12M7 21v-8h10v8M7 16h10"/>',tablet:'<path d="M7 2.5h10a2.5 2.5 0 0 1 2.5 2.5v14a2.5 2.5 0 0 1-2.5 2.5H7A2.5 2.5 0 0 1 4.5 19V5A2.5 2.5 0 0 1 7 2.5zM11 18.5h2"/>',baby:'<circle cx="12" cy="13" r="8"/><path d="M12 5c0-1.7 1.8-2.5 2.8-1.3M9 12.5h.01M15 12.5h.01M9.8 16.3c1.3.9 3.1.9 4.4 0"/>',update:'<path d="M21 12a9 9 0 1 1-3-6.7L21 8"/><path d="M21 3v5h-5M12 8v5l3 2"/>',chev:'<path d="M9 6l6 6-6 6"/>',up:'<path d="M6 15l6-6 6 6"/>'};
+const i=n=>`<svg viewBox="0 0 24 24">${P[n]}</svg>`;
+const W=[['high','garage','Garagepoort staat open','Sinds 09:25'],['high','tablet','iPad batterij laag','12%'],['babysit','baby','Oppas nodig','3 afspraken vragen aandacht',true],['low','update','Immich update','v3.3.1 → v3.3.4']];
+const warn=([cls,ic,t,d,btn],extra='')=>`<div class="item ${cls}"><span class="ic">${i(ic)}</span><span class="tx"><b>${t}</b><span>${d}</span></span>${btn?'<span class="btn">Bekijk</span>':''}${extra}</div>`;
+const head=`<p class="lbl">Zaterdag 24 oktober</p><h1>Goedemorgen, Jeroen</h1><div class="status"><i></i>Je bent thuis · 1 deur open</div>`;
+const rest=`<p class="sec">Snel</p><div class="grid"><div class="card"></div><div class="card"></div></div>`;
+const stack=`<div class="stack">${warn(W[0],'<span class="more">+3</span>')}<div class="peek p1 ${W[1][0]}"></div><div class="peek p2 ${W[2][0]}"></div></div>`;
+const all=`<div class="att">${W.map(w=>warn(w)).join('')}</div>`;
+const colors={high:'#e5534b',babysit:'#e0559b',low:'#e8913a'};
+const summary=`<div class="sum"><b>4 waarschuwingen</b><span class="dots">${W.map(([c])=>`<i style="background:${colors[c]}"></i>`).join('')}</span>${i('chev').replace('<svg','<svg class="chev"')}</div>`;
+const sheet=`<div class="dim"></div><div class="sheet"><div class="handle"></div><h2>Waarschuwingen</h2><div class="att" style="margin:0">${W.map(w=>warn(w)).join('')}</div></div>`;
+const phone=(inner,extra='')=>`<div class="phone"><div class="in">${inner}</div>${extra}</div>`;
+const S=[
+ ['A · Stapel, dicht','De belangrijkste vooraan met "+3"; de andere steken eronder uit, in hun eigen kleur.',phone(head+stack+rest)],
+ ['A · Stapel, open op de pagina','Tik op de stapel: alle waarschuwingen onder elkaar, zoals nu. "Minder" klapt weer dicht.',phone(head+all.replace('</div></div>','</div></div>')+`<div class="less" style="justify-content:center;margin-top:10px">${i('up')}Minder</div>`+rest)],
+ ['B · Stapel, opent een sheet','Dezelfde dichte stapel; tik = een sheet met alle waarschuwingen. "Bekijk" werkt daar ook.',phone(head+stack+rest,sheet)],
+ ['C · Eén samenvattingsregel','"4 waarschuwingen" met een stip per waarschuwing in zijn kleur. Het rustigst.',phone(head+summary+rest)],
+ ['C · Tik = dezelfde sheet','',phone(head+summary+rest,sheet)],
+];
+document.body.innerHTML=S.map(([c,s,h])=>`<div><p class="cap">${c}<small>${s}</small></p>${h}</div>`).join('');
+</script></html>

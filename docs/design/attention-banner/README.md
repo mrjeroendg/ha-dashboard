@@ -13,7 +13,7 @@ Source: [`mockup.html`](./mockup.html) (a static mockup; open it in a browser, n
 ## Rules
 
 - **Never closable.** There is no × anywhere. A warning disappears only when its cause is gone: the update is installed, the garage door is closed, the window is shut.
-- **Always all of them, in a list.** Every active warning gets its own banner, stacked under the status line with 8px between them. There's no "+2 more" row and no sheet. With many warnings, "Snel" simply moves down.
+- **Stacked from two warnings on** (replaced "always all of them, in a list"): see [warning-stack](../warning-stack/README.md). Once opened, every warning gets its own banner with 8px between them.
 - **Order:** highest level first; within a level, the newest first.
 - **No buttons.** *Decision during the build:* the owner removed the action button from the mockup ("Sluiten", "Bekijk"). A banner only tells you something needs attention, and it isn't tappable.
 - With no warnings, nothing is shown: no empty space, no "all good" card.

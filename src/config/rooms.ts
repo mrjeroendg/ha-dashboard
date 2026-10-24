@@ -106,6 +106,18 @@ export const ROOMS: RoomConfig[] = [
     ],
   },
   {
+    id: 'garage',
+    name: "Garage",
+    icon: 'garageCar',
+    safety: [
+      { entity: 'binary_sensor.0x0015bc003106405f_smoke', name: 'Rookmelder', battery: 'sensor.0x0015bc003106405f_battery' }
+    ],
+    entities: [
+      { entity: 'light.storage_switch', name: 'Berging' },
+      { entity: 'script.garage_door_impuls', name: 'Garagedeur' }
+    ],
+  },
+  {
     id: 'bureau',
     name: "Bureau",
     icon: 'monitor',
@@ -127,18 +139,6 @@ export const ROOMS: RoomConfig[] = [
     ],
   },
   {
-    id: 'garage',
-    name: "Garage",
-    icon: 'garageCar',
-    safety: [
-      { entity: 'binary_sensor.0x0015bc003106405f_smoke', name: 'Rookmelder', battery: 'sensor.0x0015bc003106405f_battery' }
-    ],
-    entities: [
-      { entity: 'light.storage_switch', name: 'Berging' },
-      { entity: 'script.garage_door_impuls', name: 'Garagedeur' }
-    ],
-  },
-  {
     id: 'gasten',
     name: "Gasten",
     icon: 'bed',
@@ -152,7 +152,7 @@ export const ROOMS: RoomConfig[] = [
       { entity: 'cover.rts_16722417', name: 'Rolluik', myPosition: 'button.rts_16722417_my_position' }
     ],
   },
-    {
+  {
     id: 'badkamer',
     name: "Badkamer",
     icon: 'shower',

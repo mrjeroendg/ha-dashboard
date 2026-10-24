@@ -16,7 +16,7 @@ As built (dev mode, with two extra example rooms to show the overflow):
 
 ## Design (B)
 
-- **Stacked items:** the icon (22px) above a small name (11px, medium weight), centred. Each item is **as wide as its name** plus 12px on both sides (at least 52px), so about 5 items fit on a 390px-wide phone (the old bar fits about 3½). *Changed during the build:* a fixed width of 62px cut long names off ("Slaapka…") and left the active highlight almost no padding.
+- **Stacked items:** the icon (20px) above a small name (11px, medium weight), centred. Each item is **as wide as its name** plus 12px on both sides (at least 52px), so about 5 items fit on a 390px-wide phone (the old bar fits about 3½). *Changed during the build:* a fixed width of 62px cut long names off ("Slaapka…") and left the active highlight almost no padding.
 - **Active item:** the orange tint of the room tabs, a soft orange area (`--accent-soft`) with the icon and name in orange (`--accent`). Rounded (24px) inside the bar.
 - **The bar** keeps its look: the glassy pill with blur, now with a slightly smaller corner radius (30px) for the taller items.
 - **Inside padding of 14px** left and right, as wide as the edge fades, so the first and last item are never dimmed. Names are never cut off.

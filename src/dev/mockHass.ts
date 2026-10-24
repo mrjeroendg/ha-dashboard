@@ -50,6 +50,16 @@ function baseStates(): HassEntities {
     entity('sensor.badkamer_temperatuur', '20.1', { unit_of_measurement: '°C', device_class: 'temperature' }),
     entity('sensor.badkamer_vochtigheid', '64', { unit_of_measurement: '%', device_class: 'humidity' }),
     entity('climate.woonkamer', 'heat', { current_temperature: 19.5, temperature: 19 }),
+    // Jaqueline, a Worx Landroid (docs/design/lawn-mower); the IDs are the real ones from src/config/rooms.ts.
+    entity('lawn_mower.jeroen_dg2_gmail_com_jaqueline', 'docked', { friendly_name: 'Jaqueline 👸🏼', supported_features: 7 }),
+    entity('sensor.jeroen_dg2_gmail_com_jaqueline_battery', '100', { unit_of_measurement: '%', device_class: 'battery' }),
+    entity('binary_sensor.jeroen_dg2_gmail_com_jaqueline_charging', 'off', { device_class: 'battery_charging' }),
+    entity('binary_sensor.jeroen_dg2_gmail_com_jaqueline_rain_sensor', 'off', { device_class: 'moisture' }),
+    entity('binary_sensor.jeroen_dg2_gmail_com_jaqueline_mqtt', 'on', { device_class: 'connectivity' }),
+    entity('sensor.jeroen_dg2_gmail_com_jaqueline_error', 'no_error', { device_class: 'enum' }),
+    entity('sensor.jeroen_dg2_gmail_com_jaqueline_blade_runtime_since_reset', '47.9166666666667', { unit_of_measurement: 'h' }),
+    entity('sensor.jeroen_dg2_gmail_com_jaqueline_distance_driven_total', '49.345', { unit_of_measurement: 'km' }),
+    entity('select.jeroen_dg2_gmail_com_jaqueline_zone', 'unknown', { options: ['1', '2', '3'] }),
     // A MELCloud airco (docs/design/airco-sheet); the ID is the placeholder in src/config/rooms.ts.
     entity('climate.slaapkamer_airco', 'heat', {
       friendly_name: 'Airco',
@@ -255,6 +265,10 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
       else if (service === 'set_hvac_mode') set(id, String(data?.hvac_mode));
       else if (service === 'set_fan_mode') set(id, current, { fan_mode: data?.fan_mode });
       else if (service === 'set_swing_mode') set(id, current, { swing_mode: data?.swing_mode, vane_vertical: data?.swing_mode });
+      else if (service === 'start_mowing') set(id, 'mowing');
+      else if (service === 'pause') set(id, 'paused');
+      else if (service === 'dock') set(id, 'returning');
+      else if (service === 'select_option') set(id, String(data?.option));
       else if (service === 'set_vane_horizontal') set(id, current, { vane_horizontal: data?.position });
       else if (service === 'media_play_pause')
         set(id, current === 'playing' ? 'paused' : 'playing', { media_position: positionNow(id), media_position_updated_at: stamp() });

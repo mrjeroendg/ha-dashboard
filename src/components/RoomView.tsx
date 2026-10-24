@@ -3,6 +3,7 @@ import { useState, type CSSProperties, type ReactNode } from 'react';
 import { useDebouncedCommit } from '../hooks/useDebouncedCommit';
 import { useRunAction, type RunStatus } from '../hooks/useRunAction';
 import { haptic } from '../lib/haptic';
+import { mowerRowDetail, mowerStatus } from '../lib/mower';
 import {
   roomClimate,
   roomSafety,
@@ -16,12 +17,14 @@ import {
   type RowOptions,
   type RGB,
 } from '../lib/rooms';
+import type { MowerConfig } from '../config/rooms';
 import type { HomeAssistant } from '../types/hass';
 import { BrightnessSlider } from './BrightnessSlider';
 import { ColorPicker } from './ColorPicker';
 import { AircoSheet } from './AircoSheet';
 import { Icon, type IconName } from './Icon';
 import { LightSheet } from './LightSheet';
+import { MowerSheet } from './MowerSheet';
 import { QuickCard } from './QuickCard';
 import { SafetySheet } from './SafetySheet';
 
@@ -109,6 +112,7 @@ export function RoomView({ room, hass }: Props) {
               options={{ allowUnknownState: row.allowUnknownState, simple: row.simple }}
               myPosition={row.myPosition}
               members={row.members}
+              mower={row.mower}
               hass={hass}
             />
           ))}
@@ -125,10 +129,11 @@ interface RowProps {
   options: RowOptions;
   myPosition?: string;
   members?: LightMember[];
+  mower?: MowerConfig;
   hass: HomeAssistant;
 }
 
-function EntityRow({ entity, name, options, myPosition, members, hass }: RowProps) {
+function EntityRow({ entity, name, options, myPosition, members, mower, hass }: RowProps) {
   const model = rowModel(entity, options);
   const [status, run] = useRunAction();
   const [draft, setDraft] = useDebouncedCommit<number>((pct) => setBrightness(hass, entity, pct));
@@ -235,6 +240,10 @@ function EntityRow({ entity, name, options, myPosition, members, hass }: RowProp
     );
   }
 
+  if (model.kind === 'mower') {
+    return <MowerRow hass={hass} mower={entity} name={name} config={mower ?? {}} />;
+  }
+
   if (model.kind === 'climate' && model.run) {
     return <AircoRow hass={hass} airco={entity} name={name} label={label} on={model.on} toggle={model.run} status={status} run={run} />;
   }
@@ -308,6 +317,46 @@ function AircoRow({ hass, airco, name, label, on, toggle, status, run }: AircoRo
     <RowWithSheet name={name} label={label} on={on} status={status} onOpen={openSheet} onToggle={() => run(() => toggle(hass))}>
       {isSheetOpen && <AircoSheet hass={hass} airco={airco} name={name} onClose={() => setIsSheetOpen(false)} />}
     </RowWithSheet>
+  );
+}
+
+interface MowerRowProps {
+  hass: HomeAssistant;
+  mower: HassEntity;
+  name: string;
+  config: MowerConfig;
+}
+
+/**
+ * A robot lawn mower (docs/design/lawn-mower, option R1): the whole row opens
+ * her sheet; there's no switch. An error shows in red on the second line.
+ */
+function MowerRow({ hass, mower, name, config }: MowerRowProps) {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const status = mowerStatus(mower, config, hass.states);
+  const isMowing = mower.state === 'mowing';
+
+  const openSheet = () => {
+    haptic('selection');
+    setIsSheetOpen(true);
+  };
+
+  return (
+    <div className="row-item">
+      <button type="button" className="row row--opens-sheet" onClick={openSheet}>
+        <span className={`icon-tile${isMowing ? ' is-on' : ''}`}>
+          <Icon name="mower" />
+        </span>
+        <span className="card-text">
+          <span className="row__name">{name}</span>
+          <span className={`card-detail${status.isError ? ' is-error' : ''}`}>{mowerRowDetail(mower, config, hass.states)}</span>
+        </span>
+        <span className="row__chevron" aria-hidden>
+          <Icon name="chevron" />
+        </span>
+      </button>
+      {isSheetOpen && <MowerSheet hass={hass} mower={mower} config={config} onClose={() => setIsSheetOpen(false)} />}
+    </div>
   );
 }
 

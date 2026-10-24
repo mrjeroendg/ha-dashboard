@@ -8,11 +8,11 @@ import {
   setTargetTemperature,
   targetTemperature,
   temperatureRange,
-  type AircoSetting,
 } from '../lib/airco';
 import { haptic } from '../lib/haptic';
 import type { HomeAssistant } from '../types/hass';
 import { BottomSheet } from './BottomSheet';
+import { ChoiceRow } from './ChoiceRow';
 import { Icon } from './Icon';
 
 interface Props {
@@ -39,7 +39,14 @@ export function AircoSheet({ hass, airco, name, onClose }: Props) {
     >
       <TargetTemperature hass={hass} airco={airco} />
       {aircoSettings(airco).map((setting) => (
-        <SettingChoice key={setting.title} hass={hass} setting={setting} />
+        <ChoiceRow
+          key={setting.title}
+          title={setting.title}
+          options={setting.options}
+          chosenValue={setting.chosenValue}
+          onChoose={(chosenValue) => setting.choose(hass, chosenValue)}
+          hasTallerButtons={setting.hasTallerButtons}
+        />
       ))}
     </BottomSheet>
   );
@@ -113,58 +120,6 @@ function TargetTemperature({ hass, airco }: { hass: HomeAssistant; airco: HassEn
         </button>
       </div>
       <p className="airco-sheet__now">{currentTemperatureDetail(airco)}</p>
-    </div>
-  );
-}
-
-/**
- * A row of icons, one per option; the chosen one is filled and named above the
- * row. A choice shows at once; HA's report takes over when it arrives. Hidden
- * when the airco offers nothing for it.
- */
-function SettingChoice({ hass, setting }: { hass: HomeAssistant; setting: AircoSetting }) {
-  const choiceControl = useControlValue(setting.chosenValue, (valueFromEntity, valueInApp) => valueFromEntity === valueInApp);
-  const chosenValueInApp = choiceControl.currentValueInApp;
-
-  if (setting.options.length === 0) return null;
-
-  const chosenOption = setting.options.find((option) => option.value === chosenValueInApp);
-
-  const choose = (chosenValue: string) => {
-    if (chosenValue === chosenValueInApp) return;
-
-    haptic('selection');
-    choiceControl.keepAfterRelease(chosenValue);
-    setting.choose(hass, chosenValue).catch((error) => {
-      console.error(error);
-      choiceControl.showValueFromEntity();
-    });
-  };
-
-  return (
-    <div className="airco-choice">
-      <p className="airco-choice__title">
-        {setting.title}
-        {chosenOption && <span className="airco-choice__chosen">{chosenOption.name}</span>}
-      </p>
-      <div
-        className={`airco-choice__options${setting.hasTallerButtons ? ' airco-choice__options--taller' : ''}`}
-        role="group"
-        aria-label={setting.title}
-      >
-        {setting.options.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            className="airco-choice__option"
-            aria-label={option.name}
-            aria-pressed={option.value === chosenValueInApp}
-            onClick={() => choose(option.value)}
-          >
-            <Icon name={option.icon} />
-          </button>
-        ))}
-      </div>
     </div>
   );
 }

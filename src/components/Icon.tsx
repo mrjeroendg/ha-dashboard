@@ -280,6 +280,23 @@ const PATHS = {
       <path d="M21 12.8A11 11 0 0 1 3 12.8M21 16.4L21 12.8L17.6 14M6.4 14L3 12.8L3 16.4" />
     </>
   ),
+  // Lawn mower (docs/design/lawn-mower).
+  mower: (
+    <>
+      <path d="M3 15h14l2-5h-6l-2 5M13 10l2-4" />
+      <circle cx="7" cy="17.5" r="2" />
+      <circle cx="16" cy="17.5" r="2" />
+    </>
+  ),
+  battery: <path d="M5 7h12a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2zM21 11v2" />,
+  signal: <path d="M5 12.5a10 10 0 0 1 14 0M8 15.5a6 6 0 0 1 8 0M12 19h.01" />,
+  blade: (
+    <>
+      <circle cx="12" cy="12" r="2" />
+      <path d="M12 10V3M12 14v7M10 12H3M14 12h7" />
+    </>
+  ),
+  route: <path d="M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 17h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7" />,
 } as const;
 
 export type IconName = keyof typeof PATHS;

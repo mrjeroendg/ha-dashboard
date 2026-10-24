@@ -1,0 +1,95 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Mower sheet</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(4,390px);gap:36px 28px}
+.cap{min-height:58px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.18);--track:rgba(245,244,239,.12);
+position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:56px 24px 0}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:34px}
+.group{margin-top:22px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.row{display:flex;align-items:center}
+.open{flex:1;display:flex;align-items:center;gap:14px;padding:14px 16px;min-width:0}
+.open.tap{background:var(--soft)}
+.divider{align-self:stretch;width:1px;background:var(--border)}
+.swwrap{display:flex;align-items:center;padding:0 16px;flex:none}
+.ic{width:36px;height:36px;border-radius:12px;background:var(--bg);color:var(--accent);display:grid;place-items:center;flex:none}.ic svg{width:20px;height:20px}
+.ic.on{background:var(--accent);color:#fff}
+.t{flex:1;min-width:0}.t b{display:block;font-size:16px;font-weight:500}.t span{font-size:13px;color:var(--muted)}.t span.err{color:#e5534b}
+.chev{width:16px;height:16px;color:var(--muted);flex:none}
+.sw{width:48px;height:30px;border-radius:999px;background:var(--border);position:relative;flex:none}.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff}
+.sw.on{background:var(--accent)}.sw.on::after{left:auto;right:3px}
+.tag{margin:22px 4px 0;font-size:12px;font-weight:600;color:#73726c;letter-spacing:.04em}
+.note{margin:10px 4px 0;font-size:12px;color:var(--muted);line-height:1.5}.note b{color:var(--text);font-weight:600}
+.nav{position:absolute;left:12px;right:12px;bottom:16px;display:flex;justify-content:space-between;padding:7px 14px;border-radius:30px;background:rgba(48,48,46,.92);box-shadow:inset 0 0 0 1px var(--border)}
+.nav span{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:44px;font-size:11px;color:var(--muted)}.nav span svg{width:18px;height:18px}.nav span.on{color:var(--accent)}
+/* sheet */
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background:#2b2b29;padding:10px 16px 40px;box-shadow:0 -12px 40px rgba(0,0,0,.4);box-sizing:border-box}
+.handle{width:36px;height:5px;border-radius:3px;background:var(--track);margin:0 auto 8px}
+.name{text-align:center;font-size:12px;color:var(--muted)}
+.title{margin:8px 4px 2px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:24px}
+.sub{display:flex;align-items:center;gap:6px;margin:0 4px 4px;font-size:13px;color:var(--muted)}
+.dot{width:6px;height:6px;border-radius:50%;background:#e5534b}
+.sec{display:flex;justify-content:space-between;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:18px 6px 8px}
+.sec em{font-style:normal;letter-spacing:0;text-transform:none;color:var(--text);font-size:13px}
+.seg{display:flex;gap:4px;padding:4px;border-radius:16px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--border)}
+.seg span{flex:1;height:46px;border-radius:12px;display:grid;place-items:center;color:var(--muted);font-size:16px;font-weight:600}
+.seg span svg{width:22px;height:22px}
+.seg span.on{background:var(--accent);color:#fff}
+.seg.small span{height:40px}
+.list{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.li{display:flex;align-items:center;gap:12px;padding:11px 14px;font-size:15px}.li+.li{box-shadow:inset 0 1px 0 var(--border)}
+.li svg{width:18px;height:18px;color:var(--muted);flex:none}
+.li em{margin-left:auto;font-style:normal;font-size:14px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.li em.warn{color:#e5534b}
+</style></head><body></body>
+<script>
+const svg=(inner)=>`<svg viewBox="0 0 24 24">${inner}</svg>`;
+const I={
+ sprout:svg('<path d="M12 21v-8M12 13c0-4 3-7 7-7 0 4-3 7-7 7zM12 13c0-3-2.5-5.5-6-5.5 0 3 2.5 5.5 6 5.5z"/>'),
+ mower:svg('<path d="M3 15h14l2-5h-6l-2 5"/><circle cx="7" cy="17.5" r="2"/><circle cx="16" cy="17.5" r="2"/><path d="M13 10l2-4"/>'),
+ play:svg('<path d="M8 5v14l11-7z"/>'),pause:svg('<path d="M9 6v12M15 6v12"/>'),
+ home:svg('<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'),
+ chev:svg('<path d="M9 6l6 6-6 6"/>'),
+ battery:svg('<rect x="3" y="7" width="16" height="10" rx="2"/><path d="M21 11v2"/>'),
+ droplet:svg('<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>'),
+ wifi:svg('<path d="M5 12.5a10 10 0 0 1 14 0M8 15.5a6 6 0 0 1 8 0M12 19h.01"/>'),
+ blade:svg('<circle cx="12" cy="12" r="2"/><path d="M12 10V3M12 14v7M10 12H3M14 12h7"/>'),
+ route:svg('<path d="M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 17h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7"/>'),
+ house:svg('<path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>'),sofa:svg('<path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3M2 11h20v6H2zM5 17v2M19 17v2"/>'),
+ garage:svg('<path d="M3 21V9l9-5 9 5v12M7 21v-8h10v8M7 16h10"/>'),monitor:svg('<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/>'),
+};
+const nav=`<div class="nav">${[['house','Thuis'],['sofa','Living'],['monitor','Bureau'],['garage','Garage'],['sprout','Tuin',true]].map(([icon,label,on])=>`<span class="${on?'on':''}">${I[icon]}${label}</span>`).join('')}</div>`;
+const roomTop=`<p class="lbl">Kamer</p><h1>Tuin</h1>`;
+const rowChevron=(detail,on,tap,err)=>`<div class="row"><div class="open${tap?' tap':''}"><span class="ic${on?' on':''}">${I.mower}</span><span class="t"><b>Jaqueline</b><span class="${err?'err':''}">${detail}</span></span><span class="chev">${I.chev}</span></div></div>`;
+const rowSwitch=(detail,on)=>`<div class="row"><div class="open"><span class="ic${on?' on':''}">${I.mower}</span><span class="t"><b>Jaqueline</b><span>${detail}</span></span></div><span class="divider"></span><span class="swwrap"><span class="sw${on?' on':''}"></span></span></div>`;
+const room=(row)=>`<div class="in">${roomTop}<div class="group">${row}</div></div>${nav}`;
+const controls=(active)=>`<div class="sec">Bediening<em>${{play:'Maaien',pause:'Gepauzeerd',home:'Naar huis'}[active]??''}</em></div><div class="seg">${[['play'],['pause'],['home']].map(([icon])=>`<span class="${icon===active?'on':''}">${I[icon]}</span>`).join('')}</div>`;
+const zone=(active)=>`<div class="sec">Zone<em>${active?'Zone '+active:'Niet gekozen'}</em></div><div class="seg small">${['1','2','3'].map(z=>`<span class="${z===active?'on':''}">${z}</span>`).join('')}</div>`;
+const status=(battery,rain,online)=>`<div class="sec">Status</div><div class="list">
+ <div class="li">${I.battery}Batterij<em>${battery}</em></div>
+ <div class="li">${I.droplet}Regen<em class="${rain?'warn':''}">${rain?'<span class="dot"></span>Nat':'Droog'}</em></div>
+ <div class="li">${I.wifi}Verbinding<em>${online?'Online':'Offline'}</em></div></div>`;
+const upkeep=`<div class="sec">Onderhoud</div><div class="list">
+ <div class="li">${I.blade}Messen<em>47,9 u gedraaid</em></div>
+ <div class="li">${I.route}Afgelegd<em>49,3 km</em></div></div>`;
+const sheet=(title,sub,active,zoneActive,battery,rain=false,err=false)=>`<div class="dim"></div><div class="sheet"><div class="handle"></div><div class="name">Jaqueline 👸🏼</div>
+ <h2 class="title">${title}</h2><p class="sub">${err?'<span class="dot"></span>':''}${sub}</p>
+ ${controls(active)}${zone(zoneActive)}${status(battery,rain,true)}${upkeep}</div>`;
+const phone=(inner)=>`<div class="phone">${inner}</div>`;
+const S=[
+ ['De kamer Tuin, met Jaqueline','Een nieuwe kamer achteraan in de navigatie (icoon: plantje). Twee manieren voor de rij:',
+  phone(`<div class="in">${roomTop}<p class="tag">R1 · HELE RIJ OPENT DE SHEET</p><div class="group" style="margin-top:8px">${rowChevron('In het laadstation · 100%')}</div>
+  <p class="note">Zoals de rijen die nu al een sheet openen zonder schakelaar. Starten, pauzeren en naar huis zitten in de sheet.</p>
+  <p class="tag">R2 · SCHAKELAAR + LIJNTJE, ZOALS LAMPEN EN AIRCO</p><div class="group" style="margin-top:8px">${rowSwitch('Maait · 64%',true)}</div>
+  <p class="note"><b>Aan</b> = maaien starten, <b>uit</b> = terug naar het laadstation. Links van het lijntje opent de sheet.</p></div>${nav}`)],
+ ['Sheet · in het laadstation','Hetzelfde frame als Veiligheid en de airco: de naam naast het handvat, de toestand als titel, dan iconrijen en lijstjes.',
+  phone(room(rowChevron('In het laadstation · 100%',false,true))+sheet('In het laadstation','Laadt niet · volledig opgeladen','home','','100%'))],
+ ['Sheet · aan het maaien','"Maaien" is gevuld; pauze of naar huis is één tik.',
+  phone(room(rowChevron('Maait · 64%',true,true))+sheet('Maait','Zone 2 · batterij 64%','play','2','64%'))],
+ ['Sheet · fout','De fout wordt de titel, met een rode stip (zoals Veiligheid). In de rij staat hij in het rood.',
+  phone(room(rowChevron('Zit vast',false,true,true))+sheet('Zit vast','Sinds 14:02 · batterij 52%','','2','52%',false,true))],
+];
+document.body.innerHTML=S.map(([title,sub,html])=>`<div><p class="cap">${title}<small>${sub}</small></p>${html}</div>`).join('');
+</script></html>

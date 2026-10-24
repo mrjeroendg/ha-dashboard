@@ -8,6 +8,24 @@ export interface RoomEntity {
   myPosition?: string;
   simple?: boolean;
   members?: RoomLightMember[];
+  /** A robot lawn mower's sheet (docs/design/lawn-mower). */
+  mower?: MowerConfig;
+}
+
+/** The mower's other entities, each optional: leave one out to hide its line in the sheet. */
+export interface MowerConfig {
+  /** The select entity that sets the zone to mow. */
+  zone?: string;
+  /** The zones to show, in this order: the select's option and the name on the button. */
+  zones?: Array<{ option: string; name: string }>;
+  battery?: string;
+  charging?: string;
+  rain?: string;
+  /** The cloud connection, e.g. Landroid's MQTT sensor. */
+  online?: string;
+  error?: string;
+  bladeHours?: string;
+  distance?: string;
 }
 
 export interface RoomLightMember {
@@ -160,6 +178,34 @@ export const ROOMS: RoomConfig[] = [
     icon: 'shower',
     entities: [
       { entity: 'cover.velux', name: 'Velux', myPosition: 'button.velux_my_position' }
+    ],
+  },
+  {
+    id: 'tuin',
+    name: "Tuin",
+    icon: 'sprout',
+    entities: [
+      {
+        // docs/design/lawn-mower
+        entity: 'lawn_mower.jeroen_dg2_gmail_com_jaqueline',
+        name: 'Jaqueline',
+        mower: {
+          zone: 'select.jeroen_dg2_gmail_com_jaqueline_zone',
+          // Placeholder names: give each zone its own name.
+          zones: [
+            { option: '1', name: 'Zone 1' },
+            { option: '2', name: 'Zone 2' },
+            { option: '3', name: 'Zone 3' }
+          ],
+          battery: 'sensor.jeroen_dg2_gmail_com_jaqueline_battery',
+          charging: 'binary_sensor.jeroen_dg2_gmail_com_jaqueline_charging',
+          rain: 'binary_sensor.jeroen_dg2_gmail_com_jaqueline_rain_sensor',
+          online: 'binary_sensor.jeroen_dg2_gmail_com_jaqueline_mqtt',
+          error: 'sensor.jeroen_dg2_gmail_com_jaqueline_error',
+          bladeHours: 'sensor.jeroen_dg2_gmail_com_jaqueline_blade_runtime_since_reset',
+          distance: 'sensor.jeroen_dg2_gmail_com_jaqueline_distance_driven_total'
+        }
+      }
     ],
   }
 ];

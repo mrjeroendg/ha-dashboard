@@ -50,8 +50,8 @@ function baseStates(): HassEntities {
     entity('sensor.badkamer_temperatuur', '20.1', { unit_of_measurement: '°C', device_class: 'temperature' }),
     entity('sensor.badkamer_vochtigheid', '64', { unit_of_measurement: '%', device_class: 'humidity' }),
     entity('climate.woonkamer', 'heat', { current_temperature: 19.5, temperature: 19 }),
-    // A MELCloud airco (docs/design/airco-sheet); the ID is the placeholder in src/config/rooms.ts.
-    entity('climate.slaapkamer_airco', 'heat', {
+    // A MELCloud airco (docs/design/airco-sheet); the ID is the real one from src/config/rooms.ts.
+    entity('climate.bedroom_marielou_airco', 'heat', {
       friendly_name: 'Airco',
       hvac_modes: ['heat_cool', 'heat', 'cool', 'dry', 'fan_only', 'off'],
       current_temperature: 19.5,

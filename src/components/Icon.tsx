@@ -268,12 +268,6 @@ const PATHS = {
       <path d="M12 6.5L22.6 14M18.6 13.7L22.6 14L20.9 10.4" />
     </>
   ),
-  vaneLeftRightSplit: (
-    <>
-      <path d="M6 4h12" className="icon__unit" />
-      <path d="M12 6.5L3.6 16.5M4.3 12.6L3.6 16.5L7.4 15.1M12 6.5L20.4 16.5M16.6 15.1L20.4 16.5L19.7 12.6" />
-    </>
-  ),
   vaneLeftRightSwing: (
     <>
       <path d="M6 4h12" className="icon__unit" />

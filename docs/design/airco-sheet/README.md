@@ -8,11 +8,11 @@ The airco gets the light approach: a row with a switch, and a sheet with everyth
 
 ![Design](./mockup.png)
 
-Source: [`mockup.html`](./mockup.html). As built (dev mode, a mock MELCloud airco):
+Source: [`mockup.html`](./mockup.html). As built (dev mode, a mock with the attributes of the airco in Marielou's room):
 
 ![Built](./built.png)
 
-All icons, with the value HA uses for each:
+All icons. *Decision during the build:* the real unit has no Split for left and right, so that icon was dropped; the values HA uses are listed above.
 
 ![Icons](./icons.png)
 
@@ -29,10 +29,10 @@ All icons, with the value HA uses for each:
 - **Target temperature:** large, with − and + in the airco's own step (`target_temp_step`, usually 0.5°), within `min_temp` and `max_temp`. It's sent once you stop tapping. "nu 19,5°" is shown below it.
 - **Four rows of icons.** Each row has its name on the left and the current choice on the right ("Verwarmen", "Snelheid 3", "Stand 2", "Swing"). The active icon is filled with the accent colour.
   - **Modus:** Auto, Verwarmen, Koelen, Drogen, Ventileren (`hvac_modes`, `climate.set_hvac_mode`).
-  - **Ventilator:** Auto, then 1–5 as signal bars (`fan_modes`, `climate.set_fan_mode`).
-  - **Lamellen · op en neer:** Auto, 1 (straight out) to 5 (straight down), Swing; seen from the side (`swing_modes`, `climate.set_swing_mode`).
-  - **Lamellen · links en rechts:** Auto, 1 (far left) to 5 (far right), Split, Swing; seen from above. MELCloud's `vane_horizontal_positions` and `melcloud.set_vane_horizontal`. Not every unit has this; to be checked on the real unit.
-- **Values MELCloud may spell differently:** "1_up"/"5_down" and "1_left"/"5_right" get the same icons as 1 and 5.
+  - **Ventilator:** Auto, then `speed_1`–`speed_5` as signal bars (`fan_modes`, `climate.set_fan_mode`).
+  - **Lamellen · op en neer:** Auto, `position_1` (straight out) to `position_5` (straight down), Swing; seen from the side (`swing_modes`, `climate.set_swing_mode`).
+  - **Lamellen · links en rechts:** Auto, `left`, `left_centre`, `centre`, `right_centre`, `right` (named Links … Rechts), Swing; seen from above (`swing_horizontal_modes`, `climate.set_swing_horizontal_mode`).
+- **The design's order**, whatever order HA lists them in: Auto first, Swing last.
 - **Only what the unit offers:** a mode or position HA doesn't list is left out, and a row with nothing left is hidden.
 - **Choosing something while the airco is off** turns it on.
 

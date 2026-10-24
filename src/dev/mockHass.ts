@@ -63,20 +63,18 @@ function baseStates(): HassEntities {
     // A MELCloud airco (docs/design/airco-sheet); the ID is the real one from src/config/rooms.ts.
     entity('climate.bedroom_marielou_airco', 'heat', {
       friendly_name: 'Airco',
-      hvac_modes: ['heat_cool', 'heat', 'cool', 'dry', 'fan_only', 'off'],
-      current_temperature: 19.5,
-      temperature: 21,
-      target_temp_step: 0.5,
+      hvac_modes: ['off', 'heat', 'cool', 'auto', 'dry', 'fan_only'],
+      current_temperature: 23,
+      temperature: 23,
       min_temp: 10,
       max_temp: 31,
-      fan_modes: ['auto', '1', '2', '3', '4', '5'],
-      fan_mode: '3',
-      swing_modes: ['auto', '1', '2', '3', '4', '5', 'swing'],
-      swing_mode: '2',
-      vane_horizontal: 'swing',
-      vane_horizontal_positions: ['auto', '1', '2', '3', '4', '5', 'split', 'swing'],
-      vane_vertical: '2',
-      vane_vertical_positions: ['auto', '1', '2', '3', '4', '5', 'swing'],
+      fan_modes: ['auto', 'speed_1', 'speed_2', 'speed_3', 'speed_4', 'speed_5'],
+      fan_mode: 'speed_1',
+      swing_modes: ['auto', 'swing', 'position_1', 'position_2', 'position_3', 'position_4', 'position_5'],
+      swing_mode: 'position_1',
+      swing_horizontal_modes: ['auto', 'swing', 'left', 'left_centre', 'centre', 'right_centre', 'right'],
+      swing_horizontal_mode: 'left',
+      supported_features: 937,
     }),
     entity('switch.koffiemachine', 'off', { friendly_name: 'Koffiemachine' }),
     entity('cover.rolluiken', 'closed', { friendly_name: 'Rolluiken' }),
@@ -264,12 +262,12 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
       else if (service === 'set_temperature') set(id, current === 'off' ? 'heat' : current, { temperature: data?.temperature });
       else if (service === 'set_hvac_mode') set(id, String(data?.hvac_mode));
       else if (service === 'set_fan_mode') set(id, current, { fan_mode: data?.fan_mode });
-      else if (service === 'set_swing_mode') set(id, current, { swing_mode: data?.swing_mode, vane_vertical: data?.swing_mode });
+      else if (service === 'set_swing_mode') set(id, current, { swing_mode: data?.swing_mode });
+      else if (service === 'set_swing_horizontal_mode') set(id, current, { swing_horizontal_mode: data?.swing_horizontal_mode });
       else if (service === 'start_mowing') set(id, 'mowing');
       else if (service === 'pause') set(id, 'paused');
       else if (service === 'dock') set(id, 'returning');
       else if (service === 'select_option') set(id, String(data?.option));
-      else if (service === 'set_vane_horizontal') set(id, current, { vane_horizontal: data?.position });
       else if (service === 'media_play_pause')
         set(id, current === 'playing' ? 'paused' : 'playing', { media_position: positionNow(id), media_position_updated_at: stamp() });
       else if (service === 'media_seek') set(id, current, { media_position: data?.seek_position, media_position_updated_at: stamp() });

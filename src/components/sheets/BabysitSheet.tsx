@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import type { WarningSheetProps } from '../../config/attention';
-import { BABYSIT } from '../../config/babysit';
 import { useRunAction } from '../../hooks/useRunAction';
 import { babysitAppointments, type TodoItem } from '../../lib/babysit';
 import { haptic } from '../../lib/haptic';

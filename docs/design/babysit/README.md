@@ -4,7 +4,7 @@ A warning on Thuis when appointments still need a babysitter, with a sheet that 
 
 > ✅ **Approved and built.** Don't change proportions or behaviour without asking first.
 >
-> Code: the rule in `src/config/attention.ts`, `BabysitSheet` in `src/components/sheets/`, the parsing in `src/lib/babysit.ts`, the automation in `src/config/babysit.ts`.
+> Code: the rule in `src/config/attention.ts`, `BabysitSheet` in `src/components/sheets/` (which also names the automation behind "Bijwerken"), the parsing in `src/lib/babysit.ts`.
 
 ![Design](./mockup.png)
 

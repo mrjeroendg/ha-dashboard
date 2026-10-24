@@ -95,6 +95,16 @@
 
 .header__dot--idle { background: var(--text-muted); box-shadow: none; }
 
+/* "34 min naar huis" in front of the status (docs/design/commute): a link to Waze. */
+.header__commute {
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.header__commute:active { opacity: 0.6; }
+
 /* ---------------------------------------------------------------- attention */
 
 /* Warnings under the status line (docs/design/attention-banner). Never

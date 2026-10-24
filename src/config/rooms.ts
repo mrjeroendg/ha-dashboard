@@ -79,14 +79,27 @@ export const ROOMS: RoomConfig[] = [
     ],
   },
   {
+    id: 'master-bedroom',
+    name: "Slaapkamer",
+    icon: 'moon',
+    temperature: 'sensor.master_bedroom_airco_room_temperature',
+    safety: [
+      {
+        entity: 'binary_sensor.0x0015bc003106379c_smoke',
+        'name': 'Rookmelder',
+        battery: 'sensor.0x0015bc003106379c_battery'
+      },
+    ],
+    entities: [
+      { entity: 'cover.rts_16727506', name: 'Rolluik', myPosition: 'button.rts_16727506_my_position' }
+    ],
+  },
+  {
     id: 'marielou',
     name: "Marielou",
     icon: 'baby',
     temperature: 'sensor.0xf044d3fffecd20d8_temperature',
     humidity: 'sensor.0xf044d3fffecd20d8_humidity',
-    safety: [
-      { entity: 'binary_sensor.0x001788011004451e_contact', 'name': 'Rookmelder' },
-    ],
     entities: [
       { entity: 'light.bedroom_marielou_herstal_light_switch', name: 'Herstal' },
       { entity: 'cover.rts_16767817', name: 'Rolluik', myPosition: 'button.rts_16767817_my_position' }

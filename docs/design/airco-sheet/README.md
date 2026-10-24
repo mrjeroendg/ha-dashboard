@@ -2,13 +2,17 @@
 
 The airco gets the light approach: a row with a switch, and a sheet with everything else. Dark mode only. Replaces the airco part of [room-tabs-airco](../room-tabs-airco/README.md) (option A there was never built).
 
-> ✅ **Approved (option A).** Don't change proportions or behaviour without asking first.
+> ✅ **Approved (option A) and built.** Don't change proportions or behaviour without asking first.
 >
 > Code: `AircoSheet` in `src/components/AircoSheet.tsx`, the HA calls in `src/lib/airco.ts`, the row in `RoomView.tsx`.
 
 ![Design](./mockup.png)
 
-Source: [`mockup.html`](./mockup.html). All icons, with the value HA uses for each:
+Source: [`mockup.html`](./mockup.html). As built (dev mode, a mock MELCloud airco):
+
+![Built](./built.png)
+
+All icons, with the value HA uses for each:
 
 ![Icons](./icons.png)
 
@@ -28,6 +32,7 @@ Source: [`mockup.html`](./mockup.html). All icons, with the value HA uses for ea
   - **Ventilator:** Auto, then 1–5 as signal bars (`fan_modes`, `climate.set_fan_mode`).
   - **Lamellen · op en neer:** Auto, 1 (straight out) to 5 (straight down), Swing; seen from the side (`swing_modes`, `climate.set_swing_mode`).
   - **Lamellen · links en rechts:** Auto, 1 (far left) to 5 (far right), Split, Swing; seen from above. MELCloud's `vane_horizontal_positions` and `melcloud.set_vane_horizontal`. Not every unit has this; to be checked on the real unit.
+- **Values MELCloud may spell differently:** "1_up"/"5_down" and "1_left"/"5_right" get the same icons as 1 and 5.
 - **Only what the unit offers:** a mode or position HA doesn't list is left out, and a row with nothing left is hidden.
 - **Choosing something while the airco is off** turns it on.
 

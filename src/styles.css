@@ -1705,6 +1705,11 @@ button.row:active { background: var(--accent-soft); }
 }
 
 .airco-choice__option .icon { width: 22px; height: 22px; }
-.airco-choice__options--modes .airco-choice__option { height: 46px; }
-.airco-choice__options--modes .airco-choice__option .icon { width: 24px; height: 24px; }
+.airco-choice__options--taller .airco-choice__option { height: 46px; }
+.airco-choice__options--taller .airco-choice__option .icon { width: 24px; height: 24px; }
 .airco-choice__option[aria-pressed='true'] { background: var(--accent); color: #fff; }
+
+/* Parts of the fan and vane icons. */
+.icon .icon__filled { fill: currentColor; stroke: none; }
+.icon .icon__faint { stroke-width: 1.2; opacity: 0.45; }
+.icon .icon__unit { stroke-width: 2.4; }

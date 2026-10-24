@@ -154,6 +154,132 @@ const PATHS = {
       <path transform="rotate(240 12 12)" d="M12 10.4C11 7 12 3.5 15 3.5c2.6 0 2.6 4.2-1.6 7" />
     </>
   ),
+  // Fan speed 1–5: that many bars filled.
+  fanSpeed1: (
+    <>
+      <rect x="3" y="16" width="2.6" height="4" rx="1.1" className="icon__filled" />
+      <rect x="7" y="12.5" width="2.6" height="7.5" rx="1.1" className="icon__faint" />
+      <rect x="11" y="9" width="2.6" height="11" rx="1.1" className="icon__faint" />
+      <rect x="15" y="5.5" width="2.6" height="14.5" rx="1.1" className="icon__faint" />
+      <rect x="19" y="2" width="2.6" height="18" rx="1.1" className="icon__faint" />
+    </>
+  ),
+  fanSpeed2: (
+    <>
+      <rect x="3" y="16" width="2.6" height="4" rx="1.1" className="icon__filled" />
+      <rect x="7" y="12.5" width="2.6" height="7.5" rx="1.1" className="icon__filled" />
+      <rect x="11" y="9" width="2.6" height="11" rx="1.1" className="icon__faint" />
+      <rect x="15" y="5.5" width="2.6" height="14.5" rx="1.1" className="icon__faint" />
+      <rect x="19" y="2" width="2.6" height="18" rx="1.1" className="icon__faint" />
+    </>
+  ),
+  fanSpeed3: (
+    <>
+      <rect x="3" y="16" width="2.6" height="4" rx="1.1" className="icon__filled" />
+      <rect x="7" y="12.5" width="2.6" height="7.5" rx="1.1" className="icon__filled" />
+      <rect x="11" y="9" width="2.6" height="11" rx="1.1" className="icon__filled" />
+      <rect x="15" y="5.5" width="2.6" height="14.5" rx="1.1" className="icon__faint" />
+      <rect x="19" y="2" width="2.6" height="18" rx="1.1" className="icon__faint" />
+    </>
+  ),
+  fanSpeed4: (
+    <>
+      <rect x="3" y="16" width="2.6" height="4" rx="1.1" className="icon__filled" />
+      <rect x="7" y="12.5" width="2.6" height="7.5" rx="1.1" className="icon__filled" />
+      <rect x="11" y="9" width="2.6" height="11" rx="1.1" className="icon__filled" />
+      <rect x="15" y="5.5" width="2.6" height="14.5" rx="1.1" className="icon__filled" />
+      <rect x="19" y="2" width="2.6" height="18" rx="1.1" className="icon__faint" />
+    </>
+  ),
+  fanSpeed5: (
+    <>
+      <rect x="3" y="16" width="2.6" height="4" rx="1.1" className="icon__filled" />
+      <rect x="7" y="12.5" width="2.6" height="7.5" rx="1.1" className="icon__filled" />
+      <rect x="11" y="9" width="2.6" height="11" rx="1.1" className="icon__filled" />
+      <rect x="15" y="5.5" width="2.6" height="14.5" rx="1.1" className="icon__filled" />
+      <rect x="19" y="2" width="2.6" height="18" rx="1.1" className="icon__filled" />
+    </>
+  ),
+  // Vanes up and down, seen from the side: the unit top left, the air from straight out (1) to straight down (5).
+  vaneUpDown1: (
+    <>
+      <path d="M3 4.5h9" className="icon__unit" />
+      <path d="M5 7.5L17.9 9.3M14.2 10.8L17.9 9.3L14.7 6.8" />
+    </>
+  ),
+  vaneUpDown2: (
+    <>
+      <path d="M3 4.5h9" className="icon__unit" />
+      <path d="M5 7.5L16.5 13.6M12.5 13.7L16.5 13.6L14.4 10.2" />
+    </>
+  ),
+  vaneUpDown3: (
+    <>
+      <path d="M3 4.5h9" className="icon__unit" />
+      <path d="M5 7.5L13.7 17.2M9.9 16L13.7 17.2L12.9 13.3" />
+    </>
+  ),
+  vaneUpDown4: (
+    <>
+      <path d="M3 4.5h9" className="icon__unit" />
+      <path d="M5 7.5L9.9 19.6M6.7 17.1L9.9 19.6L10.5 15.6" />
+    </>
+  ),
+  vaneUpDown5: (
+    <>
+      <path d="M3 4.5h9" className="icon__unit" />
+      <path d="M5 7.5L5.9 20.5M3.7 17.2L5.9 20.5L7.7 16.9" />
+    </>
+  ),
+  vaneUpDownSwing: (
+    <>
+      <path d="M3 4.5h9" className="icon__unit" />
+      <path d="M16.8 9.6A12 12 0 0 1 6.7 19.4M18.3 12.9L16.8 9.6L14.3 12.1M9.3 16.9L6.7 19.4L9.9 21" />
+    </>
+  ),
+  // Vanes left and right, seen from above: the unit at the top, the air from far left (1) to far right (5).
+  vaneLeftRight1: (
+    <>
+      <path d="M6 4h12" className="icon__unit" />
+      <path d="M12 6.5L1.4 14M3.1 10.4L1.4 14L5.4 13.7" />
+    </>
+  ),
+  vaneLeftRight2: (
+    <>
+      <path d="M6 4h12" className="icon__unit" />
+      <path d="M12 6.5L5.9 18M5.8 14L5.9 18L9.3 15.9" />
+    </>
+  ),
+  vaneLeftRight3: (
+    <>
+      <path d="M6 4h12" className="icon__unit" />
+      <path d="M12 6.5L12 19.5M10 16L12 19.5L14 16" />
+    </>
+  ),
+  vaneLeftRight4: (
+    <>
+      <path d="M6 4h12" className="icon__unit" />
+      <path d="M12 6.5L18.1 18M14.7 15.9L18.1 18L18.2 14" />
+    </>
+  ),
+  vaneLeftRight5: (
+    <>
+      <path d="M6 4h12" className="icon__unit" />
+      <path d="M12 6.5L22.6 14M18.6 13.7L22.6 14L20.9 10.4" />
+    </>
+  ),
+  vaneLeftRightSplit: (
+    <>
+      <path d="M6 4h12" className="icon__unit" />
+      <path d="M12 6.5L3.6 16.5M4.3 12.6L3.6 16.5L7.4 15.1M12 6.5L20.4 16.5M16.6 15.1L20.4 16.5L19.7 12.6" />
+    </>
+  ),
+  vaneLeftRightSwing: (
+    <>
+      <path d="M6 4h12" className="icon__unit" />
+      <path d="M21 12.8A11 11 0 0 1 3 12.8M21 16.4L21 12.8L17.6 14M6.4 14L3 12.8L3 16.4" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof PATHS;

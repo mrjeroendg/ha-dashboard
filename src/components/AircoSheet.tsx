@@ -1,14 +1,14 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef } from 'react';
 import { useControlValue } from '../hooks/useControlValue';
 import {
-  availableAircoModes,
+  aircoSettings,
   currentTemperatureDetail,
   readableTemperature,
-  setAircoMode,
   setTargetTemperature,
   targetTemperature,
   temperatureRange,
+  type AircoSetting,
 } from '../lib/airco';
 import { haptic } from '../lib/haptic';
 import type { HomeAssistant } from '../types/hass';
@@ -38,7 +38,9 @@ export function AircoSheet({ hass, airco, name, onClose }: Props) {
       onClose={onClose}
     >
       <TargetTemperature hass={hass} airco={airco} />
-      <ModeChoice hass={hass} airco={airco} />
+      {aircoSettings(airco).map((setting) => (
+        <SettingChoice key={setting.title} hass={hass} setting={setting} />
+      ))}
     </BottomSheet>
   );
 }
@@ -115,74 +117,51 @@ function TargetTemperature({ hass, airco }: { hass: HomeAssistant; airco: HassEn
   );
 }
 
-function ModeChoice({ hass, airco }: { hass: HomeAssistant; airco: HassEntity }) {
-  const modes = availableAircoModes(airco);
-  const modeControl = useControlValue<string>(airco.state, (modeFromEntity, modeInApp) => modeFromEntity === modeInApp);
-  const modeInApp = modeControl.currentValueInApp;
+/**
+ * A row of icons, one per option; the chosen one is filled and named above the
+ * row. A choice shows at once; HA's report takes over when it arrives. Hidden
+ * when the airco offers nothing for it.
+ */
+function SettingChoice({ hass, setting }: { hass: HomeAssistant; setting: AircoSetting }) {
+  const choiceControl = useControlValue(setting.chosenValue, (valueFromEntity, valueInApp) => valueFromEntity === valueInApp);
+  const chosenValueInApp = choiceControl.currentValueInApp;
 
-  const chooseMode = (chosenMode: string) => {
-    modeControl.keepAfterRelease(chosenMode);
-    setAircoMode(hass, airco, chosenMode).catch((error) => {
+  if (setting.options.length === 0) return null;
+
+  const chosenOption = setting.options.find((option) => option.value === chosenValueInApp);
+
+  const choose = (chosenValue: string) => {
+    if (chosenValue === chosenValueInApp) return;
+
+    haptic('selection');
+    choiceControl.keepAfterRelease(chosenValue);
+    setting.choose(hass, chosenValue).catch((error) => {
       console.error(error);
-      modeControl.showValueFromEntity();
+      choiceControl.showValueFromEntity();
     });
   };
 
   return (
-    <IconChoice
-      title="Modus"
-      options={modes.map((aircoMode) => ({ value: aircoMode.mode, name: aircoMode.name, icon: <Icon name={aircoMode.icon} /> }))}
-      chosenValue={modeInApp}
-      onChoose={chooseMode}
-      look="modes"
-    />
-  );
-}
-
-interface IconOption {
-  /** What HA calls it, e.g. "heat" or "3". */
-  value: string;
-  /** Shown above the row when chosen, and read out by screen readers. */
-  name: string;
-  icon: ReactNode;
-}
-
-interface IconChoiceProps {
-  title: string;
-  options: IconOption[];
-  chosenValue?: string;
-  onChoose(value: string): void;
-  /** The mode row has slightly taller buttons. */
-  look?: 'modes';
-}
-
-/** A row of icons, one per option; the chosen one is filled. Hidden when there's nothing to choose. */
-function IconChoice({ title, options, chosenValue, onChoose, look }: IconChoiceProps) {
-  if (options.length === 0) return null;
-
-  const chosenOption = options.find((option) => option.value === chosenValue);
-
-  return (
     <div className="airco-choice">
       <p className="airco-choice__title">
-        {title}
+        {setting.title}
         {chosenOption && <span className="airco-choice__chosen">{chosenOption.name}</span>}
       </p>
-      <div className={`airco-choice__options${look === 'modes' ? ' airco-choice__options--modes' : ''}`} role="group" aria-label={title}>
-        {options.map((option) => (
+      <div
+        className={`airco-choice__options${setting.hasTallerButtons ? ' airco-choice__options--taller' : ''}`}
+        role="group"
+        aria-label={setting.title}
+      >
+        {setting.options.map((option) => (
           <button
             key={option.value}
             type="button"
             className="airco-choice__option"
             aria-label={option.name}
-            aria-pressed={option.value === chosenValue}
-            onClick={() => {
-              if (option.value === chosenValue) return;
-              haptic('selection');
-              onChoose(option.value);
-            }}
+            aria-pressed={option.value === chosenValueInApp}
+            onClick={() => choose(option.value)}
           >
-            {option.icon}
+            <Icon name={option.icon} />
           </button>
         ))}
       </div>

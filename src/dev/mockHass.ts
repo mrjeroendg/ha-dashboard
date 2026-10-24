@@ -253,6 +253,9 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
       else if (service === 'unlock') set(id, 'unlocked');
       else if (service === 'set_temperature') set(id, current === 'off' ? 'heat' : current, { temperature: data?.temperature });
       else if (service === 'set_hvac_mode') set(id, String(data?.hvac_mode));
+      else if (service === 'set_fan_mode') set(id, current, { fan_mode: data?.fan_mode });
+      else if (service === 'set_swing_mode') set(id, current, { swing_mode: data?.swing_mode, vane_vertical: data?.swing_mode });
+      else if (service === 'set_vane_horizontal') set(id, current, { vane_horizontal: data?.position });
       else if (service === 'media_play_pause')
         set(id, current === 'playing' ? 'paused' : 'playing', { media_position: positionNow(id), media_position_updated_at: stamp() });
       else if (service === 'media_seek') set(id, current, { media_position: data?.seek_position, media_position_updated_at: stamp() });

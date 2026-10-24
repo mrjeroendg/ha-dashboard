@@ -155,12 +155,13 @@ function offeredOptions(airco: HassEntity, listAttribute: string, knownOptions: 
 export function aircoSettings(airco: HassEntity): AircoSetting[] {
   const target = aircoTarget(airco);
   const currentValue = (attribute: string) => airco.attributes[attribute] as string | undefined;
+  const modesFromEntity = (airco.attributes.hvac_modes as string[] | undefined) ?? [];
 
   return [
     {
       title: 'Modus',
-      // "off" isn't one of them: that's the switch.
-      options: offeredOptions(airco, 'hvac_modes', AIRCO_MODES),
+      // In the design's order, not HA's; "off" isn't one of them: that's the switch.
+      options: AIRCO_MODES.filter((aircoMode) => modesFromEntity.includes(aircoMode.value)),
       chosenValue: airco.state,
       choose: (hass, chosenMode) => hass.callService('climate', 'set_hvac_mode', { hvac_mode: chosenMode }, target),
       hasTallerButtons: true,

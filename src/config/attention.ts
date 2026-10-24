@@ -1,7 +1,16 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
+import type { ComponentType } from 'react';
+import { BabysitSheet } from '../components/sheets/BabysitSheet';
 import type { IconName } from '../components/Icon';
+import type { HomeAssistant } from '../types/hass';
 
-export type AttentionLevel = 'high' | 'medium' | 'low';
+export type AttentionLevel = 'high' | 'medium' | 'babysit' | 'low';
+
+export interface WarningSheetProps {
+  hass: HomeAssistant;
+  entity: HassEntity;
+  close(): void;
+}
 
 export interface AttentionRule {
   entity: string;
@@ -10,6 +19,7 @@ export interface AttentionRule {
   title?: string;
   icon?: IconName;
   detail?: (entity: HassEntity, states: HassEntities) => string;
+  sheet?: ComponentType<WarningSheetProps>;
 }
 
 export const ATTENTION: AttentionRule[] = [
@@ -54,5 +64,19 @@ export const ATTENTION: AttentionRule[] = [
 
       return batteryPercentage <= 14 && chargingState !== 'Charging'
     }, detail: (e) => `${e.state}%`,
+  },
+  {
+    entity: 'todo.babysitter_needed',
+    level: 'babysit',
+    title: 'Oppas nodig',
+    icon: 'baby',
+    when: (babysitList) => Number(babysitList.state) > 0,
+    detail: (babysitList) => {
+      const openAppointments = Number(babysitList.state);
+      const appointmentsNeedAttention = openAppointments === 1 ? 'afspraak vraagt' : 'afspraken vragen';
+
+      return `${openAppointments} ${appointmentsNeedAttention} aandacht`;
+    },
+    sheet: BabysitSheet,
   },
 ];

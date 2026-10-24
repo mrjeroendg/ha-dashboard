@@ -1,6 +1,6 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
 import Wheel from '@uiw/react-color-wheel';
-import { useEffect, useRef, useState, type PointerEvent } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePager } from '../hooks/usePager';
 import { useControlValue } from '../hooks/useControlValue';
 import { haptic } from '../lib/haptic';
@@ -20,6 +20,7 @@ import {
   type LightMember,
 } from '../lib/rooms';
 import type { HomeAssistant } from '../types/hass';
+import { BottomSheet } from './BottomSheet';
 import { Icon } from './Icon';
 import { VerticalSlider } from './VerticalSlider';
 
@@ -29,9 +30,6 @@ interface Props {
   members: LightMember[];
   onClose(): void;
 }
-
-/** How far you have to drag the handle down before the sheet closes. */
-const CLOSE_DISTANCE = 90;
 
 const BRIGHTNESS_TRACK = 'rgba(245, 244, 239, 0.08)';
 const BRIGHTNESS_FILL = 'linear-gradient(to top, #ffb36b, #ffd3a3)';
@@ -92,81 +90,51 @@ export function LightSheet({ hass, name, members, onClose }: Props) {
   const availablePages = LIGHT_PAGES.filter((page) => members.some((member) => page.canControl(member.entity)));
   const pageInView = Math.min(pager.page, availablePages.length - 1);
 
-  const [dragDistance, setDragDistance] = useState(0);
-  const dragStartY = useRef<number | null>(null);
-  const startDraggingHandle = (pointerEvent: PointerEvent) => {
-    dragStartY.current = pointerEvent.clientY;
-    pointerEvent.currentTarget.setPointerCapture(pointerEvent.pointerId);
-  };
-  const followHandle = (pointerEvent: PointerEvent) => {
-    if (dragStartY.current !== null) setDragDistance(Math.max(0, pointerEvent.clientY - dragStartY.current));
-  };
-  const releaseHandle = () => {
-    const isDraggedFarEnough = dragDistance > CLOSE_DISTANCE;
-    dragStartY.current = null;
-    setDragDistance(0);
-    if (isDraggedFarEnough) onClose();
-  };
+  // The light's name sits small in front of the page dots (option B); the title is the page.
+  const nameAndPageDots = (
+    <div className="light-sheet__name-and-dots">
+      <span className="light-sheet__light-name">{name}</span>
+      {availablePages.length > 1 &&
+        availablePages.map((page, pageIndex) => (
+          <i key={page.id} className={pageInView === pageIndex ? 'is-active' : undefined} aria-hidden />
+        ))}
+    </div>
+  );
 
   return (
-    <>
-      <div className="light-backdrop" onClick={onClose} />
-      <div
-        className={`light-sheet${dragDistance ? ' is-dragging' : ''}`}
-        style={dragDistance ? { transform: `translateY(${dragDistance}px)` } : undefined}
-        role="dialog"
-        aria-label={name}
-      >
-        <div
-          className="light-sheet__grab"
-          onPointerDown={startDraggingHandle}
-          onPointerMove={followHandle}
-          onPointerUp={releaseHandle}
-          onPointerCancel={releaseHandle}
-        >
-          <span className="xp__handle" />
-          {/* The light's name sits small in front of the page dots (option B); the title is the page. */}
-          <div className="light-sheet__name-and-dots">
-            <span className="light-sheet__light-name">{name}</span>
-            {availablePages.length > 1 &&
-              availablePages.map((page, pageIndex) => (
-                <i key={page.id} className={pageInView === pageIndex ? 'is-active' : undefined} aria-hidden />
-              ))}
-          </div>
-        </div>
-        {/* The page in view; it changes as you swipe. */}
-        <h2 className="light-sheet__title">{availablePages[pageInView]?.title}</h2>
-        <div className="media-card__pages light-sheet__pages" ref={pager.ref} onScroll={pager.onScroll}>
-          {availablePages.map((page) => {
-            const chosenMemberCanControlPage = page.canControl(members[chosenMemberIndex].entity);
-            const firstMemberThatCanControlPage = members.findIndex((member) => page.canControl(member.entity));
-            const memberIndexOnPage = chosenMemberCanControlPage ? chosenMemberIndex : firstMemberThatCanControlPage;
-            const memberOnPage = members[memberIndexOnPage];
+    <BottomSheet label={name} className="light-sheet" besideHandle={nameAndPageDots} onClose={onClose}>
+      {/* The page in view; it changes as you swipe. */}
+      <h2 className="light-sheet__title">{availablePages[pageInView]?.title}</h2>
+      <div className="media-card__pages light-sheet__pages" ref={pager.ref} onScroll={pager.onScroll}>
+        {availablePages.map((page) => {
+          const chosenMemberCanControlPage = page.canControl(members[chosenMemberIndex].entity);
+          const firstMemberThatCanControlPage = members.findIndex((member) => page.canControl(member.entity));
+          const memberIndexOnPage = chosenMemberCanControlPage ? chosenMemberIndex : firstMemberThatCanControlPage;
+          const memberOnPage = members[memberIndexOnPage];
 
-            return (
-              <div key={page.id} className="media-card__page light-sheet__page">
-                <MemberPills
-                  members={members}
-                  page={page}
-                  selectedMemberIndex={memberIndexOnPage}
-                  onSelect={setChosenMemberIndex}
-                />
-                {/* A new key per light: each light starts from its own value. */}
-                {page.id === 'brightness' && (
-                  <BrightnessControl key={memberOnPage.entity.entity_id} hass={hass} light={memberOnPage.entity} />
-                )}
-                {page.id === 'warmth' && (
-                  <WarmthControl key={memberOnPage.entity.entity_id} hass={hass} light={memberOnPage.entity} />
-                )}
-                {page.id === 'color' && (
-                  <ColorControl key={memberOnPage.entity.entity_id} hass={hass} light={memberOnPage.entity} />
-                )}
-              </div>
-            );
-          })}
-        </div>
+          return (
+            <div key={page.id} className="media-card__page light-sheet__page">
+              <MemberPills
+                members={members}
+                page={page}
+                selectedMemberIndex={memberIndexOnPage}
+                onSelect={setChosenMemberIndex}
+              />
+              {/* A new key per light: each light starts from its own value. */}
+              {page.id === 'brightness' && (
+                <BrightnessControl key={memberOnPage.entity.entity_id} hass={hass} light={memberOnPage.entity} />
+              )}
+              {page.id === 'warmth' && (
+                <WarmthControl key={memberOnPage.entity.entity_id} hass={hass} light={memberOnPage.entity} />
+              )}
+              {page.id === 'color' && (
+                <ColorControl key={memberOnPage.entity.entity_id} hass={hass} light={memberOnPage.entity} />
+              )}
+            </div>
+          );
+        })}
       </div>
-    </>
+    </BottomSheet>
   );
 }
 

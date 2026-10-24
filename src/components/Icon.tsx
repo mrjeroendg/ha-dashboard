@@ -105,6 +105,13 @@ const PATHS = {
     </>
   ),
   star: <path d="M12 3.5l2.6 5.3 5.9.9-4.3 4.1 1 5.8L12 16.9l-5.2 2.7 1-5.8L3.5 9.7l5.9-.9z" />,
+  refresh: <path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4" />,
+  calendar: (
+    <>
+      <rect x="3.5" y="5" width="17" height="15.5" rx="2.5" />
+      <path d="M3.5 10h17M8 3v4M16 3v4" />
+    </>
+  ),
   garageCar: (
     <>
       <path d="M2 10l10-6 10 6" />

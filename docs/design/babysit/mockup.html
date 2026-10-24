@@ -1,0 +1,61 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Babysit</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(4,390px);gap:28px}
+.cap{min-height:52px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:2px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;
+position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:56px 24px 0}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:33px;line-height:1.15}
+.status{display:inline-flex;gap:10px;align-items:center;margin-top:16px;padding:10px 16px;font-size:15px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:22px}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--accent)}
+/* warnings: same as src/styles.css */
+.att{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.item{--c:#e5534b;--sub:#f0b3ae;--tint:26%;--edge:32%;--on-c:#fff;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:20px;
+background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.14)),color-mix(in srgb,var(--c) var(--tint),var(--surface));
+box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 0 0 1px color-mix(in srgb,var(--c) var(--edge),transparent),0 6px 16px -6px rgba(0,0,0,.6)}
+.low{--c:#e8913a;--sub:#f3c99a;--tint:20%;--edge:28%;--on-c:#2b1a0a}
+.babysit{--c:#e0559b;--sub:#f5bdd8;--tint:24%;--edge:34%;--on-c:#fff}
+.ic{display:grid;place-items:center;flex:none;width:34px;height:34px;border-radius:11px;background:linear-gradient(180deg,color-mix(in srgb,var(--c) 85%,#fff),var(--c) 55%,color-mix(in srgb,var(--c) 85%,#000));color:var(--on-c);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 2px 6px rgba(0,0,0,.35)}
+.ic svg{width:18px;height:18px}
+.tx{flex:1;min-width:0;display:flex;flex-direction:column}.tx b,.tx span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tx b{font-size:15px;font-weight:600}.tx span{margin-top:1px;font-size:13px;color:var(--sub)}
+.btn{flex:none;height:32px;padding:0 14px;border-radius:999px;display:grid;place-items:center;font-size:13px;font-weight:600;color:#fff;background:rgba(255,255,255,.16);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+.sec{margin:30px 4px 12px;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{height:100px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+/* sheet */
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background:#2b2b29;padding:10px 20px 30px;box-shadow:0 -12px 40px rgba(0,0,0,.4)}
+.handle{width:36px;height:5px;border-radius:3px;background:rgba(245,244,239,.18);margin:0 auto 14px}
+.hdr{margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.hdr h2{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:24px}
+.refresh{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 13px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);font-size:13px;font-weight:600;color:var(--text)}
+.refresh svg{width:15px;height:15px;color:#e0559b}
+.spin{width:13px;height:13px;border-radius:50%;border:2px solid rgba(245,244,239,.2);border-top-color:#e0559b}
+.sub{margin:4px 2px 14px;font-size:13px;color:var(--muted)}
+.list{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;padding:12px 14px}.row+.row{box-shadow:inset 0 1px 0 var(--border)}
+.cal{flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:color-mix(in srgb,#e0559b 16%,var(--bg));color:#e0559b}.cal svg{width:18px;height:18px}
+.rt{display:flex;flex-direction:column;min-width:0}.rt span{font-size:13px;color:var(--muted)}.rt b{font-size:16px;font-weight:500;margin-top:1px}
+.new{margin-left:auto;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:#e0559b}
+</style></head><body></body>
+<script>
+const P={baby:'<circle cx="12" cy="13" r="8"/><path d="M12 5c0-1.7 1.8-2.5 2.8-1.3M9 12.5h.01M15 12.5h.01M9.8 16.3c1.3.9 3.1.9 4.4 0"/>',update:'<path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4"/>',refresh:'<path d="M20 12a8 8 0 1 1-2.3-5.6M20 4v4h-4"/>',check:'<path d="M5 12.5l4.5 4.5L19 7.5"/>',cal:'<rect x="3.5" y="5" width="17" height="15.5" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>'};
+const i=n=>`<svg viewBox="0 0 24 24">${P[n]}</svg>`;
+const warn=(cls,ic,t,d,btn)=>`<div class="item ${cls}"><span class="ic">${i(ic)}</span><span class="tx"><b>${t}</b><span>${d}</span></span>${btn?`<span class="btn">Bekijk</span>`:''}</div>`;
+const thuis=`<div class="in"><p class="lbl">Zaterdag 24 oktober</p><h1>Goedemorgen, Jeroen</h1><div class="status"><i></i>Iedereen thuis · 2 lichten aan</div>
+<div class="att">${warn('babysit','baby','Oppas nodig','3 afspraken vragen aandacht',true)}${warn('low','update','Immich update','v3.3.1 → v3.3.4',false)}</div>
+<p class="sec">Snel</p><div class="grid"><div class="card"></div><div class="card"></div></div></div>`;
+const rows=(items)=>`<div class="list">${items.map(([d,t,n])=>`<div class="row"><span class="cal">${i('cal')}</span><span class="rt"><span>${d}</span><b>${t}</b></span></div>`).join('')}</div>`;
+const ITEMS=[['Vrijdag 30 oktober','Etentje bij Jan'],['Zaterdag 7 november','Trouwfeest Sarah & Tom'],['Donderdag 19 november','Ouderavond school']];
+const sheet=(btn,items,sub)=>`<div class="dim"></div><div class="sheet"><div class="handle"></div><div class="hdr"><h2>Oppas nodig</h2>${btn}</div>${rows(items)}</div>`;
+const idle=`<span class="refresh">${i('refresh')}Bijwerken</span>`;
+const busy=`<span class="refresh"><span class="spin"></span>Bijwerken…</span>`;
+const done=`<span class="refresh">${i('check')}Bijgewerkt</span>`;
+const S=[
+ ['Thuis · waarschuwing','Nieuw niveau "babysit" in roze, met een "Bekijk"-knop. Andere waarschuwingen blijven zonder knop.',`<div class="phone">${thuis}</div>`],
+ ['Bekijk · de sheet','Data die nog een oppas nodig hebben, op datum. Bovenaan de datum klein, eronder de titel. Alleen lezen: niets aan te vinken.',`<div class="phone">${thuis}${sheet(idle,ITEMS,'Uit de agenda, de komende 60 dagen.')}</div>`],
+ ['Bijwerken · bezig','Start de automatisering; spinner tot HA klaar is.',`<div class="phone">${thuis}${sheet(busy,ITEMS,'Uit de agenda, de komende 60 dagen.')}</div>`],
+ ['Bijwerken · klaar','De lijst ververst met wat de automatisering vond (hier: 14 november erbij). Na even weer de gewone knop.',`<div class="phone">${thuis}${sheet(done,[ITEMS[0],ITEMS[1],['Zaterdag 14 november','Concert Ziggo Dome'],ITEMS[2]],'Uit de agenda, de komende 60 dagen.')}</div>`],
+];
+document.body.innerHTML=S.map(([c,s,h])=>`<div><p class="cap">${c}<small>${s}</small></p>${h}</div>`).join('');
+</script></html>

@@ -36,6 +36,7 @@ export async function connectHass(
     callService: (domain, service, serviceData, target) =>
       callService(conn, domain, service, serviceData, target),
     callWS,
+    connection: conn,
   });
 
   subscribeEntities(conn, (states) => onChange(build(states)));

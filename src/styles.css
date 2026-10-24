@@ -127,6 +127,8 @@
 
 .attention--high { --c: #b42318; --sub: #f2a49c; --tint: 42%; --edge: 60%; }
 .attention--low { --c: #e8913a; --sub: #f3c99a; --tint: 20%; --edge: 28%; --on-c: #2b1a0a; }
+/* Babysit (docs/design/babysit): its own level, in pink. */
+.attention--babysit { --c: #e0559b; --sub: #f5bdd8; --tint: 24%; --edge: 34%; }
 
 .attention__icon {
   display: grid;
@@ -158,6 +160,27 @@
 
 .attention__title { font-size: 15px; font-weight: 600; }
 .attention__detail { margin-top: 1px; font-size: 13px; color: var(--sub); }
+
+/* "Bekijk": only on warnings with a sheet. */
+.attention__view {
+  appearance: none;
+  flex: none;
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 120ms ease;
+}
+
+.attention__view:active { transform: scale(0.96); }
 
 /* ---------------------------------------------------------------- quick actions */
 
@@ -369,35 +392,9 @@ button.quick-card:active { transform: scale(0.97); }
 .safety-dot.is-high { background: #e5534b; }
 .safety-dot.is-medium { background: #e8913a; }
 
-.safety-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 3;
-  background: rgba(0, 0, 0, 0.45);
-  animation: fade-in 200ms ease;
-}
-
-.safety-sheet {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 4;
-  padding: 0 16px calc(34px + env(safe-area-inset-bottom));
-  border-radius: 28px 28px 0 0;
-  background: #2b2b29;
-  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.4);
-  animation: rise 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  transition: transform 200ms ease;
-}
-
-.safety-sheet.is-dragging { transition: none; }
-
-.safety-sheet__grab {
-  padding: 10px 0 6px;
-  touch-action: none;
-  cursor: grab;
-}
+/* Veiligheid's own spacing inside the shared bottom sheet. */
+.safety-sheet { padding: 0 16px calc(34px + env(safe-area-inset-bottom)); }
+.safety-sheet .bottom-sheet__grab { padding-bottom: 6px; }
 
 .safety-sheet__title {
   margin: 0 4px 2px;
@@ -1262,6 +1259,34 @@ button.row:active { background: var(--accent-soft); }
 @keyframes rise { from { transform: translateY(24px); opacity: 0; } }
 @keyframes fade-in { from { opacity: 0; } }
 
+/* ---------------------------------------------------------------- bottom sheet */
+
+/* The frame every bottom sheet shares (BottomSheet.tsx); each sheet adds its own content. */
+.bottom-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.45);
+  animation: fade-in 200ms ease;
+}
+
+.bottom-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  padding: 0 20px calc(16px + env(safe-area-inset-bottom));
+  border-radius: 28px 28px 0 0;
+  background: #2b2b29;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.4);
+  animation: rise 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 200ms ease;
+}
+
+.bottom-sheet.is-dragging { transition: none; }
+.bottom-sheet__grab { padding: 10px 0 8px; touch-action: none; cursor: grab; }
+
 /* ---------------------------------------------------------------- light sheet (docs/design/light-sheet) */
 
 /* A row with a sheet: the left part opens it, only the switch toggles. */
@@ -1297,31 +1322,6 @@ button.row:active { background: var(--accent-soft); }
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
-
-.light-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 3;
-  background: rgba(0, 0, 0, 0.45);
-  animation: fade-in 200ms ease;
-}
-
-.light-sheet {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 4;
-  padding: 0 20px calc(16px + env(safe-area-inset-bottom));
-  border-radius: 28px 28px 0 0;
-  background: #2b2b29;
-  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.4);
-  animation: rise 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  transition: transform 200ms ease;
-}
-
-.light-sheet.is-dragging { transition: none; }
-.light-sheet__grab { padding: 10px 0 8px; touch-action: none; cursor: grab; }
 
 .light-sheet__title {
   margin: 4px 0 0;
@@ -1455,3 +1455,67 @@ button.row:active { background: var(--accent-soft); }
   box-shadow: 0 0 0 3px #fff, 0 2px 10px rgba(0, 0, 0, 0.5);
   pointer-events: none;
 }
+
+/* ---------------------------------------------------------------- babysit sheet (docs/design/babysit) */
+
+.babysit-sheet__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+
+.babysit-sheet__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 24px;
+}
+
+.babysit-refresh {
+  appearance: none;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.babysit-refresh .icon { width: 15px; height: 15px; color: #e0559b; }
+.babysit-refresh .spinner { width: 13px; height: 13px; border-top-color: #e0559b; }
+.babysit-refresh.status-error { color: var(--accent); }
+
+.babysit-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  overflow: hidden;
+}
+
+.babysit-list__row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
+.babysit-list__row + .babysit-list__row { box-shadow: inset 0 1px 0 var(--border); }
+
+.babysit-list__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: color-mix(in srgb, #e0559b 16%, var(--bg));
+  color: #e0559b;
+}
+
+.babysit-list__icon .icon { width: 18px; height: 18px; }
+.babysit-list__text { display: flex; flex-direction: column; min-width: 0; }
+.babysit-list__date { font-size: 13px; color: var(--text-muted); }
+.babysit-list__title { margin-top: 1px; font-size: 16px; font-weight: 500; }

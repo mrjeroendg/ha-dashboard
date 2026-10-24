@@ -129,7 +129,7 @@ export const ROOMS: RoomConfig[] = [
   {
     id: 'garage',
     name: "Garage",
-    icon: 'garage',
+    icon: 'garageCar',
     safety: [
       { entity: 'binary_sensor.0x0015bc003106405f_smoke', name: 'Rookmelder', battery: 'sensor.0x0015bc003106405f_battery' }
     ],
@@ -141,7 +141,7 @@ export const ROOMS: RoomConfig[] = [
   {
     id: 'gasten',
     name: "Gasten",
-    icon: 'garage',
+    icon: 'bed',
     safety: [
       {
         entity: 'binary_sensor.0x0015bc003106405c_smoke', name: 'Rookmelder',
@@ -155,7 +155,7 @@ export const ROOMS: RoomConfig[] = [
     {
     id: 'badkamer',
     name: "Badkamer",
-    icon: 'garage',
+    icon: 'shower',
     entities: [
       { entity: 'cover.velux', name: 'Velux', myPosition: 'button.velux_my_position' }
     ],

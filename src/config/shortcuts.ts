@@ -11,7 +11,7 @@ import type { IconName } from '../components/Icon';
  *
  * Icons: sun coffee blinds leave thermometer car sofa tv moon lock power
  * window music sprout home bulb plug door monitor droplet gauge play radio
- * alert update garage up down stop star baby phone tablet
+ * alert update garage garageCar bed shower up down stop star baby phone tablet
  */
 export interface Shortcut {
   label: string;

@@ -28,3 +28,13 @@ As built (dev mode, with two extra example rooms to show the overflow):
 - **A · Stacked, active as a lighter area** (closest to the Netflix example): the only place where "active" wouldn't be orange.
 - **C · Icons only, the name only on the active item:** fits the most, but rooms would have to be recognised by their icon alone, and some icons look alike (Thuis and Garage are both houses).
 - **D · Orange icon with a dot, no area:** the quietest, but the active item stands out less.
+
+## Room icons
+
+Garage and Gasten both used the house-shaped `garage` icon, which looks like Thuis. Chosen from [`room-icons.png`](./room-icons.png) and [`bathroom-icons.png`](./bathroom-icons.png):
+
+- **Garage:** `garageCar`, a car under a garage roof (G3).
+- **Gasten:** `bed`, a bed seen from the side (B1).
+- **Badkamer:** `shower`, a shower head with drops (K2).
+
+The old `garage` icon stays for the garage warning on Thuis.

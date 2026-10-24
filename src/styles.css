@@ -321,12 +321,10 @@ button.quick-card:active { transform: scale(0.97); }
   transition: background-color 200ms ease, color 200ms ease;
 }
 
-.bottom-nav__item .icon { width: 20px; height: 20px; }
+.bottom-nav__item .icon { width: 18px; height: 18px; }
 
-.bottom-nav__item[aria-current='page'] {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
+/* Only the icon and name turn orange; no area behind them. */
+.bottom-nav__item[aria-current='page'] { color: var(--accent); }
 
 /* ---------------------------------------------------------------- room page */
 

@@ -1,0 +1,59 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Stack motion</title><style>
+:root{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08)}
+*{box-sizing:border-box}
+body{margin:0;padding:24px 16px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif}
+.grid{display:flex;flex-wrap:wrap;gap:28px;justify-content:center}
+.col h3{margin:0 0 4px;font-size:15px;color:#3d3c38}.col p{margin:0 0 12px;font-size:13px;color:#73726c;max-width:360px;line-height:1.4}
+.phone{width:360px;height:720px;border-radius:44px;background:var(--bg);color:var(--text);padding:56px 22px 0;overflow:hidden}
+.date{font-size:12px;letter-spacing:.08em;color:var(--muted)}
+.hi{font-family:ui-serif,"New York",Georgia,serif;font-size:30px;margin:8px 0 18px}
+.pill{display:inline-flex;gap:8px;align-items:center;height:36px;padding:0 14px;border-radius:999px;box-shadow:inset 0 0 0 1px var(--border);color:var(--muted);font-size:14px}
+.pill::before{content:"";width:8px;height:8px;border-radius:50%;background:#e07a5f}
+.stack{position:relative;margin-top:16px;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:height var(--dur) var(--ease)}
+.item{--c:#e5534b;--sub:#f0b3ae;--tint:26%;--edge:32%;--on:#fff;position:absolute;left:0;right:0;top:0;height:64px;display:flex;align-items:center;gap:12px;padding:0 14px;border-radius:20px;
+background:linear-gradient(180deg,rgba(255,255,255,.08),rgba(0,0,0,.14)),color-mix(in srgb,var(--c) var(--tint),var(--surface));
+box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 0 0 1px color-mix(in srgb,var(--c) var(--edge),transparent),0 6px 16px -6px rgba(0,0,0,.6);
+transform-origin:50% 0;transition:transform var(--dur) var(--ease),opacity calc(var(--dur)*.6) ease}
+.high{--c:#b42318;--sub:#f2a49c;--tint:42%;--edge:60%}.low{--c:#e8913a;--sub:#f3c99a;--tint:20%;--edge:28%;--on:#2b1a0a}.babysit{--c:#e0559b;--sub:#f5bdd8;--tint:24%;--edge:34%}
+.ic{width:34px;height:34px;border-radius:11px;flex:none;background:var(--c);display:grid;place-items:center;color:var(--on);font-size:15px}
+.tx{flex:1;min-width:0}.tx b,.tx span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tx b{font-size:15px}.tx span{font-size:13px;color:var(--sub)}
+.view{height:32px;padding:0 14px;border-radius:999px;background:rgba(255,255,255,.16);display:grid;place-items:center;font-size:13px;font-weight:600}
+.more{height:26px;padding:0 10px;border-radius:999px;background:rgba(0,0,0,.28);display:grid;place-items:center;font-size:12px;font-weight:700;transition:opacity 180ms ease,transform 180ms ease}
+.open .more{opacity:0;transform:scale(.6)}
+/* the content inside the cards behind fades away in the stack */
+.item .ic,.item .tx,.item .view{transition:opacity 200ms ease}
+.closed .item:not(:first-child) .ic,.closed .item:not(:first-child) .tx,.closed .item:not(:first-child) .view{opacity:0}
+.less{display:flex;justify-content:center;align-items:center;gap:4px;font-size:13px;font-weight:600;color:var(--muted);height:0;opacity:0;overflow:hidden;transition:opacity 200ms ease,height var(--dur) var(--ease)}
+.open + .less{opacity:1;height:34px;transition-delay:calc(var(--dur)*.45),0s}
+.snel{margin:22px 4px 12px;font-size:13px;color:var(--muted);letter-spacing:.06em}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:12px}.tile{height:110px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.stack:active .item:first-child{transform:scale(.98)}
+</style></head><body>
+<div class="grid">
+ <div class="col"><h3>M1 · Vloeiend</h3><p>De kaarten schuiven uit de stapel naar hun plek en groeien naar volle breedte, met de iOS-sheetcurve (rustig uitlopend). Dichtklappen: ze schuiven terug onder de voorste. "Snel" schuift mee.</p><div class="phone" data-ease="cubic-bezier(.32,.72,0,1)" data-dur="480ms" data-stagger="0"></div></div>
+ <div class="col"><h3>M2 · Veerkrachtig</h3><p>Dezelfde beweging, maar als een veer: de kaarten schieten een paar pixels door en vallen terug, en vertrekken net na elkaar (zoals de meldingen op het iOS-toegangsscherm).</p><div class="phone" data-ease="cubic-bezier(.34,1.32,.64,1)" data-dur="520ms" data-stagger="35"></div></div>
+</div>
+<script>
+const W=[['high','▢','iPad batterij laag','12%'],['high','⌂','Garagepoort staat open','Sinds 09:42'],['babysit','☺','Oppas nodig','3 afspraken vragen aandacht',true],['low','↻','Immich update','v3.3.1 → v3.3.4']];
+const H=64,GAP=8,PEEK=6;
+document.querySelectorAll('.phone').forEach(ph=>{
+ ph.style.setProperty('--ease',ph.dataset.ease);ph.style.setProperty('--dur',ph.dataset.dur);
+ ph.innerHTML=`<div class="date">ZATERDAG 24 OKTOBER</div><div class="hi">Goedemorgen, Jeroen</div><div class="pill">Je bent thuis · 1 deur open</div>
+ <div class="stack closed">${W.map(([l,ic,t,d,v],i)=>`<div class="item ${l}" style="z-index:${9-i}"><span class="ic">${ic}</span><span class="tx"><b>${t}</b><span>${d}</span></span>${v?'<span class="view">Bekijk</span>':''}${i===0?`<span class="more">+${W.length-1}</span>`:''}</div>`).join('')}</div>
+ <div class="less">⌃ Minder</div><div class="snel">SNEL</div><div class="tiles"><div class="tile"></div><div class="tile"></div></div>`;
+ const stack=ph.querySelector('.stack'),items=[...stack.children],stagger=+ph.dataset.stagger;
+ const layout=open=>{
+  stack.classList.toggle('open',open);stack.classList.toggle('closed',!open);
+  items.forEach((it,i)=>{
+   const delay=(open?i:items.length-1-i)*stagger;
+   it.style.transitionDelay=`${delay}ms`;
+   if(open){it.style.transform=`translateY(${i*(H+GAP)}px)`;it.style.opacity=1}
+   else{const depth=Math.min(i,2);const scale=1-depth*0.045;it.style.transform=`translateY(${depth*PEEK+ (H*(1-scale))}px) scale(${scale})`;it.style.opacity=i>2?0:[1,.85,.6][i]}
+  });
+  stack.style.height=open?`${items.length*H+(items.length-1)*GAP}px`:`${H+2*PEEK}px`;
+ };
+ layout(false);
+ stack.addEventListener('click',()=>layout(true));
+ ph.querySelector('.less').addEventListener('click',()=>layout(false));
+});
+</script></body></html>

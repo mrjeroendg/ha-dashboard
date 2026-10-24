@@ -1,6 +1,7 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
+import type { ComponentType } from 'react';
 import type { IconName } from '../components/Icon';
-import type { AttentionLevel, AttentionRule } from '../config/attention';
+import type { AttentionLevel, AttentionRule, WarningSheetProps } from '../config/attention';
 
 export interface Warning {
   key: string;
@@ -11,9 +12,12 @@ export interface Warning {
   detail: string;
   /** When the state started (ms), for sorting newest first. */
   since: number;
+  entity: HassEntity;
+  /** Opened with "Bekijk"; without it the warning only warns. */
+  sheet?: ComponentType<WarningSheetProps>;
 }
 
-const ORDER: Record<AttentionLevel, number> = { high: 0, medium: 1, low: 2 };
+const ORDER: Record<AttentionLevel, number> = { high: 0, medium: 1, babysit: 2, low: 3 };
 
 const domainOf = (id: string) => id.split('.')[0];
 
@@ -68,6 +72,8 @@ function warningFor(rule: AttentionRule, entity: HassEntity, states: HassEntitie
         ? `${a.installed_version ?? '?'} → ${a.latest_version ?? '?'}`
         : `Sinds ${clock(since)}`,
     since,
+    entity,
+    sheet: rule.sheet,
   };
 }
 

@@ -141,6 +141,19 @@ const PATHS = {
       <path d="M12 3.5v2M12 18.5v2M3.5 12h2M18.5 12h2" />
     </>
   ),
+  // Airco (docs/design/airco-sheet).
+  auto: <path d="M7.5 18l4.5-12 4.5 12M9.2 13.5h5.6" />,
+  snowflake: (
+    <path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5L12 7l2.5-2.5M9.5 19.5L12 17l2.5 2.5M3.9 10.6l3.4.9-.9 3.4M20.1 13.4l-3.4-.9.9-3.4" />
+  ),
+  fan: (
+    <>
+      <circle cx="12" cy="12" r="1.6" />
+      <path d="M12 10.4C11 7 12 3.5 15 3.5c2.6 0 2.6 4.2-1.6 7" />
+      <path transform="rotate(120 12 12)" d="M12 10.4C11 7 12 3.5 15 3.5c2.6 0 2.6 4.2-1.6 7" />
+      <path transform="rotate(240 12 12)" d="M12 10.4C11 7 12 3.5 15 3.5c2.6 0 2.6 4.2-1.6 7" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof PATHS;

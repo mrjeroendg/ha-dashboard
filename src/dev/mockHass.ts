@@ -50,6 +50,24 @@ function baseStates(): HassEntities {
     entity('sensor.badkamer_temperatuur', '20.1', { unit_of_measurement: '°C', device_class: 'temperature' }),
     entity('sensor.badkamer_vochtigheid', '64', { unit_of_measurement: '%', device_class: 'humidity' }),
     entity('climate.woonkamer', 'heat', { current_temperature: 19.5, temperature: 19 }),
+    // A MELCloud airco (docs/design/airco-sheet); the ID is the placeholder in src/config/rooms.ts.
+    entity('climate.slaapkamer_airco', 'heat', {
+      friendly_name: 'Airco',
+      hvac_modes: ['heat_cool', 'heat', 'cool', 'dry', 'fan_only', 'off'],
+      current_temperature: 19.5,
+      temperature: 21,
+      target_temp_step: 0.5,
+      min_temp: 10,
+      max_temp: 31,
+      fan_modes: ['auto', '1', '2', '3', '4', '5'],
+      fan_mode: '3',
+      swing_modes: ['auto', '1', '2', '3', '4', '5', 'swing'],
+      swing_mode: '2',
+      vane_horizontal: 'swing',
+      vane_horizontal_positions: ['auto', '1', '2', '3', '4', '5', 'split', 'swing'],
+      vane_vertical: '2',
+      vane_vertical_positions: ['auto', '1', '2', '3', '4', '5', 'swing'],
+    }),
     entity('switch.koffiemachine', 'off', { friendly_name: 'Koffiemachine' }),
     entity('cover.rolluiken', 'closed', { friendly_name: 'Rolluiken' }),
     entity('lock.voordeur', 'locked', { friendly_name: 'Voordeur' }),
@@ -225,14 +243,16 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
         const k = data.color_temp_kelvin;
         const rgb = k < 3300 ? [255, 167, 87] : k < 5000 ? [255, 214, 170] : [235, 238, 255];
         set(id, 'on', { color_mode: 'color_temp', color_temp_kelvin: k, rgb_color: rgb });
-      } else if (service === 'turn_on') ROUTINES[id] ? ROUTINES[id]() : set(id, 'on');
+      } else if (service === 'turn_on' && domain === 'climate') set(id, 'heat');
+      else if (service === 'turn_on') ROUTINES[id] ? ROUTINES[id]() : set(id, 'on');
       else if (service === 'turn_off') set(id, 'off');
       else if (service === 'toggle') set(id, current === 'on' ? 'off' : 'on');
       else if (service === 'open_cover') set(id, 'open');
       else if (service === 'close_cover') set(id, 'closed');
       else if (service === 'lock') set(id, 'locked');
       else if (service === 'unlock') set(id, 'unlocked');
-      else if (service === 'set_temperature') set(id, 'heat', { temperature: data?.temperature });
+      else if (service === 'set_temperature') set(id, current === 'off' ? 'heat' : current, { temperature: data?.temperature });
+      else if (service === 'set_hvac_mode') set(id, String(data?.hvac_mode));
       else if (service === 'media_play_pause')
         set(id, current === 'playing' ? 'paused' : 'playing', { media_position: positionNow(id), media_position_updated_at: stamp() });
       else if (service === 'media_seek') set(id, current, { media_position: data?.seek_position, media_position_updated_at: stamp() });

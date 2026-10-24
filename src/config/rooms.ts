@@ -91,6 +91,8 @@ export const ROOMS: RoomConfig[] = [
       },
     ],
     entities: [
+      // Placeholder ID (docs/design/airco-sheet): replace with the MELCloud climate entity. Skipped while it doesn't exist.
+      { entity: 'climate.slaapkamer_airco', name: 'Airco' },
       { entity: 'cover.rts_16727506', name: 'Rolluik', myPosition: 'button.rts_16727506_my_position' }
     ],
   },

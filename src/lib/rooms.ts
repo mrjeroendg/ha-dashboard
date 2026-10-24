@@ -3,6 +3,7 @@ import type { IconName } from '../components/Icon';
 import type { RoomConfig, RoomEntity, RoomSafety } from '../config/rooms';
 import type { Shortcut } from '../config/shortcuts';
 import type { HomeAssistant } from '../types/hass';
+import { aircoDetail, isAircoOn, toggleAirco } from './airco';
 
 export type Row = {
   entity: HassEntity;
@@ -331,12 +332,14 @@ export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowO
         run: (h) => h.callService('media_player', 'media_play_pause', {}, target),
       };
     }
+    // docs/design/airco-sheet: the switch toggles, the rest of the row opens the sheet.
     case 'climate':
       return {
         kind: 'climate',
         icon: 'thermometer',
-        on: entity.state !== 'off',
-        detail: `Nu ${number(a.current_temperature)}° · doel ${number(a.temperature)}°`,
+        on: isAircoOn(entity),
+        detail: aircoDetail(entity),
+        run: (h) => toggleAirco(h, entity),
       };
     case 'scene':
     case 'script':
@@ -351,17 +354,6 @@ export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowO
     default:
       return { kind: 'readonly', icon: iconFor(entity), on: false, detail: readableState(entity) };
   }
-}
-
-/** Climate +/- buttons: nudge the target temperature by `step` degrees. */
-export function adjustTemperature(hass: HomeAssistant, entity: HassEntity, step: number) {
-  const current = Number(entity.attributes.temperature ?? 20);
-  return hass.callService(
-    'climate',
-    'set_temperature',
-    { temperature: Math.round((current + step) * 2) / 2 },
-    { entity_id: entity.entity_id },
-  );
 }
 
 function iconFor(entity: HassEntity): IconName {

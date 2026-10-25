@@ -50,6 +50,13 @@ function baseStates(): HassEntities {
     entity('sensor.badkamer_temperatuur', '20.1', { unit_of_measurement: '°C', device_class: 'temperature' }),
     entity('sensor.badkamer_vochtigheid', '64', { unit_of_measurement: '%', device_class: 'humidity' }),
     entity('climate.woonkamer', 'heat', { current_temperature: 19.5, temperature: 19 }),
+    // Verbruik (docs/design/verbruik); the IDs are the real ones from src/config/statistics.ts.
+    entity('sensor.p1_meter_power', '196', { unit_of_measurement: 'W', device_class: 'power', state_class: 'measurement' }),
+    entity('sensor.p1_meter_energy_consumption_daily', '8.13', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
+    entity('sensor.p1_meter_energy_production_daily', '1.24', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
+    entity('sensor.garage_water_meter_consumption_daily', '0.102', { unit_of_measurement: 'm³', state_class: 'total_increasing' }),
+    entity('sensor.garage_water_meter_water_usage', '1.2', { unit_of_measurement: 'L/min' }),
+    entity('sensor.gas_meter_consumption_daily', '2.78', { unit_of_measurement: 'm³', state_class: 'total_increasing' }),
     // A MELCloud airco (docs/design/airco-sheet); the ID is the real one from src/config/rooms.ts.
     entity('climate.bedroom_marielou_airco', 'heat', {
       friendly_name: 'Airco',
@@ -263,8 +270,27 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     emit();
   };
 
-  const callWS = async <T,>(msg: { type: string }) => {
+  // The 6 days before today per daily sensor (docs/design/verbruik), oldest first.
+  const DAILY_TOTALS: Record<string, number[]> = {
+    'sensor.p1_meter_energy_consumption_daily': [9.4, 8.8, 10.2, 7.9, 9.1, 11.3],
+    'sensor.p1_meter_energy_production_daily': [3.1, 4.6, 1.2, 0.8, 2.9, 5.1],
+    'sensor.garage_water_meter_consumption_daily': [0.131, 0.118, 0.152, 0.097, 0.141, 0.126],
+    'sensor.gas_meter_consumption_daily': [2.41, 2.9, 3.1, 2.2, 2.6, 3.4],
+  };
+
+  const callWS = async <T,>(msg: { type: string; [key: string]: unknown }) => {
     console.info('[mock] callWS', msg);
+    if (msg.type === 'recorder/statistics_during_period') {
+      const statisticIds = msg.statistic_ids as string[];
+      const dayLength = 24 * 3600_000;
+      return Object.fromEntries(
+        statisticIds.map((statisticId) => [
+          statisticId,
+          (DAILY_TOTALS[statisticId] ?? []).map((change, dayIndex) => ({ start: Date.now() - (6 - dayIndex) * dayLength, change })),
+        ]),
+      ) as T;
+    }
+    if (msg.type === 'recorder/statistic_during_period') return { max: 2400 } as T;
     return undefined as T;
   };
 

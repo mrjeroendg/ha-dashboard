@@ -1713,3 +1713,106 @@ button.row:active { background: var(--accent-soft); }
 .icon .icon__filled { fill: currentColor; stroke: none; }
 .icon .icon__faint { stroke-width: 1.2; opacity: 0.45; }
 .icon .icon__unit { stroke-width: 2.4; }
+
+/* ---------------------------------------------------------------- statistics (docs/design/verbruik) */
+
+/* Live card: a fixed 59px, whatever the content. */
+.power-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 59px;
+  margin-bottom: 10px;
+  padding: 0 14px;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.power-card__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--statistic-color) 14%, transparent);
+  color: var(--statistic-color);
+}
+
+.power-card__icon .icon { width: 18px; height: 18px; }
+
+.power-card__value {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.power-card__value small,
+.statistic-tile__value small { margin-left: 3px; font-weight: 500; color: var(--text-muted); }
+.power-card__value small { font-size: 13px; }
+
+.power-card__now,
+.statistic-tile__now {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.power-card__now::before,
+.statistic-tile__now::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--statistic-color);
+}
+
+.power-card__peak { flex: 1; display: flex; flex-direction: column; gap: 7px; margin-left: 18px; }
+.power-card__peak-label { text-align: right; font-size: 11px; color: var(--text-muted); }
+.power-card__peak-label b { font-weight: 600; color: var(--text); }
+
+.power-card__meter {
+  position: relative;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--statistic-color) 14%, var(--bg));
+}
+
+.power-card__meter i { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: var(--statistic-color); }
+
+/* Tiles: 2 per row, equally high; the line sits at the bottom. */
+.statistics__tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.statistic-tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 14px 14px 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.statistic-tile__header { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--text-muted); }
+.statistic-tile__header .icon { width: 15px; height: 15px; color: var(--statistic-color); }
+
+.statistic-tile__value {
+  margin-top: 6px;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.statistic-tile__value small { font-size: 14px; }
+.statistic-tile__now { margin-top: 2px; }
+
+.statistic-tile__sparkline { height: 46px; margin: auto -14px 0; padding-top: 10px; box-sizing: content-box; }

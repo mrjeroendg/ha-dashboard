@@ -13,7 +13,9 @@
   "dependencies": {
     "@babel/runtime": "^8.0.7",
     "@uiw/react-color-wheel": "^2.10.3",
+    "apexcharts": "7.9.1",
     "react": "^19.2.0",
+    "react-apexcharts": "2.1.1",
     "react-dom": "^19.2.0"
   },
   "devDependencies": {

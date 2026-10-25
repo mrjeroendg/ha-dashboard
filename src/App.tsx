@@ -5,6 +5,8 @@ import { Header } from './components/Header';
 import { MiniPlayer } from './components/media/MiniPlayer';
 import { QuickActions } from './components/QuickActions';
 import { RoomView } from './components/RoomView';
+import { StatisticsSection } from './components/StatisticsSection';
+import { STATISTICS } from './config/statistics';
 import { ROOMS } from './config/rooms';
 import { useDock } from './hooks/useDock';
 import { scrollParent } from './lib/scroll';
@@ -59,6 +61,7 @@ export function App({ hass, config }: Props) {
               <Header hass={hass} config={config} />
               {hass && <Attention hass={hass} />}
               {hass && <QuickActions hass={hass} />}
+              {hass && STATISTICS.map((section) => <StatisticsSection key={section.title} hass={hass} section={section} />)}
             </>
           )}
         </div>

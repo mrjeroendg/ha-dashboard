@@ -1,0 +1,55 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Wat staat aan</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,390px);gap:36px 28px}
+.cap{min-height:58px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.18);--track:rgba(245,244,239,.12);
+position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:56px 24px 0}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:33px;line-height:1.15}
+.status{display:inline-flex;gap:10px;align-items:center;margin-top:18px;padding:10px 14px 10px 16px;font-size:15px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:22px}
+.status.tap{background:var(--soft)}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--soft);flex:none}
+.status svg{width:14px;height:14px;margin-left:-2px}
+.sec{margin:30px 4px 12px;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.q{height:110px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.dock{position:absolute;left:12px;right:12px;bottom:16px;height:56px;border-radius:30px;background:rgba(48,48,46,.92);box-shadow:inset 0 0 0 1px var(--border)}
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background:#2b2b29;padding:10px 16px 40px;box-shadow:0 -12px 40px rgba(0,0,0,.4)}
+.handle{width:36px;height:5px;border-radius:3px;background:var(--track);margin:0 auto 14px}
+.title{margin:0 4px 2px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:24px}
+.subt{margin:0 4px 6px;font-size:13px;color:var(--muted)}
+.group-title{margin:16px 6px 8px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.group{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.row{display:flex;align-items:center;gap:14px;padding:12px 16px}.row+.row{box-shadow:inset 0 1px 0 var(--border)}
+.ic{width:36px;height:36px;border-radius:12px;background:var(--bg);color:var(--accent);display:grid;place-items:center;flex:none}.ic svg{width:20px;height:20px}
+.ic.on{background:var(--accent);color:#fff}
+.t{flex:1;min-width:0}.t b{display:block;font-size:16px;font-weight:500}.t span{font-size:13px;color:var(--muted)}
+.sw{width:48px;height:30px;border-radius:999px;background:var(--border);position:relative;flex:none}.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff}
+.sw.on{background:var(--accent)}.sw.on::after{left:auto;right:3px}
+.empty{display:flex;flex-direction:column;align-items:center;gap:8px;padding:26px 0 10px;color:var(--muted);font-size:14px}
+.empty .ic{width:48px;height:48px;border-radius:16px}
+.note{margin:14px 6px 0;font-size:12px;color:var(--muted);line-height:1.5}
+</style></head><body></body>
+<script>
+const svg=(inner)=>`<svg viewBox="0 0 24 24">${inner}</svg>`;
+const I={bulb:svg('<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>'),
+thermo:svg('<path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/>'),plug:svg('<path d="M9 2v5M15 2v5M6 7h12v4a6 6 0 0 1-12 0zM12 17v5"/>'),
+chev:svg('<path d="M9 6l6 6-6 6"/>'),check:svg('<path d="M5 12.5l4.5 4.5L19 7.5"/>')};
+const header=(status,tap=false)=>`<p class="lbl">Zondag 25 oktober</p><h1>Goedemiddag, Jeroen</h1><div class="status${tap?' tap':''}"><i></i><span>${status}</span>${I.chev}</div>`;
+const home=(status,tap)=>`<div class="in">${header(status,tap)}<p class="sec">Snel</p><div class="qgrid"><div class="q"></div><div class="q"></div></div></div><div class="dock"></div>`;
+const row=(icon,name,detail,on)=>`<div class="row"><span class="ic${on?' on':''}">${I[icon]}</span><span class="t"><b>${name}</b><span>${detail}</span></span><span class="sw${on?' on':''}"></span></div>`;
+const phone=(inner)=>`<div class="phone">${inner}</div>`;
+const sheet=(body)=>`<div class="dim"></div><div class="sheet"><div class="handle"></div>${body}</div>`;
+const lights=(firstOff=false)=>`<p class="group-title">Lichten</p><div class="group">${row('bulb','CB3',firstOff?'Uit':'Aan · 60%',!firstOff)}${row('bulb','Centris','Aan')}</div>`;
+const aircos=`<p class="group-title">Airco's</p><div class="group">${row('thermo','Airco Marielou','Verwarmen naar 21°',true)}</div>`;
+const fixRow=(html)=>html.replace(/<span class="sw"><\/span>/g,'<span class="sw on"></span>').replace(/<span class="ic">/g,'<span class="ic on">');
+const S=[
+ ['Tik op de statusregel','Het hele grijze vak opent de sheet; de chevron toont dat het kan.',phone(home('Je bent thuis · 2 lichten aan'))],
+ ['De sheet: wat de statusregel telt','Gegroepeerd volgens de lijsten in de statusconfig: Lichten, en straks Airco\'s. De naam uit HA, de toestand eronder, een schakelaar.',phone(home('Je bent thuis · 2 lichten aan',true)+sheet(fixRow(`<h2 class="title">Wat staat aan</h2><p class="subt">3 dingen aan</p>${lights()}${aircos}`)))],
+ ['Vandaag: enkel lichten','Zolang er nog geen airco-lijst is, enkel de twee lampen uit de statusconfig.',phone(home('Je bent thuis · 2 lichten aan',true)+sheet(fixRow(`<h2 class="title">Wat staat aan</h2><p class="subt">2 lichten aan</p>${lights()}`)))],
+ ['Na uitzetten','Wat je uitzet blijft staan tot je de sheet sluit, zodat je het terug kan aanzetten.',phone(home('Je bent thuis · 1 licht aan',true)+sheet(fixRow(`<h2 class="title">Wat staat aan</h2><p class="subt">2 dingen aan</p>${lights(true)}${aircos}`).replace('<span class="ic on">'+I.bulb+'</span><span class="t"><b>CB3</b><span>Uit</span></span><span class="sw on"></span>','<span class="ic">'+I.bulb+'</span><span class="t"><b>CB3</b><span>Uit</span></span><span class="sw"></span>')))],
+ ['Alles uit','Niets aan: de sheet zegt dat gewoon.',phone(home('Je bent thuis · alle lichten uit',true)+sheet(`<h2 class="title">Wat staat aan</h2><div class="empty"><span class="ic">${I.check}</span>Alles staat uit</div>`))],
+];
+document.body.innerHTML=S.map(([title,sub,html])=>`<div><p class="cap">${title}<small>${sub}</small></p>${html}</div>`).join('');
+</script></html>

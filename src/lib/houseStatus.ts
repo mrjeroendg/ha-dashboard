@@ -35,6 +35,20 @@ function presence(states: HassEntities): string | undefined {
   return `${names.join(' & ')} thuis`;
 }
 
+/**
+ * The groups of "Wat staat aan" (docs/design/whats-on): exactly the switchable
+ * things the status line counts, grouped by their list in src/config/status.ts.
+ * Doors and windows count too, but can't be switched off, so they're not here.
+ */
+export const WHAT_IS_ON_GROUPS = [{ title: 'Lichten', entityIds: STATUS.lights, oneOn: '1 licht aan', manyOn: 'lichten aan' }];
+
+/** The listed entities of a group that are on right now. */
+export function entitiesThatAreOn(states: HassEntities, entityIds: string[]): string[] {
+  return listed(states, entityIds)
+    .filter((entity) => entity.state === 'on')
+    .map((entity) => entity.entity_id);
+}
+
 function lights(states: HassEntities): string | undefined {
   const all = listed(states, STATUS.lights);
   if (all.length === 0) return undefined;

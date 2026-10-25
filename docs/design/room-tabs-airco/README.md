@@ -2,7 +2,7 @@
 
 Room pages split into tabs, and the airco control for MELCloud units in the "Klimaat" tab. Dark mode only, current colours (orange accent; the "colour per device type" experiment is on hold).
 
-> ✅ **Approved (tabs + airco option A).** **Tabs: built.** **Airco: not built yet** (climate entities still use the plain − / + row). The owner chose this design. Don't change proportions or behaviour without asking first.
+> ✅ **Approved (tabs + airco option A).** **Tabs: built.** **Airco: replaced** by [airco-sheet](../airco-sheet/README.md) before it was built. The owner chose this design. Don't change proportions or behaviour without asking first.
 >
 > Tabs code: `sections` in `src/config/rooms.ts`, `resolveRooms` in `src/lib/rooms.ts`, `RoomView.tsx`, styles under `room-tab` in `src/styles.css`.
 >

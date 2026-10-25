@@ -4,7 +4,6 @@ import { useDebouncedCommit } from '../hooks/useDebouncedCommit';
 import { useRunAction, type RunStatus } from '../hooks/useRunAction';
 import { haptic } from '../lib/haptic';
 import {
-  adjustTemperature,
   roomClimate,
   roomSafety,
   rowModel,
@@ -20,6 +19,7 @@ import {
 import type { HomeAssistant } from '../types/hass';
 import { BrightnessSlider } from './BrightnessSlider';
 import { ColorPicker } from './ColorPicker';
+import { AircoSheet } from './AircoSheet';
 import { Icon, type IconName } from './Icon';
 import { LightSheet } from './LightSheet';
 import { QuickCard } from './QuickCard';
@@ -235,20 +235,8 @@ function EntityRow({ entity, name, options, myPosition, members, hass }: RowProp
     );
   }
 
-  if (model.kind === 'climate') {
-    return (
-      <div className={`row-item row status-${status}`}>
-        {label}
-        <span className="stepper">
-          <button type="button" aria-label="Kouder" disabled={busy} onClick={() => run(() => adjustTemperature(hass, entity, -0.5))}>
-            <Icon name="minus" />
-          </button>
-          <button type="button" aria-label="Warmer" disabled={busy} onClick={() => run(() => adjustTemperature(hass, entity, 0.5))}>
-            <Icon name="plus" />
-          </button>
-        </span>
-      </div>
-    );
+  if (model.kind === 'climate' && model.run) {
+    return <AircoRow hass={hass} airco={entity} name={name} label={label} on={model.on} toggle={model.run} status={status} run={run} />;
   }
 
   return <div className="row-item row">{label}</div>;
@@ -287,29 +275,68 @@ function SheetRow({ hass, light, name, label, on, toggle, members, status, run }
   };
 
   return (
+    <RowWithSheet name={name} label={label} on={on} status={status} onOpen={openSheet} onToggle={() => run(() => toggle(hass))}>
+      {isSheetOpen && <LightSheet hass={hass} name={name} members={members} onClose={() => setIsSheetOpen(false)} />}
+    </RowWithSheet>
+  );
+}
+
+interface AircoRowProps {
+  hass: HomeAssistant;
+  airco: HassEntity;
+  name: string;
+  label: ReactNode;
+  on: boolean;
+  toggle(hass: HomeAssistant): Promise<unknown>;
+  status: RunStatus;
+  run(action: () => Promise<unknown>): void;
+}
+
+/**
+ * An airco (docs/design/airco-sheet): the switch turns it off from any mode, or
+ * back on; the rest of the row opens the airco sheet, without turning it on.
+ */
+function AircoRow({ hass, airco, name, label, on, toggle, status, run }: AircoRowProps) {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
+  const openSheet = () => {
+    haptic('selection');
+    setIsSheetOpen(true);
+  };
+
+  return (
+    <RowWithSheet name={name} label={label} on={on} status={status} onOpen={openSheet} onToggle={() => run(() => toggle(hass))}>
+      {isSheetOpen && <AircoSheet hass={hass} airco={airco} name={name} onClose={() => setIsSheetOpen(false)} />}
+    </RowWithSheet>
+  );
+}
+
+interface RowWithSheetProps {
+  name: string;
+  label: ReactNode;
+  on: boolean;
+  status: RunStatus;
+  onOpen(): void;
+  onToggle(): void;
+  /** The sheet, while it's open. */
+  children: ReactNode;
+}
+
+/** A row whose left part opens a sheet; only the switch on the right turns it on and off. */
+function RowWithSheet({ name, label, on, status, onOpen, onToggle, children }: RowWithSheetProps) {
+  return (
     <div className="row-item">
       <div className={`row row--sheet status-${status}`}>
-        <button
-          type="button"
-          className="row__open"
-          onClick={openSheet}
-        >
+        <button type="button" className="row__open" onClick={onOpen}>
           {label}
         </button>
         {/* docs/design/light-sheet: the divider shows the left part does something else than the switch. */}
         <span className="row__divider" aria-hidden />
-        <button
-          type="button"
-          className="row__switch"
-          role="switch"
-          aria-checked={on}
-          aria-label={name}
-          onClick={() => run(() => toggle(hass))}
-        >
+        <button type="button" className="row__switch" role="switch" aria-checked={on} aria-label={name} onClick={onToggle}>
           <span className={`switch${on ? ' is-on' : ''}`} aria-hidden />
         </button>
       </div>
-      {isSheetOpen && <LightSheet hass={hass} name={name} members={members} onClose={() => setIsSheetOpen(false)} />}
+      {children}
     </div>
   );
 }

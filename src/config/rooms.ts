@@ -109,6 +109,8 @@ export const ROOMS: RoomConfig[] = [
       },
     ],
     entities: [
+      // docs/design/airco-sheet
+      { entity: 'climate.master_bedroom_airco', name: 'Airco' },
       { entity: 'cover.rts_16727506', name: 'Rolluik', myPosition: 'button.rts_16727506_my_position' }
     ],
   },
@@ -169,6 +171,8 @@ export const ROOMS: RoomConfig[] = [
       }
     ],
     entities: [
+      // docs/design/airco-sheet
+      { entity: 'climate.guest_room_airco', name: 'Airco' },
       { entity: 'cover.rts_16722417', name: 'Rolluik', myPosition: 'button.rts_16722417_my_position' }
     ],
   },

@@ -1,4 +1,5 @@
 import { useRef, useState, type PointerEvent, type ReactNode } from 'react';
+import { useLockPageScroll } from '../hooks/useLockPageScroll';
 
 interface Props {
   /** Read out by screen readers, e.g. "Veiligheid". */
@@ -16,12 +17,15 @@ const CLOSE_DISTANCE = 90;
 
 /**
  * The frame every bottom sheet shares: a dimmed page behind it, a handle,
- * swipe the handle down or tap beside the sheet to close. What's inside is
- * up to the sheet.
+ * swipe the handle down or tap beside the sheet to close. The page behind it
+ * doesn't scroll while it's open. What's inside is up to the sheet.
  */
 export function BottomSheet({ label, className, besideHandle, onClose, children }: Props) {
   const [dragDistance, setDragDistance] = useState(0);
   const dragStartY = useRef<number | null>(null);
+  const sheetRef = useRef<HTMLDivElement>(null);
+  const backdropRef = useRef<HTMLDivElement>(null);
+  useLockPageScroll(sheetRef, backdropRef);
 
   const startDraggingHandle = (pointerEvent: PointerEvent) => {
     dragStartY.current = pointerEvent.clientY;
@@ -41,8 +45,9 @@ export function BottomSheet({ label, className, besideHandle, onClose, children 
 
   return (
     <>
-      <div className="bottom-sheet-backdrop" onClick={onClose} />
+      <div ref={backdropRef} className="bottom-sheet-backdrop" onClick={onClose} />
       <div
+        ref={sheetRef}
         className={`bottom-sheet${className ? ` ${className}` : ''}${isDragging ? ' is-dragging' : ''}`}
         style={isDragging ? { transform: `translateY(${dragDistance}px)` } : undefined}
         role="dialog"

@@ -256,7 +256,9 @@ export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowO
 
   // A cover's buttons don't depend on its state, so an RTS screen stuck on 'unknown' still works.
   const coverUnknown = domain === 'cover' && entity.state === 'unknown';
-  if (UNAVAILABLE.has(entity.state) && !coverUnknown) {
+  // A scene's state is when it last ran, or 'unknown' if it never has: it can still be started.
+  const isSceneNeverRun = domain === 'scene' && entity.state === 'unknown';
+  if (UNAVAILABLE.has(entity.state) && !coverUnknown && !isSceneNeverRun) {
     return { kind: 'readonly', icon: iconFor(entity), detail: 'Niet beschikbaar', on: false };
   }
 

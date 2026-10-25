@@ -7,24 +7,21 @@ import { Icon } from './Icon';
 interface Props {
   shortcut: Shortcut;
   hass: HomeAssistant;
-  /** "large": Snel on Thuis (icon above label). "small": Snel in a room tab (one line). */
-  size?: 'large' | 'small';
 }
 
-/** A "Snel" card: calls `<domain>.<service>` (default turn_on) on the entity. */
-export function QuickCard({ shortcut, hass, size = 'large' }: Props) {
+/**
+ * A "Snel" card in a room tab (docs/design/screens-snel): icon and label on one
+ * line, calls `<domain>.<service>` (default turn_on) on the entity. Snel on
+ * Thuis is a list of `EntityControl`s instead (docs/design/snel-list).
+ */
+export function QuickCard({ shortcut, hass }: Props) {
   const [status, run] = useRunAction();
   const [domain] = shortcut.entity.split('.');
-  const on = hass.states[shortcut.entity]?.state === 'on';
-  // Small cards light up briefly after a tap, like the cover buttons.
-  const pressed = size === 'small' && (status === 'busy' || status === 'done');
+  const isOn = hass.states[shortcut.entity]?.state === 'on';
+  // Lights up briefly after a tap, like the cover buttons.
+  const isPressed = status === 'busy' || status === 'done';
 
-  const classes = [
-    'quick-card',
-    size === 'small' && 'quick-card--small',
-    status === 'error' && 'status-error',
-    (on || pressed) && 'is-active',
-  ];
+  const classes = ['quick-card', 'quick-card--small', status === 'error' && 'status-error', (isOn || isPressed) && 'is-active'];
 
   return (
     <button
@@ -35,9 +32,9 @@ export function QuickCard({ shortcut, hass, size = 'large' }: Props) {
         run(() =>
           hass
             .callService(domain, shortcut.service ?? 'turn_on', {}, { entity_id: shortcut.entity })
-            .catch((err) => {
+            .catch((error) => {
               haptic('failure');
-              throw err;
+              throw error;
             }),
         );
       }}
@@ -47,11 +44,7 @@ export function QuickCard({ shortcut, hass, size = 'large' }: Props) {
       </span>
       <span className="card-text">
         <span className="card-label">{shortcut.label}</span>
-        {status === 'error' ? (
-          <span className="card-detail">Dat lukte niet</span>
-        ) : (
-          size === 'large' && shortcut.detail && <span className="card-detail">{shortcut.detail}</span>
-        )}
+        {status === 'error' && <span className="card-detail">Dat lukte niet</span>}
       </span>
     </button>
   );

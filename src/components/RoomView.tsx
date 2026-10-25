@@ -88,6 +88,7 @@ export function RoomView({ room, hass }: Props) {
               key={row.entity.entity_id}
               entity={row.entity}
               name={row.name}
+              icon={row.icon}
               options={{ allowUnknownState: row.allowUnknownState, simple: row.simple }}
               myPosition={row.myPosition}
               members={row.members}

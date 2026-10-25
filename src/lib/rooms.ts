@@ -8,6 +8,8 @@ import { aircoDetail, isAircoOn, toggleAirco } from './airco';
 export type Row = {
   entity: HassEntity;
   name: string;
+  /** Instead of the icon that goes with the entity's domain. */
+  icon?: IconName;
   allowUnknownState?: boolean;
   simple?: boolean;
   /** Cover: the "My position" button entity, if it exists in HA. */
@@ -38,19 +40,21 @@ export interface ResolvedRoom {
   sections: ResolvedSection[];
 }
 
-function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities): Row[] {
+/** The configured controls whose entities exist in HA, for a room or for Snel on Thuis. */
+export function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities): Row[] {
   return entities
-    .map((e) => (typeof e === 'string' ? { entity: e } : e))
-    .filter((e) => e.entity in states)
-    .map((e) => ({
-      entity: states[e.entity],
-      name: e.name ?? String(states[e.entity].attributes.friendly_name ?? e.entity),
-      allowUnknownState: e.allowUnknownState,
-      simple: e.simple,
-      myPosition: e.myPosition && e.myPosition in states ? e.myPosition : undefined,
-      members: e.members
-        ?.filter((m) => m.entity in states)
-        .map((m) => ({ entity: states[m.entity], name: m.name })),
+    .map((entityConfig) => (typeof entityConfig === 'string' ? { entity: entityConfig } : entityConfig))
+    .filter((entityConfig) => entityConfig.entity in states)
+    .map((entityConfig) => ({
+      entity: states[entityConfig.entity],
+      name: entityConfig.name ?? String(states[entityConfig.entity].attributes.friendly_name ?? entityConfig.entity),
+      icon: entityConfig.icon,
+      allowUnknownState: entityConfig.allowUnknownState,
+      simple: entityConfig.simple,
+      myPosition: entityConfig.myPosition && entityConfig.myPosition in states ? entityConfig.myPosition : undefined,
+      members: entityConfig.members
+        ?.filter((member) => member.entity in states)
+        .map((member) => ({ entity: states[member.entity], name: member.name })),
     }));
 }
 

@@ -15,7 +15,8 @@ Options for Snel: [`options.png`](./options.png) ([`options.html`](./options.htm
 - **One card, one row per shortcut,** in the order of `src/config/shortcuts.ts`. No grouping; a new shortcut is simply a new row.
 - **Each row is the same control as in a room** (`EntityControl`): the domain decides what a tap does. "Start" for a scene or script, a switch for a light or switch, and so on. The feedback is the same too: the checkmark in "Start" after a tap, "Dat lukte niet" on an error.
 - **Only an icon, a name and the control.** No second line, except "Dat lukte niet".
-- **The config stays separate** from the rooms: label, icon and entity. Nothing is looked up in the rooms config. A shortcut whose entity doesn't exist in HA is left out, as in a room.
+- **Configured exactly like a control in a room** (`RoomEntity`: `entity`, `name`, `icon`, `members`, `myPosition`, `simple`, `allowUnknownState`) and resolved the same way (`resolveRows`). So a light with `members` opens its light sheet from Snel too. The config itself is separate from the rooms: nothing is shared or looked up. A shortcut whose entity doesn't exist in HA is left out, as in a room.
+- **`icon`** replaces the icon that goes with the domain; it's now optional for room controls too.
 
 ## Slim (S1)
 

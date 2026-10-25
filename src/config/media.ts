@@ -1,4 +1,5 @@
 import type { DotColor } from '../lib/dots';
+import { Entity } from './entities';
 
 export interface Station {
   name: string;
@@ -16,31 +17,31 @@ export interface App {
 
 export const MEDIA = {
   sonos: {
-    entity: 'media_player.living_room',
+    entity: Entity.LIVING_SONOS,
     stations: [
       {
         name: 'Radio 1',
-        script: 'script.speel_radio1_op_chromecast',
+        script: Entity.PLAY_RADIO_1_ON_CHROMECAST_SCRIPT,
         stream: 'http://icecast.vrtcdn.be/radio1-high.mp3',
         color: ['#ff4942', '#0068d8', '#002a66'],
       },
       {
         name: 'Studio Brussel',
         label: 'StuBru',
-        script: 'script.speel_studiobrussel_op_chromecast',
+        script: Entity.PLAY_STUDIO_BRUSSEL_ON_CHROMECAST_SCRIPT,
         stream: 'http://icecast.vrtcdn.be/stubru-high.mp3',
         color: ['#ff4942', '#7e31aa', '#331a5c'],
       },
       {
         name: 'Tijdloze',
-        script: 'script.speel_tijdloze_op_sonos',
+        script: Entity.PLAY_TIJDLOZE_ON_SONOS_SCRIPT,
         stream: 'http://icecast.vrtcdn.be/stubru_tijdloze-high.mp3',
         color: ['#ff4942', '#c0b06c', '#434540'],
       },
     ] as Station[],
   },
   chromecast: {
-    entity: 'media_player.living_living',
+    entity: Entity.LIVING_CHROMECAST,
     apps: [
       { name: 'Netflix', url: 'nflx://', color: ['#f0323b', '#e50914', '#141414'] },
       { name: 'VRT MAX', url: 'vrtmax://', color: ['#ff4f55', '#f5333a', '#f5333a', '#1b1d52'] },

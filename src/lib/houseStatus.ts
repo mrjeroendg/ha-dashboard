@@ -1,14 +1,15 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import { STATUS } from '../config/status';
 import type { HomeAssistant } from '../types/hass';
+import { Entity } from '../config/entities';
 
 const UNAVAILABLE = new Set(['unavailable', 'unknown']);
 const OPEN = new Set(['on', 'open', 'opening']);
 
 /** Jeroen's office days at Banqup (docs/design/commute). */
 const COMMUTE = {
-  travelTimeHome: 'sensor.commuting_home_travel_time_jeroen',
-  person: 'person.jeroen',
+  travelTimeHome: Entity.JEROEN_TRAVEL_TIME_HOME,
+  person: Entity.PERSON_JEROEN,
   userId: '948e49d9b8eb426aa1f994c353e0aad9',
   officeZone: 'Banqup',
   /** Tuesday and Wednesday (Sunday is 0). */

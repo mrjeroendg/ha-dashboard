@@ -4,6 +4,7 @@ import { useRunAction } from '../../hooks/useRunAction';
 import { babysitAppointments, type TodoItem } from '../../lib/babysit';
 import { haptic } from '../../lib/haptic';
 import { Icon } from '../Icon';
+import { Entity } from '../../config/entities';
 
 /**
  * "Oppas nodig" (docs/design/babysit): the open items of the babysit todo
@@ -84,7 +85,7 @@ function RefreshButton({ hass }: Pick<WarningSheetProps, 'hass'>) {
       disabled={isRefreshing}
       onClick={() => {
         haptic('light');
-        runRefresh(() => hass.callService('automation', 'trigger', {}, { entity_id: 'automation.scan_google_calendar_for_babysit_requirements' }));
+        runRefresh(() => hass.callService('automation', 'trigger', {}, { entity_id: Entity.SCAN_CALENDAR_FOR_BABYSITTER_AUTOMATION }));
       }}
     >
       {isRefreshing ? <span className="spinner" aria-hidden /> : <Icon name={refreshStatus === 'done' ? 'check' : 'refresh'} />}

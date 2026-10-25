@@ -3,6 +3,7 @@ import type { ComponentType } from 'react';
 import { BabysitSheet } from '../components/sheets/BabysitSheet';
 import type { IconName } from '../components/Icon';
 import type { HomeAssistant } from '../types/hass';
+import { Entity } from './entities';
 
 export type AttentionLevel = 'high' | 'medium' | 'babysit' | 'low';
 
@@ -13,7 +14,7 @@ export interface WarningSheetProps {
 }
 
 export interface AttentionRule {
-  entity: string;
+  entity: Entity;
   level: AttentionLevel;
   when?: string[] | ((entity: HassEntity, states: HassEntities) => boolean);
   title?: string;
@@ -24,49 +25,49 @@ export interface AttentionRule {
 
 export const ATTENTION: AttentionRule[] = [
   {
-    entity: 'sensor.garage_door_state_classification',
+    entity: Entity.GARAGE_DOOR_STATE,
     level: 'high',
     when: ['open'],
     title: 'Garagepoort staat open',
     icon: 'garage'
   },
   {
-    entity: 'update.irpi_admin_version',
+    entity: Entity.IMMICH_UPDATE,
     level: 'low',
     title: 'Immich update'
   },
   {
-    entity: 'update.garage_paperless_software',
+    entity: Entity.PAPERLESS_UPDATE,
     level: 'low',
     title: 'Paperless update'
   },
   {
-    entity: 'sensor.jeroens_ipad_battery_level',
+    entity: Entity.JEROENS_IPAD_BATTERY_LEVEL,
     level: 'high',
     title: 'iPad batterij laag',
     icon: 'tablet',
     when: (e, states) => {
       const batteryPercentage = Number(e.state);
-      const chargingState = states['sensor.jeroens_ipad_battery_state']?.state
+      const chargingState = states[Entity.JEROENS_IPAD_BATTERY_STATE]?.state
 
       return batteryPercentage <= 15 && chargingState !== 'Charging'
     },
     detail: (e) => `${e.state}%`,
   },
   {
-    entity: 'sensor.iphone_16_pro_battery_level',
+    entity: Entity.JEROENS_IPHONE_BATTERY_LEVEL,
     level: 'high',
     title: 'iPhone batterij laag',
     icon: 'phone',
     when: (e, states) => {
       const batteryPercentage = Number(e.state);
-      const chargingState = states['sensor.iphone_16_pro_battery_state']?.state
+      const chargingState = states[Entity.JEROENS_IPHONE_BATTERY_STATE]?.state
 
       return batteryPercentage <= 14 && chargingState !== 'Charging'
     }, detail: (e) => `${e.state}%`,
   },
   {
-    entity: 'todo.babysitter_needed',
+    entity: Entity.BABYSITTER_NEEDED_LIST,
     level: 'babysit',
     title: 'Oppas nodig',
     icon: 'baby',

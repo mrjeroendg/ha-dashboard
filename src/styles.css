@@ -219,7 +219,11 @@
   transition: transform var(--stack-motion), opacity 290ms ease;
 }
 
-/* The front banner on top, each next one further back. */
+/* The front banner on top, each next one further back. The stack is its own
+   stacking context, so these only layer the cards among themselves and never
+   end up above a sheet's backdrop. */
+.attention-stack { isolation: isolate; }
+
 .attention-stack .attention__item:nth-child(1) { z-index: 4; }
 .attention-stack .attention__item:nth-child(2) { z-index: 3; }
 .attention-stack .attention__item:nth-child(3) { z-index: 2; }

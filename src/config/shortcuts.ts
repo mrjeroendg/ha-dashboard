@@ -18,8 +18,6 @@ import type { RoomEntity } from './rooms';
 export const SHORTCUTS: RoomEntity[] = [
   { entity: 'scene.pre_sleep', name: 'Pré slaapje', icon: 'baby' },
   { entity: 'script.garage_door_impuls', name: 'Garagedeur', icon: 'garage' },
-  // { entity: 'switch.0x94a081fffe4fce2f', name: 'Staanlamp', icon: 'bulb' },
-  { entity: 'light.centris', name: 'Centris', icon: 'moon' },
   { entity: 'scene.living_mood_lighting', name: 'Sfeer', icon: 'sofa' }
 ];
 

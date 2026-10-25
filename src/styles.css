@@ -1817,3 +1817,21 @@ button.row:active { background: var(--accent-soft); }
 .statistic-tile__value small { font-size: 14px; }
 
 .statistic-tile__sparkline { height: 46px; margin: auto -14px 0; padding-top: 10px; box-sizing: content-box; }
+
+/* ---------------------------------------------------------------- empty state (docs/design/empty-state) */
+
+.empty-state { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 22px 0 8px; }
+
+.empty-state__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  color: var(--accent);
+}
+
+.empty-state__icon .icon { width: 22px; height: 22px; }
+.empty-state__text { margin: 0; font-size: 14px; color: var(--text-muted); }

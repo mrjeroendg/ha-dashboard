@@ -34,3 +34,9 @@ Instructions for Claude when working in this repository.
   ```
 
   Applies to new and changed code; existing code is renamed when it's touched.
+
+## Design rules
+
+- **Empty sheets:** a sheet that can have nothing to list shows the shared
+  `EmptyState` (docs/design/empty-state) with its own short text, never an
+  empty frame.

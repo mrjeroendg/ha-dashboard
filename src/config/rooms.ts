@@ -91,7 +91,6 @@ export const ROOMS: RoomConfig[] = [
       },
     ],
     entities: [
-      // docs/design/airco-sheet
       { entity: 'climate.master_bedroom_airco', name: 'Airco' },
       { entity: 'cover.rts_16727506', name: 'Rolluik', myPosition: 'button.rts_16727506_my_position' }
     ],
@@ -104,7 +103,6 @@ export const ROOMS: RoomConfig[] = [
     humidity: 'sensor.0xf044d3fffecd20d8_humidity',
     entities: [
       { entity: 'light.bedroom_marielou_herstal_light_switch', name: 'Herstal' },
-      // docs/design/airco-sheet
       { entity: 'climate.bedroom_marielou_airco', name: 'Airco' },
       { entity: 'cover.rts_16767817', name: 'Rolluik', myPosition: 'button.rts_16767817_my_position' }
     ],
@@ -153,7 +151,6 @@ export const ROOMS: RoomConfig[] = [
       }
     ],
     entities: [
-      // docs/design/airco-sheet
       { entity: 'climate.guest_room_airco', name: 'Airco' },
       { entity: 'cover.rts_16722417', name: 'Rolluik', myPosition: 'button.rts_16722417_my_position' }
     ],

@@ -21,3 +21,11 @@ template:
 ```
 
 **In the dashboard:** while `binary_sensor.zonne_overschot` is on, a hint on the power card (`src/config/statistics.ts`, `StatisticsSection`). Design to do: where the hint goes and what it says, within the card's fixed 59px.
+
+## Aircos in the status line
+
+Next to lights and openings, the status line on Thuis also counts the aircos that are on: "Iedereen thuis · 1 licht aan · 2 airco's aan". One extra list in `src/config/status.ts`, like `lights`.
+
+## Jaqueline as a warning
+
+When the lawn mower is stuck, lifted, offline or has another error, a red warning on Thuis: "Jaqueline zit vast · sinds 14:02", with "Bekijk" opening her sheet. Only when something's wrong; rain delay doesn't count. A rule in `src/config/attention.ts`, using `mowerStatus` from `src/lib/mower.ts`. **Waits for `claude/lawn-mower` to be merged.**

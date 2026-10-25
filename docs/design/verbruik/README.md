@@ -16,7 +16,7 @@ Source: [`mockup.html`](./mockup.html). The options for the water flow: [`option
 
 - **Title "Verbruik"** (was "Vandaag"), **below Snel**. Camera's isn't on master yet; when it is, it goes between them.
 - **Sparklines: the last 7 days, one point per day**, today last (was: today's history).
-- **Water flow is shown after all (W3):** a line "Nu 1,2 l/min" under the water tile's value, in the tile colour. No extra card.
+- **No water flow.** It was approved as a line "Nu 1,2 l/min" in the water tile (W3), then removed during the build at the owner's request: the flow sensor isn't connected. The mockup still shows the line.
 - **Feeding back** (the power sensor is negative): "850 W · Terug", **without a minus sign**, with the icon and dot in green (`#6bab3e`, not the Gas tile's aqua). The peak meter is hidden.
 - **A reusable section:** any number of sections, each with an optional live card and its own tiles. **Each tile's colour is set in the config**; the four approved colours are the defaults in the owner's config. Validated as a palette only in this order (Stroom, Zon / Water, Gas).
 - **Charts with ApexCharts** (`apexcharts/core` + `apexcharts/area`, pinned), at the owner's request.
@@ -34,4 +34,3 @@ Source: [`mockup.html`](./mockup.html). The options for the water flow: [`option
 | Piek vandaag | `recorder/statistic_during_period`, max of the power sensor since midnight |
 | Tile value | The daily sensor's state (it resets at midnight) |
 | Sparkline | `recorder/statistics_during_period`, period day, `change`: the 6 days before today, plus today's state |
-| "Nu … l/min" | The water flow sensor's state |

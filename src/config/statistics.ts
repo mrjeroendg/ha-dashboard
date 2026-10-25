@@ -30,8 +30,6 @@ export interface StatisticTileConfig {
   entity: string;
   /** Digits after the comma, e.g. 2 for "8,13 kWh". */
   decimals: number;
-  /** A live value under today's value, e.g. the water flow: "Nu 1,2 l/min". */
-  now?: { entity: string; unit: string; decimals: number };
 }
 
 /** The approved colours (docs/design/nutsvoorzieningen), validated together in this order. */
@@ -50,14 +48,7 @@ export const STATISTICS: StatisticsSectionConfig[] = [
     tiles: [
       { name: 'Stroom', icon: 'bolt', color: COLORS.stroom, entity: 'sensor.p1_meter_energy_consumption_daily', decimals: 2 },
       { name: 'Zon', icon: 'sun', color: COLORS.zon, entity: 'sensor.p1_meter_energy_production_daily', decimals: 2 },
-      {
-        name: 'Water',
-        icon: 'droplet',
-        color: COLORS.water,
-        entity: 'sensor.garage_water_meter_consumption_daily',
-        decimals: 3,
-        now: { entity: 'sensor.garage_water_meter_water_usage', unit: 'l/min', decimals: 2 },
-      },
+      { name: 'Water', icon: 'droplet', color: COLORS.water, entity: 'sensor.garage_water_meter_consumption_daily', decimals: 3 },
       { name: 'Gas', icon: 'flame', color: COLORS.gas, entity: 'sensor.gas_meter_consumption_daily', decimals: 2 },
     ],
   },

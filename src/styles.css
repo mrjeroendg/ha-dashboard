@@ -1754,8 +1754,7 @@ button.row:active { background: var(--accent-soft); }
 .statistic-tile__value small { margin-left: 3px; font-weight: 500; color: var(--text-muted); }
 .power-card__value small { font-size: 13px; }
 
-.power-card__now,
-.statistic-tile__now {
+.power-card__now {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -1763,8 +1762,7 @@ button.row:active { background: var(--accent-soft); }
   color: var(--text-muted);
 }
 
-.power-card__now::before,
-.statistic-tile__now::before {
+.power-card__now::before {
   content: '';
   width: 6px;
   height: 6px;
@@ -1813,6 +1811,5 @@ button.row:active { background: var(--accent-soft); }
 }
 
 .statistic-tile__value small { font-size: 14px; }
-.statistic-tile__now { margin-top: 2px; }
 
 .statistic-tile__sparkline { height: 46px; margin: auto -14px 0; padding-top: 10px; box-sizing: content-box; }

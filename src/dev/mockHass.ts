@@ -55,7 +55,6 @@ function baseStates(): HassEntities {
     entity('sensor.p1_meter_energy_consumption_daily', '8.13', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.p1_meter_energy_production_daily', '1.24', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.garage_water_meter_consumption_daily', '0.102', { unit_of_measurement: 'm³', state_class: 'total_increasing' }),
-    entity('sensor.garage_water_meter_water_usage', '1.2', { unit_of_measurement: 'L/min' }),
     entity('sensor.gas_meter_consumption_daily', '2.78', { unit_of_measurement: 'm³', state_class: 'total_increasing' }),
     // A MELCloud airco (docs/design/airco-sheet); the ID is the real one from src/config/rooms.ts.
     entity('climate.bedroom_marielou_airco', 'heat', {

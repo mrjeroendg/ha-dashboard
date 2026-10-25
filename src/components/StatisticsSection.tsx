@@ -96,7 +96,6 @@ interface StatisticTileProps {
 function StatisticTile({ hass, tile, previousDays }: StatisticTileProps) {
   const today = numberState(hass.states, tile.entity);
   const unit = String(hass.states[tile.entity]?.attributes.unit_of_measurement ?? '');
-  const valueNow = tile.now ? numberState(hass.states, tile.now.entity) : undefined;
   const lastSevenDays = today === undefined ? previousDays : [...previousDays, today];
 
   return (
@@ -109,11 +108,6 @@ function StatisticTile({ hass, tile, previousDays }: StatisticTileProps) {
         {today === undefined ? '–' : readableNumber(today, tile.decimals)}
         {today !== undefined && unit && <small>{unit}</small>}
       </b>
-      {tile.now && valueNow !== undefined && (
-        <span className="statistic-tile__now">
-          Nu {readableNumber(valueNow, tile.now.decimals)} {tile.now.unit}
-        </span>
-      )}
       <Sparkline values={lastSevenDays} color={tile.color} name={tile.name} />
     </div>
   );

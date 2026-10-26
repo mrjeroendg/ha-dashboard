@@ -2,9 +2,12 @@ import type { IconName } from '../components/Icon';
 import type { Shortcut } from './shortcuts';
 import { Entity } from './entities';
 
+/** One control: in a room, and the same config for Snel on Thuis (src/config/shortcuts.ts). */
 export interface RoomEntity {
   entity: Entity;
   name?: string;
+  /** Instead of the icon that goes with the entity's domain. */
+  icon?: IconName;
   allowUnknownState?: boolean;
   myPosition?: Entity;
   simple?: boolean;

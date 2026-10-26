@@ -9,6 +9,8 @@ import { aircoDetail, isAircoOn, toggleAirco } from './airco';
 export type Row = {
   entity: HassEntity;
   name: string;
+  /** Instead of the icon that goes with the entity's domain. */
+  icon?: IconName;
   allowUnknownState?: boolean;
   simple?: boolean;
   /** Cover: the "My position" button entity, if it exists in HA. */
@@ -39,13 +41,15 @@ export interface ResolvedRoom {
   sections: ResolvedSection[];
 }
 
-function resolveRows(entities: Array<Entity | RoomEntity>, states: HassEntities): Row[] {
+/** The configured controls whose entities exist in HA, for a room or for Snel on Thuis. */
+export function resolveRows(entities: Array<Entity | RoomEntity>, states: HassEntities): Row[] {
   return entities
     .map((entityConfig) => (typeof entityConfig === 'string' ? { entity: entityConfig } : entityConfig))
     .filter((entityConfig) => entityConfig.entity in states)
     .map((entityConfig) => ({
       entity: states[entityConfig.entity],
       name: entityConfig.name ?? String(states[entityConfig.entity].attributes.friendly_name ?? entityConfig.entity),
+      icon: entityConfig.icon,
       allowUnknownState: entityConfig.allowUnknownState,
       simple: entityConfig.simple,
       myPosition: entityConfig.myPosition && entityConfig.myPosition in states ? entityConfig.myPosition : undefined,
@@ -126,15 +130,6 @@ export interface LightColor {
   /** What the light is showing now; HA also reports rgb_color in color_temp mode. */
   rgb?: RGB;
   kelvin?: number;
-}
-
-/** A color choice: either an RGB color or a white temperature. */
-export type ColorChoice = { rgb: RGB } | { kelvin: number };
-
-/** Set a light's color or white temperature; turns it on if needed. */
-export function setColor(hass: HomeAssistant, entity: HassEntity, choice: ColorChoice) {
-  const data = 'rgb' in choice ? { rgb_color: choice.rgb } : { color_temp_kelvin: choice.kelvin };
-  return hass.callService('light', 'turn_on', data, { entity_id: entity.entity_id });
 }
 
 function lightColor(entity: HassEntity): LightColor | undefined {
@@ -257,7 +252,9 @@ export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowO
 
   // A cover's buttons don't depend on its state, so an RTS screen stuck on 'unknown' still works.
   const coverUnknown = domain === 'cover' && entity.state === 'unknown';
-  if (UNAVAILABLE.has(entity.state) && !coverUnknown) {
+  // A scene's state is when it last ran, or 'unknown' if it never has: it can still be started.
+  const isSceneNeverRun = domain === 'scene' && entity.state === 'unknown';
+  if (UNAVAILABLE.has(entity.state) && !coverUnknown && !isSceneNeverRun) {
     return { kind: 'readonly', icon: iconFor(entity), detail: 'Niet beschikbaar', on: false };
   }
 

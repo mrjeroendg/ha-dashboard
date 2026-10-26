@@ -53,6 +53,11 @@ function baseStates(): HassEntities {
     // The status line's lights (src/config/status.ts), also listed in "Wat staat aan" (docs/design/whats-on).
     entity('light.huecupboard', 'on', { friendly_name: 'CB3', brightness: 153, supported_color_modes: ['brightness'], color_mode: 'brightness' }),
     entity('light.centris', 'on', { friendly_name: 'Centris', supported_color_modes: ['onoff'], color_mode: 'onoff' }),
+    // Snel on Thuis (src/config/shortcuts.ts, docs/design/snel-list).
+    // A scene's state is when it last ran; 'unknown' if it never has.
+    entity('scene.pre_sleep', '2026-10-24T19:12:03+00:00', { friendly_name: 'Pré slaapje' }),
+    entity('script.garage_door_impuls', 'off', { friendly_name: 'Garage door impuls' }),
+    entity('scene.living_mood_lighting', 'unknown', { friendly_name: 'Sfeer' }),
     // Verbruik (docs/design/verbruik); the IDs are the real ones from src/config/statistics.ts.
     entity('sensor.p1_meter_power', '196', { unit_of_measurement: 'W', device_class: 'power', state_class: 'measurement' }),
     entity('sensor.p1_meter_energy_consumption_daily', '8.13', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),

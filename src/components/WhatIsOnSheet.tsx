@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useRunAction } from '../hooks/useRunAction';
 import { haptic } from '../lib/haptic';
-import { entitiesThatAreOn, WHAT_IS_ON_GROUPS } from '../lib/houseStatus';
+import type { StatusEntity } from '../config/status';
+import { entriesThatAreOn, WHAT_IS_ON_GROUPS } from '../lib/houseStatus';
 import { rowModel } from '../lib/rooms';
 import type { HomeAssistant } from '../types/hass';
 import { BottomSheet } from './BottomSheet';
@@ -21,8 +22,8 @@ interface Props {
 export function WhatIsOnSheet({ hass, onClose }: Props) {
   // Taken once when the sheet opens: rows don't disappear while you're looking at them.
   const [groupsWhenOpened] = useState(() =>
-    WHAT_IS_ON_GROUPS.map((group) => ({ ...group, entityIdsOn: entitiesThatAreOn(hass.states, group.entityIds) })).filter(
-      (group) => group.entityIdsOn.length > 0,
+    WHAT_IS_ON_GROUPS.map((group) => ({ ...group, entriesOn: entriesThatAreOn(hass.states, group.statusEntries) })).filter(
+      (group) => group.entriesOn.length > 0,
     ),
   );
 
@@ -38,8 +39,8 @@ export function WhatIsOnSheet({ hass, onClose }: Props) {
             <section key={group.title}>
               <h3 className="safety-sheet__section">{group.title}</h3>
               <div className="row-group">
-                {group.entityIdsOn.map((entityId) => (
-                  <SwitchRow key={entityId} hass={hass} entityId={entityId} />
+                {group.entriesOn.map((statusEntry) => (
+                  <SwitchRow key={statusEntry.entity} hass={hass} statusEntry={statusEntry} />
                 ))}
               </div>
             </section>
@@ -50,11 +51,11 @@ export function WhatIsOnSheet({ hass, onClose }: Props) {
   );
 }
 
-type GroupWhenOpened = (typeof WHAT_IS_ON_GROUPS)[number] & { entityIdsOn: string[] };
+type GroupWhenOpened = (typeof WHAT_IS_ON_GROUPS)[number] & { entriesOn: StatusEntity[] };
 
 /** "2 lichten aan" while there's one group; "3 dingen aan" once there are more (e.g. aircos too). */
 function countStillOn(hass: HomeAssistant, groupsWhenOpened: GroupWhenOpened[]) {
-  const stillOnPerGroup = groupsWhenOpened.map((group) => entitiesThatAreOn(hass.states, group.entityIdsOn).length);
+  const stillOnPerGroup = groupsWhenOpened.map((group) => entriesThatAreOn(hass.states, group.entriesOn).length);
   const totalStillOn = stillOnPerGroup.reduce((total, stillOnInGroup) => total + stillOnInGroup, 0);
   const isOnlyOneGroup = groupsWhenOpened.length === 1;
 
@@ -63,14 +64,14 @@ function countStillOn(hass: HomeAssistant, groupsWhenOpened: GroupWhenOpened[]) 
   return totalStillOn === 1 ? '1 ding aan' : `${totalStillOn} dingen aan`;
 }
 
-/** Icon, name, state and a switch; nothing else to tap. */
-function SwitchRow({ hass, entityId }: { hass: HomeAssistant; entityId: string }) {
+/** Icon, name (from the status config, or HA's), state and a switch; nothing else to tap. */
+function SwitchRow({ hass, statusEntry }: { hass: HomeAssistant; statusEntry: StatusEntity }) {
   const [status, run] = useRunAction();
-  const entity = hass.states[entityId];
+  const entity = hass.states[statusEntry.entity];
   if (!entity) return null;
 
   const model = rowModel(entity);
-  const name = String(entity.attributes.friendly_name ?? entityId);
+  const name = statusEntry.name ?? String(entity.attributes.friendly_name ?? statusEntry.entity);
   const toggle = model.run;
 
   return (

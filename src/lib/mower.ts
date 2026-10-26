@@ -116,6 +116,10 @@ export function batteryPercentage(config: MowerConfig, states: HassEntities) {
   return numberState(states, config.battery);
 }
 
+export function batteryTemperature(config: MowerConfig, states: HassEntities) {
+  return numberState(states, config.batteryTemperature);
+}
+
 /** The row's second line: "Maait · 64%", or only the error ("Zit vast"). */
 export function mowerRowDetail(mower: HassEntity, config: MowerConfig, states: HassEntities): string {
   const status = mowerStatus(mower, config, states);
@@ -200,19 +204,27 @@ export function mowerStatusLines(config: MowerConfig, states: HassEntities): Mow
   const isCharging = isOn(states, config.charging);
   const isWet = isOn(states, config.rain);
   const isOnline = isOn(states, config.online);
+  const batteryTemp = batteryTemperature(config, states);
+
 
   const zoneLine: MowerListLine | undefined = { name: 'Zone', icon: 'sprout', value: activeZoneName || "Geen zone" };
   const batteryLine: MowerListLine | undefined = battery !== undefined
     ? { name: 'Batterij', icon: 'battery', value: `${readableNumber(battery, 0)}%${isCharging ? ' · laadt op' : ''}` }
     : undefined;
+
   const rainLine: MowerListLine | undefined = isWet !== undefined
     ? { name: 'Regen', icon: 'droplet', value: isWet ? 'Nat' : 'Droog', needsAttention: isWet }
     : undefined;
+
   const connectionLine: MowerListLine | undefined = isOnline !== undefined
     ? { name: 'Verbinding', icon: 'signal', value: isOnline ? 'Online' : 'Offline', needsAttention: !isOnline }
     : undefined;
 
-  return [zoneLine, batteryLine, rainLine, connectionLine].filter((line): line is MowerListLine => line !== undefined);
+  const batteryTemperatureLine: MowerListLine | undefined = batteryTemp !== undefined
+    ? { name: 'Temperatuur', icon: 'battery', value: `${batteryTemp}°` }
+    : undefined;
+
+  return [zoneLine, batteryLine, batteryTemperatureLine, rainLine, connectionLine].filter((line): line is MowerListLine => line !== undefined);
 }
 
 /** Onderhoud: blade hours since the last reset, distance driven. */

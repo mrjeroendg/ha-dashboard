@@ -26,6 +26,7 @@ export interface MowerConfig {
   error?: string;
   bladeHours?: string;
   distance?: string;
+  batteryTemperature?: string
 }
 
 export interface RoomLightMember {
@@ -207,7 +208,8 @@ export const ROOMS: RoomConfig[] = [
           online: 'binary_sensor.jeroen_dg2_gmail_com_jaqueline_mqtt',
           error: 'sensor.jeroen_dg2_gmail_com_jaqueline_error',
           bladeHours: 'sensor.jeroen_dg2_gmail_com_jaqueline_blade_runtime_since_reset',
-          distance: 'sensor.jeroen_dg2_gmail_com_jaqueline_distance_driven_total'
+          distance: 'sensor.jeroen_dg2_gmail_com_jaqueline_distance_driven_total',
+          batteryTemperature: 'sensor.jeroen_dg2_gmail_com_jaqueline_battery_temperature'
         }
       }
     ],

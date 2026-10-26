@@ -191,7 +191,7 @@ export function controlMower(hass: HomeAssistant, mower: HassEntity, chosenContr
 
 export interface MowerListLine {
   name: string;
-  icon: 'sprout' | 'battery' | 'droplet' | 'signal' | 'blade' | 'route';
+  icon: 'sprout' | 'battery' | 'droplet' | 'signal' | 'blade' | 'route' | 'thermometer';
   value: string;
   /** A red dot: wet, or offline. */
   needsAttention?: boolean;
@@ -221,7 +221,7 @@ export function mowerStatusLines(config: MowerConfig, states: HassEntities): Mow
     : undefined;
 
   const batteryTemperatureLine: MowerListLine | undefined = batteryTemp !== undefined
-    ? { name: 'Temperatuur', icon: 'battery', value: `${batteryTemp}°` }
+    ? { name: 'Temperatuur', icon: 'thermometer', value: `${batteryTemp}°` }
     : undefined;
 
   return [zoneLine, batteryLine, batteryTemperatureLine, rainLine, connectionLine].filter((line): line is MowerListLine => line !== undefined);

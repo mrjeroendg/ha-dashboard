@@ -95,6 +95,18 @@
 
 .header__dot--idle { background: var(--text-muted); box-shadow: none; }
 
+/* Tapping the status box opens "Wat staat aan" (docs/design/whats-on). */
+.header__status--opens-sheet {
+  padding-right: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms ease;
+}
+
+.header__status--opens-sheet:active { background: var(--accent-soft); }
+.header__chevron { display: grid; margin-left: -4px; color: var(--text-muted); }
+.header__chevron .icon { width: 14px; height: 14px; }
+
 /* "34 min naar huis" in front of the status (docs/design/commute): a link to Waze. */
 .header__commute {
   font-weight: 600;
@@ -219,7 +231,11 @@
   transition: transform var(--stack-motion), opacity 290ms ease;
 }
 
-/* The front banner on top, each next one further back. */
+/* The front banner on top, each next one further back. The stack is its own
+   stacking context, so these only layer the cards among themselves and never
+   end up above a sheet's backdrop. */
+.attention-stack { isolation: isolate; }
+
 .attention-stack .attention__item:nth-child(1) { z-index: 4; }
 .attention-stack .attention__item:nth-child(2) { z-index: 3; }
 .attention-stack .attention__item:nth-child(3) { z-index: 2; }
@@ -1813,3 +1829,36 @@ button.row:active { background: var(--accent-soft); }
 .statistic-tile__value small { font-size: 14px; }
 
 .statistic-tile__sparkline { height: 46px; margin: auto -14px 0; padding-top: 10px; box-sizing: content-box; }
+
+/* ---------------------------------------------------------------- empty state (docs/design/empty-state) */
+
+.empty-state { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 22px 0 8px; }
+
+.empty-state__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  color: var(--accent);
+}
+
+.empty-state__icon .icon { width: 22px; height: 22px; }
+.empty-state__text { margin: 0; font-size: 14px; color: var(--text-muted); }
+
+/* ---------------------------------------------------------------- wat staat aan (docs/design/whats-on) */
+
+.whats-on-sheet { padding: 0 16px calc(34px + env(safe-area-inset-bottom)); }
+
+.whats-on-sheet__title {
+  margin: 0 4px 2px;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 24px;
+}
+
+.whats-on-sheet__count { margin: 0 4px 0; font-size: 13px; color: var(--text-muted); }
+.whats-on-sheet .safety-sheet__section { margin-top: 16px; }
+.whats-on-sheet .row-group { margin-top: 0; }

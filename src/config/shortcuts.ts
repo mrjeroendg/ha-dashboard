@@ -1,4 +1,5 @@
 import type { IconName } from '../components/Icon';
+import { Entity } from './entities';
 
 /**
  * Shortcuts on Thuis ("Snel"), shown in this order, always. There is no time
@@ -16,15 +17,15 @@ import type { IconName } from '../components/Icon';
 export interface Shortcut {
   label: string;
   icon: IconName;
-  entity: string;
+  entity: Entity;
   service?: string;
   detail?: string;
 }
 
 export const SHORTCUTS: Shortcut[] = [
-  { label: 'Pré slaapje', icon: 'baby', entity: 'scene.pre_sleep' },
-  { label: 'Garagedeur', icon: 'sofa', entity: 'script.garage_door_impuls' },
+  { label: 'Pré slaapje', icon: 'baby', entity: Entity.PRE_SLEEP_SCENE },
+  { label: 'Garagedeur', icon: 'sofa', entity: Entity.GARAGE_DOOR_IMPULSE_SCRIPT },
   // { label: 'Staanlamp', icon: 'bulb', entity: 'switch.0x94a081fffe4fce2f', service: 'toggle' },
-  { label: 'Centris', icon: 'moon', entity: 'light.centris', service: 'toggle' },
-  { label: 'Sfeer', icon: 'sofa', entity: 'scene.living_mood_lighting' }
+  { label: 'Centris', icon: 'moon', entity: Entity.CENTRIS_LIGHT, service: 'toggle' },
+  { label: 'Sfeer', icon: 'sofa', entity: Entity.LIVING_MOOD_LIGHTING_SCENE }
 ];

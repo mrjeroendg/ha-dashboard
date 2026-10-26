@@ -420,6 +420,22 @@ button.quick-card:active { transform: scale(0.97); }
 
 .dock:empty { display: none; }
 
+/* The bar's surface: the rooms, and on Thuis the media shortcuts on top (docs/design/media-dock). */
+.bottom-nav {
+  /* Compact bar (docs/design/bottom-nav, option B): stacked items, so ~5½ rooms fit. */
+  border-radius: 30px;
+  overflow: hidden;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  -webkit-backdrop-filter: saturate(1.4) blur(18px);
+  backdrop-filter: saturate(1.4) blur(18px);
+  box-shadow: inset 0 0 0 1px var(--border), 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.bottom-nav__top {
+  padding: 8px 8px 7px;
+  box-shadow: inset 0 -1px 0 var(--border);
+}
+
 .bottom-nav__scroller {
   display: flex;
   gap: 4px;
@@ -428,15 +444,9 @@ button.quick-card:active { transform: scale(0.97); }
   overflow-x: auto;
   scrollbar-width: none;
   scroll-padding: 0 24px;
-  /* Compact bar (docs/design/bottom-nav, option B): stacked items, so ~5½ rooms fit. */
-  border-radius: 30px;
   /* Soft edges hint that more rooms scroll in from the side. */
   -webkit-mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 14px), transparent);
   mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 14px), transparent);
-  background: color-mix(in srgb, var(--surface) 82%, transparent);
-  -webkit-backdrop-filter: saturate(1.4) blur(18px);
-  backdrop-filter: saturate(1.4) blur(18px);
-  box-shadow: inset 0 0 0 1px var(--border), 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
 .bottom-nav__scroller::-webkit-scrollbar { display: none; }
@@ -803,24 +813,35 @@ button.row:active { background: var(--accent-soft); }
 
 /* ---------------------------------------------------------------- mini player */
 
+/* Only while something plays (docs/design/media-dock): picture, title, pause, progress line. */
 .mini-player {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  gap: 8px;
   box-sizing: border-box;
-  height: 122px;
-  padding: 12px;
-  border-radius: 24px;
+  height: 56px;
+  padding: 8px;
+  border-radius: 20px;
+  overflow: hidden;
   background: var(--surface);
   box-shadow: inset 0 0 0 1px var(--border), 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-.mini-player__top {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
+.mini-player__thumb {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+  object-fit: cover;
+  background-color: var(--bg);
 }
+
+/* Album art sits square in the middle of the fade. */
+.mini-player__thumb img { width: 40px; height: 40px; object-fit: cover; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); }
 
 .mini-player__text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
@@ -831,9 +852,25 @@ button.row:active { background: var(--accent-soft); }
   text-overflow: ellipsis;
 }
 
-.mini-player__title { font-size: 16px; font-weight: 600; }
-.mini-player__title.is-error { color: var(--accent); }
-.mini-player__subtitle { margin-top: 2px; font-size: 13px; color: var(--text-muted); }
+.mini-player__title { font-size: 15px; font-weight: 600; }
+.mini-player__subtitle { margin-top: 1px; font-size: 12px; color: var(--text-muted); }
+
+.mini-player__progress {
+  position: absolute;
+  right: 16px;
+  bottom: 0;
+  left: 16px;
+  height: 2px;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--text) 12%, transparent);
+}
+
+.mini-player__progress i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 1px;
+  background: var(--accent);
+}
 
 .round-button {
   appearance: none;
@@ -853,44 +890,90 @@ button.row:active { background: var(--accent-soft); }
 .round-button .icon { width: 22px; height: 22px; stroke-width: 2.6; }
 .round-button:active { background: var(--accent-soft); }
 
-.mini-player__streams { display: flex; gap: 6px; }
+/* ---------------------------------------------------------------- media shortcuts (docs/design/media-dock) */
 
-.stream-pill {
+.media-shortcuts { display: flex; align-items: center; gap: 8px; }
+
+/* Sonos | TV: only a tap switches; swiping scrolls the shortcuts. */
+.media-shortcuts__switch {
+  flex: none;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 999px;
+  background: var(--bg);
+}
+
+.media-shortcuts__switch button {
   appearance: none;
   border: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 24px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.media-shortcuts__switch button[aria-pressed='true'] { background: var(--surface); color: var(--text); }
+.media-shortcuts__switch .icon { width: 15px; height: 15px; }
+
+.media-shortcuts__list {
   flex: 1;
   min-width: 0;
   display: flex;
+  gap: 6px;
+  /* Room to scroll the last shortcut out of the fade. */
+  padding-right: 20px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  /* The soft right edge hints that more shortcuts scroll in. */
+  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+}
+
+.media-shortcuts__list::-webkit-scrollbar { display: none; }
+
+.media-shortcut {
+  appearance: none;
+  border: 0;
+  flex: none;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 34px;
-  padding: 0 10px 0 4px;
+  height: 28px;
+  padding: 0 11px 0 6px;
   border-radius: 999px;
   background: var(--bg);
-  box-shadow: inset 0 0 0 1px var(--border);
   color: var(--text);
-  font: 600 13px var(--font-sans);
+  font: 600 12px var(--font-sans);
+  white-space: nowrap;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: transform 120ms ease, opacity 200ms ease;
 }
 
-.stream-pill:active { transform: scale(0.96); }
-.stream-pill:disabled { opacity: 0.5; cursor: default; }
+.media-shortcut:active { transform: scale(0.96); }
+.media-shortcut:disabled { opacity: 0.5; cursor: default; }
+.media-shortcut .is-error { color: var(--accent); }
 
-.stream-pill__logo {
+.media-shortcut__dot {
   flex: none;
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
+  /* The colour circles slightly darker, so they don't stand out too much. */
+  filter: brightness(0.75) saturate(0.85);
 }
 
-.stream-pill__logo--busy { background: var(--surface); }
-/* The colour circles (streams and apps) slightly darker, so they don't stand out too much. */
-.stream-pill__logo:not(.stream-pill__logo--busy) { filter: brightness(0.75) saturate(0.85); }
-.stream-pill__label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.media-shortcut__dot--busy { filter: none; }
+.media-shortcut__dot--busy .spinner { width: 12px; height: 12px; box-sizing: border-box; }
 
 .spinner {
   width: 14px;
@@ -945,16 +1028,7 @@ button.row:active { background: var(--accent-soft); }
 
 .page-dots i.is-active { width: 16px; background: var(--text); }
 
-/* ---------------------------------------------------------------- chromecast page */
-
-.cast-page__thumb {
-  flex: none;
-  width: 112px;
-  height: 63px;
-  border-radius: 12px;
-  object-fit: cover;
-  background: var(--bg);
-}
+/* ---------------------------------------------------------------- media fades */
 
 /* Shown when there is no image, and while idle. Each device has its own colours
    (docs/design/media-card, option A): the TV cool blue-violet, the Sonos warm. */
@@ -979,45 +1053,6 @@ button.row:active { background: var(--accent-soft); }
     linear-gradient(135deg, #a8452f, #3a1a24);
 }
 
-.cast-page.is-idle .media-fade { opacity: 0.8; }
-
-/* Sonos page: the same 96×54 fade as the Chromecast page (idle, with app buttons). */
-.sonos-thumb {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 96px;
-  height: 54px;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.sonos-thumb.is-idle { opacity: 0.8; }
-.sonos-thumb img { width: 54px; height: 54px; object-fit: cover; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); }
-
-/* Idle with app buttons: a smaller thumbnail so the buttons fit the 122px card. */
-.cast-page.has-apps .cast-page__thumb { width: 96px; height: 54px; }
-
-.cast-page__title {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.cast-page__progress {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: auto;
-  min-height: 18px;
-  font-size: 12px;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-}
 
 .progress-track {
   position: relative;
@@ -1036,7 +1071,6 @@ button.row:active { background: var(--accent-soft); }
   background: var(--accent);
 }
 
-.cast-page.is-idle .progress-track { opacity: 0.5; }
 
 .live-pill {
   display: inline-flex;

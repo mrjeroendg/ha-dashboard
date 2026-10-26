@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import type { ResolvedRoom } from '../lib/rooms';
 import { haptic } from '../lib/haptic';
 import { Icon } from './Icon';
@@ -8,9 +8,11 @@ interface Props {
   /** null = home ("Thuis") */
   active: string | null;
   onSelect(roomId: string | null): void;
+  /** A row on top of the rooms, part of the same bar: the media shortcuts on Thuis. */
+  top?: ReactNode;
 }
 
-export function BottomNav({ rooms, active, onSelect }: Props) {
+export function BottomNav({ rooms, active, onSelect, top }: Props) {
   const scroller = useRef<HTMLDivElement>(null);
 
   // Keep the active pill in view when the bar scrolls sideways.
@@ -28,6 +30,7 @@ export function BottomNav({ rooms, active, onSelect }: Props) {
 
   return (
     <nav className="bottom-nav" aria-label="Kamers">
+      {top && <div className="bottom-nav__top">{top}</div>}
       <div className="bottom-nav__scroller" ref={scroller}>
         {items.map((item) => (
           <button

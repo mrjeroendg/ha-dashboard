@@ -51,6 +51,28 @@ export function castApp(cast: HassEntity): string | undefined {
   return app && app !== 'Default Media Receiver' ? app : undefined;
 }
 
+/** The two media devices, in their fixed order (docs/design/media-dock): the Sonos first. */
+export type MediaDevice = 'sonos' | 'chromecast';
+export const MEDIA_DEVICES: MediaDevice[] = ['sonos', 'chromecast'];
+
+/** How long a paused Sonos keeps its page in the mini player (docs/design/media-dock). */
+const SONOS_PAUSED_PAGE_MINUTES = 15;
+
+/**
+ * The Sonos gets a page in the mini player while it plays, and for 15 minutes
+ * after pausing. A Sonos hardly ever goes idle by itself, so "paused" alone
+ * would keep the player up for days.
+ */
+export function isSonosShown(sonos: HassEntity | undefined, now: Date): boolean {
+  if (sonos?.state === 'playing') return true;
+  if (sonos?.state !== 'paused') return false;
+
+  const pausedSinceMs = Date.parse(sonos.last_changed);
+  const minutesPaused = (now.getTime() - pausedSinceMs) / 60_000;
+
+  return minutesPaused < SONOS_PAUSED_PAGE_MINUTES;
+}
+
 /** States in which the Chromecast is actually casting something. */
 const CASTING = new Set(['playing', 'paused', 'buffering']);
 

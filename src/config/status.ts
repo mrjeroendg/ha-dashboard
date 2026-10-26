@@ -14,14 +14,23 @@ import { Entity } from './entities';
  * Leave a list empty (or the temperature out) to hide that part.
  */
 export const STATUS = {
-  people: [Entity.PERSON_JEROEN, Entity.PERSON_ELINE] as Entity[],
-  lights: [Entity.LIVING_CUPBOARD_LIGHTS, Entity.CENTRIS_LIGHT] as Entity[],
+  people: [
+    Entity.PERSON_JEROEN, 
+    Entity.PERSON_ELINE
+  ],
+  lights: [
+    Entity.LIVING_CUPBOARD_LIGHTS, 
+    Entity.CENTRIS_LIGHT,
+    Entity.MARIELOU_HERSTAL_LIGHT,
+    Entity.GARAGE_STORAGE_LIGHT,
+    Entity.BUREAU_CEILING_LIGHT
+  ],
   openings: [
     Entity.BACK_DOOR_CONTACT,
     Entity.LIVING_FRONT_DOOR_CONTACT,
     Entity.LIVING_SLIDING_WINDOW_CONTACT,
     Entity.KITCHEN_SLIDING_WINDOW_CONTACT,
     Entity.GARAGE_DOOR_STATE
-  ] as Entity[],
+  ],
   temperature: undefined as Entity | undefined,
 };

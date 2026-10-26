@@ -896,6 +896,7 @@ button.row:active { background: var(--accent-soft); }
 
 /* Sonos | TV: only a tap switches; swiping scrolls the shortcuts. */
 .media-shortcuts__switch {
+  position: relative;
   flex: none;
   display: flex;
   gap: 2px;
@@ -920,6 +921,22 @@ button.row:active { background: var(--accent-soft); }
 
 .media-shortcuts__switch button[aria-pressed='true'] { background: var(--surface); color: var(--text); }
 .media-shortcuts__switch .icon { width: 15px; height: 15px; }
+
+/* A hint of the accent in the fade next to the switch, once shortcuts scroll behind it. */
+.media-shortcuts__switch::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 100%;
+  width: 14px;
+  background: radial-gradient(ellipse at left center, color-mix(in srgb, var(--accent) 22%, transparent), transparent 70%);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease;
+}
+
+.media-shortcuts.is-scrolled .media-shortcuts__switch::after { opacity: 1; }
 
 .media-shortcuts__list {
   flex: 1;

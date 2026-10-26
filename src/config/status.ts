@@ -34,9 +34,9 @@ export const STATUS: { people: StatusEntity[]; lights: StatusEntity[]; aircos: S
     { entity: Entity.BUREAU_CEILING_LIGHT, name: 'Plafondlamp' }
   ],
   aircos: [
-    { entity: Entity.MASTER_BEDROOM_AIRCO, name: 'Airco slaapkamer' },
-    { entity: Entity.MARIELOU_AIRCO, name: 'Airco Marielou' },
-    { entity: Entity.GUEST_ROOM_AIRCO, name: 'Airco gasten' }
+    { entity: Entity.MASTER_BEDROOM_AIRCO, name: 'Slaapkamer' },
+    { entity: Entity.MARIELOU_AIRCO, name: 'Marielou' },
+    { entity: Entity.GUEST_ROOM_AIRCO, name: 'Gasten' }
   ],
   openings: [
     { entity: Entity.BACK_DOOR_CONTACT, name: 'Achterdeur' },

@@ -14,7 +14,7 @@ export enum Entity {
   LIVING_CUPBOARD_LIGHT_RIGHT = 'light.0x001788010efb4490',
   LIVING_FRONT_DOOR_CONTACT = 'binary_sensor.0x001788011004451e_contact',
   LIVING_SLIDING_WINDOW_CONTACT = 'binary_sensor.0x001788011004452e_contact',
-  LIVING_SCREENS_ALL = 'cover.screen_side_facade',
+  LIVING_SCREENS_ALL = 'cover.screens',
   LIVING_SCREEN_LEFT_FRONT = 'cover.rts_16774497',
   LIVING_SCREEN_LEFT_FRONT_MY_POSITION = 'button.rts_16774497_my_position',
   LIVING_SCREEN_RIGHT_FRONT = 'cover.rts_16740619',

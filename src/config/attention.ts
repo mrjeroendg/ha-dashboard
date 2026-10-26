@@ -69,7 +69,7 @@ export const ATTENTION: AttentionRule[] = [
   {
     entity: Entity.BABYSITTER_NEEDED_LIST,
     level: 'babysit',
-    title: 'Oppas nodig',
+    title: 'Babysit Marielou',
     icon: 'baby',
     when: (babysitList) => Number(babysitList.state) > 0,
     detail: (babysitList) => {
@@ -83,7 +83,7 @@ export const ATTENTION: AttentionRule[] = [
   {
     entity: Entity.CARA_CATSITTER_NEEDED_LIST,
     level: 'catsit',
-    title: 'Oppas voor Cara',
+    title: 'Catsit Cara',
     icon: 'cat',
     when: (catsitList) => Number(catsitList.state) > 0,
     detail: (catsitList) => {

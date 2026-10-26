@@ -116,6 +116,7 @@ export function batteryPercentage(config: MowerConfig, states: HassEntities) {
   return numberState(states, config.battery);
 }
 
+/** The battery's temperature in °C, shown in Status. */
 export function batteryTemperature(config: MowerConfig, states: HassEntities) {
   return numberState(states, config.batteryTemperature);
 }
@@ -197,17 +198,19 @@ export interface MowerListLine {
   needsAttention?: boolean;
 }
 
-/** Status: zone, battery, rain, connection. A line whose entity isn't configured or available is left out. */
+/**
+ * Status: zone ("Geen zone" when none is active), battery, its temperature, rain, connection.
+ * A line whose entity isn't configured or available is left out.
+ */
 export function mowerStatusLines(config: MowerConfig, states: HassEntities): MowerListLine[] {
   const activeZoneName = chosenZoneName(config, states);
   const battery = batteryPercentage(config, states);
   const isCharging = isOn(states, config.charging);
   const isWet = isOn(states, config.rain);
   const isOnline = isOn(states, config.online);
-  const batteryTemp = batteryTemperature(config, states);
+  const batteryTemperatureInDegrees = batteryTemperature(config, states);
 
-
-  const zoneLine: MowerListLine | undefined = { name: 'Zone', icon: 'sprout', value: activeZoneName || "Geen zone" };
+  const zoneLine: MowerListLine = { name: 'Zone', icon: 'sprout', value: activeZoneName ?? 'Geen zone' };
   const batteryLine: MowerListLine | undefined = battery !== undefined
     ? { name: 'Batterij', icon: 'battery', value: `${readableNumber(battery, 0)}%${isCharging ? ' · laadt op' : ''}` }
     : undefined;
@@ -220,8 +223,8 @@ export function mowerStatusLines(config: MowerConfig, states: HassEntities): Mow
     ? { name: 'Verbinding', icon: 'signal', value: isOnline ? 'Online' : 'Offline', needsAttention: !isOnline }
     : undefined;
 
-  const batteryTemperatureLine: MowerListLine | undefined = batteryTemp !== undefined
-    ? { name: 'Temperatuur', icon: 'thermometer', value: `${batteryTemp}°` }
+  const batteryTemperatureLine: MowerListLine | undefined = batteryTemperatureInDegrees !== undefined
+    ? { name: 'Temperatuur', icon: 'thermometer', value: `${readableNumber(batteryTemperatureInDegrees)}°` }
     : undefined;
 
   return [zoneLine, batteryLine, batteryTemperatureLine, rainLine, connectionLine].filter((line): line is MowerListLine => line !== undefined);

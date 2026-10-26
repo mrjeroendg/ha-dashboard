@@ -34,3 +34,15 @@ Instructions for Claude when working in this repository.
   ```
 
   Applies to new and changed code; existing code is renamed when it's touched.
+
+- **Entities only through the `Entity` enum** (`src/config/entities.ts`), never
+  as a raw ID in the config or the code. A new entity gets a member there
+  first: UPPER_SNAKE_CASE, room first, then what it is
+  (`MARIELOU_ROLLER_SHUTTER_MY_POSITION`). The config types accept only
+  `Entity`. The dev mock (`src/dev/`) keeps raw IDs.
+
+## Design rules
+
+- **Empty sheets:** a sheet that can have nothing to list shows the shared
+  `EmptyState` (docs/design/empty-state) with its own short text, never an
+  empty frame.

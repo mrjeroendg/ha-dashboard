@@ -1,5 +1,6 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
+import type { Entity } from '../config/entities';
 import type { MowerConfig, RoomConfig, RoomEntity, RoomSafety } from '../config/rooms';
 import type { Shortcut } from '../config/shortcuts';
 import type { HomeAssistant } from '../types/hass';
@@ -8,6 +9,8 @@ import { aircoDetail, isAircoOn, toggleAirco } from './airco';
 export type Row = {
   entity: HassEntity;
   name: string;
+  /** Instead of the icon that goes with the entity's domain. */
+  icon?: IconName;
   allowUnknownState?: boolean;
   simple?: boolean;
   /** Cover: the "My position" button entity, if it exists in HA. */
@@ -36,24 +39,26 @@ export interface ResolvedRoom {
   icon: IconName;
   temperature?: string;
   humidity?: string;
-  safety?: Array<string | RoomSafety>;
+  safety?: Array<Entity | RoomSafety>;
   sections: ResolvedSection[];
 }
 
-function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities): Row[] {
+/** The configured controls whose entities exist in HA, for a room or for Snel on Thuis. */
+export function resolveRows(entities: Array<Entity | RoomEntity>, states: HassEntities): Row[] {
   return entities
-    .map((e) => (typeof e === 'string' ? { entity: e } : e))
-    .filter((e) => e.entity in states)
-    .map((e) => ({
-      entity: states[e.entity],
-      name: e.name ?? String(states[e.entity].attributes.friendly_name ?? e.entity),
-      allowUnknownState: e.allowUnknownState,
-      simple: e.simple,
-      myPosition: e.myPosition && e.myPosition in states ? e.myPosition : undefined,
-      members: e.members
-        ?.filter((m) => m.entity in states)
-        .map((m) => ({ entity: states[m.entity], name: m.name })),
-      mower: e.mower,
+    .map((entityConfig) => (typeof entityConfig === 'string' ? { entity: entityConfig } : entityConfig))
+    .filter((entityConfig) => entityConfig.entity in states)
+    .map((entityConfig) => ({
+      entity: states[entityConfig.entity],
+      name: entityConfig.name ?? String(states[entityConfig.entity].attributes.friendly_name ?? entityConfig.entity),
+      icon: entityConfig.icon,
+      allowUnknownState: entityConfig.allowUnknownState,
+      simple: entityConfig.simple,
+      myPosition: entityConfig.myPosition && entityConfig.myPosition in states ? entityConfig.myPosition : undefined,
+      members: entityConfig.members
+        ?.filter((member) => member.entity in states)
+        .map((member) => ({ entity: states[member.entity], name: member.name })),
+      mower: entityConfig.mower,
     }));
 }
 
@@ -128,15 +133,6 @@ export interface LightColor {
   /** What the light is showing now; HA also reports rgb_color in color_temp mode. */
   rgb?: RGB;
   kelvin?: number;
-}
-
-/** A color choice: either an RGB color or a white temperature. */
-export type ColorChoice = { rgb: RGB } | { kelvin: number };
-
-/** Set a light's color or white temperature; turns it on if needed. */
-export function setColor(hass: HomeAssistant, entity: HassEntity, choice: ColorChoice) {
-  const data = 'rgb' in choice ? { rgb_color: choice.rgb } : { color_temp_kelvin: choice.kelvin };
-  return hass.callService('light', 'turn_on', data, { entity_id: entity.entity_id });
 }
 
 function lightColor(entity: HassEntity): LightColor | undefined {
@@ -259,7 +255,9 @@ export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowO
 
   // A cover's buttons don't depend on its state, so an RTS screen stuck on 'unknown' still works.
   const coverUnknown = domain === 'cover' && entity.state === 'unknown';
-  if (UNAVAILABLE.has(entity.state) && !coverUnknown) {
+  // A scene's state is when it last ran, or 'unknown' if it never has: it can still be started.
+  const isSceneNeverRun = domain === 'scene' && entity.state === 'unknown';
+  if (UNAVAILABLE.has(entity.state) && !coverUnknown && !isSceneNeverRun) {
     return { kind: 'readonly', icon: iconFor(entity), detail: 'Niet beschikbaar', on: false };
   }
 
@@ -441,14 +439,14 @@ function smokeItem(entity: HassEntity, battery?: number): Pick<SafetyItem, 'icon
  */
 export function roomSafety(room: ResolvedRoom, states: HassEntities) {
   const items: SafetyItem[] = (room.safety ?? [])
-    .map((s) => (typeof s === 'string' ? { entity: s } : s))
-    .filter((s) => s.entity in states && !UNAVAILABLE.has(states[s.entity].state))
-    .flatMap((s) => {
-      const entity = states[s.entity];
+    .map((safetyConfig) => (typeof safetyConfig === 'string' ? { entity: safetyConfig } : safetyConfig))
+    .filter((safetyConfig) => safetyConfig.entity in states && !UNAVAILABLE.has(states[safetyConfig.entity].state))
+    .flatMap((safetyConfig) => {
+      const entity = states[safetyConfig.entity];
       const deviceClass = entity.attributes.device_class;
-      const name = s.name ?? String(entity.attributes.friendly_name ?? s.entity);
-      if (deviceClass === 'door') return [{ id: s.entity, name, ...doorItem(entity) }];
-      if (deviceClass === 'smoke') return [{ id: s.entity, name, ...smokeItem(entity, sensorValue(states, s.battery)) }];
+      const name = safetyConfig.name ?? String(entity.attributes.friendly_name ?? safetyConfig.entity);
+      if (deviceClass === 'door') return [{ id: safetyConfig.entity, name, ...doorItem(entity) }];
+      if (deviceClass === 'smoke') return [{ id: safetyConfig.entity, name, ...smokeItem(entity, sensorValue(states, safetyConfig.battery)) }];
       return [];
     });
   if (items.length === 0) return undefined;

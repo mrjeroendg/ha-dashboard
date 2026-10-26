@@ -1,11 +1,15 @@
 import type { IconName } from '../components/Icon';
 import type { Shortcut } from './shortcuts';
+import { Entity } from './entities';
 
+/** One control: in a room, and the same config for Snel on Thuis (src/config/shortcuts.ts). */
 export interface RoomEntity {
-  entity: string;
+  entity: Entity;
   name?: string;
+  /** Instead of the icon that goes with the entity's domain. */
+  icon?: IconName;
   allowUnknownState?: boolean;
-  myPosition?: string;
+  myPosition?: Entity;
   simple?: boolean;
   members?: RoomLightMember[];
   /** A robot lawn mower's sheet (docs/design/lawn-mower). */
@@ -15,48 +19,48 @@ export interface RoomEntity {
 /** The mower's other entities, each optional: leave one out to hide its line in the sheet. */
 export interface MowerConfig {
   /** The select entity with the active zone (only shown, not chosen). */
-  zone?: string;
+  zone?: Entity;
   /** The select's options and the name to show for each, e.g. { option: '1', name: 'Voortuin' }. */
   zones?: Array<{ option: string; name: string }>;
-  battery?: string;
-  charging?: string;
-  rain?: string;
+  battery?: Entity;
+  charging?: Entity;
+  rain?: Entity;
   /** The cloud connection, e.g. Landroid's MQTT sensor. */
-  online?: string;
-  error?: string;
-  bladeHours?: string;
-  distance?: string;
-  batteryTemperature?: string
+  online?: Entity;
+  error?: Entity;
+  bladeHours?: Entity;
+  distance?: Entity;
+  batteryTemperature?: Entity;
 }
 
 export interface RoomLightMember {
-  entity: string;
+  entity: Entity;
   name: string;
 }
 
 export interface RoomSafety {
-  entity: string;
+  entity: Entity;
   name?: string;
-  battery?: string;
+  battery?: Entity;
 }
 
 export interface RoomSection {
   title: string;
   shortcuts?: Shortcut[];
-  entities: Array<string | RoomEntity>;
+  entities: Array<Entity | RoomEntity>;
 }
 
 interface RoomBase {
   id: string;
   name: string;
   icon: IconName;
-  temperature?: string;
-  humidity?: string;
-  safety?: Array<string | RoomSafety>;
+  temperature?: Entity;
+  humidity?: Entity;
+  safety?: Array<Entity | RoomSafety>;
 }
 
 export type RoomConfig =
-  | (RoomBase & { entities: Array<string | RoomEntity>; sections?: never })
+  | (RoomBase & { entities: Array<Entity | RoomEntity>; sections?: never })
   | (RoomBase & { sections: RoomSection[]; entities?: never });
 
 export const ROOMS: RoomConfig[] = [
@@ -65,20 +69,20 @@ export const ROOMS: RoomConfig[] = [
     name: 'Living',
     icon: 'sofa',
     safety: [
-      { entity: 'binary_sensor.0x001788011004451e_contact', 'name': 'Voordeur' },
-      { entity: 'binary_sensor.0x001788011004452e_contact', 'name': 'Schuifraam' }
+      { entity: Entity.LIVING_FRONT_DOOR_CONTACT, 'name': 'Voordeur' },
+      { entity: Entity.LIVING_SLIDING_WINDOW_CONTACT, 'name': 'Schuifraam' }
     ],
     sections: [
       {
         title: "Verlichting",
         entities: [
-          { entity: 'light.living_switch_dining_table', name: 'Staanlamp' },
+          { entity: Entity.LIVING_FLOOR_LAMP, name: 'Staanlamp' },
           {
-            entity: 'light.huecupboard',
+            entity: Entity.LIVING_CUPBOARD_LIGHTS,
             name: 'CB3',
             members: [
-              { entity: 'light.0x001788010efb449a', name: 'Links' },
-              { entity: 'light.0x001788010efb4490', name: 'Rechts' }
+              { entity: Entity.LIVING_CUPBOARD_LIGHT_LEFT, name: 'Links' },
+              { entity: Entity.LIVING_CUPBOARD_LIGHT_RIGHT, name: 'Rechts' }
             ]
           },
         ],
@@ -86,13 +90,13 @@ export const ROOMS: RoomConfig[] = [
       {
         title: "Screens",
         shortcuts: [
-          { label: 'Alles open', icon: 'up', entity: 'cover.screen_side_facade', service: 'open_cover' },
-          { label: 'Alles dicht', icon: 'down', entity: 'cover.screen_side_facade', service: 'close_cover' }
+          { label: 'Alles open', icon: 'up', entity: Entity.LIVING_SCREENS_ALL, service: 'open_cover' },
+          { label: 'Alles dicht', icon: 'down', entity: Entity.LIVING_SCREENS_ALL, service: 'close_cover' }
         ],
         entities: [
-          { entity: 'cover.rts_16774497', name: 'Linksvoor', myPosition: 'button.rts_16774497_my_position' },
-          { entity: 'cover.rts_16740619', name: 'Rechtsvoor', myPosition: 'button.rts_16740619_my_position' },
-          { entity: 'cover.rts_16750040', name: 'Zijkant', myPosition: 'button.rts_16750040_my_position' }
+          { entity: Entity.LIVING_SCREEN_LEFT_FRONT, name: 'Linksvoor', myPosition: Entity.LIVING_SCREEN_LEFT_FRONT_MY_POSITION },
+          { entity: Entity.LIVING_SCREEN_RIGHT_FRONT, name: 'Rechtsvoor', myPosition: Entity.LIVING_SCREEN_RIGHT_FRONT_MY_POSITION },
+          { entity: Entity.LIVING_SCREEN_SIDE, name: 'Zijkant', myPosition: Entity.LIVING_SCREEN_SIDE_MY_POSITION }
         ],
       }
     ],
@@ -101,31 +105,29 @@ export const ROOMS: RoomConfig[] = [
     id: 'master-bedroom',
     name: "Slaapkamer",
     icon: 'moon',
-    temperature: 'sensor.master_bedroom_airco_room_temperature',
+    temperature: Entity.MASTER_BEDROOM_TEMPERATURE,
     safety: [
       {
-        entity: 'binary_sensor.0x0015bc003106379c_smoke',
+        entity: Entity.MASTER_BEDROOM_SMOKE_DETECTOR,
         'name': 'Rookmelder',
-        battery: 'sensor.0x0015bc003106379c_battery'
+        battery: Entity.MASTER_BEDROOM_SMOKE_DETECTOR_BATTERY
       },
     ],
     entities: [
-      // docs/design/airco-sheet
-      { entity: 'climate.master_bedroom_airco', name: 'Airco' },
-      { entity: 'cover.rts_16727506', name: 'Rolluik', myPosition: 'button.rts_16727506_my_position' }
+      { entity: Entity.MASTER_BEDROOM_AIRCO, name: 'Airco' },
+      { entity: Entity.MASTER_BEDROOM_ROLLER_SHUTTER, name: 'Rolluik', myPosition: Entity.MASTER_BEDROOM_ROLLER_SHUTTER_MY_POSITION }
     ],
   },
   {
     id: 'marielou',
     name: "Marielou",
     icon: 'baby',
-    temperature: 'sensor.0xf044d3fffecd20d8_temperature',
-    humidity: 'sensor.0xf044d3fffecd20d8_humidity',
+    temperature: Entity.MARIELOU_TEMPERATURE,
+    humidity: Entity.MARIELOU_HUMIDITY,
     entities: [
-      { entity: 'light.bedroom_marielou_herstal_light_switch', name: 'Herstal' },
-      // docs/design/airco-sheet
-      { entity: 'climate.bedroom_marielou_airco', name: 'Airco' },
-      { entity: 'cover.rts_16767817', name: 'Rolluik', myPosition: 'button.rts_16767817_my_position' }
+      { entity: Entity.MARIELOU_HERSTAL_LIGHT, name: 'Herstal' },
+      { entity: Entity.MARIELOU_AIRCO, name: 'Airco' },
+      { entity: Entity.MARIELOU_ROLLER_SHUTTER, name: 'Rolluik', myPosition: Entity.MARIELOU_ROLLER_SHUTTER_MY_POSITION }
     ],
   },
   {
@@ -133,32 +135,32 @@ export const ROOMS: RoomConfig[] = [
     name: "Garage",
     icon: 'garageCar',
     safety: [
-      { entity: 'binary_sensor.0x0015bc003106405f_smoke', name: 'Rookmelder', battery: 'sensor.0x0015bc003106405f_battery' }
+      { entity: Entity.GARAGE_SMOKE_DETECTOR, name: 'Rookmelder', battery: Entity.GARAGE_SMOKE_DETECTOR_BATTERY }
     ],
     entities: [
-      { entity: 'light.storage_switch', name: 'Berging' },
-      { entity: 'script.garage_door_impuls', name: 'Garagedeur' }
+      { entity: Entity.GARAGE_STORAGE_LIGHT, name: 'Berging' },
+      { entity: Entity.GARAGE_DOOR_IMPULSE_SCRIPT, name: 'Garagedeur' }
     ],
   },
   {
     id: 'bureau',
     name: "Bureau",
     icon: 'monitor',
-    temperature: 'sensor.0x7c3e822f69dd0000_temperature',
-    humidity: 'sensor.0x7c3e822f69dd0000_humidity',
+    temperature: Entity.BUREAU_TEMPERATURE,
+    humidity: Entity.BUREAU_HUMIDITY,
     safety: [
-      { entity: 'binary_sensor.0x0015bc003106406b_smoke', name: 'Rookmelder', battery: 'sensor.0x0015bc003106406b_battery' }
+      { entity: Entity.BUREAU_SMOKE_DETECTOR, name: 'Rookmelder', battery: Entity.BUREAU_SMOKE_DETECTOR_BATTERY }
     ],
     entities: [
       {
-        entity: 'light.ceiling_light',
+        entity: Entity.BUREAU_CEILING_LIGHT,
         name: 'Plafondlamp',
         members: [
-          { entity: 'light.0x54ef4410012089f2_rgb', name: 'Ring' },
-          { entity: 'light.0x54ef4410012089f2_white', name: 'Lamp' }
+          { entity: Entity.BUREAU_CEILING_LIGHT_RING, name: 'Ring' },
+          { entity: Entity.BUREAU_CEILING_LIGHT_LAMP, name: 'Lamp' }
         ]
       },
-      { entity: 'cover.rts_16765494', name: 'Rolluik', myPosition: 'button.rts_16765494_my_position' }
+      { entity: Entity.BUREAU_ROLLER_SHUTTER, name: 'Rolluik', myPosition: Entity.BUREAU_ROLLER_SHUTTER_MY_POSITION }
     ],
   },
   {
@@ -167,14 +169,13 @@ export const ROOMS: RoomConfig[] = [
     icon: 'bed',
     safety: [
       {
-        entity: 'binary_sensor.0x0015bc003106405c_smoke', name: 'Rookmelder',
-        battery: 'sensor.0x0015bc003106405c_battery'
+        entity: Entity.GUEST_ROOM_SMOKE_DETECTOR, name: 'Rookmelder',
+        battery: Entity.GUEST_ROOM_SMOKE_DETECTOR_BATTERY
       }
     ],
     entities: [
-      // docs/design/airco-sheet
-      { entity: 'climate.guest_room_airco', name: 'Airco' },
-      { entity: 'cover.rts_16722417', name: 'Rolluik', myPosition: 'button.rts_16722417_my_position' }
+      { entity: Entity.GUEST_ROOM_AIRCO, name: 'Airco' },
+      { entity: Entity.GUEST_ROOM_ROLLER_SHUTTER, name: 'Rolluik', myPosition: Entity.GUEST_ROOM_ROLLER_SHUTTER_MY_POSITION }
     ],
   },
   {
@@ -182,7 +183,7 @@ export const ROOMS: RoomConfig[] = [
     name: "Badkamer",
     icon: 'shower',
     entities: [
-      { entity: 'cover.velux', name: 'Velux', myPosition: 'button.velux_my_position' }
+      { entity: Entity.BATHROOM_VELUX, name: 'Velux', myPosition: Entity.BATHROOM_VELUX_MY_POSITION }
     ],
   },
   {
@@ -192,24 +193,23 @@ export const ROOMS: RoomConfig[] = [
     entities: [
       {
         // docs/design/lawn-mower
-        entity: 'lawn_mower.jeroen_dg2_gmail_com_jaqueline',
+        entity: Entity.GARDEN_LAWN_MOWER,
         name: 'Jaqueline',
         mower: {
-          zone: 'select.jeroen_dg2_gmail_com_jaqueline_zone',
-          // Placeholder names: give each zone its own name.
+          zone: Entity.GARDEN_LAWN_MOWER_ZONE,
           zones: [
             { option: '1', name: 'Achtertuin' },
             { option: '2', name: 'Voortuin' },
             { option: '3', name: 'Zijtuin' }
           ],
-          battery: 'sensor.jeroen_dg2_gmail_com_jaqueline_battery',
-          charging: 'binary_sensor.jeroen_dg2_gmail_com_jaqueline_charging',
-          rain: 'binary_sensor.jeroen_dg2_gmail_com_jaqueline_rain_sensor',
-          online: 'binary_sensor.jeroen_dg2_gmail_com_jaqueline_mqtt',
-          error: 'sensor.jeroen_dg2_gmail_com_jaqueline_error',
-          bladeHours: 'sensor.jeroen_dg2_gmail_com_jaqueline_blade_runtime_since_reset',
-          distance: 'sensor.jeroen_dg2_gmail_com_jaqueline_distance_driven_total',
-          batteryTemperature: 'sensor.jeroen_dg2_gmail_com_jaqueline_battery_temperature'
+          battery: Entity.GARDEN_LAWN_MOWER_BATTERY,
+          charging: Entity.GARDEN_LAWN_MOWER_CHARGING,
+          rain: Entity.GARDEN_LAWN_MOWER_RAIN_SENSOR,
+          online: Entity.GARDEN_LAWN_MOWER_CONNECTION,
+          error: Entity.GARDEN_LAWN_MOWER_ERROR,
+          bladeHours: Entity.GARDEN_LAWN_MOWER_BLADE_HOURS_SINCE_RESET,
+          distance: Entity.GARDEN_LAWN_MOWER_DISTANCE_TOTAL,
+          batteryTemperature: Entity.GARDEN_LAWN_MOWER_BATTERY_TEMPERATURE
         }
       }
     ],

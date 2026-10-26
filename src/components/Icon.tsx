@@ -274,6 +274,9 @@ const PATHS = {
       <path d="M21 12.8A11 11 0 0 1 3 12.8M21 16.4L21 12.8L17.6 14M6.4 14L3 12.8L3 16.4" />
     </>
   ),
+  // Verbruik (docs/design/verbruik).
+  bolt: <path d="M13 2L4 14h7l-1 8 9-12h-7z" />,
+  flame: <path d="M12 22a7 7 0 0 0 7-7c0-4-3-6-4-10-2 2-3 4-3 6-1-1-2-2-2-4-2 2-5 5-5 8a7 7 0 0 0 7 7z" />,
   // Lawn mower (docs/design/lawn-mower).
   mower: (
     <>

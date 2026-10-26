@@ -95,6 +95,18 @@
 
 .header__dot--idle { background: var(--text-muted); box-shadow: none; }
 
+/* Tapping the status box opens "Wat staat aan" (docs/design/whats-on). */
+.header__status--opens-sheet {
+  padding-right: 12px;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms ease;
+}
+
+.header__status--opens-sheet:active { background: var(--accent-soft); }
+.header__chevron { display: grid; margin-left: -4px; color: var(--text-muted); }
+.header__chevron .icon { width: 14px; height: 14px; }
+
 /* "34 min naar huis" in front of the status (docs/design/commute): a link to Waze. */
 .header__commute {
   font-weight: 600;
@@ -219,7 +231,11 @@
   transition: transform var(--stack-motion), opacity 290ms ease;
 }
 
-/* The front banner on top, each next one further back. */
+/* The front banner on top, each next one further back. The stack is its own
+   stacking context, so these only layer the cards among themselves and never
+   end up above a sheet's backdrop. */
+.attention-stack { isolation: isolate; }
+
 .attention-stack .attention__item:nth-child(1) { z-index: 4; }
 .attention-stack .attention__item:nth-child(2) { z-index: 3; }
 .attention-stack .attention__item:nth-child(3) { z-index: 2; }
@@ -338,12 +354,6 @@ button.quick-card:active { transform: scale(0.97); }
 .card-label { font-size: 15px; font-weight: 600; }
 .card-detail { margin-top: 2px; font-size: 13px; line-height: 1.3; color: var(--text-muted); }
 
-/* Quick: 2-column grid of small cards */
-.quick-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
 
 .quick-card {
   position: relative;
@@ -729,7 +739,7 @@ button.row:active { background: var(--accent-soft); }
 .pill-button:disabled,
 .stepper button:disabled { opacity: 0.5; }
 
-/* Brightness slider under a dimmable light */
+/* Slider with a value (the volume) */
 .slider {
   position: relative;
   display: flex;
@@ -787,68 +797,6 @@ button.row:active { background: var(--accent-soft); }
   border: 0;
   border-radius: 2px;
   background: var(--accent);
-}
-
-/* Color swatches under a color light */
-/* One row of swatches that scrolls sideways instead of wrapping. The padding
-   leaves room for the selection ring; the soft right edge hints at more. */
-.color-picker {
-  display: flex;
-  gap: 10px;
-  margin: -5px 0 11px 61px;
-  padding: 5px 5px 5px 5px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  /* Fade only the side(s) with more swatches to scroll to. */
-  --fade-left: 0px;
-  --fade-right: 28px;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
-  mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
-}
-
-.color-picker.is-scrolled { --fade-left: 28px; }
-.color-picker.is-end { --fade-right: 0px; }
-
-.color-picker::-webkit-scrollbar { display: none; }
-
-.swatch {
-  appearance: none;
-  position: relative;
-  flex: none;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: var(--swatch);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform 120ms ease;
-}
-
-.swatch:active { transform: scale(0.9); }
-
-/* Selected: ring in the page background + accent ring around it */
-.swatch[aria-checked='true'] {
-  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent);
-}
-
-.swatch--custom {
-  overflow: hidden;
-  background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
-}
-
-.swatch--custom.is-custom { background: var(--swatch); }
-
-.swatch--custom input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
 }
 
 /* ---------------------------------------------------------------- mini player */
@@ -1719,6 +1667,157 @@ button.row:active { background: var(--accent-soft); }
 .icon .icon__faint { stroke-width: 1.2; opacity: 0.45; }
 .icon .icon__unit { stroke-width: 2.4; }
 
+/* ---------------------------------------------------------------- statistics (docs/design/verbruik) */
+
+/* Live card: a fixed 59px, whatever the content. */
+.power-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 59px;
+  margin-bottom: 10px;
+  padding: 0 14px;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.power-card__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--statistic-color) 14%, transparent);
+  color: var(--statistic-color);
+}
+
+.power-card__icon .icon { width: 18px; height: 18px; }
+
+.power-card__value {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.power-card__value small,
+.statistic-tile__value small { margin-left: 3px; font-weight: 500; color: var(--text-muted); }
+.power-card__value small { font-size: 13px; }
+
+.power-card__now {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.power-card__now::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--statistic-color);
+}
+
+.power-card__peak { flex: 1; display: flex; flex-direction: column; gap: 7px; margin-left: 18px; }
+.power-card__peak-label { text-align: right; font-size: 11px; color: var(--text-muted); }
+.power-card__peak-label b { font-weight: 600; color: var(--text); }
+
+.power-card__meter {
+  position: relative;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--statistic-color) 14%, var(--bg));
+}
+
+.power-card__meter i { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: var(--statistic-color); }
+
+/* Tiles: 2 per row, equally high; the line sits at the bottom. */
+.statistics__tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.statistic-tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 14px 14px 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.statistic-tile__header { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--text-muted); }
+.statistic-tile__header .icon { width: 15px; height: 15px; color: var(--statistic-color); }
+
+.statistic-tile__value {
+  margin-top: 6px;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.statistic-tile__value small { font-size: 14px; }
+
+.statistic-tile__sparkline { height: 46px; margin: auto -14px 0; padding-top: 10px; box-sizing: content-box; }
+
+/* ---------------------------------------------------------------- empty state (docs/design/empty-state) */
+
+.empty-state { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 22px 0 8px; }
+
+.empty-state__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  color: var(--accent);
+}
+
+.empty-state__icon .icon { width: 22px; height: 22px; }
+.empty-state__text { margin: 0; font-size: 14px; color: var(--text-muted); }
+
+/* ---------------------------------------------------------------- wat staat aan (docs/design/whats-on) */
+
+.whats-on-sheet { padding: 0 16px calc(34px + env(safe-area-inset-bottom)); }
+
+.whats-on-sheet__title {
+  margin: 0 4px 2px;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 24px;
+}
+
+.whats-on-sheet__count { margin: 0 4px 0; font-size: 13px; color: var(--text-muted); }
+.whats-on-sheet .safety-sheet__section { margin-top: 16px; }
+.whats-on-sheet .row-group { margin-top: 0; }
+
+/* ---------------------------------------------------------------- slim controls (docs/design/snel-list, S1) */
+
+/* The room controls, smaller: Snel on Thuis. Only sizes change; the markup and
+   what a tap does are the same as in a room. */
+.row-group--slim { margin-top: 0; }
+.row-group--slim .row { gap: 12px; padding: 8px 14px; }
+.row-group--slim .row--sheet { padding: 0; }
+.row-group--slim .row__open { gap: 12px; padding: 8px 4px 8px 14px; }
+.row-group--slim .row__switch { padding: 8px 14px; }
+.row-group--slim .icon-tile { width: 28px; height: 28px; border-radius: 9px; }
+.row-group--slim .icon-tile .icon { width: 16px; height: 16px; }
+.row-group--slim .row__name { font-size: 15px; }
+.row-group--slim .pill-button { min-width: 60px; height: 26px; padding: 0 12px; font-size: 12px; }
+.row-group--slim .pill-button .icon { width: 15px; height: 15px; }
+.row-group--slim .switch { width: 40px; height: 24px; }
+.row-group--slim .switch::after { top: 2px; left: 2px; width: 20px; height: 20px; }
+.row-group--slim .switch.is-on::after { transform: translateX(16px); }
+
 /* ---------------------------------------------------------------- lawn mower (docs/design/lawn-mower) */
 
 /* The whole row opens her sheet (option R1); a chevron instead of a switch. */
@@ -1763,7 +1862,7 @@ button.row:active { background: var(--accent-soft); }
 .mower-sheet .choice-row { margin-top: 18px; }
 .mower-sheet .choice-row__title { margin: 0 6px 8px; }
 
-/* A zone's name on its button instead of an icon. */
+/* An option's text on its button instead of an icon. */
 .choice-row__label {
   overflow: hidden;
   padding: 0 6px;

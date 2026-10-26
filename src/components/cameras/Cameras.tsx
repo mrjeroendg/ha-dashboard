@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Camera } from '../../config/cameras';
-import { camerasIn, clock, stillUrl } from '../../lib/cameras';
+import { camerasIn, stillUrl } from '../../lib/cameras';
 import { haptic } from '../../lib/haptic';
 import type { HomeAssistant } from '../../types/hass';
 import { CameraSheet } from './CameraSheet';
@@ -66,12 +66,10 @@ interface TileProps {
 
 function CameraTile({ camera, hass, stamp, large, onOpen }: TileProps) {
   const src = stillUrl(hass, hass.states[camera.entity], stamp);
-  const [loadedAt, setLoadedAt] = useState<Date | null>(null);
 
   return (
     <button type="button" className={`camera-tile${large ? ' camera-tile--large' : ''}`} onClick={onOpen}>
-      {src && <img className="camera-tile__image" src={src} alt="" onLoad={() => setLoadedAt(new Date())} />}
-      {loadedAt && <span className="camera-time">{clock(loadedAt)}</span>}
+      {src && <img className="camera-tile__image" src={src} alt="" />}
       <span className="camera-tile__name">{camera.name}</span>
     </button>
   );

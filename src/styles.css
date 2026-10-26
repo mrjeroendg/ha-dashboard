@@ -1309,19 +1309,6 @@ button.row:active { background: var(--accent-soft); }
   color: #f5f4ef;
 }
 
-.camera-time {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  z-index: 1;
-  padding: 3px 7px;
-  border-radius: 999px;
-  background: rgba(0, 0, 0, 0.35);
-  font-size: 11px;
-  font-variant-numeric: tabular-nums;
-  color: rgba(245, 244, 239, 0.75);
-}
-
 .camera-backdrop {
   position: fixed;
   inset: 0;

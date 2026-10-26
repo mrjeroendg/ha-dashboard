@@ -29,9 +29,8 @@ interface FrigateEvent {
   start_time: number;
 }
 
-/** "19:42", or "19:42:08" with seconds. */
-export const clock = (date: Date, seconds = false) =>
-  date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit', second: seconds ? '2-digit' : undefined });
+/** "19:42", for the events. */
+const clock = (date: Date) => date.toLocaleTimeString('nl-BE', { hour: '2-digit', minute: '2-digit' });
 
 /** The configured cameras that exist in HA, in config order. */
 export const camerasIn = (states: HassEntities): Camera[] => CAMERAS.filter((c) => c.entity in states);

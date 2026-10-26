@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import type { Camera, CameraAction } from '../../config/cameras';
 import { useCameraStream } from '../../hooks/useCameraStream';
 import { useRunAction } from '../../hooks/useRunAction';
-import { useTicker } from '../../hooks/useTicker';
-import { clock, runCameraAction, todaysEvents, type CameraEvent } from '../../lib/cameras';
+import { runCameraAction, todaysEvents, type CameraEvent } from '../../lib/cameras';
 import { haptic } from '../../lib/haptic';
 import type { HomeAssistant } from '../../types/hass';
 import { Icon } from '../Icon';
@@ -19,7 +18,6 @@ interface Props {
 
 /** One camera in the live sheet: image, name with LIVE, actions, and "Vandaag". */
 export function CameraPage({ hass, camera, live }: Props) {
-  const now = useTicker(live);
   const entity = hass.states[camera.entity];
   const stream = useCameraStream(hass, entity, live);
   const isLive = stream.state.status === 'playing';
@@ -35,7 +33,6 @@ export function CameraPage({ hass, camera, live }: Props) {
           onFirstFrame={stream.onFirstFrame}
           onMediaError={stream.onMediaError}
         />
-        <span className="camera-time">{clock(new Date(now), true)}</span>
       </div>
       <StreamStatus state={stream.state} platform={stream.platform} />
       <div className="camera-page__header">

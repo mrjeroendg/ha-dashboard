@@ -89,7 +89,7 @@ Via the Frigate integration's websocket command `frigate/events/get` (instance `
   - **Garage:** one large tile, 16:9, full width.
   - **Achterdeur and Zijpad:** two small tiles below it, 4:3, side by side. The gap is 10px and the radius 18px.
 - The order is **fixed** and never changes based on motion.
-- Each tile shows a still image with the **camera name** at the bottom left (white, 14px/600, on a soft bottom gradient) and the **time of the image** at the top right (a small dark pill, 11px, tabular figures).
+- Each tile shows a still image with the **camera name** at the bottom left (white, 14px/600, on a soft bottom gradient). *Decision during the build:* the time of the image at the top right was removed at the owner's request.
 - **No motion indicators on the tiles:** no labels, no accent border, no "last motion" text.
 - Tapping a tile opens the live sheet on that camera.
 
@@ -98,7 +98,7 @@ Via the Frigate integration's websocket command `frigate/events/get` (instance `
 - A bottom sheet over the dimmed page, top radius 28px, with a **grab handle** and **3 page dots** under it. Their order is Garage, Achterdeur, Zijpad.
 - **Swipe left/right** between cameras with the same snapping as the media card: always a whole camera, never halfway, one per swipe. Close it by swiping down on the handle or tapping the dimmed page.
 - Every sheet has the same structure, top to bottom:
-  1. **Live image** (16:9, radius 18) with the time at the top right.
+  1. **Live image** (16:9, radius 18). *Decision during the build:* the running clock at the top right was removed at the owner's request.
   2. **Name** (serif, 24px) with a **"● LIVE"** pill on the right.
   3. **Actions:** 1–2 pill buttons, 42px high, sharing the width equally.
   4. **"Vandaag":** the event list, or the placeholder.

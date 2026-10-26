@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { MEDIA, type App } from '../../config/media';
 import { useStationStart } from '../../hooks/useStationStart';
 import { dotFor } from '../../lib/dots';
@@ -29,13 +29,9 @@ export function MediaShortcuts({ hass, device, onDeviceChange }: Props) {
   const stations = useMemo(() => streamButtons(MEDIA.sonos.stations, hass.states), [hass.states]);
   const apps = device === 'sonos' ? MEDIA.sonos.apps : MEDIA.chromecast.apps;
   const isStartingStation = stationStart.startingScript !== undefined;
-  // Tints the fade next to the switch, only once something scrolled behind it.
-  const [isScrolled, setIsScrolled] = useState(false);
-  // Another device's shortcuts start at the left, also when the switch follows the player.
-  useEffect(() => setIsScrolled(false), [device]);
 
   return (
-    <div className={`media-shortcuts${isScrolled ? ' is-scrolled' : ''}`}>
+    <div className="media-shortcuts">
       <div className="media-shortcuts__switch" role="group" aria-label="Toestel">
         {SWITCH.map((option) => (
           <button
@@ -53,11 +49,7 @@ export function MediaShortcuts({ hass, device, onDeviceChange }: Props) {
         ))}
       </div>
       {/* A new key per device starts the shortcuts at the left again. */}
-      <div
-        key={device}
-        className="media-shortcuts__list"
-        onScroll={(scrollEvent) => setIsScrolled(scrollEvent.currentTarget.scrollLeft > 0)}
-      >
+      <div key={device} className="media-shortcuts__list">
         {apps.map((app) => (
           <AppShortcut key={app.url} app={app} />
         ))}

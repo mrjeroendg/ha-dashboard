@@ -1,3 +1,5 @@
+import { Entity } from './entities';
+
 /**
  * The status line on Thuis, e.g. "Iedereen thuis · 3 lichten aan · 21,5° binnen".
  * Only the entities listed here count; nothing is found automatically.
@@ -12,14 +14,14 @@
  * Leave a list empty (or the temperature out) to hide that part.
  */
 export const STATUS = {
-  people: ['person.jeroen', 'person.eline'] as string[],
-  lights: ['light.huecupboard', 'light.centris'],
+  people: [Entity.PERSON_JEROEN, Entity.PERSON_ELINE] as Entity[],
+  lights: [Entity.LIVING_CUPBOARD_LIGHTS, Entity.CENTRIS_LIGHT] as Entity[],
   openings: [
-    'binary_sensor.0x0017880110044edb_contact', // back door
-    'binary_sensor.0x001788011004451e_contact', // front door
-    'binary_sensor.0x001788011004452e_contact', // sliding window living
-    'binary_sensor.0x00178801100445ff_contact', // sliding window kitchen,
-    'sensor.garage_door_state_classification'
-  ],
-  temperature: undefined as string | undefined,
+    Entity.BACK_DOOR_CONTACT,
+    Entity.LIVING_FRONT_DOOR_CONTACT,
+    Entity.LIVING_SLIDING_WINDOW_CONTACT,
+    Entity.KITCHEN_SLIDING_WINDOW_CONTACT,
+    Entity.GARAGE_DOOR_STATE
+  ] as Entity[],
+  temperature: undefined as Entity | undefined,
 };

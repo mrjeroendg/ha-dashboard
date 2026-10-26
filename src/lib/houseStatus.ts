@@ -1,6 +1,7 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import { STATUS, type StatusEntity } from '../config/status';
 import type { HomeAssistant } from '../types/hass';
+import { isAircoOn } from './airco';
 import { Entity } from '../config/entities';
 
 const UNAVAILABLE = new Set(['unavailable', 'unknown']);
@@ -59,14 +60,24 @@ function presence(states: HassEntities): string | undefined {
  * things the status line counts, grouped by their list in src/config/status.ts.
  * Doors and windows count too, but can't be switched off, so they're not here.
  */
-export const WHAT_IS_ON_GROUPS = [{ title: 'Lichten', statusEntries: STATUS.lights, oneOn: '1 licht aan', manyOn: 'lichten aan' }];
+export const WHAT_IS_ON_GROUPS = [
+  { title: 'Lichten', statusEntries: STATUS.lights, oneOn: '1 licht aan', manyOn: 'lichten aan' },
+  { title: "Airco's", statusEntries: STATUS.aircos, oneOn: '1 airco aan', manyOn: "airco's aan" },
+];
+
+/** On, as the status line counts it: an airco in any mode but `off`, anything else when it's `on`. */
+function isSwitchedOn(entity: HassEntity): boolean {
+  const isAirco = entity.entity_id.startsWith('climate.');
+
+  return isAirco ? isAircoOn(entity) : entity.state === 'on';
+}
 
 /** The entries of a group whose entity is on right now. */
 export function entriesThatAreOn(states: HassEntities, statusEntries: StatusEntity[]): StatusEntity[] {
-  return statusEntries.filter((statusEntry) => {
-    const entityFromHass = states[statusEntry.entity];
-    return entityFromHass !== undefined && entityFromHass.state === 'on';
-  });
+  return listed(states, statusEntries)
+    .filter((listedEntity) => isSwitchedOn(listedEntity.entity))
+    .map((listedEntity) => statusEntries.find((statusEntry) => statusEntry.entity === listedEntity.entity.entity_id))
+    .filter((statusEntry): statusEntry is StatusEntity => statusEntry !== undefined);
 }
 
 function lights(states: HassEntities): string | undefined {
@@ -76,6 +87,14 @@ function lights(states: HassEntities): string | undefined {
   const lightsOn = listedLights.filter((light) => light.entity.state === 'on').length;
   if (lightsOn === 0) return 'alle lichten uit';
   return lightsOn === 1 ? '1 licht aan' : `${lightsOn} lichten aan`;
+}
+
+/** "2 airco's aan"; nothing when none are on, so the line stays short. */
+function aircos(states: HassEntities): string | undefined {
+  const aircosOn = listed(states, STATUS.aircos).filter((airco) => isSwitchedOn(airco.entity)).length;
+  if (aircosOn === 0) return undefined;
+
+  return aircosOn === 1 ? '1 airco aan' : `${aircosOn} airco's aan`;
 }
 
 function openings(states: HassEntities): string | undefined {
@@ -106,11 +125,11 @@ export function commute(hass: HomeAssistant, now: Date): string | undefined {
 
 /**
  * One short, calm sentence about the house, e.g.
- * "Iedereen thuis · 3 lichten aan · alles gesloten". Only the entities in
+ * "Iedereen thuis · 3 lichten aan · 1 airco aan · alles gesloten". Only the entities in
  * src/config/status.ts count.
  */
 export function houseStatus(states: HassEntities): string {
-  const statusParts = [presence(states), lights(states), openings(states)].filter((statusPart): statusPart is string =>
+  const statusParts = [presence(states), lights(states), aircos(states), openings(states)].filter((statusPart): statusPart is string =>
     Boolean(statusPart),
   );
 

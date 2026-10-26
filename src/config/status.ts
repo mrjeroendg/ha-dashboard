@@ -9,6 +9,8 @@ import { Entity } from './entities';
  * - people: person entities. "Iedereen thuis", "Jeroen thuis", "Niemand thuis".
  * - lights: everything that counts as a light that's on (`on`), so a switch
  *   that powers a lamp can be listed too. Also the "Lichten" in "Wat staat aan".
+ * - aircos: climate entities, on in any mode but `off`. "2 airco's aan"; left
+ *   out of the line when none are on. Also the "Airco's" in "Wat staat aan".
  * - openings: doors, windows, the garage… counted while `on`, `open` or `opening`.
  *   "1 deur of raam open", or "alles gesloten" when none are.
  *
@@ -19,7 +21,7 @@ export interface StatusEntity {
   name?: string;
 }
 
-export const STATUS: { people: StatusEntity[]; lights: StatusEntity[]; openings: StatusEntity[] } = {
+export const STATUS: { people: StatusEntity[]; lights: StatusEntity[]; aircos: StatusEntity[]; openings: StatusEntity[] } = {
   people: [
     { entity: Entity.PERSON_JEROEN, name: 'Jeroen' },
     { entity: Entity.PERSON_ELINE, name: 'Eline' }
@@ -30,6 +32,11 @@ export const STATUS: { people: StatusEntity[]; lights: StatusEntity[]; openings:
     { entity: Entity.MARIELOU_HERSTAL_LIGHT, name: 'Herstal' },
     { entity: Entity.GARAGE_STORAGE_LIGHT, name: 'Berging' },
     { entity: Entity.BUREAU_CEILING_LIGHT, name: 'Plafondlamp' }
+  ],
+  aircos: [
+    { entity: Entity.MASTER_BEDROOM_AIRCO, name: 'Airco slaapkamer' },
+    { entity: Entity.MARIELOU_AIRCO, name: 'Airco Marielou' },
+    { entity: Entity.GUEST_ROOM_AIRCO, name: 'Airco gasten' }
   ],
   openings: [
     { entity: Entity.BACK_DOOR_CONTACT, name: 'Achterdeur' },

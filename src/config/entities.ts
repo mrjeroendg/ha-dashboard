@@ -108,8 +108,10 @@ export enum Entity {
   IMMICH_UPDATE = 'update.irpi_admin_version',
   PAPERLESS_UPDATE = 'update.garage_paperless_software',
 
-  // Babysitter and commute
+  // Babysitter, catsitter and commute
   BABYSITTER_NEEDED_LIST = 'todo.babysitter_needed',
   SCAN_CALENDAR_FOR_BABYSITTER_AUTOMATION = 'automation.scan_google_calendar_for_babysit_requirements',
+  CARA_CATSITTER_NEEDED_LIST = 'todo.catsitter_needed',
+  SCAN_CALENDAR_FOR_CATSITTER_AUTOMATION = 'automation.scan_google_calendar_for_catsit_requirements',
   JEROEN_TRAVEL_TIME_HOME = 'sensor.commuting_home_travel_time_jeroen',
 }

@@ -4,7 +4,7 @@ A warning on Thuis when appointments still need a babysitter, with a sheet that 
 
 > ✅ **Approved and built.** Don't change proportions or behaviour without asking first.
 >
-> Code: the rule in `src/config/attention.ts`, `BabysitSheet` in `src/components/sheets/` (which also names the automation behind "Bijwerken"), the parsing in `src/lib/babysit.ts`.
+> Code: the rules in `src/config/attention.ts`, `BabysitSheet` and `CatsitSheet` in `src/components/sheets/SitterSheet.tsx` (which also name the automation behind "Bijwerken"), the parsing in `src/lib/sitters.ts`.
 
 ![Design](./mockup.png)
 
@@ -29,6 +29,13 @@ Your HA automation scans the calendars every night and adds an item to the todo 
 - **Two lines per item:** the date small on top ("Vrijdag 30 oktober"), the title below ("Etentje bij Jan"), without "(BABYSIT)". The list has no year, so the year is the one that puts the date closest to today ("05/01" in December is next January).
 - **The list updates by itself** while the sheet is open (HA's `todo/item/subscribe`).
 - **"Bijwerken"** triggers the automation (`automation.trigger`). While it runs: a spinner with "Bijwerken…", then "✓ Bijgewerkt" (or "Dat lukte niet"), then back to "Bijwerken". New items appear as soon as HA reports them. The automation also sends its own notification when it finds new dates.
+
+## Cara's catsitter: "Oppas voor Cara"
+
+The same warning and sheet for the cat, from its own todo list `todo.catsitter_needed` with "(CARA)" items, e.g. "30/10: (CARA) Weekend Ardennen", filled by `automation.scan_google_calendar_for_catsit_requirements`.
+
+- **Its own level, `catsit`, in violet** (`#8f6ee0`), with the cat icon. It sorts right after `babysit`, before orange (`low`).
+- **"Oppas voor Cara"** as the warning's and the sheet's title; the rest (count, "Bekijk", "Bijwerken", the list) works as above, with violet icons in the sheet.
 
 ## Sheets on warnings (for later)
 

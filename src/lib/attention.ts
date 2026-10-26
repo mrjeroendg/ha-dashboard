@@ -17,7 +17,7 @@ export interface Warning {
   sheet?: ComponentType<WarningSheetProps>;
 }
 
-const ORDER: Record<AttentionLevel, number> = { high: 0, medium: 1, babysit: 2, low: 3 };
+const ORDER: Record<AttentionLevel, number> = { high: 0, medium: 1, babysit: 2, catsit: 3, low: 4 };
 
 const domainOf = (id: string) => id.split('.')[0];
 

@@ -1,11 +1,11 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import type { ComponentType } from 'react';
-import { BabysitSheet } from '../components/sheets/BabysitSheet';
+import { BabysitSheet, CatsitSheet } from '../components/sheets/SitterSheet';
 import type { IconName } from '../components/Icon';
 import type { HomeAssistant } from '../types/hass';
 import { Entity } from './entities';
 
-export type AttentionLevel = 'high' | 'medium' | 'babysit' | 'low';
+export type AttentionLevel = 'high' | 'medium' | 'babysit' | 'catsit' | 'low';
 
 export interface WarningSheetProps {
   hass: HomeAssistant;
@@ -79,5 +79,19 @@ export const ATTENTION: AttentionRule[] = [
       return `${openAppointments} ${appointmentsNeedAttention} aandacht`;
     },
     sheet: BabysitSheet,
+  },
+  {
+    entity: Entity.CARA_CATSITTER_NEEDED_LIST,
+    level: 'catsit',
+    title: 'Oppas voor Cara',
+    icon: 'cat',
+    when: (catsitList) => Number(catsitList.state) > 0,
+    detail: (catsitList) => {
+      const openAppointments = Number(catsitList.state);
+      const appointmentsNeedAttention = openAppointments === 1 ? 'afspraak vraagt' : 'afspraken vragen';
+
+      return `${openAppointments} ${appointmentsNeedAttention} aandacht`;
+    },
+    sheet: CatsitSheet,
   },
 ];

@@ -156,6 +156,8 @@
 .attention--low { --c: #e8913a; --sub: #f3c99a; --tint: 20%; --edge: 28%; --on-c: #2b1a0a; }
 /* Babysit (docs/design/babysit): its own level, in pink. */
 .attention--babysit { --c: #e0559b; --sub: #f5bdd8; --tint: 24%; --edge: 34%; }
+/* Catsit: Cara's own level, in violet. */
+.attention--catsit { --c: #8f6ee0; --sub: #d6c9f7; --tint: 24%; --edge: 34%; }
 
 .attention__icon {
   display: grid;
@@ -1510,18 +1512,18 @@ button.row:active { background: var(--accent-soft); }
   pointer-events: none;
 }
 
-/* ---------------------------------------------------------------- babysit sheet (docs/design/babysit) */
+/* ---------------------------------------------------------------- sitter sheets (docs/design/babysit), coloured by --sitter-color */
 
-.babysit-sheet__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+.sitter-sheet__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 
-.babysit-sheet__title {
+.sitter-sheet__title {
   margin: 0;
   font-family: var(--font-serif);
   font-weight: 400;
   font-size: 24px;
 }
 
-.babysit-refresh {
+.sitter-refresh {
   appearance: none;
   flex: none;
   display: inline-flex;
@@ -1541,11 +1543,11 @@ button.row:active { background: var(--accent-soft); }
   -webkit-tap-highlight-color: transparent;
 }
 
-.babysit-refresh .icon { width: 15px; height: 15px; color: #e0559b; }
-.babysit-refresh .spinner { width: 13px; height: 13px; border-top-color: #e0559b; }
-.babysit-refresh.status-error { color: var(--accent); }
+.sitter-refresh .icon { width: 15px; height: 15px; color: var(--sitter-color); }
+.sitter-refresh .spinner { width: 13px; height: 13px; border-top-color: var(--sitter-color); }
+.sitter-refresh.status-error { color: var(--accent); }
 
-.babysit-list {
+.sitter-list {
   margin: 0;
   padding: 0;
   list-style: none;
@@ -1555,24 +1557,24 @@ button.row:active { background: var(--accent-soft); }
   overflow: hidden;
 }
 
-.babysit-list__row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
-.babysit-list__row + .babysit-list__row { box-shadow: inset 0 1px 0 var(--border); }
+.sitter-list__row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
+.sitter-list__row + .sitter-list__row { box-shadow: inset 0 1px 0 var(--border); }
 
-.babysit-list__icon {
+.sitter-list__icon {
   display: grid;
   place-items: center;
   flex: none;
   width: 36px;
   height: 36px;
   border-radius: 12px;
-  background: color-mix(in srgb, #e0559b 16%, var(--bg));
-  color: #e0559b;
+  background: color-mix(in srgb, var(--sitter-color) 16%, var(--bg));
+  color: var(--sitter-color);
 }
 
-.babysit-list__icon .icon { width: 18px; height: 18px; }
-.babysit-list__text { display: flex; flex-direction: column; min-width: 0; }
-.babysit-list__date { font-size: 13px; color: var(--text-muted); }
-.babysit-list__title { margin-top: 1px; font-size: 16px; font-weight: 500; }
+.sitter-list__icon .icon { width: 18px; height: 18px; }
+.sitter-list__text { display: flex; flex-direction: column; min-width: 0; }
+.sitter-list__date { font-size: 13px; color: var(--text-muted); }
+.sitter-list__title { margin-top: 1px; font-size: 16px; font-weight: 500; }
 
 /* ---------------------------------------------------------------- airco sheet (docs/design/airco-sheet) */
 

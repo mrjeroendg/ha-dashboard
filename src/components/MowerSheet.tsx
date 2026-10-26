@@ -2,14 +2,12 @@ import type { HassEntity } from 'home-assistant-js-websocket';
 import type { MowerConfig } from '../config/rooms';
 import {
   chosenMowerControl,
-  chosenZone,
   controlMower,
   mowerControls,
   mowerSheetDetail,
   mowerStatus,
   mowerStatusLines,
   mowerUpkeepLines,
-  mowerZones,
   type MowerListLine,
 } from '../lib/mower';
 import type { HomeAssistant } from '../types/hass';
@@ -26,8 +24,8 @@ interface Props {
 
 /**
  * Lawn mower sheet (docs/design/lawn-mower): her state as the title, then
- * Bediening and Zone as rows of buttons (like the airco sheet), then Status and
- * Onderhoud as lists (like Veiligheid). At most 80% of the screen; the content
+ * Bediening as a row of buttons (like the airco sheet), then Status (with the
+ * active zone) and Onderhoud as lists (like Veiligheid). At most 80% of the screen; the content
  * scrolls under the handle.
  */
 export function MowerSheet({ hass, mower, config, onClose }: Props) {
@@ -55,8 +53,6 @@ export function MowerSheet({ hass, mower, config, onClose }: Props) {
           chosenValue={chosenMowerControl(mower)}
           onChoose={(chosenControl) => controlMower(hass, mower, chosenControl)}
         />
-        {/* Read-only: only the active zone is filled (see mowerZones). */}
-        <ChoiceRow title="Zone" options={mowerZones(config, hass.states)} chosenValue={chosenZone(config, hass.states)} />
         <MowerList title="Status" lines={statusLines} />
         <MowerList title="Onderhoud" lines={upkeepLines} />
       </div>

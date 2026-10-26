@@ -18,8 +18,7 @@ interface Props {
   title: string;
   options: ChoiceOption[];
   chosenValue?: string;
-  /** Without it, the row is read-only: it only shows which one is chosen (e.g. the mower's zone). */
-  onChoose?(value: string): Promise<unknown>;
+  onChoose(value: string): Promise<unknown>;
   /** E.g. the airco's mode row: slightly taller buttons. */
   hasTallerButtons?: boolean;
 }
@@ -37,10 +36,8 @@ export function ChoiceRow({ title, options, chosenValue, onChoose, hasTallerButt
 
   const chosenOption = options.find((option) => option.value === chosenValueInApp);
 
-  const isReadOnly = onChoose === undefined;
-
   const choose = (newChosenValue: string) => {
-    if (!onChoose || newChosenValue === chosenValueInApp) return;
+    if (newChosenValue === chosenValueInApp) return;
 
     haptic('selection');
     choiceControl.keepAfterRelease(newChosenValue);
@@ -64,7 +61,7 @@ export function ChoiceRow({ title, options, chosenValue, onChoose, hasTallerButt
             className={`choice-row__option${option.isDisabled ? ' is-disabled' : ''}`}
             aria-label={option.name}
             aria-pressed={option.value === chosenValueInApp}
-            disabled={isReadOnly || option.isDisabled}
+            disabled={option.isDisabled}
             onClick={() => choose(option.value)}
           >
             {option.icon ? <Icon name={option.icon} /> : <span className="choice-row__label">{option.label ?? option.name}</span>}

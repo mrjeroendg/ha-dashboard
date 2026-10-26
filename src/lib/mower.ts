@@ -125,7 +125,11 @@ export function mowerRowDetail(mower: HassEntity, config: MowerConfig, states: H
   return isBatteryShown ? `${status.title} · ${readableNumber(battery, 0)}%` : status.title;
 }
 
-/** The zone the select is on, by its name from the config. */
+/**
+ * The zone the select is on, by its name from the config. Only shown, never
+ * chosen: Landroid Cloud can't choose a zone for RTK/Vision mowers yet ("Zone
+ * selection for RTK/Vision devices is not supported yet").
+ */
 function chosenZoneName(config: MowerConfig, states: HassEntities): string | undefined {
   const chosenZoneOption = config.zone ? states[config.zone]?.state : undefined;
 
@@ -179,41 +183,27 @@ export function controlMower(hass: HomeAssistant, mower: HassEntity, chosenContr
   return hass.callService('lawn_mower', MOWER_SERVICES[chosenControl], {}, { entity_id: mower.entity_id });
 }
 
-/**
- * The zones from the config that the select offers, with their own names on the buttons.
- * Read-only: Landroid Cloud can't choose a zone for RTK/Vision mowers yet ("Zone selection
- * for RTK/Vision devices is not supported yet"), so the sheet only shows the active one.
- */
-export function mowerZones(config: MowerConfig, states: HassEntities): ChoiceOption[] {
-  const zoneSelect = config.zone ? states[config.zone] : undefined;
-  const optionsFromEntity = (zoneSelect?.attributes.options as string[] | undefined) ?? [];
-
-  return (config.zones ?? [])
-    .filter((zone) => optionsFromEntity.includes(zone.option))
-    .map((zone) => ({ value: zone.option, name: zone.name, label: zone.name }));
-}
-
-export function chosenZone(config: MowerConfig, states: HassEntities) {
-  return config.zone ? states[config.zone]?.state : undefined;
-}
-
 // ---------------------------------------------------------------- lists in the sheet
 
 export interface MowerListLine {
   name: string;
-  icon: 'battery' | 'droplet' | 'signal' | 'blade' | 'route';
+  icon: 'sprout' | 'battery' | 'droplet' | 'signal' | 'blade' | 'route';
   value: string;
   /** A red dot: wet, or offline. */
   needsAttention?: boolean;
 }
 
-/** Status: battery, rain, connection. A line whose entity isn't configured or available is left out. */
+/** Status: zone, battery, rain, connection. A line whose entity isn't configured or available is left out. */
 export function mowerStatusLines(config: MowerConfig, states: HassEntities): MowerListLine[] {
+  const activeZoneName = chosenZoneName(config, states);
   const battery = batteryPercentage(config, states);
   const isCharging = isOn(states, config.charging);
   const isWet = isOn(states, config.rain);
   const isOnline = isOn(states, config.online);
 
+  const zoneLine: MowerListLine | undefined = activeZoneName !== undefined
+    ? { name: 'Zone', icon: 'sprout', value: activeZoneName }
+    : undefined;
   const batteryLine: MowerListLine | undefined = battery !== undefined
     ? { name: 'Batterij', icon: 'battery', value: `${readableNumber(battery, 0)}%${isCharging ? ' · laadt op' : ''}` }
     : undefined;
@@ -224,7 +214,7 @@ export function mowerStatusLines(config: MowerConfig, states: HassEntities): Mow
     ? { name: 'Verbinding', icon: 'signal', value: isOnline ? 'Online' : 'Offline', needsAttention: !isOnline }
     : undefined;
 
-  return [batteryLine, rainLine, connectionLine].filter((line): line is MowerListLine => line !== undefined);
+  return [zoneLine, batteryLine, rainLine, connectionLine].filter((line): line is MowerListLine => line !== undefined);
 }
 
 /** Onderhoud: blade hours since the last reset, distance driven. */

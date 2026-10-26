@@ -2,11 +2,14 @@ import type { HassEntity } from 'home-assistant-js-websocket';
 import { useState, type ReactNode } from 'react';
 import { useRunAction, type RunStatus } from '../hooks/useRunAction';
 import { haptic } from '../lib/haptic';
+import { mowerRowDetail, mowerStatus } from '../lib/mower';
 import { rowModel, type LightMember, turnOnLight, type RowOptions, type RGB } from '../lib/rooms';
+import type { MowerConfig } from '../config/rooms';
 import type { HomeAssistant } from '../types/hass';
 import { AircoSheet } from './AircoSheet';
 import { Icon, type IconName } from './Icon';
 import { LightSheet } from './LightSheet';
+import { MowerSheet } from './MowerSheet';
 
 interface Props {
   entity: HassEntity;
@@ -14,6 +17,8 @@ interface Props {
   options?: RowOptions;
   myPosition?: string;
   members?: LightMember[];
+  /** Lawn mower: its other entities (docs/design/lawn-mower). */
+  mower?: MowerConfig;
   hass: HomeAssistant;
   /** Overrides the icon that goes with the entity's domain, e.g. a shortcut's own icon. */
   icon?: IconName;
@@ -28,10 +33,10 @@ interface Props {
  * One entity as a control, as in a room and in Snel: what it looks like and
  * what a tap does follows from its domain (`rowModel`). A switch for lights and
  * switches, "Start" for scenes and scripts, the strip for covers, the airco
- * sheet. Nothing extra by itself: a light only opens the light sheet when its
+ * sheet, the mower sheet. Nothing extra by itself: a light only opens the light sheet when its
  * `members` are configured.
  */
-export function EntityControl({ entity, name, options = {}, myPosition, members, hass, icon, look }: Props) {
+export function EntityControl({ entity, name, options = {}, myPosition, members, mower, hass, icon, look }: Props) {
   const model = rowModel(entity, options);
   const [status, run] = useRunAction();
   const isBusy = status === 'busy';
@@ -126,6 +131,10 @@ export function EntityControl({ entity, name, options = {}, myPosition, members,
     );
   }
 
+  if (model.kind === 'mower') {
+    return <MowerRow hass={hass} mower={entity} name={name} config={mower ?? {}} />;
+  }
+
   if (model.kind === 'climate' && model.run) {
     return <AircoRow hass={hass} airco={entity} name={name} label={label} on={model.on} toggle={model.run} status={status} run={run} />;
   }
@@ -199,6 +208,46 @@ function AircoRow({ hass, airco, name, label, on, toggle, status, run }: AircoRo
     <RowWithSheet name={name} label={label} on={on} status={status} onOpen={openSheet} onToggle={() => run(() => toggle(hass))}>
       {isSheetOpen && <AircoSheet hass={hass} airco={airco} name={name} onClose={() => setIsSheetOpen(false)} />}
     </RowWithSheet>
+  );
+}
+
+interface MowerRowProps {
+  hass: HomeAssistant;
+  mower: HassEntity;
+  name: string;
+  config: MowerConfig;
+}
+
+/**
+ * A robot lawn mower (docs/design/lawn-mower, option R1): the whole row opens
+ * her sheet; there's no switch. An error shows in red on the second line.
+ */
+function MowerRow({ hass, mower, name, config }: MowerRowProps) {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const status = mowerStatus(mower, config, hass.states);
+  const isMowing = mower.state === 'mowing';
+
+  const openSheet = () => {
+    haptic('selection');
+    setIsSheetOpen(true);
+  };
+
+  return (
+    <div className="row-item">
+      <button type="button" className="row row--opens-sheet" onClick={openSheet}>
+        <span className={`icon-tile${isMowing ? ' is-on' : ''}`}>
+          <Icon name="mower" />
+        </span>
+        <span className="card-text">
+          <span className="row__name">{name}</span>
+          <span className={`card-detail${status.isError ? ' is-error' : ''}`}>{mowerRowDetail(mower, config, hass.states)}</span>
+        </span>
+        <span className="row__chevron" aria-hidden>
+          <Icon name="chevron" />
+        </span>
+      </button>
+      {isSheetOpen && <MowerSheet hass={hass} mower={mower} config={config} onClose={() => setIsSheetOpen(false)} />}
+    </div>
   );
 }
 

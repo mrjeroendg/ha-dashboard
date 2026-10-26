@@ -12,6 +12,25 @@ export interface RoomEntity {
   myPosition?: Entity;
   simple?: boolean;
   members?: RoomLightMember[];
+  /** A robot lawn mower's sheet (docs/design/lawn-mower). */
+  mower?: MowerConfig;
+}
+
+/** The mower's other entities, each optional: leave one out to hide its line in the sheet. */
+export interface MowerConfig {
+  /** The select entity with the active zone (only shown, not chosen). */
+  zone?: Entity;
+  /** The select's options and the name to show for each, e.g. { option: '1', name: 'Voortuin' }. */
+  zones?: Array<{ option: string; name: string }>;
+  battery?: Entity;
+  charging?: Entity;
+  rain?: Entity;
+  /** The cloud connection, e.g. Landroid's MQTT sensor. */
+  online?: Entity;
+  error?: Entity;
+  bladeHours?: Entity;
+  distance?: Entity;
+  batteryTemperature?: Entity;
 }
 
 export interface RoomLightMember {
@@ -165,6 +184,34 @@ export const ROOMS: RoomConfig[] = [
     icon: 'shower',
     entities: [
       { entity: Entity.BATHROOM_VELUX, name: 'Velux', myPosition: Entity.BATHROOM_VELUX_MY_POSITION }
+    ],
+  },
+  {
+    id: 'tuin',
+    name: "Tuin",
+    icon: 'sprout',
+    entities: [
+      {
+        // docs/design/lawn-mower
+        entity: Entity.GARDEN_LAWN_MOWER,
+        name: 'Jaqueline',
+        mower: {
+          zone: Entity.GARDEN_LAWN_MOWER_ZONE,
+          zones: [
+            { option: '1', name: 'Achtertuin' },
+            { option: '2', name: 'Voortuin' },
+            { option: '3', name: 'Zijtuin' }
+          ],
+          battery: Entity.GARDEN_LAWN_MOWER_BATTERY,
+          charging: Entity.GARDEN_LAWN_MOWER_CHARGING,
+          rain: Entity.GARDEN_LAWN_MOWER_RAIN_SENSOR,
+          online: Entity.GARDEN_LAWN_MOWER_CONNECTION,
+          error: Entity.GARDEN_LAWN_MOWER_ERROR,
+          bladeHours: Entity.GARDEN_LAWN_MOWER_BLADE_HOURS_SINCE_RESET,
+          distance: Entity.GARDEN_LAWN_MOWER_DISTANCE_TOTAL,
+          batteryTemperature: Entity.GARDEN_LAWN_MOWER_BATTERY_TEMPERATURE
+        }
+      }
     ],
   }
 ];

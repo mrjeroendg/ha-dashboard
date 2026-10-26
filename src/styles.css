@@ -1613,9 +1613,9 @@ button.row:active { background: var(--accent-soft); }
 .airco-sheet__now { margin: 6px 0 0; font-size: 13px; text-align: center; color: var(--text-muted); }
 .airco-sheet__now--alone { margin-top: 18px; font-size: 15px; }
 
-.airco-choice { margin-top: 20px; }
+.choice-row { margin-top: 20px; }
 
-.airco-choice__title {
+.choice-row__title {
   display: flex;
   justify-content: space-between;
   margin: 0 2px 8px;
@@ -1626,9 +1626,9 @@ button.row:active { background: var(--accent-soft); }
   color: var(--text-muted);
 }
 
-.airco-choice__chosen { font-size: 13px; letter-spacing: 0; text-transform: none; color: var(--text); }
+.choice-row__chosen { font-size: 13px; letter-spacing: 0; text-transform: none; color: var(--text); }
 
-.airco-choice__options {
+.choice-row__options {
   display: flex;
   gap: 4px;
   padding: 4px;
@@ -1637,9 +1637,11 @@ button.row:active { background: var(--accent-soft); }
   box-shadow: inset 0 0 0 1px var(--border);
 }
 
-.airco-choice__option {
+.choice-row__option {
   appearance: none;
   flex: 1;
+  /* Buttons don't inherit the page font by themselves (the zone names in the mower sheet). */
+  font: inherit;
   min-width: 0;
   display: grid;
   place-items: center;
@@ -1652,10 +1654,13 @@ button.row:active { background: var(--accent-soft); }
   -webkit-tap-highlight-color: transparent;
 }
 
-.airco-choice__option .icon { width: 22px; height: 22px; }
-.airco-choice__options--taller .airco-choice__option { height: 46px; }
-.airco-choice__options--taller .airco-choice__option .icon { width: 24px; height: 24px; }
-.airco-choice__option[aria-pressed='true'] { background: var(--accent); color: #fff; }
+.choice-row__option .icon { width: 22px; height: 22px; }
+.choice-row__options--taller .choice-row__option { height: 46px; }
+.choice-row__options--taller .choice-row__option .icon { width: 24px; height: 24px; }
+.choice-row__option[aria-pressed='true'] { background: var(--accent); color: #fff; }
+/* A disabled option: not tappable and dimmed, but still filled when it's the chosen one. */
+.choice-row__option:disabled { cursor: default; }
+.choice-row__option.is-disabled:not([aria-pressed='true']) { opacity: 0.35; }
 
 /* Parts of the fan and vane icons. */
 .icon .icon__filled { fill: currentColor; stroke: none; }
@@ -1812,3 +1817,57 @@ button.row:active { background: var(--accent-soft); }
 .row-group--slim .switch { width: 40px; height: 24px; }
 .row-group--slim .switch::after { top: 2px; left: 2px; width: 20px; height: 20px; }
 .row-group--slim .switch.is-on::after { transform: translateX(16px); }
+
+/* ---------------------------------------------------------------- lawn mower (docs/design/lawn-mower) */
+
+/* The whole row opens her sheet (option R1); a chevron instead of a switch. */
+.row__chevron { flex: none; display: grid; color: var(--text-muted); }
+.row__chevron .icon { width: 16px; height: 16px; }
+.row--opens-sheet .card-detail.is-error { color: #e5534b; }
+
+/* At most 80% of the screen: the handle stays, the content scrolls under it. */
+.mower-sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: 80dvh;
+  padding: 0 16px;
+}
+
+.mower-sheet__name { display: block; font-size: 12px; text-align: center; color: var(--text-muted); }
+
+.mower-sheet__content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: calc(34px + env(safe-area-inset-bottom));
+}
+
+.mower-sheet__title {
+  margin: 8px 4px 2px;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 24px;
+}
+
+.mower-sheet__detail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.mower-sheet .choice-row { margin-top: 18px; }
+.mower-sheet .choice-row__title { margin: 0 6px 8px; }
+
+/* An option's text on its button instead of an icon. */
+.choice-row__label {
+  overflow: hidden;
+  padding: 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}

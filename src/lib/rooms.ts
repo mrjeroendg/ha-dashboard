@@ -1,7 +1,7 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
 import type { Entity } from '../config/entities';
-import type { RoomConfig, RoomEntity, RoomSafety } from '../config/rooms';
+import type { MowerConfig, RoomConfig, RoomEntity, RoomSafety } from '../config/rooms';
 import type { Shortcut } from '../config/shortcuts';
 import type { HomeAssistant } from '../types/hass';
 import { aircoDetail, isAircoOn, toggleAirco } from './airco';
@@ -17,6 +17,8 @@ export type Row = {
   myPosition?: string;
   /** Light: the pills of its sheet (docs/design/light-sheet), those that exist in HA. */
   members?: LightMember[];
+  /** Lawn mower: its other entities (docs/design/lawn-mower). */
+  mower?: MowerConfig;
 };
 
 export interface LightMember {
@@ -56,6 +58,7 @@ export function resolveRows(entities: Array<Entity | RoomEntity>, states: HassEn
       members: entityConfig.members
         ?.filter((member) => member.entity in states)
         .map((member) => ({ entity: states[member.entity], name: member.name })),
+      mower: entityConfig.mower,
     }));
 }
 
@@ -85,7 +88,7 @@ const number = (value: unknown, digits = 1) =>
 
 // ---------------------------------------------------------------- rows
 
-export type RowKind = 'toggle' | 'action' | 'climate' | 'cover' | 'readonly';
+export type RowKind = 'toggle' | 'action' | 'climate' | 'cover' | 'mower' | 'readonly';
 
 export interface RowModel {
   kind: RowKind;
@@ -330,6 +333,9 @@ export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowO
         run: (h) => h.callService('media_player', 'media_play_pause', {}, target),
       };
     }
+    // docs/design/lawn-mower: the whole row opens her sheet; the row's second line comes from lib/mower.
+    case 'lawn_mower':
+      return { kind: 'mower', icon: 'mower', on: entity.state === 'mowing', detail: readableState(entity) };
     // docs/design/airco-sheet: the switch toggles, the rest of the row opens the sheet.
     case 'climate':
       return {

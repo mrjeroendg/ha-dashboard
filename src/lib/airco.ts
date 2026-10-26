@@ -1,15 +1,10 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
+import type { ChoiceOption } from '../components/ChoiceRow';
 import type { IconName } from '../components/Icon';
 import type { HomeAssistant } from '../types/hass';
 
 /** One icon in a row of the airco sheet. */
-export interface AircoOption {
-  /** What HA calls it, e.g. "heat" or "3". */
-  value: string;
-  /** Shown above the row when chosen, and read out by screen readers. */
-  name: string;
-  icon: IconName;
-}
+type AircoOption = ChoiceOption & { icon: IconName };
 
 /** In this order in the sheet (docs/design/airco-sheet). MELCloud calls auto `heat_cool`. */
 const AIRCO_MODES: AircoOption[] = [

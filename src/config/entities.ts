@@ -76,6 +76,18 @@ export enum Entity {
   BATHROOM_VELUX = 'cover.velux',
   BATHROOM_VELUX_MY_POSITION = 'button.velux_my_position',
 
+  // Garden: Jaqueline, the lawn mower (Worx Landroid)
+  GARDEN_LAWN_MOWER = 'lawn_mower.jeroen_dg2_gmail_com_jaqueline',
+  GARDEN_LAWN_MOWER_ZONE = 'select.jeroen_dg2_gmail_com_jaqueline_zone',
+  GARDEN_LAWN_MOWER_BATTERY = 'sensor.jeroen_dg2_gmail_com_jaqueline_battery',
+  GARDEN_LAWN_MOWER_BATTERY_TEMPERATURE = 'sensor.jeroen_dg2_gmail_com_jaqueline_battery_temperature',
+  GARDEN_LAWN_MOWER_CHARGING = 'binary_sensor.jeroen_dg2_gmail_com_jaqueline_charging',
+  GARDEN_LAWN_MOWER_RAIN_SENSOR = 'binary_sensor.jeroen_dg2_gmail_com_jaqueline_rain_sensor',
+  GARDEN_LAWN_MOWER_CONNECTION = 'binary_sensor.jeroen_dg2_gmail_com_jaqueline_mqtt',
+  GARDEN_LAWN_MOWER_ERROR = 'sensor.jeroen_dg2_gmail_com_jaqueline_error',
+  GARDEN_LAWN_MOWER_BLADE_HOURS_SINCE_RESET = 'sensor.jeroen_dg2_gmail_com_jaqueline_blade_runtime_since_reset',
+  GARDEN_LAWN_MOWER_DISTANCE_TOTAL = 'sensor.jeroen_dg2_gmail_com_jaqueline_distance_driven_total',
+
   // Energy and water
   ELECTRICITY_POWER = 'sensor.p1_meter_power',
   ELECTRICITY_CONSUMPTION_TODAY = 'sensor.p1_meter_energy_consumption_daily',

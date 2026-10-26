@@ -92,6 +92,7 @@ export function RoomView({ room, hass }: Props) {
               options={{ allowUnknownState: row.allowUnknownState, simple: row.simple }}
               myPosition={row.myPosition}
               members={row.members}
+              mower={row.mower}
               hass={hass}
             />
           ))}

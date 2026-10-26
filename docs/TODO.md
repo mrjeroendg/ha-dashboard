@@ -29,3 +29,9 @@ Next to lights and openings, the status line on Thuis also counts the aircos tha
 ## Jaqueline as a warning
 
 When the lawn mower is stuck, lifted, offline or has another error, a red warning on Thuis: "Jaqueline zit vast · sinds 14:02", with "Bekijk" opening her sheet. Only when something's wrong; rain delay doesn't count. A rule in `src/config/attention.ts`, using `mowerStatus` from `src/lib/mower.ts`. **Waits for `claude/lawn-mower` to be merged.**
+
+## Snel by time of day
+
+A shortcut only shows in Snel on Thuis during part of the day, e.g. "Pré slaapje" in the evening. A new optional `show: { from, until }` on an entry in `src/config/shortcuts.ts`, e.g. `show: { from: '18:00', until: '21:00' }`. Without `show`, a shortcut is always there, as now.
+
+To decide in the design: what happens over midnight (`from: '22:00', until: '06:00'`), whether `from` and `until` can each be left out, and whether the list animates when a shortcut appears or disappears. The comment in `shortcuts.ts` ("no time or state logic") changes with it. Uses `useNow` (re-renders every minute).

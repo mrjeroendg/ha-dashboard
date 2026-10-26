@@ -1,22 +1,10 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
 import { useState, type ReactNode } from 'react';
-import { useDebouncedCommit } from '../hooks/useDebouncedCommit';
 import { useRunAction, type RunStatus } from '../hooks/useRunAction';
 import { haptic } from '../lib/haptic';
-import {
-  rowModel,
-  setBrightness,
-  setColor,
-  type ColorChoice,
-  type LightMember,
-  turnOnLight,
-  type RowOptions,
-  type RGB,
-} from '../lib/rooms';
+import { rowModel, type LightMember, turnOnLight, type RowOptions, type RGB } from '../lib/rooms';
 import type { HomeAssistant } from '../types/hass';
 import { AircoSheet } from './AircoSheet';
-import { BrightnessSlider } from './BrightnessSlider';
-import { ColorPicker } from './ColorPicker';
 import { Icon, type IconName } from './Icon';
 import { LightSheet } from './LightSheet';
 
@@ -39,26 +27,23 @@ interface Props {
 /**
  * One entity as a control, as in a room and in Snel: what it looks like and
  * what a tap does follows from its domain (`rowModel`). A switch for lights and
- * switches (with the light sheet for a light with members, or its slider and
- * colours), "Start" for scenes and scripts, the strip for covers, the airco sheet.
+ * switches, "Start" for scenes and scripts, the strip for covers, the airco
+ * sheet. Nothing extra by itself: a light only opens the light sheet when its
+ * `members` are configured.
  */
 export function EntityControl({ entity, name, options = {}, myPosition, members, hass, icon, look }: Props) {
   const model = rowModel(entity, options);
   const [status, run] = useRunAction();
-  const [brightnessDraft, setBrightnessDraft] = useDebouncedCommit<number>((draggedBrightness) =>
-    setBrightness(hass, entity, draggedBrightness),
-  );
-  const [colorDraft, setColorDraft] = useDebouncedCommit<ColorChoice>((chosenColor) => setColor(hass, entity, chosenColor), 150);
   const isBusy = status === 'busy';
   const isSlim = look === 'slim';
-  const brightness = model.brightness !== undefined ? (brightnessDraft ?? model.brightness) : undefined;
   const detailWhileOn =
-    brightness !== undefined
-      ? ['Aan', `${brightness}%`, model.kelvin !== undefined && `${model.kelvin} K`].filter(Boolean).join(' · ')
+    model.brightness !== undefined
+      ? ['Aan', `${model.brightness}%`, model.kelvin !== undefined && `${model.kelvin} K`].filter(Boolean).join(' · ')
       : model.detail;
   const detail = status === 'error' ? 'Dat lukte niet' : isSlim ? undefined : detailWhileOn;
 
-  const tint = model.color ? tintFor(colorDraft, model.color.rgb) : undefined;
+  // The icon tile shows a colour light's current colour.
+  const tint = model.color ? tintFor(model.color.rgb) : undefined;
 
   const label = (
     <>
@@ -102,16 +87,6 @@ export function EntityControl({ entity, name, options = {}, myPosition, members,
           {label}
           <span className={`switch${model.on ? ' is-on' : ''}`} aria-hidden />
         </button>
-        {brightness !== undefined && <BrightnessSlider value={brightness} label={name} onInput={setBrightnessDraft} />}
-        {model.color && (
-          <ColorPicker
-            entityId={entity.entity_id}
-            color={model.color}
-            draft={colorDraft}
-            label={name}
-            onPick={setColorDraft}
-          />
-        )}
       </div>
     );
   }
@@ -282,13 +257,12 @@ function CoverButton({ icon, label, action }: { icon: IconName; label: string; a
 }
 
 /** Color the light's icon tile with the light's current color. */
-function tintFor(colorDraft: ColorChoice | null, colorFromEntity?: RGB) {
-  const shownColor = colorDraft && 'rgb' in colorDraft ? colorDraft.rgb : colorFromEntity;
-  if (!shownColor) return undefined;
+function tintFor(colorFromEntity?: RGB) {
+  if (!colorFromEntity) return undefined;
 
-  const [red, green, blue] = shownColor;
+  const [red, green, blue] = colorFromEntity;
   const luminance = (0.299 * red + 0.587 * green + 0.114 * blue) / 255;
   const isLightColor = luminance > 0.7;
 
-  return { background: `rgb(${shownColor.join(' ')})`, color: isLightColor ? '#1f1e1d' : '#fff' };
+  return { background: `rgb(${colorFromEntity.join(' ')})`, color: isLightColor ? '#1f1e1d' : '#fff' };
 }

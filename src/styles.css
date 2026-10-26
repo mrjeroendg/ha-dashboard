@@ -739,7 +739,7 @@ button.row:active { background: var(--accent-soft); }
 .pill-button:disabled,
 .stepper button:disabled { opacity: 0.5; }
 
-/* Brightness slider under a dimmable light */
+/* Slider with a value (the volume) */
 .slider {
   position: relative;
   display: flex;
@@ -797,68 +797,6 @@ button.row:active { background: var(--accent-soft); }
   border: 0;
   border-radius: 2px;
   background: var(--accent);
-}
-
-/* Color swatches under a color light */
-/* One row of swatches that scrolls sideways instead of wrapping. The padding
-   leaves room for the selection ring; the soft right edge hints at more. */
-.color-picker {
-  display: flex;
-  gap: 10px;
-  margin: -5px 0 11px 61px;
-  padding: 5px 5px 5px 5px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  /* Fade only the side(s) with more swatches to scroll to. */
-  --fade-left: 0px;
-  --fade-right: 28px;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
-  mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
-}
-
-.color-picker.is-scrolled { --fade-left: 28px; }
-.color-picker.is-end { --fade-right: 0px; }
-
-.color-picker::-webkit-scrollbar { display: none; }
-
-.swatch {
-  appearance: none;
-  position: relative;
-  flex: none;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: var(--swatch);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform 120ms ease;
-}
-
-.swatch:active { transform: scale(0.9); }
-
-/* Selected: ring in the page background + accent ring around it */
-.swatch[aria-checked='true'] {
-  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent);
-}
-
-.swatch--custom {
-  overflow: hidden;
-  background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
-}
-
-.swatch--custom.is-custom { background: var(--swatch); }
-
-.swatch--custom input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
 }
 
 /* ---------------------------------------------------------------- mini player */

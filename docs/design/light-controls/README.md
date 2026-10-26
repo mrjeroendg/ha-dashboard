@@ -1,5 +1,7 @@
 # Light controls: brightness or colour on one row
 
+> ⛔ **Replaced.** The slider and colour dots under a light are gone: a control adds nothing by itself. A light only gets more than its switch when its `members` are configured; then the row opens the [light sheet](../light-sheet/README.md).
+
 How a dimmable colour light looks on a room page. Dark mode only. It builds on the current room rows (`src/components/RoomView.tsx`, `BrightnessSlider`, `ColorPicker`).
 
 > ⛔ **Replaced by [`light-sheet`](../light-sheet/README.md)** before it was built. Kept for history.

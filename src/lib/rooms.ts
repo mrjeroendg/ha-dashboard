@@ -132,15 +132,6 @@ export interface LightColor {
   kelvin?: number;
 }
 
-/** A color choice: either an RGB color or a white temperature. */
-export type ColorChoice = { rgb: RGB } | { kelvin: number };
-
-/** Set a light's color or white temperature; turns it on if needed. */
-export function setColor(hass: HomeAssistant, entity: HassEntity, choice: ColorChoice) {
-  const data = 'rgb' in choice ? { rgb_color: choice.rgb } : { color_temp_kelvin: choice.kelvin };
-  return hass.callService('light', 'turn_on', data, { entity_id: entity.entity_id });
-}
-
 function lightColor(entity: HassEntity): LightColor | undefined {
   const f = lightFeatures(entity);
   if (entity.state !== 'on' || (!f.color && !f.colorTemp)) return undefined;

@@ -20,7 +20,7 @@ Source: [`mockup.html`](./mockup.html). The first round (grouped per room or per
 
 - **Only what the status line counts as on,** nothing else: the entities in the lists of `src/config/status.ts`. Today that's `lights`; once there's an airco list (see `docs/TODO.md`), its aircos join as their own group. Doors and windows count in the status line, but can't be switched off, so they're not listed.
 - **Grouped by the list they're in:** "Lichten", later "Airco's". No room config needed.
-- **Each row:** the icon, the name from HA (`friendly_name`), its state ("Aan · 60%", as in the rooms), and a switch. Tapping the row toggles it.
+- **Each row:** the icon, the name (`name` in the status config, otherwise HA's `friendly_name`), its state ("Aan · 60%", as in the rooms), and a switch. Tapping the row toggles it.
 - **Under the title:** how many are still on: "2 lichten aan" with one group, "3 dingen aan" with more.
 - **What you turn off stays** in the list, with "Uit", until you close the sheet, so you can turn it back on. Next time it's gone.
 - **Nothing on:** the shared empty state, "Alles staat uit" ([empty-state](../empty-state/README.md)).

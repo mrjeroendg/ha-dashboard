@@ -23,8 +23,7 @@ Source: [`mockup.html`](./mockup.html). As built (dev mode, mock data): the room
 - **"Jaqueline 👸🏼" next to the handle** (her `friendly_name`).
 - **Title:** her state ("In het laadstation", "Maait", "Gepauzeerd", "Keert terug"), or the error ("Zit vast"). **Below it:** a short line, e.g. "Laadt niet · batterij 100%", "Voortuin · batterij 64%", or "Sinds 14:02 · batterij 52%" with a red dot for an error.
 - **Bediening:** the airco's icon row with Maaien (▶), Pauze (Ⅱ) and Naar huis (⌂). What she's doing now is filled. *Decision during the build:* Maaien and Pauze are **permanently disabled** (dimmed, not tappable, hard-coded in the sheet): from the dashboard she can only be sent home (`lawn_mower.dock`). They still fill to show that she's mowing or paused.
-- **Zone:** the same row, with the zones listed in the config, each with its own name. *Decision during the build:* **read-only**. Landroid Cloud can't choose a zone for RTK/Vision mowers yet ("Zone selection for RTK/Vision devices is not supported yet"), so only the active zone is filled and nothing is tappable.
-- **Status:** the Veiligheid list with Batterij (with "laadt op" while charging), Regen (Droog / Nat) and Verbinding (Online / Offline).
+- **Status:** the Veiligheid list with Zone (the active zone's name from the config), Batterij (with "laadt op" while charging), Regen (Droog / Nat) and Verbinding (Online / Offline). *Decision during the build:* the zone was a row of buttons; it's **only shown**, because Landroid Cloud can't choose a zone for RTK/Vision mowers yet ("Zone selection for RTK/Vision devices is not supported yet"). Without an active zone (`unknown`), the line is left out.
 - **Onderhoud:** blade hours since the last reset, and the total distance driven.
 - **"Wacht op droog weer"** (`rain_delay`) is a state, not an error: no red.
 

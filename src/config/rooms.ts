@@ -14,9 +14,9 @@ export interface RoomEntity {
 
 /** The mower's other entities, each optional: leave one out to hide its line in the sheet. */
 export interface MowerConfig {
-  /** The select entity that sets the zone to mow. */
+  /** The select entity with the active zone (only shown, not chosen). */
   zone?: string;
-  /** The zones to show, in this order: the select's option and the name on the button. */
+  /** The select's options and the name to show for each, e.g. { option: '1', name: 'Voortuin' }. */
   zones?: Array<{ option: string; name: string }>;
   battery?: string;
   charging?: string;

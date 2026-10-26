@@ -1710,8 +1710,7 @@ button.row:active { background: var(--accent-soft); }
 .choice-row__options--taller .choice-row__option { height: 46px; }
 .choice-row__options--taller .choice-row__option .icon { width: 24px; height: 24px; }
 .choice-row__option[aria-pressed='true'] { background: var(--accent); color: #fff; }
-/* Not tappable (a disabled option, or a read-only row). A disabled option is
-   dimmed, but stays filled when it's the chosen one. */
+/* A disabled option: not tappable and dimmed, but still filled when it's the chosen one. */
 .choice-row__option:disabled { cursor: default; }
 .choice-row__option.is-disabled:not([aria-pressed='true']) { opacity: 0.35; }
 

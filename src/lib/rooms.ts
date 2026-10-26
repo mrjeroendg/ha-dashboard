@@ -1,5 +1,6 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
+import type { Entity } from '../config/entities';
 import type { RoomConfig, RoomEntity, RoomSafety } from '../config/rooms';
 import type { Shortcut } from '../config/shortcuts';
 import type { HomeAssistant } from '../types/hass';
@@ -36,12 +37,12 @@ export interface ResolvedRoom {
   icon: IconName;
   temperature?: string;
   humidity?: string;
-  safety?: Array<string | RoomSafety>;
+  safety?: Array<Entity | RoomSafety>;
   sections: ResolvedSection[];
 }
 
 /** The configured controls whose entities exist in HA, for a room or for Snel on Thuis. */
-export function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities): Row[] {
+export function resolveRows(entities: Array<Entity | RoomEntity>, states: HassEntities): Row[] {
   return entities
     .map((entityConfig) => (typeof entityConfig === 'string' ? { entity: entityConfig } : entityConfig))
     .filter((entityConfig) => entityConfig.entity in states)
@@ -441,14 +442,14 @@ function smokeItem(entity: HassEntity, battery?: number): Pick<SafetyItem, 'icon
  */
 export function roomSafety(room: ResolvedRoom, states: HassEntities) {
   const items: SafetyItem[] = (room.safety ?? [])
-    .map((s) => (typeof s === 'string' ? { entity: s } : s))
-    .filter((s) => s.entity in states && !UNAVAILABLE.has(states[s.entity].state))
-    .flatMap((s) => {
-      const entity = states[s.entity];
+    .map((safetyConfig) => (typeof safetyConfig === 'string' ? { entity: safetyConfig } : safetyConfig))
+    .filter((safetyConfig) => safetyConfig.entity in states && !UNAVAILABLE.has(states[safetyConfig.entity].state))
+    .flatMap((safetyConfig) => {
+      const entity = states[safetyConfig.entity];
       const deviceClass = entity.attributes.device_class;
-      const name = s.name ?? String(entity.attributes.friendly_name ?? s.entity);
-      if (deviceClass === 'door') return [{ id: s.entity, name, ...doorItem(entity) }];
-      if (deviceClass === 'smoke') return [{ id: s.entity, name, ...smokeItem(entity, sensorValue(states, s.battery)) }];
+      const name = safetyConfig.name ?? String(entity.attributes.friendly_name ?? safetyConfig.entity);
+      if (deviceClass === 'door') return [{ id: safetyConfig.entity, name, ...doorItem(entity) }];
+      if (deviceClass === 'smoke') return [{ id: safetyConfig.entity, name, ...smokeItem(entity, sensorValue(states, safetyConfig.battery)) }];
       return [];
     });
   if (items.length === 0) return undefined;

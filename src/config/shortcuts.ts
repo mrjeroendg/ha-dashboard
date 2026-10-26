@@ -1,4 +1,5 @@
 import type { IconName } from '../components/Icon';
+import { Entity } from './entities';
 import type { RoomEntity } from './rooms';
 
 /**
@@ -16,10 +17,10 @@ import type { RoomEntity } from './rooms';
  * alert update garage garageCar bed shower up down stop star baby phone tablet
  */
 export const SHORTCUTS: RoomEntity[] = [
-  { entity: 'scene.pre_sleep', name: 'Pré slaapje', icon: 'baby' },
-  { entity: 'script.garage_door_impuls', name: 'Garagedeur', icon: 'garage' },
-  { entity: 'light.centris', name: 'Centris', icon: 'moon' },
-  { entity: 'scene.living_mood_lighting', name: 'Sfeer', icon: 'sofa' }
+  { entity: Entity.PRE_SLEEP_SCENE, name: 'Pré slaapje', icon: 'baby' },
+  { entity: Entity.GARAGE_DOOR_IMPULSE_SCRIPT, name: 'Garagedeur', icon: 'garage' },
+  { entity: Entity.CENTRIS_LIGHT, name: 'Centris', icon: 'moon' },
+  { entity: Entity.LIVING_MOOD_LIGHTING_SCENE, name: 'Sfeer', icon: 'sofa' }
 ];
 
 /**
@@ -31,6 +32,6 @@ export const SHORTCUTS: RoomEntity[] = [
 export interface Shortcut {
   label: string;
   icon: IconName;
-  entity: string;
+  entity: Entity;
   service?: string;
 }

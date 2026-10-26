@@ -25,10 +25,21 @@ export function Attention({ hass }: Props) {
   const [isListOpen, setIsListOpen] = useState(false);
   const [openWarningKey, setOpenWarningKey] = useState<string | null>(null);
   // Looked up by key, so the open sheet always gets the warning's latest state.
-  const openWarning = warnings.find((warning) => warning.key === openWarningKey);
+  const openWarningNow = warnings.find((warning) => warning.key === openWarningKey);
+  // A warning can go away while its sheet is open (e.g. "Bijwerken" finds no more
+  // appointments): the sheet stays until you close it, and shows that it's empty.
+  const lastSeenOpenWarning = useRef<Warning | undefined>(undefined);
+  if (openWarningNow) lastSeenOpenWarning.current = openWarningNow;
+  const openWarning = openWarningKey ? (openWarningNow ?? lastSeenOpenWarning.current) : undefined;
   const closeSheet = () => setOpenWarningKey(null);
 
-  if (warnings.length === 0) return null;
+  const openSheet = openWarning?.sheet && (
+    <BottomSheet label={openWarning.title} onClose={closeSheet}>
+      <openWarning.sheet hass={hass} entity={openWarning.entity} close={closeSheet} />
+    </BottomSheet>
+  );
+
+  if (warnings.length === 0) return openSheet || null;
 
   const viewHandlerFor = (warning: Warning) =>
     warning.sheet
@@ -79,11 +90,7 @@ export function Attention({ hass }: Props) {
       ) : (
         <WarningBanner warning={warnings[0]} onView={viewHandlerFor(warnings[0])} />
       )}
-      {openWarning?.sheet && (
-        <BottomSheet label={openWarning.title} onClose={closeSheet}>
-          <openWarning.sheet hass={hass} entity={openWarning.entity} close={closeSheet} />
-        </BottomSheet>
-      )}
+      {openSheet}
     </div>
   );
 }

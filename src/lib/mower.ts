@@ -201,9 +201,7 @@ export function mowerStatusLines(config: MowerConfig, states: HassEntities): Mow
   const isWet = isOn(states, config.rain);
   const isOnline = isOn(states, config.online);
 
-  const zoneLine: MowerListLine | undefined = activeZoneName !== undefined
-    ? { name: 'Zone', icon: 'sprout', value: activeZoneName }
-    : undefined;
+  const zoneLine: MowerListLine | undefined = { name: 'Zone', icon: 'sprout', value: activeZoneName || "Geen zone" };
   const batteryLine: MowerListLine | undefined = battery !== undefined
     ? { name: 'Batterij', icon: 'battery', value: `${readableNumber(battery, 0)}%${isCharging ? ' · laadt op' : ''}` }
     : undefined;

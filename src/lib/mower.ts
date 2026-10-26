@@ -151,12 +151,16 @@ export function mowerSheetDetail(mower: HassEntity, config: MowerConfig, states:
 
 // ---------------------------------------------------------------- choices in the sheet
 
-/** Bediening: what she can do, by her supported_features. The value is what she'll be doing. */
+/**
+ * Bediening: what she can do, by her supported_features. The value is what she'll be doing.
+ * Maaien and Pauze are permanently disabled: from the dashboard she can only be sent home.
+ * They still show what she's doing.
+ */
 export function mowerControls(mower: HassEntity): ChoiceOption[] {
   const supportedFeatures = Number(mower.attributes.supported_features ?? 0);
   const controls: Array<ChoiceOption & { feature: number }> = [
-    { value: 'mowing', name: 'Maaien', icon: 'play', feature: CAN_START_MOWING },
-    { value: 'paused', name: 'Pauze', icon: 'pause', feature: CAN_PAUSE },
+    { value: 'mowing', name: 'Maaien', icon: 'play', feature: CAN_START_MOWING, isDisabled: true },
+    { value: 'paused', name: 'Pauze', icon: 'pause', feature: CAN_PAUSE, isDisabled: true },
     { value: 'docked', name: 'Naar huis', icon: 'home', feature: CAN_DOCK },
   ];
 
@@ -175,7 +179,11 @@ export function controlMower(hass: HomeAssistant, mower: HassEntity, chosenContr
   return hass.callService('lawn_mower', MOWER_SERVICES[chosenControl], {}, { entity_id: mower.entity_id });
 }
 
-/** The zones from the config that the select offers, with their own names on the buttons. */
+/**
+ * The zones from the config that the select offers, with their own names on the buttons.
+ * Read-only: Landroid Cloud can't choose a zone for RTK/Vision mowers yet ("Zone selection
+ * for RTK/Vision devices is not supported yet"), so the sheet only shows the active one.
+ */
 export function mowerZones(config: MowerConfig, states: HassEntities): ChoiceOption[] {
   const zoneSelect = config.zone ? states[config.zone] : undefined;
   const optionsFromEntity = (zoneSelect?.attributes.options as string[] | undefined) ?? [];
@@ -187,10 +195,6 @@ export function mowerZones(config: MowerConfig, states: HassEntities): ChoiceOpt
 
 export function chosenZone(config: MowerConfig, states: HassEntities) {
   return config.zone ? states[config.zone]?.state : undefined;
-}
-
-export function chooseZone(hass: HomeAssistant, config: MowerConfig, zoneOption: string) {
-  return hass.callService('select', 'select_option', { option: zoneOption }, { entity_id: config.zone });
 }
 
 // ---------------------------------------------------------------- lists in the sheet

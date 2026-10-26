@@ -1,7 +1,6 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
 import type { MowerConfig } from '../config/rooms';
 import {
-  chooseZone,
   chosenMowerControl,
   chosenZone,
   controlMower,
@@ -56,12 +55,8 @@ export function MowerSheet({ hass, mower, config, onClose }: Props) {
           chosenValue={chosenMowerControl(mower)}
           onChoose={(chosenControl) => controlMower(hass, mower, chosenControl)}
         />
-        <ChoiceRow
-          title="Zone"
-          options={mowerZones(config, hass.states)}
-          chosenValue={chosenZone(config, hass.states)}
-          onChoose={(chosenZoneOption) => chooseZone(hass, config, chosenZoneOption)}
-        />
+        {/* Read-only: only the active zone is filled (see mowerZones). */}
+        <ChoiceRow title="Zone" options={mowerZones(config, hass.states)} chosenValue={chosenZone(config, hass.states)} />
         <MowerList title="Status" lines={statusLines} />
         <MowerList title="Onderhoud" lines={upkeepLines} />
       </div>

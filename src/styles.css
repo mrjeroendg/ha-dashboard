@@ -918,7 +918,8 @@ button.row:active { background: var(--accent-soft); }
   -webkit-tap-highlight-color: transparent;
 }
 
-.media-shortcuts__switch button[aria-pressed='true'] { background: var(--surface); color: var(--text); }
+/* Like the rooms below: the active icon in the accent. */
+.media-shortcuts__switch button[aria-pressed='true'] { background: var(--surface); color: var(--accent); }
 .media-shortcuts__switch .icon { width: 15px; height: 15px; }
 
 .media-shortcuts__list {

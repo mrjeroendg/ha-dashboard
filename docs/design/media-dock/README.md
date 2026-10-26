@@ -18,7 +18,7 @@ The idle card (122px plus page dots) sat above the navigation all the time and c
 
 - **Only on Thuis.** On room pages the navigation stays as it is.
 - **Part of the navigation:** the same surface, on top of the rooms, with a hairline between them.
-- **Left: a Sonos | TV switch** (two icons in a small segmented pill). **Only a tap switches**; swiping the row only scrolls the shortcuts.
+- **Left: a Sonos | TV switch** (two icons in a small segmented pill). The active one has a lighter pill and an orange icon, like the active room below it. **Only a tap switches**; swiping the row only scrolls the shortcuts.
 - **The Sonos comes first:** on the left of the switch, and the device the row starts on.
 - **Right: that device's shortcuts, scrolling sideways**, each as wide as its name, with a soft right edge. Chips 28px high, a 16px colour circle (a bit darker, like before) and the name in 12px/600.
   - **Sonos:** Spotify first, then Radio 1, StuBru, Tijdloze.

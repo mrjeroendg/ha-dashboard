@@ -1692,6 +1692,8 @@ button.row:active { background: var(--accent-soft); }
 .choice-row__option {
   appearance: none;
   flex: 1;
+  /* Buttons don't inherit the page font by themselves (the zone names in the mower sheet). */
+  font: inherit;
   min-width: 0;
   display: grid;
   place-items: center;

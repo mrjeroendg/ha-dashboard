@@ -892,7 +892,7 @@ button.row:active { background: var(--accent-soft); }
 
 /* ---------------------------------------------------------------- media shortcuts (docs/design/media-dock) */
 
-.media-shortcuts { display: flex; align-items: center; gap: 8px; }
+.media-shortcuts { display: flex; align-items: center; }
 
 /* Sonos | TV: only a tap switches; swiping scrolls the shortcuts. */
 .media-shortcuts__switch {
@@ -926,14 +926,14 @@ button.row:active { background: var(--accent-soft); }
   min-width: 0;
   display: flex;
   gap: 6px;
-  /* Room to scroll the last shortcut out of the fade. */
-  padding-right: 20px;
+  /* As wide as the fades, so the first and last shortcut are never dimmed. */
+  padding: 0 20px 0 14px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
   scrollbar-width: none;
-  /* The soft right edge hints that more shortcuts scroll in. */
-  -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
-  mask-image: linear-gradient(to right, #000 calc(100% - 24px), transparent);
+  /* Soft edges: shortcuts fade out next to the switch, and more scroll in from the right. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 24px), transparent);
 }
 
 .media-shortcuts__list::-webkit-scrollbar { display: none; }

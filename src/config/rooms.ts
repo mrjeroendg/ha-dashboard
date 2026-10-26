@@ -197,9 +197,9 @@ export const ROOMS: RoomConfig[] = [
           zone: 'select.jeroen_dg2_gmail_com_jaqueline_zone',
           // Placeholder names: give each zone its own name.
           zones: [
-            { option: '1', name: 'Zone 1' },
-            { option: '2', name: 'Zone 2' },
-            { option: '3', name: 'Zone 3' }
+            { option: '1', name: 'Achtertuin' },
+            { option: '2', name: 'Voortuin' },
+            { option: '3', name: 'Zijtuin' }
           ],
           battery: 'sensor.jeroen_dg2_gmail_com_jaqueline_battery',
           charging: 'binary_sensor.jeroen_dg2_gmail_com_jaqueline_charging',

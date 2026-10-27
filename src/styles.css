@@ -19,6 +19,11 @@
 
 * { box-sizing: border-box; }
 
+/* No scrollbars anywhere: everything scrolls by swiping. The page itself is
+   Home Assistant's, outside this stylesheet: see useHiddenPageScrollbar. */
+* { scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
+
 .dashboard {
   /* padding-bottom is set from code (useDock) to the height of the dock. */
   box-sizing: border-box;
@@ -356,7 +361,6 @@ button.quick-card:active { transform: scale(0.97); }
 .card-label { font-size: 15px; font-weight: 600; }
 .card-detail { margin-top: 2px; font-size: 13px; line-height: 1.3; color: var(--text-muted); }
 
-
 .quick-card {
   position: relative;
   display: flex;
@@ -396,9 +400,6 @@ button.quick-card:active { transform: scale(0.97); }
 
 .section-title--tab { margin: 20px 4px 10px; }
 .quick-row + .row-group { margin-top: 10px; }
-
-
-
 
 .status-busy { opacity: 0.7; }
 .status-error .card-detail { color: var(--accent); }
@@ -442,14 +443,11 @@ button.quick-card:active { transform: scale(0.97); }
   /* Wider than the 14px edge fades, so the first and last item are never dimmed. */
   padding: 6px 14px;
   overflow-x: auto;
-  scrollbar-width: none;
   scroll-padding: 0 24px;
   /* Soft edges hint that more rooms scroll in from the side. */
   -webkit-mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 14px), transparent);
   mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 14px), transparent);
 }
-
-.bottom-nav__scroller::-webkit-scrollbar { display: none; }
 
 .bottom-nav__item {
   appearance: none;
@@ -607,10 +605,7 @@ button.quick-card:active { transform: scale(0.97); }
   margin: 20px -24px 0;
   padding: 0 24px;
   overflow-x: auto;
-  scrollbar-width: none;
 }
-
-.room-tabs::-webkit-scrollbar { display: none; }
 
 .room-tab {
   appearance: none;
@@ -931,13 +926,10 @@ button.row:active { background: var(--accent-soft); }
   padding: 0 20px 0 14px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  scrollbar-width: none;
   /* Soft edges: shortcuts fade out next to the switch, and more scroll in from the right. */
   -webkit-mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 24px), transparent);
   mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 24px), transparent);
 }
-
-.media-shortcuts__list::-webkit-scrollbar { display: none; }
 
 .media-shortcut {
   appearance: none;
@@ -998,11 +990,8 @@ button.row:active { background: var(--accent-soft); }
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
-  scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
-
-.media-card__pages::-webkit-scrollbar { display: none; }
 
 .media-card__page {
   flex: 0 0 100%;
@@ -1054,7 +1043,6 @@ button.row:active { background: var(--accent-soft); }
     linear-gradient(135deg, #a8452f, #3a1a24);
 }
 
-
 .progress-track {
   position: relative;
   display: block;
@@ -1071,7 +1059,6 @@ button.row:active { background: var(--accent-soft); }
   border-radius: 2px;
   background: var(--accent);
 }
-
 
 .live-pill {
   display: inline-flex;

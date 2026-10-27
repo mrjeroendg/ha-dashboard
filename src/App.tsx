@@ -10,6 +10,7 @@ import { StatisticsSection } from './components/StatisticsSection';
 import { STATISTICS } from './config/statistics';
 import { ROOMS } from './config/rooms';
 import { useDock } from './hooks/useDock';
+import { useHiddenPageScrollbar } from './hooks/useHiddenPageScrollbar';
 import { scrollParent } from './lib/scroll';
 import type { MediaDevice } from './lib/media';
 import { resolveRooms } from './lib/rooms';
@@ -42,6 +43,7 @@ export function App({ hass, config }: Props) {
 
   const dock = useRef<HTMLDivElement>(null);
   useDock(top, dock);
+  useHiddenPageScrollbar(top, Boolean(hass));
 
   // A new page starts at the top: if you'd scrolled down, scroll back up.
   useEffect(() => {

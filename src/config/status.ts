@@ -1,16 +1,18 @@
+import type { IconName } from '../components/Icon';
 import { Entity } from './entities';
 
 /**
- * The status line on Thuis, e.g. "Iedereen thuis · 3 lichten aan · alles gesloten".
+ * The status band on Thuis (docs/design/now-ticker), e.g. "Iedereen thuis ·
+ * 3 lichten aan · alles gesloten · Cara is aan het drinken", scrolling by.
  * Only the entities listed here count; nothing is found automatically. Each
  * entry is `{ entity, name? }`, like a control in a room: `name` replaces HA's
- * name where it's shown ("Jeroen thuis", the rows in "Wat staat aan").
+ * name where it's shown ("Jeroen thuis", the rows in "Nu").
  *
  * - people: person entities. "Iedereen thuis", "Jeroen thuis", "Niemand thuis".
  * - lights: everything that counts as a light that's on (`on`), so a switch
- *   that powers a lamp can be listed too. Also the "Lichten" in "Wat staat aan".
+ *   that powers a lamp can be listed too. Also the "Lichten" in "Nu".
  * - aircos: climate entities, on in any mode but `off`. "2 airco's aan"; left
- *   out of the line when none are on. Also the "Airco's" in "Wat staat aan".
+ *   out of the band when none are on. Also the "Airco's" in "Nu".
  * - openings: doors, windows, the garage… counted while `on`, `open` or `opening`.
  *   "1 deur of raam open", or "alles gesloten" when none are.
  *
@@ -46,3 +48,20 @@ export const STATUS: { people: StatusEntity[]; lights: StatusEntity[]; aircos: S
     { entity: Entity.GARAGE_DOOR_STATE, name: 'Garagepoort' }
   ],
 };
+
+/**
+ * Something happening right now, at the end of the status band while its
+ * entity is `on` (docs/design/now-ticker): "Cara is aan het drinken". `name`
+ * is in white, `text` in grey, after the icon in `color`.
+ */
+export interface NowEntity {
+  entity: Entity;
+  icon: IconName;
+  color: string;
+  name: string;
+  text: string;
+}
+
+export const NOW: NowEntity[] = [
+  { entity: Entity.CARA_WATER_FOUNTAIN, icon: 'cat', color: '#6cb8e6', name: 'Cara', text: 'is aan het drinken' },
+];

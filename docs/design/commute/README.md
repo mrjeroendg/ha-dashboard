@@ -1,5 +1,7 @@
 # Commute: "34 min naar huis"
 
+> **Changed by the [now ticker](../now-ticker/README.md):** "34 min naar huis" is now an item in the scrolling status band, not bold and not a link. The route in Waze moved to "Naar huis" in the "Nu" sheet, with a "Start route" button.
+
 On office days, the travel time home sits at the front of the status line on Thuis. Dark mode only. Quiet on purpose: it's not a warning.
 
 > ✅ **Approved and built (option A1).** Don't change proportions or behaviour without asking first.

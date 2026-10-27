@@ -100,6 +100,8 @@ function baseStates(): HassEntities {
     entity('sensor.auto_batterij', '62', { unit_of_measurement: '%' }),
     entity('switch.auto_laden', 'off', { friendly_name: 'Auto laden' }),
     entity('media_player.woonkamer', 'idle', { friendly_name: 'Woonkamer' }),
+    // Cara's water fountain (src/config/status.ts NOW): on, so the status band shows her drinking.
+    entity('switch.0x94a081fffe562fad', 'on', { friendly_name: 'Drinkfontein Cara' }),
     // The media card uses the IDs from src/config/media.ts, so mock those.
     entity(SONOS, 'idle', { friendly_name: 'Woonkamer', volume_level: 0.3, supported_features: 1 | 4 | 16 | 32 | 4096 }),
     entity(CHROMECAST, 'playing', {

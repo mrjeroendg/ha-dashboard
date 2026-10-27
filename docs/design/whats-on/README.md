@@ -1,5 +1,7 @@
 # Wat staat aan
 
+> **Changed by the [now ticker](../now-ticker/README.md):** the sheet is now called "Nu", has no count under the title, and starts with "Naar huis" (the route in Waze) on office days. It opens from the scrolling status band.
+
 Tapping the status line on Thuis opens a sheet with what's on, each with a switch to turn it off. Dark mode only. Nothing fancy: no options, no extra controls.
 
 > ✅ **Approved and built.** Don't change proportions or behaviour without asking first.

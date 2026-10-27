@@ -1,5 +1,6 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
-import { STATUS, type StatusEntity } from '../config/status';
+import type { IconName } from '../components/Icon';
+import { NOW, STATUS, type StatusEntity } from '../config/status';
 import type { HomeAssistant } from '../types/hass';
 import { isAircoOn } from './airco';
 import { Entity } from '../config/entities';
@@ -56,16 +57,16 @@ function presence(states: HassEntities): string | undefined {
 }
 
 /**
- * The groups of "Wat staat aan" (docs/design/whats-on): exactly the switchable
- * things the status line counts, grouped by their list in src/config/status.ts.
+ * The groups of "Nu" (docs/design/whats-on, now-ticker): exactly the switchable
+ * things the status band counts, grouped by their list in src/config/status.ts.
  * Doors and windows count too, but can't be switched off, so they're not here.
  */
 export const WHAT_IS_ON_GROUPS = [
-  { title: 'Lichten', statusEntries: STATUS.lights, oneOn: '1 licht aan', manyOn: 'lichten aan' },
-  { title: "Airco's", statusEntries: STATUS.aircos, oneOn: '1 airco aan', manyOn: "airco's aan" },
+  { title: 'Lichten', statusEntries: STATUS.lights },
+  { title: "Airco's", statusEntries: STATUS.aircos },
 ];
 
-/** On, as the status line counts it: an airco in any mode but `off`, anything else when it's `on`. */
+/** On, as the status band counts it: an airco in any mode but `off`, anything else when it's `on`. */
 function isSwitchedOn(entity: HassEntity): boolean {
   const isAirco = entity.entity_id.startsWith('climate.');
 
@@ -89,7 +90,7 @@ function lights(states: HassEntities): string | undefined {
   return lightsOn === 1 ? '1 licht aan' : `${lightsOn} lichten aan`;
 }
 
-/** "2 airco's aan"; nothing when none are on, so the line stays short. */
+/** "2 airco's aan"; nothing when none are on, so the band stays short. */
 function aircos(states: HassEntities): string | undefined {
   const aircosOn = listed(states, STATUS.aircos).filter((airco) => isSwitchedOn(airco.entity)).length;
   if (aircosOn === 0) return undefined;
@@ -107,7 +108,7 @@ function openings(states: HassEntities): string | undefined {
 }
 
 /**
- * "34 min naar huis", put in front of the status line. Only for Jeroen, on his
+ * "34 min naar huis", in the status band and in "Nu". Only for Jeroen, on his
  * office days between 16:00 and 18:00, while he's at Banqup; otherwise nothing.
  */
 export function commute(hass: HomeAssistant, now: Date): string | undefined {
@@ -123,16 +124,46 @@ export function commute(hass: HomeAssistant, now: Date): string | undefined {
   return isCommuting ? `${Math.round(travelTimeInMinutes)} min naar huis` : undefined;
 }
 
-/**
- * One short, calm sentence about the house, e.g.
- * "Iedereen thuis · 3 lichten aan · 1 airco aan · alles gesloten". Only the entities in
- * src/config/status.ts count.
- */
-export function houseStatus(states: HassEntities): string {
-  const statusParts = [presence(states), lights(states), aircos(states), openings(states)].filter((statusPart): statusPart is string =>
-    Boolean(statusPart),
-  );
+/** One item in the status band: an icon, then white text, then grey text. */
+export interface StatusItem {
+  icon: IconName;
+  /** The icon's colour; without one it's grey like the text. */
+  iconColor?: string;
+  highlighted?: string;
+  text?: string;
+}
 
-  const sentence = statusParts.join(' · ');
-  return sentence.charAt(0).toUpperCase() + sentence.slice(1);
+/** Something from src/config/status.ts `NOW` that's on right now: "Cara is aan het drinken". */
+function nowItems(states: HassEntities): StatusItem[] {
+  return NOW.filter((nowEntity) => states[nowEntity.entity]?.state === 'on').map((nowEntity) => ({
+    icon: nowEntity.icon,
+    iconColor: nowEntity.color,
+    highlighted: nowEntity.name,
+    text: nowEntity.text,
+  }));
+}
+
+/**
+ * The status band on Thuis (docs/design/now-ticker), in this order: who's
+ * home, the travel time home, lights, aircos, doors and windows, then what's
+ * happening now. Only the entities in src/config/status.ts count.
+ */
+export function houseStatusItems(hass: HomeAssistant, now: Date): StatusItem[] {
+  const states = hass.states;
+  const whoIsHome = presence(states);
+  const travelTimeHome = commute(hass, now);
+  const lightsPart = lights(states);
+  const aircosPart = aircos(states);
+  const openingsPart = openings(states);
+
+  const statusItems: Array<StatusItem | undefined> = [
+    whoIsHome ? { icon: 'home', iconColor: 'var(--accent)', highlighted: whoIsHome } : undefined,
+    travelTimeHome ? { icon: 'car', highlighted: travelTimeHome } : undefined,
+    lightsPart ? { icon: 'bulb', text: lightsPart } : undefined,
+    aircosPart ? { icon: 'snowflake', text: aircosPart } : undefined,
+    openingsPart ? { icon: 'door', text: openingsPart } : undefined,
+    ...nowItems(states),
+  ];
+
+  return statusItems.filter((statusItem): statusItem is StatusItem => statusItem !== undefined);
 }

@@ -100,27 +100,68 @@
 
 .header__dot--idle { background: var(--text-muted); box-shadow: none; }
 
-/* Tapping the status box opens "Wat staat aan" (docs/design/whats-on). */
-.header__status--opens-sheet {
-  padding-right: 12px;
+/* The status band (docs/design/now-ticker): everything scrolls by, endlessly.
+   Tapping it opens "Nu". */
+.status-ticker {
+  display: flex;
+  align-items: center;
+  height: 46px;
+  margin: 18px 0 0;
+  padding: 0 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: background-color 120ms ease;
 }
 
-.header__status--opens-sheet:active { background: var(--accent-soft); }
-.header__chevron { display: grid; margin-left: -4px; color: var(--text-muted); }
-.header__chevron .icon { width: 14px; height: 14px; }
+.status-ticker:active { background: var(--accent-soft); }
 
-/* "34 min naar huis" in front of the status (docs/design/commute): a link to Waze. */
-.header__commute {
-  font-weight: 600;
-  color: var(--text);
-  text-decoration: none;
-  -webkit-tap-highlight-color: transparent;
+.status-ticker__window {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  /* Soft edges: items slide in on the right and out on the left. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 18px, #000 calc(100% - 18px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 18px, #000 calc(100% - 18px), transparent);
 }
 
-.header__commute:active { opacity: 0.6; }
+/* The items twice in a row: moving half the width loops without a seam.
+   The duration is set from code, so the speed stays the same. */
+.status-ticker__belt {
+  display: flex;
+  width: max-content;
+  animation: status-crawl 30s linear infinite;
+}
+
+@keyframes status-crawl { to { transform: translateX(-50%); } }
+
+.status-ticker__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding-right: 15px;
+  font-size: 15px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* A small dot between the items. */
+.status-ticker__item::after {
+  content: '';
+  width: 3px;
+  height: 3px;
+  margin-left: 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.5;
+}
+
+.status-ticker__icon { display: grid; color: var(--text-muted); }
+.status-ticker__icon .icon { width: 16px; height: 16px; }
+.status-ticker__highlighted { color: var(--text); }
 
 /* ---------------------------------------------------------------- attention */
 
@@ -741,6 +782,8 @@ button.row:active { background: var(--accent-soft); }
 }
 
 .pill-button { min-width: 72px; height: 34px; padding: 0 14px; border-radius: 999px; }
+/* Also a link, e.g. "Start route" in "Nu". */
+a.pill-button { text-decoration: none; }
 .stepper { display: inline-flex; gap: 8px; }
 .stepper button { width: 36px; height: 36px; border-radius: 50%; }
 .pill-button:disabled,
@@ -1820,7 +1863,6 @@ button.row:active { background: var(--accent-soft); }
   font-size: 24px;
 }
 
-.whats-on-sheet__count { margin: 0 4px 0; font-size: 13px; color: var(--text-muted); }
 .whats-on-sheet .safety-sheet__section { margin-top: 16px; }
 .whats-on-sheet .row-group { margin-top: 0; }
 

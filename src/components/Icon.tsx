@@ -299,6 +299,14 @@ const PATHS = {
       <path d="M12 10V3M12 14v7M10 12H3M14 12h7" />
     </>
   ),
+  // Media shortcuts in the navigation (docs/design/media-dock).
+  speaker: (
+    <>
+      <rect x="6" y="3" width="12" height="18" rx="3" />
+      <circle cx="12" cy="14" r="3" />
+      <path d="M12 7h.01" />
+    </>
+  ),
   route: <path d="M6 19a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM18 9a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM8 17h7a3 3 0 0 0 0-6H9a3 3 0 0 1 0-6h7" />,
 } as const;
 

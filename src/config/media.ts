@@ -15,9 +15,14 @@ export interface App {
   color?: DotColor;
 }
 
+/**
+ * Media on Thuis (docs/design/media-dock): the Sonos comes first. Its apps
+ * (Spotify) come before its stations in the shortcut row.
+ */
 export const MEDIA = {
   sonos: {
     entity: Entity.LIVING_SONOS,
+    apps: [{ name: 'Spotify', url: 'spotify://', color: ['#5ef08f', '#1db954', '#0b3d1f'] }] as App[],
     stations: [
       {
         name: 'Radio 1',
@@ -44,8 +49,10 @@ export const MEDIA = {
     entity: Entity.LIVING_CHROMECAST,
     apps: [
       { name: 'Netflix', url: 'nflx://', color: ['#f0323b', '#e50914', '#141414'] },
-      { name: 'VRT MAX', url: 'vrtmax://', color: ['#ff4f55', '#f5333a', '#f5333a', '#1b1d52'] },
-      { name: 'VTM GO', url: 'vtmgo://', color: ['#e555d9', '#fa077e', '#f73849', '#ff8518'] },
+      { name: 'VRT', url: 'vrtmax://', color: ['#ff4f55', '#f5333a', '#f5333a', '#1b1d52'] },
+      { name: 'VTM', url: 'vtmgo://', color: ['#e555d9', '#fa077e', '#f73849', '#ff8518'] },
+      { name: 'HBO', url: 'hbomax://', color: ['#b18cff', '#5b2be0', '#120a3a'] },
+      { name: 'DAZN', url: 'dazn://', color: ['#f4f4f0', '#3a3a38', '#0b0b0b'] },
     ] as App[],
   },
 };

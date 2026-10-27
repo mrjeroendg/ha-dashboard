@@ -2,6 +2,8 @@
 
 One card on **Thuis** for all media: Sonos and Chromecast, plus stream buttons that start Home Assistant scripts. Dark mode only.
 
+> **Changed by the [media dock](../media-dock/README.md):** the stream and app buttons moved to a row in the navigation, the mini player only shows while something plays (as a slim player), and the Sonos comes first. The expanded player below still applies.
+
 | Part | Status |
 |---|---|
 | [Mini player](#mini-player--approved-final) | ✅ **Approved: final.** Build exactly as designed. |

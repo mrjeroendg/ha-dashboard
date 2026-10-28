@@ -1,9 +1,12 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { StatusItem } from '../lib/houseStatus';
 import { Icon } from './Icon';
 
-/** The band always moves at the same speed, however many items it has. */
 const SPEED_IN_PIXELS_PER_SECOND = 30;
+const REST_AT_THE_END_MS = 3000;
+const BACK_TO_THE_START_MS = 700;
+/** How often a band that fits checks whether it has to scroll after all. */
+const CHECK_IF_IT_FITS_MS = 1000;
 
 interface Props {
   statusItems: StatusItem[];
@@ -11,31 +14,75 @@ interface Props {
   onOpen(): void;
 }
 
+const wait = (milliseconds: number) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
+
 /**
- * The status band on Thuis (docs/design/now-ticker): every item scrolls by
- * from right to left, endlessly, also when they'd all fit. The items are in
- * it twice, so moving it half its width loops without a seam.
+ * The status band on Thuis (docs/design/now-ticker). When the items don't fit,
+ * it scrolls to the end at 30px/s, rests there for 3 s, takes in what changed
+ * meanwhile, slides back to the start and scrolls again. While it scrolls,
+ * the items stay as they were, so nothing changes under your eyes. When
+ * everything fits, it stands still and changes right away.
  */
 export function StatusTicker({ statusItems, onOpen }: Props) {
+  const visibleWindow = useRef<HTMLDivElement>(null);
   const belt = useRef<HTMLDivElement>(null);
-  const [secondsPerRound, setSecondsPerRound] = useState<number | undefined>(undefined);
+  const [shownItems, setShownItems] = useState(statusItems);
+  const latestItems = useRef(statusItems);
+  const isScrolling = useRef(false);
+  latestItems.current = statusItems;
 
-  useLayoutEffect(() => {
-    const beltElement = belt.current;
-    if (!beltElement) return;
+  // Standing still: show changes right away. Scrolling: they wait for the end.
+  useEffect(() => {
+    if (!isScrolling.current) setShownItems(statusItems);
+  }, [statusItems]);
 
-    const updateSpeed = () => {
-      const widthOfOneRound = beltElement.offsetWidth / 2;
-      setSecondsPerRound(widthOfOneRound / SPEED_IN_PIXELS_PER_SECOND);
+  useEffect(() => {
+    let isStopped = false;
+
+    const slide = (fromPixels: number, toPixels: number, durationMs: number, easing: string) => {
+      const beltElement = belt.current;
+      if (!beltElement) return Promise.reject(new Error('The band is gone'));
+      beltElement.getAnimations().forEach((animation) => animation.cancel());
+      const keyframes = [{ transform: `translateX(${fromPixels}px)` }, { transform: `translateX(${toPixels}px)` }];
+
+      return beltElement.animate(keyframes, { duration: durationMs, easing, fill: 'forwards' }).finished;
     };
 
-    updateSpeed();
-    const observer = new ResizeObserver(updateSpeed);
-    observer.observe(beltElement);
-    return () => observer.disconnect();
+    const scrollForever = async () => {
+      while (!isStopped) {
+        const beltElement = belt.current;
+        const windowElement = visibleWindow.current;
+        if (!beltElement || !windowElement) return;
+
+        const distanceToTheEnd = beltElement.offsetWidth - windowElement.clientWidth;
+        const doesEverythingFit = distanceToTheEnd <= 0;
+        if (doesEverythingFit) {
+          isScrolling.current = false;
+          await wait(CHECK_IF_IT_FITS_MS);
+          continue;
+        }
+
+        isScrolling.current = true;
+        const scrollDurationMs = (distanceToTheEnd / SPEED_IN_PIXELS_PER_SECOND) * 1000;
+        await slide(0, -distanceToTheEnd, scrollDurationMs, 'linear');
+        await wait(REST_AT_THE_END_MS);
+        if (isStopped) return;
+
+        setShownItems(latestItems.current);
+        await slide(-distanceToTheEnd, 0, BACK_TO_THE_START_MS, 'ease-in-out');
+      }
+    };
+
+    // A cancelled animation (the band left the page) ends the loop.
+    scrollForever().catch(() => undefined);
+
+    return () => {
+      isStopped = true;
+      belt.current?.getAnimations().forEach((animation) => animation.cancel());
+    };
   }, []);
 
-  const readableStatus = statusItems.map((statusItem) => [statusItem.highlighted, statusItem.text].filter(Boolean).join(' ')).join(', ');
+  const readableStatus = shownItems.map((statusItem) => [statusItem.highlighted, statusItem.text].filter(Boolean).join(' ')).join(', ');
 
   return (
     <div
@@ -49,26 +96,20 @@ export function StatusTicker({ statusItems, onOpen }: Props) {
         if (isOpenKey) onOpen();
       }}
     >
-      <div className="status-ticker__window" aria-hidden>
-        <div
-          ref={belt}
-          className="status-ticker__belt"
-          style={secondsPerRound ? { animationDuration: `${secondsPerRound}s` } : undefined}
-        >
-          {[0, 1].map((round) =>
-            statusItems.map((statusItem, position) => (
-              <span key={`${round}-${position}`} className="status-ticker__item">
-                <span className="status-ticker__icon" style={statusItem.iconColor ? { color: statusItem.iconColor } : undefined}>
-                  <Icon name={statusItem.icon} />
-                </span>
-                <span>
-                  {statusItem.highlighted && <span className="status-ticker__highlighted">{statusItem.highlighted}</span>}
-                  {statusItem.highlighted && statusItem.text && ' '}
-                  {statusItem.text}
-                </span>
+      <div ref={visibleWindow} className="status-ticker__window" aria-hidden>
+        <div ref={belt} className="status-ticker__belt">
+          {shownItems.map((statusItem, position) => (
+            <span key={position} className="status-ticker__item">
+              <span className="status-ticker__icon" style={statusItem.iconColor ? { color: statusItem.iconColor } : undefined}>
+                <Icon name={statusItem.icon} />
               </span>
-            )),
-          )}
+              <span>
+                {statusItem.highlighted && <span className="status-ticker__highlighted">{statusItem.highlighted}</span>}
+                {statusItem.highlighted && statusItem.text && ' '}
+                {statusItem.text}
+              </span>
+            </span>
+          ))}
         </div>
       </div>
     </div>

@@ -1,0 +1,134 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Snel compact</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(4,390px);gap:28px}
+.cap{min-height:74px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.18);
+position:relative;width:390px;height:620px;border-radius:44px 44px 0 0;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:28px 24px 0}
+svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.date{font-size:13px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+h1{margin:6px 0 0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:31px}
+.band{display:flex;gap:10px;align-items:center;height:46px;box-sizing:border-box;margin-top:16px;padding:0 18px;font-size:15px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:22px;white-space:nowrap;overflow:hidden}
+.band b{font-weight:400;color:var(--text)}
+.warn{margin-top:16px;display:flex;gap:12px;align-items:center;padding:12px 14px;border-radius:20px;background:color-mix(in srgb,#b42318 42%,var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,#b42318 60%,transparent)}
+.warn .wi{width:34px;height:34px;border-radius:10px;background:#b42318;display:grid;place-items:center;color:#fff}.warn b{display:block;font-size:15px}.warn span{font-size:13px;color:#f2a49c}
+.sechead{display:flex;align-items:baseline;justify-content:space-between;margin:26px 4px 10px}
+.sec{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.all{font-size:14px;font-weight:500;color:var(--accent);display:inline-flex;align-items:center;gap:2px}.all svg{width:14px;height:14px}
+.scroller{display:flex;gap:8px;margin:0 -24px;padding:0 24px;overflow:hidden;-webkit-mask-image:linear-gradient(to right,#000 85%,transparent);mask-image:linear-gradient(to right,#000 85%,transparent)}
+/* A: chips */
+.chip{flex:none;display:inline-flex;align-items:center;gap:8px;height:42px;padding:0 16px 0 10px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);font-size:15px;font-weight:500;white-space:nowrap}
+.chip .ci{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;background:var(--bg);color:var(--accent)}.chip .ci svg{width:16px;height:16px}
+.chip.on{background:color-mix(in srgb,var(--accent) 16%,var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 40%,transparent)}
+.chip.on .ci{background:var(--accent);color:#fff}
+.chip.more{padding:0 14px;color:var(--muted);gap:4px}.chip.more svg{width:16px;height:16px}
+/* B: tiles */
+.tile{flex:none;width:92px;height:84px;box-sizing:border-box;padding:12px;border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);display:flex;flex-direction:column;justify-content:space-between}
+.tile .ci{width:30px;height:30px;border-radius:10px;display:grid;place-items:center;background:var(--bg);color:var(--accent)}.tile .ci svg{width:17px;height:17px}
+.tile b{font-size:13px;font-weight:500;line-height:1.2}
+.tile.on{background:color-mix(in srgb,var(--accent) 16%,var(--surface));box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 40%,transparent)}.tile.on .ci{background:var(--accent);color:#fff}
+.tile.more{align-items:center;justify-content:center;gap:6px;color:var(--muted);text-align:center}.tile.more .ci{color:var(--muted)}
+/* C: one card, icons only, names below */
+.iconrow{display:flex;gap:4px;padding:12px 8px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden;-webkit-mask-image:linear-gradient(to right,#000 85%,transparent);mask-image:linear-gradient(to right,#000 85%,transparent)}
+.ico{flex:none;width:68px;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;color:var(--muted);text-align:center}
+.ico .ci{width:44px;height:44px;border-radius:15px;display:grid;place-items:center;background:var(--bg);color:var(--accent)}.ico .ci svg{width:21px;height:21px}
+.ico.on .ci{background:var(--accent);color:#fff}.ico.on{color:var(--text)}
+.next{opacity:.45}
+.cams{height:150px;border-radius:18px;background:radial-gradient(circle at 30% 70%,#3b4a40,transparent 60%),#1d2520;margin-top:0}
+/* sheet */
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;padding:10px 20px 28px;border-radius:28px 28px 0 0;background:#2b2b29;box-shadow:0 -12px 40px rgba(0,0,0,.4)}
+.handle{width:36px;height:5px;border-radius:3px;background:rgba(245,244,239,.18);margin:0 auto 14px}
+.sheet h2{margin:0 4px 12px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:24px}
+.list{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.lrow{display:flex;align-items:center;gap:14px;padding:10px 14px}.lrow+.lrow{box-shadow:inset 0 1px 0 var(--border)}
+.lrow .ci{width:32px;height:32px;border-radius:10px;background:var(--bg);color:var(--accent);display:grid;place-items:center}.lrow .ci svg{width:18px;height:18px}
+.lrow.on .ci{background:var(--accent);color:#fff}
+.lrow b{flex:1;font-size:15px;font-weight:500}.go{padding:6px 13px;border-radius:999px;background:var(--soft);color:var(--accent);font-size:13px;font-weight:600}
+.sw{width:44px;height:26px;border-radius:999px;background:var(--accent);position:relative}.sw::after{content:"";position:absolute;top:3px;right:3px;width:20px;height:20px;border-radius:50%;background:#fff}
+
+.dock5{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;padding:10px 6px 9px;border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.dock5.black{background:#0d0d0c;box-shadow:inset 0 0 0 1px rgba(245,244,239,.06)}
+.dock5 .ico{width:auto;gap:5px;font-size:11px}
+.dock5 .ci{width:38px;height:38px;border-radius:13px}.dock5 .ci svg{width:19px;height:19px}
+.dock5.black .ci{background:#232321}.dock5.black .ico.on .ci{background:var(--accent);color:#fff}
+.dock5 .ico.more .ci{background:transparent;box-shadow:inset 0 0 0 1px var(--border);color:var(--muted)}
+.dock5.black .ico.more .ci{box-shadow:inset 0 0 0 1px rgba(245,244,239,.12)}
+.dock5 .count{font-size:14px;font-weight:600;color:var(--text)}
+.ico span.label{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:64px}
+
+/* D1: warm glow, lit from above, like the warnings */
+.dock5.d1{background:radial-gradient(120% 140% at 50% -20%,color-mix(in srgb,var(--accent) 34%,var(--surface)),var(--surface) 70%);box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 0 0 1px color-mix(in srgb,var(--accent) 30%,transparent),0 8px 20px -8px rgba(0,0,0,.6)}
+.dock5.d1 .ci{background:rgba(0,0,0,.22)}
+/* D2: frosted glass over colour */
+.glasswrap{position:relative}
+.glasswrap::before{content:"";position:absolute;inset:-6px 10px;border-radius:26px;background:radial-gradient(circle at 20% 50%,rgba(217,119,87,.55),transparent 45%),radial-gradient(circle at 80% 40%,rgba(122,92,255,.45),transparent 45%),radial-gradient(circle at 55% 90%,rgba(57,135,229,.35),transparent 45%);filter:blur(14px)}
+.dock5.d2{position:relative;background:rgba(48,48,46,.55);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 0 0 1px rgba(255,255,255,.08),0 10px 24px -10px rgba(0,0,0,.6)}
+.dock5.d2 .ci{background:rgba(0,0,0,.25)}
+/* D3: raised card, every shortcut its own coloured tile */
+.dock5.d3{background:linear-gradient(180deg,#363633,#2c2c2a);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 10px 24px -8px rgba(0,0,0,.7)}
+.dock5.d3 .ci{color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 3px 8px -3px rgba(0,0,0,.6)}
+/* D4: inset well, coloured icons */
+.dock5.d4{background:#1f1f1d;box-shadow:inset 0 2px 6px rgba(0,0,0,.55),inset 0 0 0 1px rgba(255,255,255,.04),0 1px 0 rgba(255,255,255,.06)}
+.dock5.d4 .ci{background:color-mix(in srgb,var(--c) 18%,#2a2a28);color:var(--c);box-shadow:inset 0 1px 0 rgba(255,255,255,.06)}
+.dock5 .ico.on .ci{background:var(--accent)!important;color:#fff!important}
+
+.pager5{position:relative;overflow:hidden;border-radius:18px}
+.pager5 .track{display:flex;transition:none}
+.pager5 .pg{flex:none;width:100%}
+.dock5.d2.small{padding:8px 4px 7px;border-radius:18px}
+.dock5.small .ico{gap:4px;font-size:10px}
+.dock5.small .ci{width:32px;height:32px;border-radius:11px}.dock5.small .ci svg{width:16px;height:16px}
+.dock5.small .label{max-width:58px}
+.dots5{display:flex;justify-content:center;gap:5px;margin-top:8px}.dots5 i{width:5px;height:5px;border-radius:3px;background:rgba(245,244,239,.22)}.dots5 i.on{width:12px;background:var(--text)}
+.hand{position:absolute;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.25);box-shadow:0 0 0 2px rgba(255,255,255,.4);z-index:5}
+
+/* One card that stays put: the glass is on the window, the pages inside are bare. */
+.pager5.onecard{background:rgba(48,48,46,.55);-webkit-backdrop-filter:blur(18px) saturate(1.5);backdrop-filter:blur(18px) saturate(1.5);box-shadow:inset 0 1px 0 rgba(255,255,255,.16),inset 0 0 0 1px rgba(255,255,255,.08),0 10px 24px -10px rgba(0,0,0,.6)}
+.pager5.onecard .dock5.d2.small{background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;border-radius:0}
+</style></head><body></body>
+<script>
+const svg=(inner)=>`<svg viewBox="0 0 24 24">${inner}</svg>`;
+const I={
+ baby:svg('<circle cx="12" cy="13" r="8"/><path d="M12 5c0-1.7 1.8-2.5 2.8-1.3M9 12.5h.01M15 12.5h.01M9.8 16.3c1.3.9 3.1.9 4.4 0"/>'),
+ garage:svg('<path d="M3 21V9l9-5 9 5v12M7 21v-8h10v8M7 16h10"/>'),
+ moon:svg('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'),
+ bed:svg('<path d="M3 18V6M3 13h18v5M21 13v-2a3 3 0 0 0-3-3h-7v5"/><circle cx="7" cy="10" r="1.6"/>'),
+ leave:svg('<path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4M10 16l-4-4 4-4M6 12h10"/>'),
+ sprout:svg('<path d="M12 21v-9M12 12c0-4 3-6 7-6 0 4-3 6-7 6zM12 14c0-3-2-5-6-5 0 3 2 5 6 5z"/>'),
+ chev:svg('<path d="M9 6l6 6-6 6"/>'),grid:svg('<rect x="4" y="4" width="6" height="6" rx="1.5"/><rect x="14" y="4" width="6" height="6" rx="1.5"/><rect x="4" y="14" width="6" height="6" rx="1.5"/><rect x="14" y="14" width="6" height="6" rx="1.5"/>'),
+ home:svg('<path d="M4 11l8-7 8 7v9H4z"/>'),cake:svg('<path d="M4 21h16M5 21v-6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v6M12 13v-3"/>'),
+};
+const SHORTCUTS=[['baby','Pré slaapje','go'],['garage','Garagedeur','go'],['moon','Centris','on'],['bed','Slaapwel','go'],['leave','Vertrekken','go'],['sprout','Sproeier','go']];
+const pageTop=`<div class="date">Woensdag 28 oktober</div><h1>Goedenavond, Jeroen</h1>
+ <div class="band"><span style="color:var(--accent);display:grid">${I.home}</span><b>Je bent thuis</b> · <span style="color:#ec8fb5;display:grid">${I.cake}</span><b>Jan</b> is jarig · 2 lichten…</div>
+ <div class="warn"><span class="wi">${I.garage}</span><div><b>Garagepoort staat open</b><span>Sinds 20:59</span></div></div>`;
+const head=(withAll)=>`<div class="sechead"><span class="sec">Snel</span>${withAll?`<span class="all">Alles ${I.chev}</span>`:''}</div>`;
+const after=`<div class="sechead"><span class="sec">Camera's</span></div><div class="cams"></div>`;
+const phone=(body,over='')=>`<div class="phone"><div class="in">${pageTop}${body}${after}</div>${over}</div>`;
+I.film=svg('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 5v14M17 5v14M3 9h4M3 15h4M17 9h4M17 15h4"/>');
+I.dots=svg('<circle cx="6" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18" cy="12" r="1.3"/>');
+const ALL=[...SHORTCUTS,['film','Film','go']];
+const ico=([i,n,s])=>`<span class="ico${s==='on'?' on':''}"><span class="ci">${I[i]}</span><span class="label">${n}</span></span>`;
+const dock=(black,items,last)=>`<div class="dock5${black?' black':''}">${items.map(ico).join('')}${last||''}</div>`;
+const more=`<span class="ico more"><span class="ci">${I.dots}</span><span class="label">Meer</span></span>`;
+const count=`<span class="ico more"><span class="ci"><span class="count">+3</span></span><span class="label">Alles</span></span>`;
+const headAll=`<div class="sechead"><span class="sec">Snel</span><span class="all">Alle 7 ${I.chev}</span></div>`;
+const rows=ALL.map(([i,n,s])=>`<div class="lrow${s==='on'?' on':''}"><span class="ci">${I[i]}</span><b>${n}</b>${s==='on'?'<span class="sw"></span>':'<span class="go">Start</span>'}</div>`).join('');
+const COLORS={baby:'#e0559b',garage:'#3987e5',moon:'#8f6ee0',bed:'#199e70',leave:'#c98500',sprout:'#6bab3e',film:'#d55181'};
+const tiled=(items,cls)=>`<div class="dock5 ${cls}">${items.map(([i,n,st])=>`<span class="ico${st==='on'?' on':''}"><span class="ci" style="--c:${COLORS[i]};${cls==='d3'?`background:linear-gradient(160deg,color-mix(in srgb,${COLORS[i]} 85%,#fff),${COLORS[i]} 60%,color-mix(in srgb,${COLORS[i]} 70%,#000))`:''}">${I[i]}</span><span class="label">${n}</span></span>`).join('')}</div>`;
+const five=ALL.slice(0,5);
+I.sun=svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>');
+I.blinds=svg('<path d="M4 4h16M5 4v10h14V4M5 8h14M5 11h14M12 14v4"/>');
+I.bulb=svg('<path d="M9 18h6M10 21h4M12 3a6 6 0 0 0-3.5 10.9c.6.5 1 1.2 1 2.1h5c0-.9.4-1.6 1-2.1A6 6 0 0 0 12 3z"/>');
+const TEN=[...ALL,['sun','Wekker licht','go'],['blinds','Rolluiken','go'],['bulb','Buitenlicht','go']];
+const smallDock=(items)=>`<div class="dock5 d2 small">${items.map(([i,n,st])=>`<span class="ico${st==='on'?' on':''}"><span class="ci">${I[i]}</span><span class="label">${n}</span></span>`).join('')}</div>`;
+const headTen=`<div class="sechead"><span class="sec">Snel</span><span class="all">Alle 10 ${I.chev}</span></div>`;
+const paged=(shift,page,hand)=>`${headTen}<div class="glasswrap"><div class="pager5 onecard"><div class="track" style="transform:translateX(-${shift}%)"><div class="pg">${smallDock(TEN.slice(0,5))}</div><div class="pg">${smallDock(TEN.slice(5,10))}</div></div></div></div><div class="dots5"><i class="${page===0?'on':''}"></i><i class="${page===1?'on':''}"></i></div>${hand?'<span class="hand" style="left:200px;top:290px"></span>':''}`;
+const S=[
+ ['Pagina 1','Kleiner: iconen 32px, namen 10px, de kaart ±62px hoog. Vijf per pagina, met twee bolletjes eronder. "Alle 10 ›" blijft.',phone(paged(0,0,false))],
+ ['Swipen','De kaart blijft staan; alleen de snelkoppelingen schuiven erin, als één band. Ze springt altijd naar een hele pagina, zoals de mini-speler.',phone(paged(42,0,true))],
+ ['Pagina 2','De volgende vijf. Terug swipen brengt je naar pagina 1. Met vijf of minder snelkoppelingen: één pagina, geen bolletjes.',phone(paged(100,1,false))],
+ ['Ter vergelijking: nu (D2)','D2 zoals gekozen, iconen 38px.',phone(headAll+`<div class="glasswrap">${tiled(five,'d2')}</div>`)],
+];
+document.body.innerHTML=S.map(([t,sub,h])=>`<div><p class="cap">${t}<small>${sub}</small></p>${h}</div>`).join('');
+</script></html>

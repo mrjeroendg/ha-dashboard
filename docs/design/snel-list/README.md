@@ -2,6 +2,8 @@
 
 "Snel" on Thuis becomes one list of controls (option C), in the slim variant (S1). Dark mode only.
 
+> ↪ **On Thuis replaced by the [glass dock](../snel-dock/README.md)** (28 October). The list below lives on as the sheet behind "Alle".
+>
 > ✅ **Approved (C + slim S1) and built.** Don't change proportions or behaviour without asking first.
 >
 > Code: `EntityControl` in `src/components/EntityControl.tsx` (extracted from `RoomView.tsx`, shared by the rooms and Snel), `QuickActions.tsx`, styles under "slim controls" in `src/styles.css`.

@@ -19,13 +19,18 @@ As built (dev mode, mock data):
 ## The band
 
 - **The status pill's place and shape** (46px, the same surface, border and corners), without the dot and the chevron. The band has the whole width.
-- **Everything scrolls,** also who's home, from right to left, endlessly, at 30px per second. **Always**, also when everything would fit. Nothing has to be tapped to be seen.
+- **Everything scrolls,** also who's home, in a cycle. Nothing has to be tapped to be seen:
+  1. it scrolls from the first item to the end, right to left, at 30px per second;
+  2. at the end, with the last item fully in view, it rests for 3 seconds;
+  3. it takes in what changed meanwhile (while it scrolls, the items stay as they were, so nothing changes under your eyes);
+  4. it slides back to the start in 0.7 s (ease-in-out) and scrolls again.
+- **When everything fits** in the width, there's nothing to scroll: the band stands still and changes right away.
 - **Items, in this order:**
   1. who's home, with an orange house: "Iedereen thuis", "Jeroen thuis", "Eline thuis", "Niemand thuis";
   2. the travel time home on Jeroen's office days, with a car: "34 min naar huis" (same conditions as [commute](../commute/README.md));
   3. lights, aircos, doors and windows, as the status line had them;
   4. what's happening now: "Cara is aan het drinken" with a cat in water blue (`#6cb8e6`), while `switch.0x94a081fffe562fad` (her water fountain) is on.
-- **Nothing bold.** Who's home, the travel time and the names are white, the rest grey. A small dot between the items; soft edges left and right.
+- **Nothing bold.** Who's home, the travel time and the names are white, the rest grey. A small dot between the items; soft edges left and right, with room so the first and last item end up clear of them.
 - **Tapping it** opens "Nu". The Waze link is no longer in the band itself.
 
 ## "Nu"
@@ -37,7 +42,3 @@ As built (dev mode, mock data):
 ## Adding something that's happening now
 
 A line in `NOW` (`src/config/status.ts`): the entity, an icon, a colour, the name (white) and the text (grey). It's in the band while the entity is `on`.
-
-## Known
-
-- **When an item comes or goes, the band jumps a little.** Its length changes, and so does the duration that keeps the speed at 30px per second.

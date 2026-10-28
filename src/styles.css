@@ -100,8 +100,8 @@
 
 .header__dot--idle { background: var(--text-muted); box-shadow: none; }
 
-/* The status band (docs/design/now-ticker): everything scrolls by, endlessly.
-   Tapping it opens "Nu". */
+/* The status band (docs/design/now-ticker): scrolls to the end, rests, slides
+   back. Tapping it opens "Nu". */
 .status-ticker {
   display: flex;
   align-items: center;
@@ -128,32 +128,29 @@
   mask-image: linear-gradient(to right, transparent, #000 18px, #000 calc(100% - 18px), transparent);
 }
 
-/* The items twice in a row: moving half the width loops without a seam.
-   The duration is set from code, so the speed stays the same. */
+/* Moved from code (StatusTicker): to the end, a rest, back to the start.
+   As wide as the fades on both sides, so the first and last item end up clear. */
 .status-ticker__belt {
   display: flex;
   width: max-content;
-  animation: status-crawl 30s linear infinite;
+  padding: 0 18px;
 }
-
-@keyframes status-crawl { to { transform: translateX(-50%); } }
 
 .status-ticker__item {
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  padding-right: 15px;
   font-size: 15px;
   color: var(--text-muted);
   white-space: nowrap;
 }
 
 /* A small dot between the items. */
-.status-ticker__item::after {
+.status-ticker__item + .status-ticker__item::before {
   content: '';
   width: 3px;
   height: 3px;
-  margin-left: 8px;
+  margin: 0 8px;
   border-radius: 50%;
   background: var(--text-muted);
   opacity: 0.5;

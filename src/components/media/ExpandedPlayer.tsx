@@ -7,7 +7,7 @@ import { SonosExpanded } from './SonosExpanded';
 
 interface Props {
   hass: HomeAssistant;
-  /** Page to open on: 0 = Chromecast, 1 = Sonos. */
+  /** Page to open on: 0 = Sonos, 1 = Chromecast (MEDIA_DEVICES). */
   initialPage: number;
   /** Reports the page in view, so the mini player can return to it. */
   onPageChange(page: number): void;
@@ -19,7 +19,7 @@ const CLOSE_DISTANCE = 90;
 
 /**
  * Expanded player (docs/design/media-card): opens in place above the bottom
- * navigation. Swipe sideways between Chromecast and Sonos; swipe the handle
+ * navigation. Swipe sideways between Sonos and Chromecast; swipe the handle
  * down (or tap the dimmed page) to close.
  */
 export function ExpandedPlayer({ hass, initialPage, onPageChange, onClose }: Props) {
@@ -73,10 +73,10 @@ export function ExpandedPlayer({ hass, initialPage, onPageChange, onClose }: Pro
 
       <div className="media-card__pages" ref={pager.ref} onScroll={pager.onScroll}>
         <div className="media-card__page">
-          <CastExpanded hass={hass} player={hass.states[MEDIA.chromecast.entity]} />
+          <SonosExpanded hass={hass} player={hass.states[MEDIA.sonos.entity]} />
         </div>
         <div className="media-card__page">
-          <SonosExpanded hass={hass} player={hass.states[MEDIA.sonos.entity]} />
+          <CastExpanded hass={hass} player={hass.states[MEDIA.chromecast.entity]} />
         </div>
       </div>
     </div>

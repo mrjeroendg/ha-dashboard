@@ -1,0 +1,63 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Snel</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,390px);gap:36px 28px}
+.cap{min-height:58px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.18);
+position:relative;width:390px;height:430px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:30px 24px 0}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.status{display:inline-flex;gap:10px;align-items:center;padding:10px 16px;font-size:15px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:22px}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--accent);flex:none}
+.sec{margin:28px 4px 12px;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.tile-ic{width:40px;height:40px;border-radius:12px;background:var(--bg);color:var(--accent);display:grid;place-items:center;flex:none}.tile-ic svg{width:22px;height:22px}
+.on .tile-ic{background:var(--accent);color:#fff}
+/* now */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.big{min-height:112px;box-sizing:border-box;padding:16px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);display:flex;flex-direction:column;justify-content:space-between}
+.big b{font-size:16px;font-weight:600}
+/* A: compact two columns */
+.small{display:flex;align-items:center;gap:10px;height:56px;box-sizing:border-box;padding:0 12px;border-radius:18px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.small .tile-ic{width:32px;height:32px;border-radius:10px}.small .tile-ic svg{width:18px;height:18px}
+.small b{font-size:15px;font-weight:600}
+.small.on{background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+/* B: round buttons, iOS control centre */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.round{display:flex;flex-direction:column;align-items:center;gap:8px;font-size:12px;color:var(--muted);text-align:center}
+.round span{width:62px;height:62px;border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);display:grid;place-items:center;color:var(--text)}
+.round span svg{width:24px;height:24px}
+.round.on span{background:var(--accent);color:#fff;box-shadow:none}.round.on{color:var(--text)}
+/* C: one card, rows */
+.list{border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.lrow{display:flex;align-items:center;gap:14px;padding:12px 16px}.lrow+.lrow{box-shadow:inset 0 1px 0 var(--border)}
+.lrow .tile-ic{width:36px;height:36px}.lrow .tile-ic svg{width:20px;height:20px}
+.lrow b{flex:1;font-size:16px;font-weight:500}
+.go{height:32px;padding:0 14px;border-radius:999px;background:var(--soft);color:var(--accent);display:grid;place-items:center;font-size:13px;font-weight:600}
+.sw{width:48px;height:30px;border-radius:999px;background:var(--accent);position:relative}.sw::after{content:"";position:absolute;top:3px;right:3px;width:24px;height:24px;border-radius:50%;background:#fff}
+/* D: chips */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px 0 12px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);font-size:15px;font-weight:600}
+.chip svg{width:18px;height:18px;color:var(--accent)}
+.chip.on{background:var(--accent);color:#fff;box-shadow:none}.chip.on svg{color:#fff}
+</style></head><body></body>
+<script>
+const svg=(inner)=>`<svg viewBox="0 0 24 24">${inner}</svg>`;
+const I={baby:svg('<circle cx="12" cy="13" r="8"/><path d="M12 5c0-1.7 1.8-2.5 2.8-1.3M9 12.5h.01M15 12.5h.01M9.8 16.3c1.3.9 3.1.9 4.4 0"/>'),
+garage:svg('<path d="M3 21V9l9-5 9 5v12M7 21v-8h10v8M7 16h10"/>'),moon:svg('<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>'),
+sofa:svg('<path d="M4 11V8a3 3 0 0 1 3-3h10a3 3 0 0 1 3 3v3M2 11h20v6H2zM5 17v2M19 17v2"/>')};
+// The four real shortcuts; Centris is a toggle that's on.
+const SHORTCUTS=[['baby','Pré slaapje'],['garage','Garagedeur'],['moon','Centris',true,'toggle'],['sofa','Sfeer']];
+const head=`<div class="status"><i></i>Je bent thuis · 2 lichten aan</div><p class="sec">Snel</p>`;
+const phone=(body)=>`<div class="phone"><div class="in">${head}${body}</div></div>`;
+const now=`<div class="g2">${SHORTCUTS.map(([ic,l,on])=>`<div class="big${on?' on':''}"><span class="tile-ic">${I[ic]}</span><b>${l}</b></div>`).join('')}</div>`;
+const A=`<div class="g2">${SHORTCUTS.map(([ic,l,on])=>`<div class="small${on?' on':''}"><span class="tile-ic">${I[ic]}</span><b>${l}</b></div>`).join('')}</div>`;
+const B=`<div class="g4">${SHORTCUTS.map(([ic,l,on])=>`<div class="round${on?' on':''}"><span>${I[ic]}</span>${l}</div>`).join('')}</div>`;
+const C=`<div class="list">${SHORTCUTS.map(([ic,l,on,kind])=>`<div class="lrow${on?' on':''}"><span class="tile-ic">${I[ic]}</span><b>${l}</b>${kind==='toggle'?'<span class="sw"></span>':'<span class="go">Start</span>'}</div>`).join('')}</div>`;
+const D=`<div class="chips">${SHORTCUTS.map(([ic,l,on])=>`<span class="chip${on?' on':''}">${I[ic]}${l}</span>`).join('')}</div>`;
+const S=[
+ ['Nu','Grote tegels van 112px, icoon boven, naam onder. Vier snelkoppelingen nemen een half scherm.',phone(now)],
+ ['A · Compact, twee kolommen','De kleine kaart uit de kamer-tabs (56px): icoon en naam op één regel. De helft van de hoogte.',phone(A)],
+ ['B · Ronde knoppen, zoals het iOS-bedieningspaneel','Vier op een rij, naam eronder. Het compactst; aan = gevuld in oranje.',phone(B)],
+ ['C · Eén kaart met rijen','Zoals de rijen in een kamer: "Start" voor scènes en scripts, een schakelaar voor wat aan of uit kan.',phone(C)],
+ ['D · Pillen','Icoon en naam in een pil, ze lopen door naar de volgende regel. Licht en speels.',phone(D)],
+];
+document.body.innerHTML=S.map(([title,sub,html])=>`<div><p class="cap">${title}<small>${sub}</small></p>${html}</div>`).join('');
+</script></html>

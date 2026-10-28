@@ -1,0 +1,76 @@
+# Light sheet: controls in a bottom sheet
+
+How lights are controlled on a room page. Dark mode only. Replaces [`light-controls`](../light-controls/README.md) (option B, never built).
+
+> ✅ **Approved, not built yet.** Don't change proportions or behaviour without asking first.
+
+![Light sheet](./mockup.png)
+
+Source: [`mockup.html`](./mockup.html).
+
+## The row
+
+- No controls under the row anymore: every light is one row.
+- **Only the switch** turns the light on and off. Tapping the rest of the row **opens the sheet**.
+- **An off light is turned on first** (`light.turn_on`, keeping its last brightness and colour), and the sheet opens once HA has accepted that. So every control in the sheet starts from a lit lamp. If turning it on fails, the row shows "Dat lukte niet" and no sheet opens.
+- The row shows it opens a sheet with a thin **vertical divider** between the text and the switch (option A in [`row-hint-options.png`](./row-hint-options.png)). *Changed during the build:* first a "›" between text and switch, then a "›" at the end of the detail line (D), which sat misaligned on the phone. Not chosen: a sliders button (B), a brightness bar (C).
+- With nothing to show (only on/off, no scenes), tapping does nothing and the row has no divider.
+- Detail line: "Aan · 40%", plus the kelvin in white mode: "Aan · 40% · 3000 K". In colour mode HA reports no kelvin, so it stays "Aan · 40%". No colour names: the dashboard doesn't guess.
+
+## The sheet
+
+- Opens from the bottom over the dimmed page; swipe down or tap beside it to close (like the expanded player).
+- **The title is the page in view** (serif: Helderheid, Warmte, Kleur); it changes as you swipe. **The light's name** sits small and grey **in front of the page dots** (option B in [`name-options.png`](./name-options.png); not chosen: a label above the title, one muted serif line, a chip with the row's icon). Then the pills and the control. *Changed during the build:* first the light's name was the title with the page heading under the pills, then next to it. **No subtitle, no on/off button.**
+- **The control is centred** horizontally and vertically in the space under the pills ([`centred-slider.png`](./centred-slider.png)). The columns left and right of a slider are equally wide (110px: "Koel/Warm" against the slider, the value on the other side), so the slider sits exactly in the middle and in the same place on every page.
+- Pages, swiped sideways like Chromecast ↔ Sonos, in this order and **only when available**:
+
+| # | Page | When | Control |
+|---|---|---|---|
+| 1 | **Scènes** | The light has a `scenes` list in the config | Tiles, two per row: colour circle + name. Tap = start the scene. No "active" highlight (HA can't tell reliably). |
+| 2 | **Helderheid** | The light supports brightness | Vertical slider (iOS Control Center style) with the percentage next to it |
+| 3 | **Warmte** | The light supports `color_temp` | Vertical slider, warm (bottom) to cool (top), value in kelvin with a name ("3000 K · Warm wit") |
+| 4 | **Kleur** | The light supports a colour mode (hs/xy/rgb) | Colour disc (option A): hue around, white in the middle to full colour at the edge. The knob sits on the colour HA reports and takes that colour. |
+
+- One page: no dots. No pages at all: no sheet.
+- Vertical sliders, so dragging a slider can't be confused with swiping between pages.
+
+## Groups
+
+A light group (e.g. CB3 = two Hue Play bars) is **one row** on the room page; its switch turns the whole group on and off. In the sheet, **pills** under the name choose what the pages control:
+
+![Group](./group.png)
+
+Source: [`group.html`](./group.html). The mockup still shows a "Samen" pill; that was dropped (see below).
+
+- **Pills are the individual lights only**, configured by hand (`members`), in that order. The first is selected when the sheet opens. *Changed during the build:* a "Samen" pill for the group itself was dropped. A HA light group reports the average of its members, so while they update one after the other its kelvin is a value no light has, and the knob jumped (HA's own control does the same).
+- A pill whose light can't do the current page is **dimmed**, from that light's own `supported_color_modes`.
+- **On/off is always the group:** the row's switch. No switch per light, no "Lampen" page.
+- Without `members`, there are no pills.
+
+## Config
+
+Scenes are listed explicitly per light, in display order:
+
+```ts
+{
+  entity: 'light.huecupboard',
+  name: 'CB3',
+  scenes: ['scene.cb3_ontspannen', 'scene.cb3_lezen'],
+  members: [
+    { entity: 'light.play_links', name: 'Play links' },
+    { entity: 'light.play_rechts', name: 'Play rechts' },
+  ],
+}
+```
+
+Colour picker: [`@uiw/react-color-wheel`](https://www.npmjs.com/package/@uiw/react-color-wheel) (MIT), styled to match (+9 kB in the bundle). It works in hue/saturation, like HA's `hs_color`; red sits at 3 o'clock and the hues run clockwise, as in the mockup.
+
+All controls send their value **once, on release** (a tap counts too), and keep it until HA reports a clearly different value. Small differences from HA's rounding are ignored: 1% brightness, 60 K warmth, 3° hue and 3% saturation (HA converts colours to the light's xy and back). On the Kleur page you swipe between pages outside the disc; on the disc itself, dragging picks a colour.
+
+## Not chosen
+
+- Horizontal sliders (B): clash with swiping between pages.
+- Page names above the title, an on/off button and a subtitle in the sheet: dropped (KISS).
+- Colour swatches on the Kleur page, and a ring (B) instead of a disc ([`color-picker-options.png`](./color-picker-options.png)): the disc matches the HA and Hue apps.
+- A "Lampen" page with a switch per member light: on/off is always the whole group.
+- Colour names on the row ("Aan · 40% · Amber"): that would be a guess.

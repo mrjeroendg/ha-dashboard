@@ -1,17 +1,30 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
-import type { RoomConfig, RoomEntity, RoomSafety } from '../config/rooms';
+import type { Entity } from '../config/entities';
+import type { MowerConfig, RoomConfig, RoomEntity, RoomSafety } from '../config/rooms';
 import type { Shortcut } from '../config/shortcuts';
 import type { HomeAssistant } from '../types/hass';
+import { aircoDetail, isAircoOn, toggleAirco } from './airco';
 
 export type Row = {
   entity: HassEntity;
   name: string;
+  /** Instead of the icon that goes with the entity's domain. */
+  icon?: IconName;
   allowUnknownState?: boolean;
   simple?: boolean;
   /** Cover: the "My position" button entity, if it exists in HA. */
   myPosition?: string;
+  /** Light: the pills of its sheet (docs/design/light-sheet), those that exist in HA. */
+  members?: LightMember[];
+  /** Lawn mower: its other entities (docs/design/lawn-mower). */
+  mower?: MowerConfig;
 };
+
+export interface LightMember {
+  entity: HassEntity;
+  name: string;
+}
 
 export interface ResolvedSection {
   /** Undefined for a room configured with a plain `entities` list. */
@@ -26,20 +39,26 @@ export interface ResolvedRoom {
   icon: IconName;
   temperature?: string;
   humidity?: string;
-  safety?: Array<string | RoomSafety>;
+  safety?: Array<Entity | RoomSafety>;
   sections: ResolvedSection[];
 }
 
-function resolveRows(entities: Array<string | RoomEntity>, states: HassEntities): Row[] {
+/** The configured controls whose entities exist in HA, for a room or for Snel on Thuis. */
+export function resolveRows(entities: Array<Entity | RoomEntity>, states: HassEntities): Row[] {
   return entities
-    .map((e) => (typeof e === 'string' ? { entity: e } : e))
-    .filter((e) => e.entity in states)
-    .map((e) => ({
-      entity: states[e.entity],
-      name: e.name ?? String(states[e.entity].attributes.friendly_name ?? e.entity),
-      allowUnknownState: e.allowUnknownState,
-      simple: e.simple,
-      myPosition: e.myPosition && e.myPosition in states ? e.myPosition : undefined,
+    .map((entityConfig) => (typeof entityConfig === 'string' ? { entity: entityConfig } : entityConfig))
+    .filter((entityConfig) => entityConfig.entity in states)
+    .map((entityConfig) => ({
+      entity: states[entityConfig.entity],
+      name: entityConfig.name ?? String(states[entityConfig.entity].attributes.friendly_name ?? entityConfig.entity),
+      icon: entityConfig.icon,
+      allowUnknownState: entityConfig.allowUnknownState,
+      simple: entityConfig.simple,
+      myPosition: entityConfig.myPosition && entityConfig.myPosition in states ? entityConfig.myPosition : undefined,
+      members: entityConfig.members
+        ?.filter((member) => member.entity in states)
+        .map((member) => ({ entity: states[member.entity], name: member.name })),
+      mower: entityConfig.mower,
     }));
 }
 
@@ -69,7 +88,7 @@ const number = (value: unknown, digits = 1) =>
 
 // ---------------------------------------------------------------- rows
 
-export type RowKind = 'toggle' | 'action' | 'climate' | 'cover' | 'readonly';
+export type RowKind = 'toggle' | 'action' | 'climate' | 'cover' | 'mower' | 'readonly';
 
 export interface RowModel {
   kind: RowKind;
@@ -82,6 +101,8 @@ export interface RowModel {
   actionLabel?: string;
   /** Brightness 1–100 when the light is on and dimmable; shows a slider. */
   brightness?: number;
+  /** White temperature, while the light is in white mode. */
+  kelvin?: number;
   /** Present when the light is on and supports color or color temperature. */
   color?: LightColor;
   run?(hass: HomeAssistant): Promise<unknown>;
@@ -114,15 +135,6 @@ export interface LightColor {
   kelvin?: number;
 }
 
-/** A color choice: either an RGB color or a white temperature. */
-export type ColorChoice = { rgb: RGB } | { kelvin: number };
-
-/** Set a light's color or white temperature; turns it on if needed. */
-export function setColor(hass: HomeAssistant, entity: HassEntity, choice: ColorChoice) {
-  const data = 'rgb' in choice ? { rgb_color: choice.rgb } : { color_temp_kelvin: choice.kelvin };
-  return hass.callService('light', 'turn_on', data, { entity_id: entity.entity_id });
-}
-
 function lightColor(entity: HassEntity): LightColor | undefined {
   const f = lightFeatures(entity);
   if (entity.state !== 'on' || (!f.color && !f.colorTemp)) return undefined;
@@ -136,6 +148,82 @@ function lightColor(entity: HassEntity): LightColor | undefined {
     rgb: Array.isArray(a.rgb_color) ? (a.rgb_color as RGB) : undefined,
     kelvin: inTempMode && typeof a.color_temp_kelvin === 'number' ? a.color_temp_kelvin : undefined,
   };
+}
+
+// ---------------------------------------------------------------- light sheet
+
+/** Whether a pill's light can be dimmed (docs/design/light-sheet). */
+export function canSetBrightness(light: HassEntity): boolean {
+  return lightFeatures(light).brightness;
+}
+
+/** The light's brightness as 1–100%, only while it's on (HA reports none when off). */
+export function currentBrightnessPercentage(light: HassEntity): number | undefined {
+  const brightnessFromEntity = light.attributes.brightness;
+  const isOnWithBrightness = light.state === 'on' && typeof brightnessFromEntity === 'number';
+
+  return isOnWithBrightness ? Math.max(1, Math.round((brightnessFromEntity / 255) * 100)) : undefined;
+}
+
+/** A colour as HA's `hs_color`: hue 0–360°, saturation 0–100%. */
+export interface HueSaturation {
+  hue: number;
+  saturation: number;
+}
+
+/** Whether a pill's light can show colours (docs/design/light-sheet). */
+export function canSetColor(light: HassEntity): boolean {
+  return lightFeatures(light).color;
+}
+
+/** The colour HA reports for the light, only while it's on. */
+export function currentHueSaturation(light: HassEntity): HueSaturation | undefined {
+  const hueSaturationFromEntity = light.attributes.hs_color;
+  const isOnWithColor = light.state === 'on' && Array.isArray(hueSaturationFromEntity);
+
+  return isOnWithColor
+    ? { hue: Number(hueSaturationFromEntity[0]), saturation: Number(hueSaturationFromEntity[1]) }
+    : undefined;
+}
+
+/** Set the light's colour; turns it on if needed. */
+export function setHueSaturation(hass: HomeAssistant, light: HassEntity, color: HueSaturation) {
+  return hass.callService('light', 'turn_on', { hs_color: [color.hue, color.saturation] }, { entity_id: light.entity_id });
+}
+
+/** Whether a pill's light can set the warmth (docs/design/light-sheet). */
+export function canSetWarmth(entity: HassEntity): boolean {
+  return lightFeatures(entity).colorTemp;
+}
+
+/** The light's kelvin range. */
+export function warmthRange(entity: HassEntity) {
+  const min = Number(entity.attributes.min_color_temp_kelvin ?? 2000);
+  const max = Number(entity.attributes.max_color_temp_kelvin ?? 6500);
+  return { min, max: Math.max(min, max) };
+}
+
+/** The light's current white temperature, only while it's in white mode. */
+export function currentKelvin(entity: HassEntity): number | undefined {
+  const a = entity.attributes;
+  return a.color_mode === 'color_temp' && typeof a.color_temp_kelvin === 'number' ? a.color_temp_kelvin : undefined;
+}
+
+/** "Warm wit", "Neutraal wit" or "Koel wit", like the white swatches. */
+export function warmthName(kelvin: number): string {
+  if (kelvin < 3300) return 'Warm wit';
+  if (kelvin < 4500) return 'Neutraal wit';
+  return 'Koel wit';
+}
+
+/** Set the white temperature; turns the light on if needed. */
+export function setWarmth(hass: HomeAssistant, entity: HassEntity, kelvin: number) {
+  return hass.callService('light', 'turn_on', { color_temp_kelvin: kelvin }, { entity_id: entity.entity_id });
+}
+
+/** Turn a light on, keeping its last brightness and colour. */
+export function turnOnLight(hass: HomeAssistant, light: HassEntity) {
+  return hass.callService('light', 'turn_on', {}, { entity_id: light.entity_id });
 }
 
 /** Set a light's brightness (1–100%); turns it on if needed. */
@@ -167,7 +255,9 @@ export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowO
 
   // A cover's buttons don't depend on its state, so an RTS screen stuck on 'unknown' still works.
   const coverUnknown = domain === 'cover' && entity.state === 'unknown';
-  if (UNAVAILABLE.has(entity.state) && !coverUnknown) {
+  // A scene's state is when it last ran, or 'unknown' if it never has: it can still be started.
+  const isSceneNeverRun = domain === 'scene' && entity.state === 'unknown';
+  if (UNAVAILABLE.has(entity.state) && !coverUnknown && !isSceneNeverRun) {
     return { kind: 'readonly', icon: iconFor(entity), detail: 'Niet beschikbaar', on: false };
   }
 
@@ -176,11 +266,18 @@ export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowO
       const on = entity.state === 'on';
       const pct =
         typeof a.brightness === 'number' && !simple ? Math.max(1, Math.round((a.brightness / 255) * 100)) : undefined;
+      // Only in white mode: in colour mode HA reports no meaningful kelvin.
+      const kelvin =
+        a.color_mode === 'color_temp' && typeof a.color_temp_kelvin === 'number' && !simple
+          ? Math.round(a.color_temp_kelvin)
+          : undefined;
+      const parts = ['Aan', pct !== undefined && `${pct}%`, kelvin !== undefined && `${kelvin} K`].filter(Boolean);
       return {
         kind: 'toggle',
         icon: 'bulb',
         on,
-        detail: on ? (pct !== undefined ? `Aan · ${pct}%` : 'Aan') : 'Uit',
+        detail: on ? parts.join(' · ') : 'Uit',
+        kelvin: on ? kelvin : undefined,
         brightness: on && !simple && lightFeatures(entity).brightness ? (pct ?? 100) : undefined,
         color: simple ? undefined : lightColor(entity),
         run: (h) => h.callService('light', 'toggle', {}, target),
@@ -236,12 +333,17 @@ export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowO
         run: (h) => h.callService('media_player', 'media_play_pause', {}, target),
       };
     }
+    // docs/design/lawn-mower: the whole row opens her sheet; the row's second line comes from lib/mower.
+    case 'lawn_mower':
+      return { kind: 'mower', icon: 'mower', on: entity.state === 'mowing', detail: readableState(entity) };
+    // docs/design/airco-sheet: the switch toggles, the rest of the row opens the sheet.
     case 'climate':
       return {
         kind: 'climate',
         icon: 'thermometer',
-        on: entity.state !== 'off',
-        detail: `Nu ${number(a.current_temperature)}° · doel ${number(a.temperature)}°`,
+        on: isAircoOn(entity),
+        detail: aircoDetail(entity),
+        run: (h) => toggleAirco(h, entity),
       };
     case 'scene':
     case 'script':
@@ -256,17 +358,6 @@ export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowO
     default:
       return { kind: 'readonly', icon: iconFor(entity), on: false, detail: readableState(entity) };
   }
-}
-
-/** Climate +/- buttons: nudge the target temperature by `step` degrees. */
-export function adjustTemperature(hass: HomeAssistant, entity: HassEntity, step: number) {
-  const current = Number(entity.attributes.temperature ?? 20);
-  return hass.callService(
-    'climate',
-    'set_temperature',
-    { temperature: Math.round((current + step) * 2) / 2 },
-    { entity_id: entity.entity_id },
-  );
 }
 
 function iconFor(entity: HassEntity): IconName {
@@ -348,14 +439,14 @@ function smokeItem(entity: HassEntity, battery?: number): Pick<SafetyItem, 'icon
  */
 export function roomSafety(room: ResolvedRoom, states: HassEntities) {
   const items: SafetyItem[] = (room.safety ?? [])
-    .map((s) => (typeof s === 'string' ? { entity: s } : s))
-    .filter((s) => s.entity in states && !UNAVAILABLE.has(states[s.entity].state))
-    .flatMap((s) => {
-      const entity = states[s.entity];
+    .map((safetyConfig) => (typeof safetyConfig === 'string' ? { entity: safetyConfig } : safetyConfig))
+    .filter((safetyConfig) => safetyConfig.entity in states && !UNAVAILABLE.has(states[safetyConfig.entity].state))
+    .flatMap((safetyConfig) => {
+      const entity = states[safetyConfig.entity];
       const deviceClass = entity.attributes.device_class;
-      const name = s.name ?? String(entity.attributes.friendly_name ?? s.entity);
-      if (deviceClass === 'door') return [{ id: s.entity, name, ...doorItem(entity) }];
-      if (deviceClass === 'smoke') return [{ id: s.entity, name, ...smokeItem(entity, sensorValue(states, s.battery)) }];
+      const name = safetyConfig.name ?? String(entity.attributes.friendly_name ?? safetyConfig.entity);
+      if (deviceClass === 'door') return [{ id: safetyConfig.entity, name, ...doorItem(entity) }];
+      if (deviceClass === 'smoke') return [{ id: safetyConfig.entity, name, ...smokeItem(entity, sensorValue(states, safetyConfig.battery)) }];
       return [];
     });
   if (items.length === 0) return undefined;

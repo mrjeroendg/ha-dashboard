@@ -19,6 +19,11 @@
 
 * { box-sizing: border-box; }
 
+/* No scrollbars anywhere: everything scrolls by swiping. The page itself is
+   Home Assistant's, outside this stylesheet: see useHiddenPageScrollbar. */
+* { scrollbar-width: none; }
+*::-webkit-scrollbar { display: none; }
+
 .dashboard {
   /* padding-bottom is set from code (useDock) to the height of the dock. */
   box-sizing: border-box;
@@ -45,6 +50,9 @@
 @media (prefers-reduced-motion: reduce) {
   .page--forward,
   .page--back { animation: none; }
+  .attention-stack.has-motion,
+  .attention-stack.has-motion .attention__item,
+  .attention__less { transition: none; }
 }
 
 .header { padding: 4px 4px 8px; }
@@ -92,6 +100,90 @@
 
 .header__dot--idle { background: var(--text-muted); box-shadow: none; }
 
+/* The status band (docs/design/now-ticker): you swipe it sideways yourself.
+   Tapping it opens "Nu". */
+.status-ticker {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: 46px;
+  margin: 18px 0 0;
+  padding: 0 6px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  overflow: hidden;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background-color 120ms ease;
+}
+
+.status-ticker:active { background: var(--accent-soft); }
+
+.status-ticker__scroller {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  /* Soft edges: items slide out of view on both sides. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 18px, #000 calc(100% - 18px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 18px, #000 calc(100% - 18px), transparent);
+}
+
+/* As wide as the fades on both sides, so the first and last item end up clear. */
+.status-ticker__items {
+  display: flex;
+  width: max-content;
+  padding: 0 18px;
+}
+
+.status-ticker__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 15px;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+/* A small dot between the items. */
+.status-ticker__item + .status-ticker__item::before {
+  content: '';
+  width: 3px;
+  height: 3px;
+  margin: 0 8px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  opacity: 0.5;
+}
+
+.status-ticker__icon { display: grid; color: var(--text-muted); }
+.status-ticker__icon .icon { width: 16px; height: 16px; }
+.status-ticker__highlighted { color: var(--text); }
+
+/* Only when there's more than fits: a 44px track at the bottom centre, with a
+   16px piece that moves from the left end (start) to the right end (end). */
+.status-ticker__track {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  width: 44px;
+  height: 2px;
+  margin-left: -22px;
+  border-radius: 1px;
+  background: var(--border);
+}
+
+.status-ticker__thumb {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 16px;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--text) 38%, transparent);
+  /* 28px is the room it has to move: the track minus the piece itself. */
+  transform: translateX(calc(var(--scrolled-fraction, 0) * 28px));
+}
+
 /* ---------------------------------------------------------------- attention */
 
 /* Warnings under the status line (docs/design/attention-banner). Never
@@ -103,6 +195,8 @@
   gap: 8px;
   /* 16px below the status pill, which already has 8px under it. */
   margin-top: 8px;
+  /* Opening and closing the stack (docs/design/warning-stack, M1). */
+  --stack-motion: 480ms cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 .attention__item {
@@ -127,6 +221,10 @@
 
 .attention--high { --c: #b42318; --sub: #f2a49c; --tint: 42%; --edge: 60%; }
 .attention--low { --c: #e8913a; --sub: #f3c99a; --tint: 20%; --edge: 28%; --on-c: #2b1a0a; }
+/* Babysit (docs/design/babysit): its own level, in pink. */
+.attention--babysit { --c: #e0559b; --sub: #f5bdd8; --tint: 24%; --edge: 34%; }
+/* Catsit: Cara's own level, in violet. */
+.attention--catsit { --c: #8f6ee0; --sub: #d6c9f7; --tint: 24%; --edge: 34%; }
 
 .attention__icon {
   display: grid;
@@ -158,6 +256,122 @@
 
 .attention__title { font-size: 15px; font-weight: 600; }
 .attention__detail { margin-top: 1px; font-size: 13px; color: var(--sub); }
+
+/* "Bekijk": only on warnings with a sheet. */
+.attention__view {
+  appearance: none;
+  flex: none;
+  height: 32px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.18);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 120ms ease;
+}
+
+.attention__view:active { transform: scale(0.96); }
+
+/* Stack (docs/design/warning-stack): two or more warnings. The banners keep
+   their list layout; useWarningStack pulls the ones behind the front banner up
+   under it (narrower, fading) and sets the stack's height. Motion M1: the iOS
+   sheet curve, so opening and closing slide and ease out. */
+.attention-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.attention-stack.is-stacked { cursor: pointer; }
+
+.attention-stack .attention__item { position: relative; transform-origin: 50% 0; }
+
+.attention-stack.has-motion { transition: height var(--stack-motion); }
+
+.attention-stack.has-motion .attention__item {
+  transition: transform var(--stack-motion), opacity 290ms ease;
+}
+
+/* The front banner on top, each next one further back. The stack is its own
+   stacking context, so these only layer the cards among themselves and never
+   end up above a sheet's backdrop. */
+.attention-stack { isolation: isolate; }
+
+.attention-stack .attention__item:nth-child(1) { z-index: 4; }
+.attention-stack .attention__item:nth-child(2) { z-index: 3; }
+.attention-stack .attention__item:nth-child(3) { z-index: 2; }
+
+/* Behind the front banner only the coloured card shows. */
+.attention-stack .attention__item > * { transition: opacity 200ms ease; }
+.attention-stack.is-stacked .attention__item:not(:first-child) { pointer-events: none; }
+.attention-stack.is-stacked .attention__item:not(:first-child) > * { opacity: 0; }
+
+.attention-stack.is-stacked:active .attention__item:first-child { transform: scale(0.98); }
+
+/* "+3" on the front of the stack. */
+.attention__more {
+  display: grid;
+  place-items: center;
+  flex: none;
+  height: 26px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.28);
+  font-size: 12px;
+  font-weight: 700;
+  color: #fff;
+  overflow: hidden;
+  max-width: 60px;
+  transition: opacity 180ms ease, transform 180ms ease, max-width var(--stack-motion), padding var(--stack-motion), margin var(--stack-motion);
+}
+
+/* In the open list it folds away completely, so it leaves no gap before "Bekijk". */
+.attention-stack:not(.is-stacked) .attention__more {
+  max-width: 0;
+  padding: 0;
+  margin-left: -12px;
+  opacity: 0;
+  transform: scale(0.6);
+}
+
+/* "Minder": stacks the list again. Fades in as the cards arrive. */
+.attention__less {
+  appearance: none;
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 30px;
+  padding: 0 10px;
+  overflow: hidden;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 200ms ease 220ms, height var(--stack-motion), margin var(--stack-motion);
+}
+
+.attention-stack.is-stacked + .attention__less {
+  height: 0;
+  margin-top: -8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 120ms ease, height var(--stack-motion), margin var(--stack-motion);
+}
+
+.attention__less .icon { width: 14px; height: 14px; }
 
 /* ---------------------------------------------------------------- quick actions */
 
@@ -209,13 +423,6 @@ button.quick-card:active { transform: scale(0.97); }
 .card-label { font-size: 15px; font-weight: 600; }
 .card-detail { margin-top: 2px; font-size: 13px; line-height: 1.3; color: var(--text-muted); }
 
-/* Quick: 2-column grid of small cards */
-.quick-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-}
-
 .quick-card {
   position: relative;
   display: flex;
@@ -256,9 +463,6 @@ button.quick-card:active { transform: scale(0.97); }
 .section-title--tab { margin: 20px 4px 10px; }
 .quick-row + .row-group { margin-top: 10px; }
 
-
-
-
 .status-busy { opacity: 0.7; }
 .status-error .card-detail { color: var(--accent); }
 
@@ -279,37 +483,49 @@ button.quick-card:active { transform: scale(0.97); }
 
 .dock:empty { display: none; }
 
-.bottom-nav__scroller {
-  display: flex;
-  gap: 4px;
-  padding: 6px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  scroll-padding: 0 24px;
-  border-radius: 999px;
-  /* Soft edges hint that more rooms scroll in from the side. */
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 14px), transparent);
-  mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 14px), transparent);
+/* The bar's surface: the rooms, and on Thuis the media shortcuts on top (docs/design/media-dock). */
+.bottom-nav {
+  /* Compact bar (docs/design/bottom-nav, option B): stacked items, so ~5½ rooms fit. */
+  border-radius: 30px;
+  overflow: hidden;
   background: color-mix(in srgb, var(--surface) 82%, transparent);
   -webkit-backdrop-filter: saturate(1.4) blur(18px);
   backdrop-filter: saturate(1.4) blur(18px);
   box-shadow: inset 0 0 0 1px var(--border), 0 8px 24px rgba(0, 0, 0, 0.08);
 }
 
-.bottom-nav__scroller::-webkit-scrollbar { display: none; }
+.bottom-nav__top {
+  padding: 8px 8px 7px;
+  box-shadow: inset 0 -1px 0 var(--border);
+}
+
+.bottom-nav__scroller {
+  display: flex;
+  gap: 4px;
+  /* Wider than the 14px edge fades, so the first and last item are never dimmed. */
+  padding: 6px 14px;
+  overflow-x: auto;
+  scroll-padding: 0 24px;
+  /* Soft edges hint that more rooms scroll in from the side. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 14px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 14px), transparent);
+}
 
 .bottom-nav__item {
   appearance: none;
   border: 0;
   flex: none;
-  display: inline-flex;
+  /* As wide as its name, so nothing is cut off; short names stay easy to tap. */
+  min-width: 52px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 7px;
-  padding: 10px 14px;
-  border-radius: 999px;
+  gap: 3px;
+  padding: 8px 12px 7px;
+  border-radius: 24px;
   background: transparent;
   color: var(--text-muted);
-  font: 500 14px var(--font-sans);
+  font: 500 11px var(--font-sans);
   white-space: nowrap;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -318,10 +534,8 @@ button.quick-card:active { transform: scale(0.97); }
 
 .bottom-nav__item .icon { width: 18px; height: 18px; }
 
-.bottom-nav__item[aria-current='page'] {
-  background: var(--accent);
-  color: #fff;
-}
+/* Only the icon and name turn orange; no area behind them. */
+.bottom-nav__item[aria-current='page'] { color: var(--accent); }
 
 /* ---------------------------------------------------------------- room page */
 
@@ -366,35 +580,9 @@ button.quick-card:active { transform: scale(0.97); }
 .safety-dot.is-high { background: #e5534b; }
 .safety-dot.is-medium { background: #e8913a; }
 
-.safety-backdrop {
-  position: fixed;
-  inset: 0;
-  z-index: 3;
-  background: rgba(0, 0, 0, 0.45);
-  animation: fade-in 200ms ease;
-}
-
-.safety-sheet {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 4;
-  padding: 0 16px calc(34px + env(safe-area-inset-bottom));
-  border-radius: 28px 28px 0 0;
-  background: #2b2b29;
-  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.4);
-  animation: rise 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  transition: transform 200ms ease;
-}
-
-.safety-sheet.is-dragging { transition: none; }
-
-.safety-sheet__grab {
-  padding: 10px 0 6px;
-  touch-action: none;
-  cursor: grab;
-}
+/* Veiligheid's own spacing inside the shared bottom sheet. */
+.safety-sheet { padding: 0 16px calc(34px + env(safe-area-inset-bottom)); }
+.safety-sheet .bottom-sheet__grab { padding-bottom: 6px; }
 
 .safety-sheet__title {
   margin: 0 4px 2px;
@@ -479,10 +667,7 @@ button.quick-card:active { transform: scale(0.97); }
   margin: 20px -24px 0;
   padding: 0 24px;
   overflow-x: auto;
-  scrollbar-width: none;
 }
-
-.room-tabs::-webkit-scrollbar { display: none; }
 
 .room-tab {
   appearance: none;
@@ -618,12 +803,22 @@ button.row:active { background: var(--accent-soft); }
 }
 
 .pill-button { min-width: 72px; height: 34px; padding: 0 14px; border-radius: 999px; }
+
+/* A pill can take a brand colour (--pill-color), e.g. Waze or WhatsApp in "Nu":
+   text in that colour on a soft background of it. Without one, the orange. */
+.pill-button {
+  color: var(--pill-color, var(--accent));
+  background: color-mix(in srgb, var(--pill-color, var(--accent)) 18%, transparent);
+}
+
+/* Also a link, e.g. "Start route" in "Nu". */
+a.pill-button { text-decoration: none; }
 .stepper { display: inline-flex; gap: 8px; }
 .stepper button { width: 36px; height: 36px; border-radius: 50%; }
 .pill-button:disabled,
 .stepper button:disabled { opacity: 0.5; }
 
-/* Brightness slider under a dimmable light */
+/* Slider with a value (the volume) */
 .slider {
   position: relative;
   display: flex;
@@ -683,88 +878,37 @@ button.row:active { background: var(--accent-soft); }
   background: var(--accent);
 }
 
-/* Color swatches under a color light */
-/* One row of swatches that scrolls sideways instead of wrapping. The padding
-   leaves room for the selection ring; the soft right edge hints at more. */
-.color-picker {
-  display: flex;
-  gap: 10px;
-  margin: -5px 0 11px 61px;
-  padding: 5px 5px 5px 5px;
-  overflow-x: auto;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-  /* Fade only the side(s) with more swatches to scroll to. */
-  --fade-left: 0px;
-  --fade-right: 28px;
-  -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
-  mask-image: linear-gradient(to right, transparent, #000 var(--fade-left), #000 calc(100% - var(--fade-right)), transparent);
-}
-
-.color-picker.is-scrolled { --fade-left: 28px; }
-.color-picker.is-end { --fade-right: 0px; }
-
-.color-picker::-webkit-scrollbar { display: none; }
-
-.swatch {
-  appearance: none;
-  position: relative;
-  flex: none;
-  width: 30px;
-  height: 30px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: var(--swatch);
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-  transition: transform 120ms ease;
-}
-
-.swatch:active { transform: scale(0.9); }
-
-/* Selected: ring in the page background + accent ring around it */
-.swatch[aria-checked='true'] {
-  box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--accent);
-}
-
-.swatch--custom {
-  overflow: hidden;
-  background: conic-gradient(red, yellow, lime, cyan, blue, magenta, red);
-}
-
-.swatch--custom.is-custom { background: var(--swatch); }
-
-.swatch--custom input {
-  position: absolute;
-  inset: 0;
-  opacity: 0;
-  width: 100%;
-  height: 100%;
-  cursor: pointer;
-}
-
 /* ---------------------------------------------------------------- mini player */
 
+/* Only while something plays (docs/design/media-dock): picture, title, pause, progress line. */
 .mini-player {
+  position: relative;
   display: flex;
-  flex-direction: column;
-  gap: 10px;
+  align-items: center;
+  gap: 8px;
   box-sizing: border-box;
-  height: 122px;
-  padding: 12px;
-  border-radius: 24px;
+  height: 56px;
+  padding: 8px;
+  border-radius: 20px;
+  overflow: hidden;
   background: var(--surface);
   box-shadow: inset 0 0 0 1px var(--border), 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-.mini-player__top {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  min-width: 0;
+.mini-player__thumb {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 40px;
+  border-radius: 10px;
+  overflow: hidden;
+  object-fit: cover;
+  background-color: var(--bg);
 }
+
+/* Album art sits square in the middle of the fade. */
+.mini-player__thumb img { width: 40px; height: 40px; object-fit: cover; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); }
 
 .mini-player__text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
 
@@ -775,9 +919,25 @@ button.row:active { background: var(--accent-soft); }
   text-overflow: ellipsis;
 }
 
-.mini-player__title { font-size: 16px; font-weight: 600; }
-.mini-player__title.is-error { color: var(--accent); }
-.mini-player__subtitle { margin-top: 2px; font-size: 13px; color: var(--text-muted); }
+.mini-player__title { font-size: 15px; font-weight: 600; }
+.mini-player__subtitle { margin-top: 1px; font-size: 12px; color: var(--text-muted); }
+
+.mini-player__progress {
+  position: absolute;
+  right: 16px;
+  bottom: 0;
+  left: 16px;
+  height: 2px;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--text) 12%, transparent);
+}
+
+.mini-player__progress i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 1px;
+  background: var(--accent);
+}
 
 .round-button {
   appearance: none;
@@ -797,44 +957,88 @@ button.row:active { background: var(--accent-soft); }
 .round-button .icon { width: 22px; height: 22px; stroke-width: 2.6; }
 .round-button:active { background: var(--accent-soft); }
 
-.mini-player__streams { display: flex; gap: 6px; }
+/* ---------------------------------------------------------------- media shortcuts (docs/design/media-dock) */
 
-.stream-pill {
+.media-shortcuts { display: flex; align-items: center; }
+
+/* Sonos | TV: only a tap switches; swiping scrolls the shortcuts. */
+.media-shortcuts__switch {
+  flex: none;
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 999px;
+  background: var(--bg);
+}
+
+.media-shortcuts__switch button {
   appearance: none;
   border: 0;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 24px;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Like the rooms below: the active icon in the accent. */
+.media-shortcuts__switch button[aria-pressed='true'] { background: var(--surface); color: var(--accent); }
+.media-shortcuts__switch .icon { width: 15px; height: 15px; }
+
+.media-shortcuts__list {
   flex: 1;
   min-width: 0;
   display: flex;
+  gap: 6px;
+  /* As wide as the fades, so the first and last shortcut are never dimmed. */
+  padding: 0 20px 0 14px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  /* Soft edges: shortcuts fade out next to the switch, and more scroll in from the right. */
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(to right, transparent, #000 14px, #000 calc(100% - 24px), transparent);
+}
+
+.media-shortcut {
+  appearance: none;
+  border: 0;
+  flex: none;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  height: 34px;
-  padding: 0 10px 0 4px;
+  height: 28px;
+  padding: 0 11px 0 6px;
   border-radius: 999px;
   background: var(--bg);
-  box-shadow: inset 0 0 0 1px var(--border);
   color: var(--text);
-  font: 600 13px var(--font-sans);
+  font: 600 12px var(--font-sans);
+  white-space: nowrap;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
   transition: transform 120ms ease, opacity 200ms ease;
 }
 
-.stream-pill:active { transform: scale(0.96); }
-.stream-pill:disabled { opacity: 0.5; cursor: default; }
+.media-shortcut:active { transform: scale(0.96); }
+.media-shortcut:disabled { opacity: 0.5; cursor: default; }
+.media-shortcut .is-error { color: var(--accent); }
 
-.stream-pill__logo {
+.media-shortcut__dot {
   flex: none;
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
+  /* The colour circles slightly darker, so they don't stand out too much. */
+  filter: brightness(0.75) saturate(0.85);
 }
 
-.stream-pill__logo--busy { background: var(--surface); }
-/* The colour circles (streams and apps) slightly darker, so they don't stand out too much. */
-.stream-pill__logo:not(.stream-pill__logo--busy) { filter: brightness(0.75) saturate(0.85); }
-.stream-pill__label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.media-shortcut__dot--busy { filter: none; }
+.media-shortcut__dot--busy .spinner { width: 12px; height: 12px; box-sizing: border-box; }
 
 .spinner {
   width: 14px;
@@ -858,11 +1062,8 @@ button.row:active { background: var(--accent-soft); }
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
-  scrollbar-width: none;
   -webkit-overflow-scrolling: touch;
 }
-
-.media-card__pages::-webkit-scrollbar { display: none; }
 
 .media-card__page {
   flex: 0 0 100%;
@@ -889,16 +1090,7 @@ button.row:active { background: var(--accent-soft); }
 
 .page-dots i.is-active { width: 16px; background: var(--text); }
 
-/* ---------------------------------------------------------------- chromecast page */
-
-.cast-page__thumb {
-  flex: none;
-  width: 112px;
-  height: 63px;
-  border-radius: 12px;
-  object-fit: cover;
-  background: var(--bg);
-}
+/* ---------------------------------------------------------------- media fades */
 
 /* Shown when there is no image, and while idle. Each device has its own colours
    (docs/design/media-card, option A): the TV cool blue-violet, the Sonos warm. */
@@ -923,46 +1115,6 @@ button.row:active { background: var(--accent-soft); }
     linear-gradient(135deg, #a8452f, #3a1a24);
 }
 
-.cast-page.is-idle .media-fade { opacity: 0.8; }
-
-/* Sonos page: the same 96×54 fade as the Chromecast page (idle, with app buttons). */
-.sonos-thumb {
-  flex: none;
-  display: grid;
-  place-items: center;
-  width: 96px;
-  height: 54px;
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.sonos-thumb.is-idle { opacity: 0.8; }
-.sonos-thumb img { width: 54px; height: 54px; object-fit: cover; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35); }
-
-/* Idle with app buttons: a smaller thumbnail so the buttons fit the 122px card. */
-.cast-page.has-apps .cast-page__thumb { width: 96px; height: 54px; }
-
-.cast-page__title {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  font-size: 16px;
-  font-weight: 600;
-  line-height: 1.25;
-}
-
-.cast-page__progress {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: auto;
-  min-height: 18px;
-  font-size: 12px;
-  color: var(--text-muted);
-  font-variant-numeric: tabular-nums;
-}
-
 .progress-track {
   position: relative;
   display: block;
@@ -979,8 +1131,6 @@ button.row:active { background: var(--accent-soft); }
   border-radius: 2px;
   background: var(--accent);
 }
-
-.cast-page.is-idle .progress-track { opacity: 0.5; }
 
 .live-pill {
   display: inline-flex;
@@ -1258,6 +1408,564 @@ button.row:active { background: var(--accent-soft); }
 
 @keyframes rise { from { transform: translateY(24px); opacity: 0; } }
 @keyframes fade-in { from { opacity: 0; } }
+
+/* ---------------------------------------------------------------- bottom sheet */
+
+/* The frame every bottom sheet shares (BottomSheet.tsx); each sheet adds its own content. */
+.bottom-sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.45);
+  animation: fade-in 200ms ease;
+}
+
+.bottom-sheet {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 4;
+  padding: 0 20px calc(16px + env(safe-area-inset-bottom));
+  border-radius: 28px 28px 0 0;
+  background: #2b2b29;
+  box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.4);
+  animation: rise 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  transition: transform 200ms ease;
+}
+
+.bottom-sheet.is-dragging { transition: none; }
+.bottom-sheet__grab { padding: 10px 0 8px; touch-action: none; cursor: grab; }
+
+/* ---------------------------------------------------------------- light sheet (docs/design/light-sheet) */
+
+/* A row with a sheet: the left part opens it, only the switch toggles. */
+.row--sheet { padding: 0; gap: 0; }
+
+.row__open {
+  appearance: none;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 4px 14px 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.row__open:active { background: var(--accent-soft); }
+.row__divider { flex: none; align-self: stretch; width: 1px; background: var(--border); }
+
+.row__switch {
+  appearance: none;
+  flex: none;
+  display: grid;
+  padding: 14px 16px;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.light-sheet__title {
+  margin: 4px 0 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 24px;
+}
+
+.light-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+
+.light-pill {
+  appearance: none;
+  padding: 7px 13px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.light-pill[aria-pressed='true'] {
+  background: var(--accent-soft);
+  color: var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent);
+}
+
+.light-pill:disabled { opacity: 0.35; background: transparent; cursor: default; }
+
+.light-sheet__pages { margin: 0 -20px; }
+.light-sheet__page { padding: 0 20px; }
+
+.light-sheet__name-and-dots { display: flex; align-items: center; justify-content: center; gap: 6px; }
+.light-sheet__light-name { margin-right: 6px; font-size: 12px; color: var(--text-muted); }
+
+.light-sheet__name-and-dots i {
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--text) 22%, transparent);
+  transition: width 200ms ease, background-color 200ms ease;
+}
+
+.light-sheet__name-and-dots i.is-active { width: 16px; background: var(--text); }
+
+/* Every page as tall as the tallest control, with the control centred in the space under the pills. */
+.light-sheet__page { display: flex; flex-direction: column; min-height: 400px; }
+
+.light-control {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 16px 0;
+}
+
+.light-control__ends {
+  flex: none;
+  width: 110px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 300px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* Fixed width and equal-width digits: a changing value must not shift the centred slider. */
+.light-control__value { flex: none; width: 110px; display: flex; flex-direction: column; gap: 6px; white-space: nowrap; }
+.light-control__number { font-family: var(--font-serif); font-size: 34px; line-height: 1; font-variant-numeric: tabular-nums; }
+.light-control__number small { font-size: 0.45em; color: var(--text-muted); }
+.light-control__name { font-size: 13px; color: var(--text-muted); }
+
+.vslider {
+  position: relative;
+  flex: none;
+  width: 120px;
+  height: 300px;
+  border-radius: 34px;
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px var(--border);
+  touch-action: none;
+  cursor: pointer;
+}
+
+.vslider.is-disabled { opacity: 0.35; cursor: default; }
+
+.vslider__fill { position: absolute; left: 0; right: 0; bottom: 0; pointer-events: none; }
+
+.vslider__icon {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  display: grid;
+  transform: translateX(-50%);
+  color: #5a3a20;
+  pointer-events: none;
+}
+
+.vslider__icon .icon { width: 26px; height: 26px; }
+
+.vslider__knob {
+  position: absolute;
+  left: 10px;
+  right: 10px;
+  height: 6px;
+  margin-bottom: -3px;
+  border-radius: 3px;
+  background: #fff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+  pointer-events: none;
+}
+
+/* Colour disc (docs/design/light-sheet, option A), from @uiw/react-color-wheel. */
+.light-color-wheel { flex: none; border-radius: 50%; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1); outline: none; }
+
+.light-color-wheel__knob {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 34px;
+  height: 34px;
+  margin: -17px 0 0 -17px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px #fff, 0 2px 10px rgba(0, 0, 0, 0.5);
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------- sitter sheets (docs/design/babysit), coloured by --sitter-color */
+
+.sitter-sheet__header { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+
+.sitter-sheet__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 24px;
+}
+
+.sitter-refresh {
+  appearance: none;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  height: 34px;
+  padding: 0 13px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.sitter-refresh .icon { width: 15px; height: 15px; color: var(--sitter-color); }
+.sitter-refresh .spinner { width: 13px; height: 13px; border-top-color: var(--sitter-color); }
+.sitter-refresh.status-error { color: var(--accent); }
+
+.sitter-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  overflow: hidden;
+}
+
+.sitter-list__row { display: flex; align-items: center; gap: 12px; padding: 12px 14px; }
+.sitter-list__row + .sitter-list__row { box-shadow: inset 0 1px 0 var(--border); }
+
+.sitter-list__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--sitter-color) 16%, var(--bg));
+  color: var(--sitter-color);
+}
+
+.sitter-list__icon .icon { width: 18px; height: 18px; }
+.sitter-list__text { display: flex; flex-direction: column; min-width: 0; }
+.sitter-list__date { font-size: 13px; color: var(--text-muted); }
+.sitter-list__title { margin-top: 1px; font-size: 16px; font-weight: 500; }
+
+/* ---------------------------------------------------------------- airco sheet (docs/design/airco-sheet) */
+
+.airco-sheet__name { display: block; font-size: 12px; text-align: center; color: var(--text-muted); }
+
+.airco-sheet__target { margin-top: 14px; }
+
+.airco-target { display: flex; align-items: center; justify-content: center; gap: 26px; }
+
+.airco-target__value {
+  min-width: 120px;
+  font-family: var(--font-serif);
+  font-size: 60px;
+  line-height: 1;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.airco-target__step {
+  appearance: none;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: transform 120ms ease;
+}
+
+.airco-target__step .icon { width: 22px; height: 22px; }
+.airco-target__step:active { transform: scale(0.94); }
+.airco-target__step:disabled { opacity: 0.35; cursor: default; }
+
+.airco-sheet__now { margin: 6px 0 0; font-size: 13px; text-align: center; color: var(--text-muted); }
+.airco-sheet__now--alone { margin-top: 18px; font-size: 15px; }
+
+.choice-row { margin-top: 20px; }
+
+.choice-row__title {
+  display: flex;
+  justify-content: space-between;
+  margin: 0 2px 8px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.choice-row__chosen { font-size: 13px; letter-spacing: 0; text-transform: none; color: var(--text); }
+
+.choice-row__options {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 16px;
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.choice-row__option {
+  appearance: none;
+  flex: 1;
+  /* Buttons don't inherit the page font by themselves (the zone names in the mower sheet). */
+  font: inherit;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  height: 40px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.choice-row__option .icon { width: 22px; height: 22px; }
+.choice-row__options--taller .choice-row__option { height: 46px; }
+.choice-row__options--taller .choice-row__option .icon { width: 24px; height: 24px; }
+.choice-row__option[aria-pressed='true'] { background: var(--accent); color: #fff; }
+/* A disabled option: not tappable and dimmed, but still filled when it's the chosen one. */
+.choice-row__option:disabled { cursor: default; }
+.choice-row__option.is-disabled:not([aria-pressed='true']) { opacity: 0.35; }
+
+/* Parts of the fan and vane icons. */
+.icon .icon__filled { fill: currentColor; stroke: none; }
+.icon .icon__faint { stroke-width: 1.2; opacity: 0.45; }
+.icon .icon__unit { stroke-width: 2.4; }
+
+/* ---------------------------------------------------------------- statistics (docs/design/verbruik) */
+
+/* Live card: a fixed 59px, whatever the content. */
+.power-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 59px;
+  margin-bottom: 10px;
+  padding: 0 14px;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.power-card__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
+  background: color-mix(in srgb, var(--statistic-color) 14%, transparent);
+  color: var(--statistic-color);
+}
+
+.power-card__icon .icon { width: 18px; height: 18px; }
+
+.power-card__value {
+  display: block;
+  font-size: 17px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.power-card__value small,
+.statistic-tile__value small { margin-left: 3px; font-weight: 500; color: var(--text-muted); }
+.power-card__value small { font-size: 13px; }
+
+.power-card__now {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.power-card__now::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--statistic-color);
+}
+
+.power-card__peak { flex: 1; display: flex; flex-direction: column; gap: 7px; margin-left: 18px; }
+.power-card__peak-label { text-align: right; font-size: 11px; color: var(--text-muted); }
+.power-card__peak-label b { font-weight: 600; color: var(--text); }
+
+.power-card__meter {
+  position: relative;
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--statistic-color) 14%, var(--bg));
+}
+
+.power-card__meter i { position: absolute; inset: 0 auto 0 0; border-radius: 999px; background: var(--statistic-color); }
+
+/* Tiles: 2 per row, equally high; the line sits at the bottom. */
+.statistics__tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.statistic-tile {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: 14px 14px 0;
+  overflow: hidden;
+  border-radius: 20px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+}
+
+.statistic-tile__header { display: flex; align-items: center; gap: 7px; font-size: 13px; color: var(--text-muted); }
+.statistic-tile__header .icon { width: 15px; height: 15px; color: var(--statistic-color); }
+
+.statistic-tile__value {
+  margin-top: 6px;
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.statistic-tile__value small { font-size: 14px; }
+
+.statistic-tile__sparkline { height: 46px; margin: auto -14px 0; padding-top: 10px; box-sizing: content-box; }
+
+/* ---------------------------------------------------------------- empty state (docs/design/empty-state) */
+
+.empty-state { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 22px 0 8px; }
+
+.empty-state__icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--surface);
+  box-shadow: inset 0 0 0 1px var(--border);
+  color: var(--accent);
+}
+
+.empty-state__icon .icon { width: 22px; height: 22px; }
+.empty-state__text { margin: 0; font-size: 14px; color: var(--text-muted); }
+
+/* ---------------------------------------------------------------- wat staat aan (docs/design/whats-on) */
+
+.whats-on-sheet { padding: 0 16px calc(34px + env(safe-area-inset-bottom)); }
+
+.whats-on-sheet__title {
+  margin: 0 4px 2px;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 24px;
+}
+
+.whats-on-sheet .safety-sheet__section { margin-top: 16px; }
+.whats-on-sheet .row-group { margin-top: 0; }
+
+/* ---------------------------------------------------------------- slim controls (docs/design/snel-list, S1) */
+
+/* The room controls, smaller: Snel on Thuis. Only sizes change; the markup and
+   what a tap does are the same as in a room. */
+.row-group--slim { margin-top: 0; }
+.row-group--slim .row { gap: 12px; padding: 8px 14px; }
+.row-group--slim .row--sheet { padding: 0; }
+.row-group--slim .row__open { gap: 12px; padding: 8px 4px 8px 14px; }
+.row-group--slim .row__switch { padding: 8px 14px; }
+.row-group--slim .icon-tile { width: 28px; height: 28px; border-radius: 9px; }
+.row-group--slim .icon-tile .icon { width: 16px; height: 16px; }
+.row-group--slim .row__name { font-size: 15px; }
+.row-group--slim .pill-button { min-width: 60px; height: 26px; padding: 0 12px; font-size: 12px; }
+.row-group--slim .pill-button .icon { width: 15px; height: 15px; }
+.row-group--slim .switch { width: 40px; height: 24px; }
+.row-group--slim .switch::after { top: 2px; left: 2px; width: 20px; height: 20px; }
+.row-group--slim .switch.is-on::after { transform: translateX(16px); }
+
+/* ---------------------------------------------------------------- lawn mower (docs/design/lawn-mower) */
+
+/* The whole row opens her sheet (option R1); a chevron instead of a switch. */
+.row__chevron { flex: none; display: grid; color: var(--text-muted); }
+.row__chevron .icon { width: 16px; height: 16px; }
+.row--opens-sheet .card-detail.is-error { color: #e5534b; }
+
+/* At most 80% of the screen: the handle stays, the content scrolls under it. */
+.mower-sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: 80dvh;
+  padding: 0 16px;
+}
+
+.mower-sheet__name { display: block; font-size: 12px; text-align: center; color: var(--text-muted); }
+
+.mower-sheet__content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding-bottom: calc(34px + env(safe-area-inset-bottom));
+}
+
+.mower-sheet__title {
+  margin: 8px 4px 2px;
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: 24px;
+}
+
+.mower-sheet__detail {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.mower-sheet .choice-row { margin-top: 18px; }
+.mower-sheet .choice-row__title { margin: 0 6px 8px; }
+
+/* An option's text on its button instead of an icon. */
+.choice-row__label {
+  overflow: hidden;
+  padding: 0 6px;
+  font-size: 14px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
 
 /* ---------------------------------------------------------------- cameras (docs/design/cameras) */
 

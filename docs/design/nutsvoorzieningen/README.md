@@ -2,6 +2,8 @@
 
 Today's energy and water use on **Thuis**. Dark mode only. Replaces the owner's existing HA "Nutsvoorzieningen" section and follows the same design system as the [media card](../media-card/README.md) and [cameras](../cameras/README.md).
 
+> ➡️ **Adjusted and built as [Verbruik](../verbruik/README.md).** What's below is the original approved design; Verbruik lists what changed.
+>
 > ✅ **Approved: final.** The owner approved this design. Build it exactly as designed, and don't change layout, colors, proportions or content without asking first.
 
 ![Nutsvoorzieningen](./nutsvoorzieningen.png)

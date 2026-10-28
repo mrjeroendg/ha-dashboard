@@ -1,0 +1,54 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Commute</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,390px);gap:34px 28px}
+.cap{min-height:70px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--accent-soft:rgba(217,119,87,.18);
+position:relative;width:390px;height:640px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:56px 24px 0}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.lbl b{font-weight:600;color:var(--text)}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:33px;line-height:1.15}
+.status{display:inline-flex;gap:10px;align-items:center;margin-top:18px;padding:10px 16px;font-size:15px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:22px}
+.status i{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft);flex:none}
+.status b{font-weight:600;color:var(--text)}
+.chip{display:inline-flex;gap:8px;align-items:center;margin-top:8px;padding:8px 14px 8px 12px;font-size:14px;color:var(--muted);background:var(--surface);border:1px solid var(--border);border-radius:22px}
+.chip svg{width:17px;height:17px;color:var(--accent)}
+.chip b{font-weight:600;color:var(--text)}
+.sec{margin:30px 4px 12px;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{min-height:112px;padding:16px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);display:flex;flex-direction:column;justify-content:space-between;gap:18px}
+.tile{width:40px;height:40px;border-radius:12px;background:rgba(245,244,239,.06);display:grid;place-items:center;color:var(--accent)}.tile svg{width:22px;height:22px}
+.card b{font-size:15px;font-weight:600}.card small{display:block;margin-top:2px;font-size:13px;color:var(--muted)}
+.card .big{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.ph{opacity:.9}
+.dock{position:absolute;left:12px;right:12px;bottom:16px}
+.nav{height:56px;border-radius:30px;background:rgba(48,48,46,.92);box-shadow:inset 0 0 0 1px var(--border)}
+.bar{display:flex;align-items:center;gap:10px;margin-bottom:8px;padding:10px 14px;border-radius:22px;background:rgba(48,48,46,.96);box-shadow:inset 0 0 0 1px var(--border),0 8px 24px rgba(0,0,0,.35);font-size:14px;color:var(--muted)}
+.bar svg{width:18px;height:18px;color:var(--accent)}.bar b{color:var(--text);font-weight:600}.bar .r{margin-left:auto;font-variant-numeric:tabular-nums}
+</style></head><body></body>
+<script>
+const car='<svg viewBox="0 0 24 24"><path d="M5 17h14v-5l-2-5H7l-2 5z"/><circle cx="8" cy="17" r="2"/><circle cx="16" cy="17" r="2"/></svg>';
+const baby='<svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 5c0-1.7 1.8-2.5 2.8-1.3M9 12.5h.01M15 12.5h.01M9.8 16.3c1.3.9 3.1.9 4.4 0"/></svg>';
+const moon='<svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/></svg>';
+const date=(extra='')=>`<p class="lbl">Dinsdag 27 oktober${extra}</p>`;
+const hi=`<h1>Goedemiddag, Jeroen</h1>`;
+const status=(text)=>`<div class="status"><i></i><span>${text}</span></div>`;
+const normalStatus=status('Eline thuis · 1 licht aan · alles gesloten');
+const card=(icon,label,detail='')=>`<div class="card"><span class="tile">${icon}</span><div><b>${label}</b>${detail?`<small>${detail}</small>`:''}</div></div>`;
+const snel=(first='')=>`<p class="sec">Snel</p><div class="grid">${first}${card(baby,'Pré slaapje')}${card(moon,'Centris')}${first?'':card(moon,'Sfeer')}</div>`;
+const nav=(bar='')=>`<div class="dock">${bar}<div class="nav"></div></div>`;
+const phone=(inner,dock=nav())=>`<div class="phone"><div class="in">${inner}</div>${dock}</div>`;
+const opts=[
+ ['A · In de statusregel','Geen nieuw element: de reistijd komt vooraan in de regel die er al staat. Het rustigst.',
+   phone(date()+hi+status('<b>34 min naar huis</b> · Eline thuis · alles gesloten')+snel())],
+ ['B · In de datumregel','Klein en in hoofdletters naast de datum, boven de begroeting. Je ziet het pas als je kijkt.',
+   phone(date(' · <b>34 min naar huis</b>')+hi+normalStatus+snel())],
+ ['C · Een tweede, kleiner pilletje','Onder de statusregel, met een auto-icoon en "thuis om". Valt op maar is geen waarschuwing.',
+   phone(date()+hi+normalStatus+'<br>'+`<div class="chip">${car}<span><b>34 min</b> naar huis · thuis om 17:12</span></div>`+snel())],
+ ['D · Eerste kaart in Snel','Een kaart tussen de snelkoppelingen, met de reistijd groot. Neemt de plek van een snelkoppeling in.',
+   phone(date()+hi+normalStatus+snel(`<div class="card"><span class="tile">${car}</span><div><span class="big">34 min</span><small>naar huis · thuis om 17:12</small></div></div>`))],
+ ['E · Balk boven de navigatie','Zoals de mini-speler: een dunne balk onderaan, altijd in beeld, ook in de kamers.',
+   phone(date()+hi+normalStatus+snel(),nav(`<div class="bar">${car}<span><b>34 min</b> naar huis</span><span class="r">thuis om 17:12</span></div>`))],
+];
+document.body.innerHTML=opts.map(([title,sub,html])=>`<div><p class="cap">${title}<small>${sub}</small></p>${html}</div>`).join('');
+</script></html>

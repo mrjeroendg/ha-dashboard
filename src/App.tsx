@@ -3,12 +3,17 @@ import { Attention } from './components/Attention';
 import { BottomNav } from './components/BottomNav';
 import { Cameras } from './components/cameras/Cameras';
 import { Header } from './components/Header';
+import { MediaShortcuts } from './components/media/MediaShortcuts';
 import { MiniPlayer } from './components/media/MiniPlayer';
 import { QuickActions } from './components/QuickActions';
 import { RoomView } from './components/RoomView';
+import { StatisticsSection } from './components/StatisticsSection';
+import { STATISTICS } from './config/statistics';
 import { ROOMS } from './config/rooms';
 import { useDock } from './hooks/useDock';
+import { useHiddenPageScrollbar } from './hooks/useHiddenPageScrollbar';
 import { scrollParent } from './lib/scroll';
+import type { MediaDevice } from './lib/media';
 import { resolveRooms } from './lib/rooms';
 import type { DashboardConfig, HomeAssistant } from './types/hass';
 
@@ -23,6 +28,8 @@ export function App({ hass, config }: Props) {
   // further along the bar, from the left when you go back. None on first load.
   const [direction, setDirection] = useState<'forward' | 'back' | null>(null);
   const top = useRef<HTMLElement>(null);
+  // The device of the media shortcuts; it follows the mini player's page.
+  const [mediaDevice, setMediaDevice] = useState<MediaDevice>('sonos');
 
   const states = hass?.states;
   const rooms = useMemo(() => (states ? resolveRooms(ROOMS, states) : []), [states]);
@@ -37,6 +44,7 @@ export function App({ hass, config }: Props) {
 
   const dock = useRef<HTMLDivElement>(null);
   useDock(top, dock);
+  useHiddenPageScrollbar(top, Boolean(hass));
 
   // A new page starts at the top: if you'd scrolled down, scroll back up.
   useEffect(() => {
@@ -61,14 +69,22 @@ export function App({ hass, config }: Props) {
               {hass && <Attention hass={hass} />}
               {hass && <QuickActions hass={hass} />}
               {hass && <Cameras hass={hass} />}
+              {hass && STATISTICS.map((section) => <StatisticsSection key={section.title} hass={hass} section={section} />)}
             </>
           )}
         </div>
       </div>
       <div className="dock" ref={dock}>
-        {/* The mini player only lives on Thuis. */}
-        {hass && !room && <MiniPlayer hass={hass} />}
-        {rooms.length > 0 && <BottomNav rooms={rooms} active={room ? room.id : null} onSelect={selectPage} />}
+        {/* The mini player and the media shortcuts only live on Thuis. */}
+        {hass && !room && <MiniPlayer hass={hass} onDeviceInView={setMediaDevice} />}
+        {rooms.length > 0 && (
+          <BottomNav
+            rooms={rooms}
+            active={room ? room.id : null}
+            onSelect={selectPage}
+            top={hass && !room && <MediaShortcuts hass={hass} device={mediaDevice} onDeviceChange={setMediaDevice} />}
+          />
+        )}
       </div>
     </main>
   );

@@ -1,0 +1,149 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Airco sheet</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,390px);gap:36px 28px}
+.cap{min-height:58px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone,.legend{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.18);--track:rgba(245,244,239,.12);
+position:relative;width:390px;height:844px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:56px 24px 0}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.lbl{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
+h1{margin:0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:32px}
+.tabs{display:flex;gap:6px;margin-top:18px}
+.tab{padding:8px 14px;border-radius:999px;font-size:14px;font-weight:500;color:var(--muted);background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.tab.on{background:var(--soft);color:var(--accent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 45%,transparent)}
+.group{margin-top:16px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.row{display:flex;align-items:center}.row+.row{box-shadow:inset 0 1px 0 var(--border)}
+.open{flex:1;display:flex;align-items:center;gap:14px;padding:14px 16px;min-width:0}
+.open.tap{background:var(--soft)}
+.divider{align-self:stretch;width:1px;background:var(--border)}
+.swwrap{display:flex;align-items:center;padding:0 16px;flex:none}
+.ic{width:36px;height:36px;border-radius:12px;background:var(--bg);color:var(--accent);display:grid;place-items:center;flex:none}.ic svg{width:20px;height:20px}
+.ic.on{background:var(--accent);color:#fff}
+.t{flex:1;min-width:0}.t b{display:block;font-size:16px;font-weight:500}.t span{font-size:13px;color:var(--muted)}
+.sw{width:48px;height:30px;border-radius:999px;background:var(--border);position:relative;flex:none}.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff}
+.sw.on{background:var(--accent)}.sw.on::after{left:auto;right:3px}
+.note{margin:14px 4px 0;font-size:12px;color:var(--muted);line-height:1.5}.note b{color:var(--text);font-weight:600}
+.nav{position:absolute;left:12px;right:12px;bottom:16px;height:56px;border-radius:30px;background:rgba(48,48,46,.92);box-shadow:inset 0 0 0 1px var(--border)}
+/* sheet */
+.dim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.sheet{position:absolute;left:0;right:0;bottom:0;border-radius:28px 28px 0 0;background:#2b2b29;padding:10px 20px 40px;box-shadow:0 -12px 40px rgba(0,0,0,.4);box-sizing:border-box}
+.handle{width:36px;height:5px;border-radius:3px;background:var(--track);margin:0 auto 8px}
+.name{display:flex;justify-content:center;align-items:center;gap:6px;font-size:12px;color:var(--muted);height:16px}
+.name i{width:6px;height:6px;border-radius:3px;background:rgba(245,244,239,.22)}.name i.on{width:16px;background:var(--text)}
+.title{margin:10px 2px 0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:26px}
+/* temperature */
+.temp{display:flex;align-items:center;justify-content:center;gap:26px;margin-top:8px}
+.step{width:52px;height:52px;border-radius:50%;background:var(--soft);color:var(--accent);display:grid;place-items:center}.step svg{width:22px;height:22px}
+.deg{font-family:ui-serif,"New York",Georgia,serif;font-size:60px;line-height:1;min-width:120px;text-align:center;font-variant-numeric:tabular-nums}
+.now{text-align:center;font-size:13px;color:var(--muted);margin-top:6px}
+/* icon rows */
+.sub{display:flex;justify-content:space-between;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:20px 2px 8px}
+.sub em{font-style:normal;letter-spacing:0;text-transform:none;color:var(--text);font-size:13px}
+.seg{display:flex;gap:4px;padding:4px;border-radius:16px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--border)}
+.seg span{flex:1;height:40px;border-radius:12px;display:grid;place-items:center;color:var(--muted)}
+.seg span svg{width:22px;height:22px}
+.seg span.on{background:var(--accent);color:#fff}
+.seg.modes span{height:46px}.seg.modes span svg{width:24px;height:24px}
+/* B pages */
+.bgrid{display:grid;gap:10px;margin-top:6px}
+.bgrid span{height:74px;border-radius:18px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:var(--muted);font-size:12px}
+.bgrid span svg{width:28px;height:28px}
+.bgrid span.on{background:var(--accent);color:#fff;box-shadow:none}
+.vs-wrap{display:flex;align-items:center;justify-content:center;gap:26px;margin-top:14px}
+.vs{position:relative;width:110px;height:270px;border-radius:32px;background:rgba(245,244,239,.08);overflow:hidden;box-shadow:inset 0 0 0 1px var(--border)}
+.vs i{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(to top,#8fb7ff,#ffb36b)}
+.vs-val .deg{text-align:left;min-width:0}
+/* legend */
+.legend{box-sizing:border-box;width:390px;background:#2b2b29;border-radius:28px;padding:22px 20px;color:var(--text)}
+.lg-row{margin-bottom:18px}.lg-row h4{margin:0 0 8px;font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.lg-items{display:flex;flex-wrap:wrap;gap:10px 3px}
+.lg-items div{width:40px;display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;color:var(--muted);text-align:center}
+.lg-items div span{width:40px;height:40px;border-radius:14px;background:var(--bg);display:grid;place-items:center;color:var(--text)}
+.lg-items svg{width:26px;height:26px}
+.lg-items code{font-size:9px;color:#7d7a73}
+</style></head><body></body>
+<script>
+const svg=(inner)=>`<svg viewBox="0 0 24 24">${inner}</svg>`;
+const rad=(degrees)=>degrees*Math.PI/180;
+// a line from (x,y) in direction `angle` (0° = right, 90° = down), with an arrowhead
+const arrow=(x,y,angle,length)=>{const a=rad(angle),ex=x+Math.cos(a)*length,ey=y+Math.sin(a)*length,h=4;
+ const l=a+Math.PI-rad(30),r=a+Math.PI+rad(30);
+ return `<path d="M${x} ${y}L${ex.toFixed(1)} ${ey.toFixed(1)}M${(ex+Math.cos(l)*h).toFixed(1)} ${(ey+Math.sin(l)*h).toFixed(1)}L${ex.toFixed(1)} ${ey.toFixed(1)}L${(ex+Math.cos(r)*h).toFixed(1)} ${(ey+Math.sin(r)*h).toFixed(1)}"/>`};
+const arc=(cx,cy,radius,from,to)=>{const p=(d)=>[cx+Math.cos(rad(d))*radius,cy+Math.sin(rad(d))*radius].map(n=>n.toFixed(1));
+ const [x1,y1]=p(from),[x2,y2]=p(to);const head=(d,dir)=>{const [x,y]=p(d).map(Number);const t=rad(d+dir*90);const h=3.6;
+  return `M${(x+Math.cos(t+Math.PI-rad(35))*h).toFixed(1)} ${(y+Math.sin(t+Math.PI-rad(35))*h).toFixed(1)}L${x} ${y}L${(x+Math.cos(t+Math.PI+rad(35))*h).toFixed(1)} ${(y+Math.sin(t+Math.PI+rad(35))*h).toFixed(1)}`};
+ return `<path d="M${x1} ${y1}A${radius} ${radius} 0 0 1 ${x2} ${y2}${head(from,-1)}${head(to,1)}"/>`};
+const I={
+ auto:svg('<path d="M7.5 18l4.5-12 4.5 12M9.2 13.5h5.6"/>'),
+ heat:svg('<circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/>'),
+ cool:svg('<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5L12 7l2.5-2.5M9.5 19.5L12 17l2.5 2.5M3.9 10.6l3.4.9-.9 3.4M20.1 13.4l-3.4-.9.9-3.4M6.4 9.1l.9 3.4M17.6 14.9l-.9-3.4"/>'.replace('M6.4 9.1l.9 3.4M17.6 14.9l-.9-3.4','')),
+ dry:svg('<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/><path d="M9 14.5a3 3 0 0 0 3 3"/>'),
+ fan:svg('<circle cx="12" cy="12" r="1.6"/>'+[0,120,240].map(r=>`<path transform="rotate(${r} 12 12)" d="M12 10.4C11 7 12 3.5 15 3.5c2.6 0 2.6 4.2-1.6 7"/>`).join('')),
+ minus:svg('<path d="M6 12h12"/>'),plus:svg('<path d="M12 6v12M6 12h12"/>'),
+ thermo:svg('<path d="M14 14.8V4a2 2 0 0 0-4 0v10.8a4 4 0 1 0 4 0z"/>'),
+};
+// fan speed: n of 5 bars filled
+const bars=(n)=>svg([0,1,2,3,4].map(i=>{const h=4+i*3.5,x=3+i*4;return `<rect x="${x}" y="${20-h}" width="2.6" height="${h}" rx="1.1" ${i<n?'fill="currentColor" stroke="none"':'stroke-width="1.2" opacity=".45"'}/>`}).join(''));
+// vertical vane, side view: the unit top left, the air goes out at an angle (1 = straight out, 5 = down)
+const VERTICAL_ANGLES=[8,28,48,68,86];
+const vertical=(position)=>svg('<path d="M3 4.5h9" stroke-width="2.4"/>'+arrow(5,7.5,VERTICAL_ANGLES[position-1],13));
+const verticalSwing=svg('<path d="M3 4.5h9" stroke-width="2.4"/>'+arc(5,7.5,12,10,82));
+// horizontal vane, top view: the unit at the top, the air goes left to right (1 = far left, 5 = far right)
+const HORIZONTAL_ANGLES=[145,118,90,62,35];
+const horizontal=(position)=>svg('<path d="M6 4h12" stroke-width="2.4"/>'+arrow(12,6.5,HORIZONTAL_ANGLES[position-1],13));
+const horizontalSplit=svg('<path d="M6 4h12" stroke-width="2.4"/>'+arrow(12,6.5,130,13)+arrow(12,6.5,50,13));
+const horizontalSwing=svg('<path d="M6 4h12" stroke-width="2.4"/>'+arc(12,6.5,11,35,145));
+
+const MODES=[['auto','Auto'],['heat','Verwarmen'],['cool','Koelen'],['dry','Drogen'],['fan','Ventileren']];
+const FAN=[['auto',I.auto],...[1,2,3,4,5].map(n=>[String(n),bars(n)])];
+const VERTICAL=[['auto',I.auto],...[1,2,3,4,5].map(n=>[String(n),vertical(n)]),['swing',verticalSwing]];
+const HORIZONTAL=[['auto',I.auto],...[1,2,3,4,5].map(n=>[String(n),horizontal(n)]),['split',horizontalSplit],['swing',horizontalSwing]];
+const seg=(items,active,cls='')=>`<div class="seg ${cls}">${items.map(([key,icon])=>`<span class="${key===active?'on':''}">${icon}</span>`).join('')}</div>`;
+const modeBar=(active)=>seg(MODES.map(([key])=>[key,I[key]]),active,'modes');
+
+const room=(rowOn,tap=false,extra='')=>`<div class="in"><p class="lbl">Slaapkamer</p><h1>Slaapkamer</h1>
+ <div class="tabs"><span class="tab on">Klimaat</span><span class="tab">Rolluik</span></div>
+ <div class="group">${rowOn}</div>${extra}</div><div class="nav"></div>`;
+const aircoRow=(on,tap)=>`<div class="row"><div class="open${tap?' tap':''}"><span class="ic${on?' on':''}">${I.thermo}</span><span class="t"><b>Airco</b><span>${on?'Verwarmen naar 21°':'Uit'}</span></span></div><span class="divider"></span><span class="swwrap"><span class="sw${on?' on':''}"></span></span></div>`;
+const phone=(inner)=>`<div class="phone">${inner}</div>`;
+
+const sheetA=`<div class="dim"></div><div class="sheet"><div class="handle"></div><div class="name">Airco</div>
+ <div class="temp" style="margin-top:18px"><span class="step">${I.minus}</span><span class="deg">21°</span><span class="step">${I.plus}</span></div>
+ <div class="now">nu 19,5°</div>
+ <div class="sub" style="margin-top:22px">Modus<em>Verwarmen</em></div>${modeBar('heat')}
+ <div class="sub">Ventilator<em>Snelheid 3</em></div>${seg(FAN,'3')}
+ <div class="sub">Lamellen · op en neer<em>Stand 2</em></div>${seg(VERTICAL,'2')}
+ <div class="sub">Lamellen · links en rechts<em>Swing</em></div>${seg(HORIZONTAL,'swing')}
+</div>`;
+
+const pageDots=(active)=>`<div class="name">Airco ${[0,1,2].map(i=>`<i class="${i===active?'on':''}"></i>`).join('')}</div>`;
+const sheetB1=`<div class="dim"></div><div class="sheet" style="height:610px"><div class="handle"></div>${pageDots(0)}<h2 class="title">Temperatuur</h2>
+ <div class="vs-wrap"><div class="vs"><i style="height:36%"></i></div><div class="vs-val"><div class="deg">21°</div><div class="now" style="text-align:left">nu 19,5°</div></div></div>
+ <div class="sub" style="margin-top:22px">Modus<em>Verwarmen</em></div>${modeBar('heat')}</div>`;
+const bigGrid=(items,active,columns,labels)=>`<div class="bgrid" style="grid-template-columns:repeat(${columns},1fr)">${items.map(([key,icon],i)=>`<span class="${key===active?'on':''}">${icon}${labels[i]}</span>`).join('')}</div>`;
+const sheetB2=`<div class="dim"></div><div class="sheet" style="height:610px"><div class="handle"></div>${pageDots(1)}<h2 class="title">Ventilator</h2>
+ <div style="margin-top:16px">${bigGrid(FAN,'3',3,['Auto','1','2','3','4','5'])}</div></div>`;
+const sheetB3=`<div class="dim"></div><div class="sheet" style="height:610px"><div class="handle"></div>${pageDots(2)}<h2 class="title">Lamellen</h2>
+ <div class="sub">Op en neer</div>${bigGrid(VERTICAL.slice(0,4),'2',4,['Auto','1','2','3'])}<div style="height:10px"></div>${bigGrid(VERTICAL.slice(4),'',4,['4','5','Swing'])}
+ <div class="sub">Links en rechts</div>${bigGrid(HORIZONTAL.slice(0,4),'',4,['Auto','1','2','3'])}<div style="height:10px"></div>${bigGrid(HORIZONTAL.slice(4),'swing',4,['4','5','Split','Swing'])}</div>`;
+
+const legendRow=(title,items,labels,values,wide)=>`<div class="lg-row"><h4>${title}</h4><div class="lg-items"${wide?' style="gap:10px 22px"':''}>${items.map(([,icon],i)=>`<div><span>${icon}</span>${labels[i]}<code>${values[i]}</code></div>`).join('')}</div></div>`;
+const legend=`<div class="legend">
+ ${legendRow('Modus',MODES.map(([k])=>[k,I[k]]),MODES.map(([,n])=>n),['heat_cool','heat','cool','dry','fan_only'],true)}
+ ${legendRow('Ventilator',FAN,['Auto','1','2','3','4','5'],['auto','1','2','3','4','5'])}
+ ${legendRow('Op en neer (zijaanzicht)',VERTICAL,['Auto','1','2','3','4','5','Swing'],['auto','1','2','3','4','5','swing'])}
+ ${legendRow('Links en rechts (bovenaanzicht)',HORIZONTAL,['Auto','1','2','3','4','5','Split','Swing'],['auto','1','2','3','4','5','split','swing'])}
+</div>`;
+
+const S=[
+ ['De rij, aan en uit','Zoals de lampen: de schakelaar zet de airco uit (vanuit elke modus) of weer aan. Links van het lijntje opent de sheet.',
+  phone(room(aircoRow(true),false,`<div class="group">${aircoRow(false)}</div><p class="note"><b>Aan:</b> modus en doel. <b>Uit:</b> "Uit". De temperatuur nu staat al bovenaan de kamer.<br> De sheet openen zet hem niet aan; pas als je iets kiest.</p>`))],
+ ['A · Eén sheet, alles in beeld','Doel met − / +, dan vier rijen iconen: modus, ventilator, op en neer, links en rechts. Rechts boven elke rij staat wat gekozen is.',
+  phone(room(aircoRow(true,true))+sheetA)],
+ ['Iconen','Elke stand een eigen icoon, geen lijstjes. De grijze code is de waarde in HA.',`<div>${legend}</div>`],
+ ['B · Pagina\'s zoals de lampen (1/3)','Opzij swipen. Temperatuur met de verticale slider (koud blauw onderaan, warm oranje boven), modus eronder.',
+  phone(room(aircoRow(true,true))+sheetB1)],
+ ['B · Pagina 2: Ventilator','Grote knoppen met het icoon en de stand eronder.',phone(room(aircoRow(true,true))+sheetB2)],
+ ['B · Pagina 3: Lamellen','Op en neer, en links en rechts, op één pagina.',phone(room(aircoRow(true,true))+sheetB3)],
+];
+document.body.innerHTML=S.map(([title,sub,html])=>`<div><p class="cap">${title}<small>${sub}</small></p>${html}</div>`).join('');
+</script></html>

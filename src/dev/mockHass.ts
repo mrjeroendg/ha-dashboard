@@ -59,6 +59,47 @@ function baseStates(): HassEntities {
     entity('sensor.badkamer_temperatuur', '20.1', { unit_of_measurement: '°C', device_class: 'temperature' }),
     entity('sensor.badkamer_vochtigheid', '64', { unit_of_measurement: '%', device_class: 'humidity' }),
     entity('climate.woonkamer', 'heat', { current_temperature: 19.5, temperature: 19 }),
+    // The status line's lights (src/config/status.ts), also listed in "Wat staat aan" (docs/design/whats-on).
+    entity('light.huecupboard', 'on', { friendly_name: 'CB3', brightness: 153, supported_color_modes: ['brightness'], color_mode: 'brightness' }),
+    entity('light.centris', 'on', { friendly_name: 'Centris', supported_color_modes: ['onoff'], color_mode: 'onoff' }),
+    // Snel on Thuis (src/config/shortcuts.ts, docs/design/snel-list).
+    // A scene's state is when it last ran; 'unknown' if it never has.
+    entity('scene.pre_sleep', '2026-10-24T19:12:03+00:00', { friendly_name: 'Pré slaapje' }),
+    entity('script.garage_door_impuls', 'off', { friendly_name: 'Garage door impuls' }),
+    entity('scene.living_mood_lighting', 'unknown', { friendly_name: 'Sfeer' }),
+    // Verbruik (docs/design/verbruik); the IDs are the real ones from src/config/statistics.ts.
+    entity('sensor.p1_meter_power', '196', { unit_of_measurement: 'W', device_class: 'power', state_class: 'measurement' }),
+    entity('sensor.p1_meter_energy_consumption_daily', '8.13', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
+    entity('sensor.p1_meter_energy_production_daily', '1.24', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
+    entity('sensor.garage_water_meter_consumption_daily', '0.102', { unit_of_measurement: 'm³', state_class: 'total_increasing' }),
+    entity('sensor.gas_meter_consumption_daily', '2.78', { unit_of_measurement: 'm³', state_class: 'total_increasing' }),
+    // Jaqueline, a Worx Landroid (docs/design/lawn-mower); the IDs are the real ones from src/config/rooms.ts.
+    entity('lawn_mower.jeroen_dg2_gmail_com_jaqueline', 'docked', { friendly_name: 'Jaqueline 👸🏼', supported_features: 7 }),
+    entity('sensor.jeroen_dg2_gmail_com_jaqueline_battery', '100', { unit_of_measurement: '%', device_class: 'battery' }),
+    entity('sensor.jeroen_dg2_gmail_com_jaqueline_battery_temperature', '16.5', { unit_of_measurement: '°C', device_class: 'temperature' }),
+    entity('binary_sensor.jeroen_dg2_gmail_com_jaqueline_charging', 'off', { device_class: 'battery_charging' }),
+    entity('binary_sensor.jeroen_dg2_gmail_com_jaqueline_rain_sensor', 'off', { device_class: 'moisture' }),
+    entity('binary_sensor.jeroen_dg2_gmail_com_jaqueline_mqtt', 'on', { device_class: 'connectivity' }),
+    entity('sensor.jeroen_dg2_gmail_com_jaqueline_error', 'no_error', { device_class: 'enum' }),
+    entity('sensor.jeroen_dg2_gmail_com_jaqueline_blade_runtime_since_reset', '47.9166666666667', { unit_of_measurement: 'h' }),
+    entity('sensor.jeroen_dg2_gmail_com_jaqueline_distance_driven_total', '49.345', { unit_of_measurement: 'km' }),
+    entity('select.jeroen_dg2_gmail_com_jaqueline_zone', 'unknown', { options: ['1', '2', '3'] }),
+    // A MELCloud airco (docs/design/airco-sheet); the ID is the real one from src/config/rooms.ts.
+    entity('climate.bedroom_marielou_airco', 'heat', {
+      friendly_name: 'Airco',
+      hvac_modes: ['off', 'heat', 'cool', 'auto', 'dry', 'fan_only'],
+      current_temperature: 23,
+      temperature: 23,
+      min_temp: 10,
+      max_temp: 31,
+      fan_modes: ['auto', 'speed_1', 'speed_2', 'speed_3', 'speed_4', 'speed_5'],
+      fan_mode: 'speed_1',
+      swing_modes: ['auto', 'swing', 'position_1', 'position_2', 'position_3', 'position_4', 'position_5'],
+      swing_mode: 'position_1',
+      swing_horizontal_modes: ['auto', 'swing', 'left', 'left_centre', 'centre', 'right_centre', 'right'],
+      swing_horizontal_mode: 'left',
+      supported_features: 937,
+    }),
     entity('switch.koffiemachine', 'off', { friendly_name: 'Koffiemachine' }),
     entity('cover.rolluiken', 'closed', { friendly_name: 'Rolluiken' }),
     entity('lock.voordeur', 'locked', { friendly_name: 'Voordeur' }),
@@ -68,6 +109,10 @@ function baseStates(): HassEntities {
     entity('sensor.auto_batterij', '62', { unit_of_measurement: '%' }),
     entity('switch.auto_laden', 'off', { friendly_name: 'Auto laden' }),
     entity('media_player.woonkamer', 'idle', { friendly_name: 'Woonkamer' }),
+    // Today's birthdays (src/config/status.ts BIRTHDAYS): the state is the number of open items.
+    entity('todo.birthdays_today', '2', { friendly_name: 'Birthdays today' }),
+    // Cara's water fountain (src/config/status.ts NOW): on, so the status band shows her drinking.
+    entity('switch.0x94a081fffe562fad', 'on', { friendly_name: 'Drinkfontein Cara' }),
     // The media card uses the IDs from src/config/media.ts, so mock those.
     entity(SONOS, 'idle', { friendly_name: 'Woonkamer', volume_level: 0.3, supported_features: 1 | 4 | 16 | 32 | 4096 }),
     entity(CHROMECAST, 'playing', {
@@ -234,14 +279,23 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
         const k = data.color_temp_kelvin;
         const rgb = k < 3300 ? [255, 167, 87] : k < 5000 ? [255, 214, 170] : [235, 238, 255];
         set(id, 'on', { color_mode: 'color_temp', color_temp_kelvin: k, rgb_color: rgb });
-      } else if (service === 'turn_on') ROUTINES[id] ? ROUTINES[id]() : set(id, 'on');
+      } else if (service === 'turn_on' && domain === 'climate') set(id, 'heat');
+      else if (service === 'turn_on') ROUTINES[id] ? ROUTINES[id]() : set(id, 'on');
       else if (service === 'turn_off') set(id, 'off');
       else if (service === 'toggle') set(id, current === 'on' ? 'off' : 'on');
       else if (service === 'open_cover') set(id, 'open');
       else if (service === 'close_cover') set(id, 'closed');
       else if (service === 'lock') set(id, 'locked');
       else if (service === 'unlock') set(id, 'unlocked');
-      else if (service === 'set_temperature') set(id, 'heat', { temperature: data?.temperature });
+      else if (service === 'set_temperature') set(id, current === 'off' ? 'heat' : current, { temperature: data?.temperature });
+      else if (service === 'set_hvac_mode') set(id, String(data?.hvac_mode));
+      else if (service === 'set_fan_mode') set(id, current, { fan_mode: data?.fan_mode });
+      else if (service === 'set_swing_mode') set(id, current, { swing_mode: data?.swing_mode });
+      else if (service === 'set_swing_horizontal_mode') set(id, current, { swing_horizontal_mode: data?.swing_horizontal_mode });
+      else if (service === 'start_mowing') set(id, 'mowing');
+      else if (service === 'pause') set(id, 'paused');
+      else if (service === 'dock') set(id, 'returning');
+      else if (service === 'select_option') set(id, String(data?.option));
       else if (service === 'media_play_pause')
         set(id, current === 'playing' ? 'paused' : 'playing', { media_position: positionNow(id), media_position_updated_at: stamp() });
       else if (service === 'media_seek') set(id, current, { media_position: data?.seek_position, media_position_updated_at: stamp() });
@@ -262,6 +316,14 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     return JSON.stringify(events);
   };
 
+  // The 6 days before today per daily sensor (docs/design/verbruik), oldest first.
+  const DAILY_TOTALS: Record<string, number[]> = {
+    'sensor.p1_meter_energy_consumption_daily': [9.4, 8.8, 10.2, 7.9, 9.1, 11.3],
+    'sensor.p1_meter_energy_production_daily': [3.1, 4.6, 1.2, 0.8, 2.9, 5.1],
+    'sensor.garage_water_meter_consumption_daily': [0.131, 0.118, 0.152, 0.097, 0.141, 0.126],
+    'sensor.gas_meter_consumption_daily': [2.41, 2.9, 3.1, 2.2, 2.6, 3.4],
+  };
+
   const callWS = async <T,>(msg: { type: string; [key: string]: unknown }) => {
     console.info('[mock] callWS', msg);
     if (msg.type === 'frigate/events/get') return frigateEvents() as T;
@@ -269,6 +331,20 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     if (msg.type === 'camera/stream') throw new Error('No stream in mock mode');
     if (msg.type === 'camera/capabilities') return { frontend_stream_types: ['web_rtc', 'hls'] } as T;
     if (msg.type === 'camera/webrtc/get_client_config') return { configuration: { iceServers: [] } } as T;
+    if (msg.type === 'recorder/statistics_during_period') {
+      const statisticIds = msg.statistic_ids as string[];
+      const dayLength = 24 * 3600_000;
+      return Object.fromEntries(
+        statisticIds.map((statisticId) => [
+          statisticId,
+          (DAILY_TOTALS[statisticId] ?? []).map((change, dayIndex) => ({ start: Date.now() - (6 - dayIndex) * dayLength, change })),
+        ]),
+      ) as T;
+    }
+    if (msg.type === 'recorder/statistic_during_period') return { max: 2400 } as T;
+    if (msg.type === 'todo/item/list' && msg.entity_id === 'todo.birthdays_today') {
+      return { items: [{ uid: 'birthday-1', summary: 'Jan', status: 'needs_action' }, { uid: 'birthday-2', summary: 'An', status: 'needs_action' }] } as T;
+    }
     return undefined as T;
   };
 

@@ -1,0 +1,60 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Verbruik</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(4,390px);gap:36px 28px}
+.cap{min-height:58px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;
+position:relative;width:390px;height:700px;border-radius:44px;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:30px 24px 0}
+svg{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sec{margin:26px 4px 12px;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.sec:first-child{margin-top:0}
+.qgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.q{height:80px;border-radius:22px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border)}
+.lv{display:flex;align-items:center;gap:12px;height:59px;box-sizing:border-box;padding:0 14px;border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);margin-bottom:10px}
+.lv .ic{width:34px;height:34px;border-radius:11px;display:grid;place-items:center;background:color-mix(in srgb,var(--h) 14%,transparent);color:var(--h);flex:none}.lv .ic svg{width:18px;height:18px}
+.lv b{display:block;font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.lv b small{font-size:13px;font-weight:500;color:var(--muted);margin-left:3px}
+.lv .now{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.lv .now::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--h)}
+.mw{flex:1;margin-left:18px;display:flex;flex-direction:column;gap:7px}
+.mlab{text-align:right;font-size:11px;color:var(--muted)}.mlab b{display:inline;font-size:11px;color:var(--text);font-weight:600}
+.mtr{position:relative;height:8px;border-radius:999px;background:color-mix(in srgb,var(--h) 14%,var(--bg))}
+.mtr i{position:absolute;left:0;top:0;bottom:0;border-radius:999px;background:var(--h)}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:10px}.pair .lv{margin-bottom:10px}
+.ut{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.utile{padding:14px 14px 0;border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden;display:flex;flex-direction:column}
+.utile .hd{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--muted)}
+.utile .hd svg{width:15px;height:15px;color:var(--h)}
+.utile .v{margin-top:6px;font-size:26px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.utile .v small{font-size:14px;font-weight:500;color:var(--muted);margin-left:3px}
+.utile .nowline{display:flex;align-items:center;gap:6px;margin-top:2px;font-size:12px;color:var(--muted)}
+.utile .nowline::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--h)}
+.utile svg.spark{display:block;width:calc(100% + 28px);margin:10px -14px 0;height:46px}
+.dock{position:absolute;left:12px;right:12px;bottom:16px;height:56px;border-radius:30px;background:rgba(48,48,46,.92);box-shadow:inset 0 0 0 1px var(--border)}
+</style></head><body></body>
+<script>
+const svg=(inner)=>`<svg viewBox="0 0 24 24">${inner}</svg>`;
+const I={sun:svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),
+bolt:svg('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),flame:svg('<path d="M12 22a7 7 0 0 0 7-7c0-4-3-6-4-10-2 2-3 4-3 6-1-1-2-2-2-4-2 2-5 5-5 8a7 7 0 0 0 7 7z"/>'),
+drop:svg('<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/>')};
+const path=(ys,w,h,pad=4)=>{const n=ys.length,mx=Math.max(...ys),mn=Math.min(...ys,0);const P=ys.map((y,k)=>[k*(w/(n-1)),pad+(h-2*pad)*(1-(y-mn)/((mx-mn)||1))]);
+let d=`M${P[0][0]},${P[0][1]}`;for(let k=0;k<n-1;k++){const p0=P[k-1]||P[k],p1=P[k],p2=P[k+1],p3=P[k+2]||p2;d+=` C${p1[0]+(p2[0]-p0[0])/6},${p1[1]+(p2[1]-p0[1])/6} ${p2[0]-(p3[0]-p1[0])/6},${p2[1]-(p3[1]-p1[1])/6} ${p2[0]},${p2[1]}`;}return d;};
+const spark=(ys,col)=>{const w=180,h=46,d=path(ys,w,h),id='g'+col.slice(1)+Math.random().toString(36).slice(2,6);return `<svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none">
+<defs><linearGradient id="${id}" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stop-color="${col}" stop-opacity=".38"/><stop offset="1" stop-color="${col}" stop-opacity=".06"/></linearGradient></defs>
+<path d="${d} L${w},${h} L0,${h} Z" fill="url(#${id})" stroke="none"/><path d="${d}" fill="none" stroke="${col}" stroke-width="2" vector-effect="non-scaling-stroke" stroke-linecap="round"/></svg>`;};
+// last 7 days, one point per day (today last)
+const E=[9.4,8.8,10.2,7.9,9.1,11.3,8.1],Z=[3.1,4.6,1.2,0.8,2.9,5.1,1.24],W=[0.131,0.118,0.152,0.097,0.141,0.126,0.102],G=[2.41,2.9,3.1,2.2,2.6,3.4,2.78];
+const C={stroom:'#d55181',zon:'#c98500',water:'#3987e5',gas:'#199e70'};
+const power=(feedingBack)=>feedingBack
+ ? `<div class="lv" style="--h:${C.zon}"><span class="ic">${I.sun}</span><div><b>850<small>W</small></b><span class="now">Terug</span></div></div>`
+ : `<div class="lv" style="--h:${C.stroom}"><span class="ic">${I.bolt}</span><div><b>196<small>W</small></b><span class="now">Nu</span></div><div class="mw"><div class="mlab">Piek vandaag <b>2,4 kW</b></div><div class="mtr"><i style="width:8%"></i></div></div></div>`;
+const waterCard=`<div class="lv" style="--h:${C.water}"><span class="ic">${I.drop}</span><div><b>1,2<small>l/min</small></b><span class="now">Nu</span></div></div>`;
+const tile=(icon,label,value,unit,ys,col,extra='')=>`<div class="utile" style="--h:${col}"><div class="hd">${I[icon]}${label}</div><div class="v">${value}<small>${unit}</small></div>${extra}${spark(ys,col)}</div>`;
+const tiles=(waterInTile=false)=>`<div class="ut">${tile('bolt','Stroom','8,1','kWh',E,C.stroom)}${tile('sun','Zon','1,24','kWh',Z,C.zon)}${tile('drop','Water','0,102','m³',W,C.water,waterInTile?'<div class="nowline">Nu 1,2 l/min</div>':'')}${tile('flame','Gas','2,78','m³',G,C.gas)}</div>`;
+const phone=(body)=>`<div class="phone"><div class="in"><p class="sec">Snel</p><div class="qgrid"><div class="q"></div><div class="q"></div></div><p class="sec">Verbruik</p>${body}</div><div class="dock"></div></div>`;
+const S=[
+ ['W1 · Water als tweede live-kaart','Onder de stroomkaart, even hoog (59px), zonder meter. Zoals je HA-sectie nu.',phone(power(false)+waterCard+tiles())],
+ ['W2 · Stroom en water naast elkaar','Twee halve live-kaarten. De piekmeter past dan niet meer en valt weg.',phone(`<div class="pair">${power(true).replace('Terug','Nu').replace(C.zon,C.stroom).replace(I.sun,I.bolt).replace('850','196')}${waterCard}</div>`+tiles())],
+ ['W3 · Water "nu" in de watertegel','Geen extra kaart: een regel "Nu 1,2 l/min" onder het verbruik van vandaag. Het rustigst.',phone(power(false)+tiles(true))],
+ ['Terugleveren','"850 W · Terug" zonder minteken, punt en icoon in de Zon-kleur, geen piekmeter. (Hier met W3.)',phone(power(true)+tiles(true))],
+];
+document.body.innerHTML=S.map(([title,sub,html])=>`<div><p class="cap">${title}<small>${sub}</small></p>${html}</div>`).join('');
+</script></html>

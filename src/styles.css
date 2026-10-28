@@ -803,6 +803,14 @@ button.row:active { background: var(--accent-soft); }
 }
 
 .pill-button { min-width: 72px; height: 34px; padding: 0 14px; border-radius: 999px; }
+
+/* A pill can take a brand colour (--pill-color), e.g. Waze or WhatsApp in "Nu":
+   text in that colour on a soft background of it. Without one, the orange. */
+.pill-button {
+  color: var(--pill-color, var(--accent));
+  background: color-mix(in srgb, var(--pill-color, var(--accent)) 18%, transparent);
+}
+
 /* Also a link, e.g. "Start route" in "Nu". */
 a.pill-button { text-decoration: none; }
 .stepper { display: inline-flex; gap: 8px; }

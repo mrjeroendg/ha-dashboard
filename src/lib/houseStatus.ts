@@ -23,6 +23,10 @@ const COMMUTE = {
 export const WAZE_ROUTE_HOME = 'https://waze.com/ul?favorite=home&navigate=yes';
 export const SEND_WHATSAPP_MESSAGE = 'whatsapp://';
 
+/** The brand colours of the buttons that open those apps in "Nu". */
+export const WAZE_COLOR = '#33ccff';
+export const WHATSAPP_COLOR = '#25d366';
+
 
 /** A status entry whose entity exists in HA and is available, with its name. */
 export interface ListedEntity {

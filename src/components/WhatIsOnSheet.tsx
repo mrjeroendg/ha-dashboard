@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { useRunAction } from '../hooks/useRunAction';
 import { haptic } from '../lib/haptic';
 import type { StatusEntity } from '../config/status';
 import { BIRTHDAYS } from '../config/status';
-import { entriesThatAreOn, SEND_WHATSAPP_MESSAGE, WAZE_ROUTE_HOME, WHAT_IS_ON_GROUPS } from '../lib/houseStatus';
+import { entriesThatAreOn, SEND_WHATSAPP_MESSAGE, WAZE_COLOR, WAZE_ROUTE_HOME, WHATSAPP_COLOR, WHAT_IS_ON_GROUPS } from '../lib/houseStatus';
 import { rowModel } from '../lib/rooms';
 import type { HomeAssistant } from '../types/hass';
 import { BottomSheet } from './BottomSheet';
@@ -70,7 +70,14 @@ function RouteHome({ travelTimeHome }: { travelTimeHome: string }) {
             <span className="row__name">{travelTimeHome}</span>
             <span className="card-detail">Route in Waze</span>
           </span>
-          <a className="pill-button" href={WAZE_ROUTE_HOME} target="_blank" rel="noreferrer" onClick={() => haptic('light')}>
+          <a
+            className="pill-button"
+            style={{ '--pill-color': WAZE_COLOR } as CSSProperties}
+            href={WAZE_ROUTE_HOME}
+            target="_blank"
+            rel="noreferrer"
+            onClick={() => haptic('light')}
+          >
             Start route
           </a>
         </div>
@@ -93,7 +100,14 @@ function Birthdays({ birthdayNames }: { birthdayNames: string[] }) {
             <span className="card-text">
               <span className="row__name">{birthdayName}</span>
             </span>
-            <a className="pill-button" href={SEND_WHATSAPP_MESSAGE} target="_blank" rel="noreferrer" onClick={() => haptic('light')}>
+            <a
+              className="pill-button"
+              style={{ '--pill-color': WHATSAPP_COLOR } as CSSProperties}
+              href={SEND_WHATSAPP_MESSAGE}
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => haptic('light')}
+            >
               Stuur bericht
             </a>
           </div>

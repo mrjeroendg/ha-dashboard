@@ -35,7 +35,7 @@ export function WhatIsOnSheet({ hass, travelTimeHome, onClose }: Props) {
       <h2 className="whats-on-sheet__title">Nu</h2>
       {travelTimeHome && <RouteHome travelTimeHome={travelTimeHome} />}
       {groupsWhenOpened.length === 0 ? (
-        <EmptyState icon="check" text="Alles staat uit" />
+        <EmptyState icon="check" text="Niks te melden" />
       ) : (
         groupsWhenOpened.map((group) => (
           <section key={group.title}>

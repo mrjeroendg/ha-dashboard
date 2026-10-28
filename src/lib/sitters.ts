@@ -1,3 +1,5 @@
+import type { TodoItem } from '../types/hass';
+
 /**
  * The sitter todo lists (docs/design/babysit): the babysitter for Marielou and
  * the catsitter for Cara. Their automations write items like
@@ -12,13 +14,6 @@ export interface SitterAppointment {
   title: string;
   /** For sorting; undated items go last. */
   date?: Date;
-}
-
-/** A todo item as HA sends it (todo/item/subscribe). */
-export interface TodoItem {
-  uid: string;
-  summary: string;
-  status: 'needs_action' | 'completed';
 }
 
 const DATE_IN_FRONT = /^(\d{1,2})\/(\d{1,2}):\s*(.*)$/;

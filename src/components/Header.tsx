@@ -1,5 +1,7 @@
 import { useState } from 'react';
+import { BIRTHDAYS } from '../config/status';
 import { useNow } from '../hooks/useNow';
+import { useTodoItems } from '../hooks/useTodoItems';
 import { formatDate, greeting } from '../lib/greeting';
 import { commute, houseStatusItems, type StatusItem } from '../lib/houseStatus';
 import { haptic } from '../lib/haptic';
@@ -15,14 +17,16 @@ interface Props {
 export function Header({ hass, config }: Props) {
   const now = useNow();
   const name = config.name ?? hass?.user?.name;
-  const statusItems = hass ? houseStatusItems(hass, now) : [];
+  const birthdayItems = useTodoItems(hass, BIRTHDAYS.todoList) ?? [];
+  const birthdayNames = birthdayItems.filter((todoItem) => todoItem.status === 'needs_action').map((todoItem) => todoItem.summary);
+  const statusItems = hass ? houseStatusItems(hass, now, birthdayNames) : [];
 
   return (
     <header className="header">
       <p className="header__date">{formatDate(now)}</p>
       <h1 className="header__greeting">{greeting(now, name)}</h1>
       {/* Nothing listed in src/config/status.ts: no status band. */}
-      {hass && statusItems.length > 0 && <StatusBand hass={hass} now={now} statusItems={statusItems} />}
+      {hass && statusItems.length > 0 && <StatusBand hass={hass} now={now} statusItems={statusItems} birthdayNames={birthdayNames} />}
       {!hass && (
         <p className="header__status">
           <span className="header__dot header__dot--idle" aria-hidden />
@@ -37,10 +41,11 @@ interface StatusBandProps {
   hass: HomeAssistant;
   now: Date;
   statusItems: StatusItem[];
+  birthdayNames: string[];
 }
 
 /** The scrolling status band; tapping it opens "Nu" (docs/design/now-ticker). */
-function StatusBand({ hass, now, statusItems }: StatusBandProps) {
+function StatusBand({ hass, now, statusItems, birthdayNames }: StatusBandProps) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const openSheet = () => {
@@ -51,7 +56,9 @@ function StatusBand({ hass, now, statusItems }: StatusBandProps) {
   return (
     <>
       <StatusTicker statusItems={statusItems} onOpen={openSheet} />
-      {isSheetOpen && <WhatIsOnSheet hass={hass} travelTimeHome={commute(hass, now)} onClose={() => setIsSheetOpen(false)} />}
+      {isSheetOpen && (
+        <WhatIsOnSheet hass={hass} travelTimeHome={commute(hass, now)} birthdayNames={birthdayNames} onClose={() => setIsSheetOpen(false)} />
+      )}
     </>
   );
 }

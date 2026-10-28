@@ -299,6 +299,13 @@ const PATHS = {
       <path d="M12 10V3M12 14v7M10 12H3M14 12h7" />
     </>
   ),
+  // Birthdays in the status band (docs/design/now-ticker).
+  cake: (
+    <>
+      <path d="M4 21h16M5 21v-6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v6M5 17c1.4 1 2.6 1 4 0s2.6-1 4 0 2.6 1 4 0 1.4-1 2-1M12 13v-3" />
+      <path d="M12 4.5c.9.9.9 2 0 2.6-.9-.6-.9-1.7 0-2.6z" />
+    </>
+  ),
   // Media shortcuts in the navigation (docs/design/media-dock).
   speaker: (
     <>

@@ -22,6 +22,13 @@ export interface HomeAssistant {
   connection?: Connection;
 }
 
+/** A todo item as HA sends it (todo/item/subscribe). */
+export interface TodoItem {
+  uid: string;
+  summary: string;
+  status: 'needs_action' | 'completed';
+}
+
 /** Card config as written in the Lovelace YAML (`type: custom:ha-dashboard`). */
 export interface DashboardConfig {
   type?: string;

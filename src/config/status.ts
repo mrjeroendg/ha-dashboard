@@ -65,3 +65,14 @@ export interface NowEntity {
 export const NOW: NowEntity[] = [
   { entity: Entity.CARA_WATER_FOUNTAIN, icon: 'cat', color: '#6cb8e6', name: 'Cara', text: 'is aan het drinken' },
 ];
+
+/**
+ * Today's birthdays (docs/design/now-ticker), right after who's home in the
+ * band: "Jan is jarig", or "2 jarigen vandaag". An HA automation fills the
+ * todo list each night with one item per birthday, the name as its title.
+ */
+export const BIRTHDAYS = {
+  todoList: Entity.BIRTHDAYS_TODAY_LIST,
+  icon: 'cake' as IconName,
+  color: '#ec8fb5',
+};

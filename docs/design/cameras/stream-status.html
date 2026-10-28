@@ -1,0 +1,87 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Stream steps</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif}
+.grid{display:grid;grid-template-columns:200px repeat(3,390px);gap:24px 24px;align-items:start}
+.colh{font-size:15px;font-weight:600;color:#3d3c38}.colh small{display:block;font-weight:400;color:#73726c;margin-top:2px}
+.rowh{font-size:15px;font-weight:600;color:#3d3c38;padding-top:16px}.rowh small{display:block;font-weight:400;color:#73726c;margin-top:4px;line-height:1.4}
+.panel{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--soft:rgba(217,119,87,.16);
+background:var(--surface);color:var(--text);border-radius:28px;padding:16px}
+.live{position:relative;aspect-ratio:16/9;border-radius:18px;overflow:hidden;background:#1b1c1d}
+.img{position:absolute;inset:0;background:radial-gradient(ellipse at 30% 75%,rgba(160,150,130,.55),transparent 55%),radial-gradient(ellipse at 80% 20%,rgba(90,100,110,.6),transparent 50%),linear-gradient(180deg,#3a3d40,#1f2123)}
+.img.dim{filter:brightness(.45) saturate(.6)}
+.ts{position:absolute;right:10px;top:10px;font-size:11px;font-variant-numeric:tabular-nums;color:rgba(245,244,239,.75);background:rgba(0,0,0,.35);padding:3px 7px;border-radius:999px}
+.hdr{display:flex;align-items:center;justify-content:space-between;margin:14px 4px 0}
+.hdr b{font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:24px}
+.pill{display:inline-flex;align-items:center;gap:7px;height:26px;padding:0 11px;border-radius:999px;background:var(--soft);color:var(--accent);font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.pill::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--accent)}
+.pill.wait{background:rgba(245,244,239,.08);color:var(--muted)}.pill.wait::before{background:var(--muted)}
+/* A: log in the image */
+.log{position:absolute;left:10px;bottom:10px;right:60px;display:flex;flex-direction:column;align-items:flex-start;gap:3px}
+.log span{font-size:11px;line-height:1.3;color:#f5f4ef;background:rgba(0,0,0,.5);padding:3px 8px;border-radius:8px}
+.log span.old{opacity:.45}
+.log span.old2{opacity:.25}
+.tag{position:absolute;left:10px;bottom:10px;font-size:11px;color:rgba(245,244,239,.8);background:rgba(0,0,0,.35);padding:3px 8px;border-radius:999px;font-variant-numeric:tabular-nums}
+/* B: centred status */
+.center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;text-align:center}
+.spin{width:22px;height:22px;border-radius:50%;border:2.5px solid rgba(245,244,239,.2);border-top-color:#f5f4ef;animation:s 1s linear infinite}
+@keyframes s{to{transform:rotate(360deg)}}
+.center b{font-size:15px;font-weight:600}
+.center small{font-size:12px;color:rgba(245,244,239,.65)}
+/* C: log under the image */
+.steps{margin:10px 4px 0;display:flex;flex-direction:column;gap:5px}
+.step{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted)}
+.step i{width:14px;height:14px;flex:none;display:grid;place-items:center;font-style:normal;font-size:11px}
+.step.done i{color:#199e70}.step.fail i{color:#e5534b}.step.now{color:var(--text)}
+.step .sp{width:11px;height:11px;border-radius:50%;border:2px solid rgba(245,244,239,.2);border-top-color:var(--text);animation:s 1s linear infinite}
+.step em{margin-left:auto;font-style:normal;font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.route{margin:10px 4px 0;font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.route::before{content:"";width:6px;height:6px;border-radius:50%;background:#199e70}
+.acts{display:flex;gap:8px;margin-top:14px}
+.act{flex:1;height:42px;border-radius:999px;background:var(--bg);box-shadow:inset 0 0 0 1px var(--border);display:grid;place-items:center;font-size:14px;font-weight:600}
+
+.status{display:flex;align-items:center;gap:8px;height:20px;margin:10px 4px 0;font-size:13px;color:var(--text)}
+.status .sp{width:12px;height:12px;flex:none;border-radius:50%;border:2px solid rgba(245,244,239,.2);border-top-color:var(--text);animation:s 1s linear infinite}
+.status .ok{width:6px;height:6px;margin:0 3px;flex:none;border-radius:50%;background:#199e70}
+.status em{margin-left:auto;font-style:normal;font-size:12px;font-variant-numeric:tabular-nums;color:var(--muted)}
+.status.done{color:var(--muted)}
+.phases{display:flex;gap:4px;margin:8px 4px 0}
+.phases span{flex:1;display:flex;flex-direction:column;gap:5px;font-size:11px;color:var(--muted)}
+.phases span::before{content:"";height:3px;border-radius:2px;background:rgba(245,244,239,.12)}
+.phases span.past{opacity:.45}.phases span.past::before{background:rgba(245,244,239,.25)}
+.phases span.now{color:var(--text)}.phases span.now::before{background:var(--accent)}
+.phases span.ok{color:var(--muted)}.phases span.ok::before{background:#199e70}
+.bar{height:3px;margin:8px 4px 0;border-radius:2px;background:rgba(245,244,239,.12);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--accent);border-radius:2px}
+.bar.ok i{background:#199e70}
+</style></head><body><div class="grid" id="g"></div>
+<script>
+const head=(pill)=>`<div class="hdr"><b>Garage</b><span class="pill ${pill?'':'wait'}">${pill?'Live':'Verbinden'}</span></div>`;
+const acts=`<div class="acts"><div class="act">Garagepoort</div><div class="act">Licht garage</div></div>`;
+const live=(inner,dim=true,ts='19:42:08')=>`<div class="live"><div class="img ${dim?'dim':''}"></div><span class="ts">${ts}</span>${inner}</div>`;
+const panel=(h)=>`<div class="panel">${h}</div>`;
+
+const st=(txt,right,done)=>`<div class="status ${done?'done':''}">${done?'<span class="ok"></span>':'<span class="sp"></span>'}${txt}<em>${right}</em></div>`;
+const ph=(now,ok)=>`<div class="phases">${['WebRTC','HLS','MJPEG','Stilstaand'].map((p,i)=>`<span class="${i===now?(ok?'ok':'now'):i<now?'past':''}">${p}</span>`).join('')}</div>`;
+const bar=(pct,ok)=>`<div class="bar ${ok?'ok':''}"><i style="width:${pct}%"></i></div>`;
+const C1=[
+ panel(live(``)+st('WebRTC proberen…','poging 1 · 3 s')+head(false)+acts),
+ panel(live(``)+st('Overschakelen naar HLS…','iOS')+head(false)+acts),
+ panel(live(``,false)+st('WebRTC · relay','0,6 s',true)+head(true)+acts),
+];
+const C2=[
+ panel(live(``)+st('WebRTC proberen…','poging 1 · 3 s')+ph(0)+head(false)+acts),
+ panel(live(``)+st('Overschakelen naar HLS…','iOS')+ph(1)+head(false)+acts),
+ panel(live(``,false)+st('WebRTC · relay','0,6 s',true)+ph(0,true)+head(true)+acts),
+];
+const C3=[
+ panel(live(``)+st('WebRTC proberen…','poging 1 · 3 s')+bar(38)+head(false)+acts),
+ panel(live(``)+st('Overschakelen naar HLS…','iOS')+bar(10)+head(false)+acts),
+ panel(live(``,false)+st('WebRTC · relay','0,6 s',true)+bar(100,true)+head(true)+acts),
+];
+const rows=[
+ ['C1 · Eén statusregel','Altijd één regel onder het beeld: spinner + huidige stap, details rechts. Verbonden: groene stip + route.',C1],
+ ['C2 · Regel + fasebalk','Dezelfde regel, met eronder de vier fases. De actieve fase is oranje; groen = daarmee verbonden.',C2],
+ ['C3 · Regel + aftelbalk','Dezelfde regel, met eronder een balk die volloopt tot de poging opgeeft (8 s).',C3],
+];
+const cols=['','1 · Proberen<small>WebRTC loopt</small>','2 · Overschakelen<small>WebRTC lukte niet</small>','3 · Verbonden<small>Beeld speelt</small>'];
+document.getElementById('g').innerHTML=cols.map(c=>`<div class="colh">${c}</div>`).join('')+rows.map(([t,s,p])=>`<div class="rowh">${t}<small>${s}</small></div>`+p.join('')).join('');
+</script></html>

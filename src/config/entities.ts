@@ -28,6 +28,7 @@ export enum Entity {
   // Kitchen, back door, lights without a room
   KITCHEN_SLIDING_WINDOW_CONTACT = 'binary_sensor.0x00178801100445ff_contact',
   BACK_DOOR_CONTACT = 'binary_sensor.0x0017880110044edb_contact',
+  BACK_DOOR_CAMERA = 'camera.back_door_fluent_lens_0',
   CENTRIS_LIGHT = 'light.centris',
 
   // Master bedroom

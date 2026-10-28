@@ -1,7 +1,7 @@
 // DEV ONLY. A fake `hass` with sample entities, used by `npm run dev` when
 // .env.local has no token. States start out matching the current moment of day. callService mutates the fake states so tapping a
 // card visibly does something.
-import type { HassEntities, HassEntity, HassServiceTarget } from 'home-assistant-js-websocket';
+import type { Connection, HassEntities, HassEntity, HassServiceTarget } from 'home-assistant-js-websocket';
 import { MEDIA } from '../config/media';
 
 const SONOS = MEDIA.sonos.entity;
@@ -20,6 +20,12 @@ const entity = (entity_id: string, state: string, attributes: Attrs = {}): HassE
   last_updated: new Date().toISOString(),
   context: { id: 'mock', user_id: null, parent_id: null },
 });
+
+/** A fake camera image: a dark gradient, as a data URL. The trailing "#" keeps a cache-buster harmless. */
+const cameraImage = (a: string, b: string, glow: string) => {
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient><radialGradient id="r" cx=".35" cy=".75" r=".5"><stop offset="0" stop-color="${glow}" stop-opacity=".55"/><stop offset="1" stop-color="${glow}" stop-opacity="0"/></radialGradient></defs><rect width="640" height="360" fill="url(#g)"/><rect width="640" height="360" fill="url(#r)"/></svg>`;
+  return `data:image/svg+xml;base64,${btoa(svg)}#`;
+};
 
 const minutesAgo = (m: number) => new Date(Date.now() - m * 60_000).toISOString();
 
@@ -45,6 +51,7 @@ function baseStates(): HassEntities {
     entity('light.slaapkamer', 'off', { friendly_name: 'Slaapkamer', supported_color_modes: ['hs'], color_mode: 'hs', rgb_color: [255, 147, 41] }),
     entity('light.bureau', 'off', { friendly_name: 'Bureau', supported_color_modes: ['onoff'] }),
     entity('binary_sensor.raam_badkamer', 'off', { friendly_name: 'Raam badkamer', device_class: 'window' }),
+    entity('camera.back_door_fluent_lens_0', 'idle', { friendly_name: 'Achterdeur', entity_picture: cameraImage('#2f3a33', '#1a201c', '#788c6e'), access_token: 'mock' }),
     entity('sensor.woonkamer_temperatuur', '19.5', { unit_of_measurement: '°C', device_class: 'temperature' }),
     entity('sensor.slaapkamer_temperatuur', '18.2', { unit_of_measurement: '°C', device_class: 'temperature', friendly_name: 'Temperatuur' }),
     entity('sensor.badkamer_temperatuur', '20.1', { unit_of_measurement: '°C', device_class: 'temperature' }),
@@ -296,6 +303,17 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     emit();
   };
 
+  // Today's Frigate events for the garage, as text like the integration sends them.
+  const frigateEvents = () => {
+    const midnight = new Date().setHours(0, 0, 0, 0);
+    const events = [
+      { id: 'e1', label: 'person', start_time: (Date.now() - 60_000) / 1000 },
+      { id: 'e2', label: 'car', start_time: (Date.now() - 131 * 60_000) / 1000 },
+      { id: 'e3', label: 'person', start_time: (Date.now() - 689 * 60_000) / 1000 },
+    ].filter((e) => e.start_time * 1000 > midnight);
+    return JSON.stringify(events);
+  };
+
   // The 6 days before today per daily sensor (docs/design/verbruik), oldest first.
   const DAILY_TOTALS: Record<string, number[]> = {
     'sensor.p1_meter_energy_consumption_daily': [9.4, 8.8, 10.2, 7.9, 9.1, 11.3],
@@ -306,6 +324,11 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
 
   const callWS = async <T,>(msg: { type: string; [key: string]: unknown }) => {
     console.info('[mock] callWS', msg);
+    if (msg.type === 'frigate/events/get') return frigateEvents() as T;
+    if (msg.type === 'auth/sign_path') return { path: cameraImage('#4a4d50', '#2a2c2e', '#c0b49a') } as T;
+    if (msg.type === 'camera/stream') throw new Error('No stream in mock mode');
+    if (msg.type === 'camera/capabilities') return { frontend_stream_types: ['web_rtc', 'hls'] } as T;
+    if (msg.type === 'camera/webrtc/get_client_config') return { configuration: { iceServers: [] } } as T;
     if (msg.type === 'recorder/statistics_during_period') {
       const statisticIds = msg.statistic_ids as string[];
       const dayLength = 24 * 3600_000;
@@ -328,9 +351,15 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
       states,
       user: { id: 'mock', name: 'Jeroen', is_admin: true },
       language: 'nl',
-      hassUrl: (path = '') => path,
+      // The MJPEG stream "plays" the camera's still image.
+      hassUrl: (path = '') => {
+        const mjpeg = path.match(/^\/api\/camera_proxy_stream\/([^?]+)/);
+        return mjpeg ? String(states[mjpeg[1]]?.attributes.entity_picture ?? path) : path;
+      },
       callService,
       callWS,
+      // WebRTC offers go nowhere: no answer ever comes, so it times out like a blocked network.
+      connection: { subscribeMessage: async () => async () => undefined } as unknown as Connection,
     });
 
   for (const [id, value] of Object.entries(SCENARIOS[scenarioFor(new Date())])) {

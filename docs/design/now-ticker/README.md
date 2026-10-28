@@ -43,19 +43,24 @@ The four ways to show it scrolls, and D1–D3: [`swipe-options.html`](./swipe-op
 ## "Nu"
 
 - **The title is "Nu"** (was "Wat staat aan"). **No count** under it any more ("3 dingen aan").
-- **"Naar huis"** on top when the travel time applies: a car tile, "34 min naar huis", "Route in Waze" and a **"Start route"** button. It opens `https://waze.com/ul?favorite=home&navigate=yes`, which starts the route to the "Home" favourite saved in Waze right away.
-- **"Jarig"** next, when there are birthdays today: a row per person with a pink cake tile, the name, and "Vandaag". Nothing to tap.
+- **"Naar huis"** on top when the travel time applies: a car tile, "34 min naar huis", "Route in Waze" and a **"Start route"** button in Waze cyan. It opens `https://waze.com/ul?favorite=home&navigate=yes`, which starts the route to the "Home" favourite saved in Waze right away.
+- **"Jarig"** next, when there are birthdays today: a row per person with a pink cake tile, the name, and a **"Stuur bericht"** button in WhatsApp green. It just opens WhatsApp (`whatsapp://`), to congratulate them.
+- **The app buttons take the app's colour** (option A): text in the brand colour on a soft background of it, Waze `#33ccff` and WhatsApp `#25d366` (`WAZE_COLOR`, `WHATSAPP_COLOR` in `src/lib/houseStatus.ts`). A `.pill-button` takes a colour through `--pill-color`; without one it stays orange.
 - **Then the sections as before:** "Lichten", "Airco's", each with only a switch. Nothing on: "Alles staat uit".
 
 ## Birthdays
 
 - **From the todo list `todo.birthdays_today`** (`BIRTHDAYS` in `src/config/status.ts`), one open item per birthday, with the name as its title. The dashboard follows it live (`todo/item/subscribe`).
 - **An HA automation fills it**, "Fill today's birthdays to-do list": just after midnight and when HA starts, it removes all items and adds today's events from `calendar.birthdays`, with the 🎂 stripped from their titles.
-- **Only today.** No age: the calendar has no year of birth.
+- **Only today.**
 
 Built (dev mode, mock data: one birthday, two birthdays, "Nu"):
 
 ![Birthdays](./birthdays-built.png)
+
+"Nu" with the brand colours (dev mode, mock data):
+
+![Nu](./sheet-built.png)
 
 ## Adding something that's happening now
 

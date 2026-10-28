@@ -100,9 +100,10 @@
 
 .header__dot--idle { background: var(--text-muted); box-shadow: none; }
 
-/* The status band (docs/design/now-ticker): scrolls to the end, rests, slides
-   back. Tapping it opens "Nu". */
+/* The status band (docs/design/now-ticker): you swipe it sideways yourself.
+   Tapping it opens "Nu". */
 .status-ticker {
+  position: relative;
   display: flex;
   align-items: center;
   height: 46px;
@@ -119,18 +120,18 @@
 
 .status-ticker:active { background: var(--accent-soft); }
 
-.status-ticker__window {
+.status-ticker__scroller {
   flex: 1;
   min-width: 0;
-  overflow: hidden;
-  /* Soft edges: items slide in on the right and out on the left. */
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  /* Soft edges: items slide out of view on both sides. */
   -webkit-mask-image: linear-gradient(to right, transparent, #000 18px, #000 calc(100% - 18px), transparent);
   mask-image: linear-gradient(to right, transparent, #000 18px, #000 calc(100% - 18px), transparent);
 }
 
-/* Moved from code (StatusTicker): to the end, a rest, back to the start.
-   As wide as the fades on both sides, so the first and last item end up clear. */
-.status-ticker__belt {
+/* As wide as the fades on both sides, so the first and last item end up clear. */
+.status-ticker__items {
   display: flex;
   width: max-content;
   padding: 0 18px;
@@ -159,6 +160,29 @@
 .status-ticker__icon { display: grid; color: var(--text-muted); }
 .status-ticker__icon .icon { width: 16px; height: 16px; }
 .status-ticker__highlighted { color: var(--text); }
+
+/* Only when there's more than fits: a 44px track at the bottom centre, with a
+   16px piece that moves from the left end (start) to the right end (end). */
+.status-ticker__track {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  width: 44px;
+  height: 2px;
+  margin-left: -22px;
+  border-radius: 1px;
+  background: var(--border);
+}
+
+.status-ticker__thumb {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 16px;
+  border-radius: 1px;
+  background: color-mix(in srgb, var(--text) 38%, transparent);
+  /* 28px is the room it has to move: the track minus the piece itself. */
+  transform: translateX(calc(var(--scrolled-fraction, 0) * 28px));
+}
 
 /* ---------------------------------------------------------------- attention */
 

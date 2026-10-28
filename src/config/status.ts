@@ -75,4 +75,6 @@ export const BIRTHDAYS = {
   todoList: Entity.BIRTHDAYS_TODAY_LIST,
   icon: 'cake' as IconName,
   color: '#ec8fb5',
+  /** "WhatsApp" on each row in "Nu": just opens the app, to congratulate them. */
+  whatsAppUrl: 'whatsapp://',
 };

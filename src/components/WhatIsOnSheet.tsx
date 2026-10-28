@@ -79,7 +79,7 @@ function RouteHome({ travelTimeHome }: { travelTimeHome: string }) {
   );
 }
 
-/** "Jarig" (docs/design/now-ticker): one row per birthday today; nothing to tap. */
+/** "Jarig" (docs/design/now-ticker): one row per birthday today, with "WhatsApp" to congratulate them. */
 function Birthdays({ birthdayNames }: { birthdayNames: string[] }) {
   return (
     <section>
@@ -94,6 +94,9 @@ function Birthdays({ birthdayNames }: { birthdayNames: string[] }) {
               <span className="row__name">{birthdayName}</span>
               <span className="card-detail">Vandaag</span>
             </span>
+            <a className="pill-button" href={BIRTHDAYS.whatsAppUrl} target="_blank" rel="noreferrer" onClick={() => haptic('light')}>
+              WhatsApp
+            </a>
           </div>
         ))}
       </div>

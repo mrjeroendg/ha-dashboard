@@ -44,7 +44,7 @@ The four ways to show it scrolls, and D1–D3: [`swipe-options.html`](./swipe-op
 
 - **The title is "Nu"** (was "Wat staat aan"). **No count** under it any more ("3 dingen aan").
 - **"Naar huis"** on top when the travel time applies: a car tile, "34 min naar huis", "Route in Waze" and a **"Start route"** button. It opens `https://waze.com/ul?favorite=home&navigate=yes`, which starts the route to the "Home" favourite saved in Waze right away.
-- **"Jarig"** next, when there are birthdays today: a row per person with a pink cake tile, the name, and "Vandaag". Nothing to tap.
+- **"Jarig"** next, when there are birthdays today: a row per person with a pink cake tile, the name, "Vandaag", and a **"WhatsApp"** button that just opens WhatsApp (`whatsapp://`), to congratulate them.
 - **Then the sections as before:** "Lichten", "Airco's", each with only a switch. Nothing on: "Alles staat uit".
 
 ## Birthdays

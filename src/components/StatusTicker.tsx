@@ -1,12 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState, type CSSProperties } from 'react';
 import type { StatusItem } from '../lib/houseStatus';
 import { Icon } from './Icon';
-
-const SPEED_IN_PIXELS_PER_SECOND = 30;
-const REST_AT_THE_END_MS = 3000;
-const BACK_TO_THE_START_MS = 700;
-/** How often a band that fits checks whether it has to scroll after all. */
-const CHECK_IF_IT_FITS_MS = 1000;
 
 interface Props {
   statusItems: StatusItem[];
@@ -14,75 +8,39 @@ interface Props {
   onOpen(): void;
 }
 
-const wait = (milliseconds: number) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
-
 /**
- * The status band on Thuis (docs/design/now-ticker). When the items don't fit,
- * it scrolls to the end at 30px/s, rests there for 3 s, takes in what changed
- * meanwhile, slides back to the start and scrolls again. While it scrolls,
- * the items stay as they were, so nothing changes under your eyes. When
- * everything fits, it stands still and changes right away.
+ * The status band on Thuis (docs/design/now-ticker). You swipe it sideways
+ * yourself; the browser does the moving. When there's more than fits, a
+ * small track at the bottom shows how far you've swiped.
  */
 export function StatusTicker({ statusItems, onOpen }: Props) {
-  const visibleWindow = useRef<HTMLDivElement>(null);
-  const belt = useRef<HTMLDivElement>(null);
-  const [shownItems, setShownItems] = useState(statusItems);
-  const latestItems = useRef(statusItems);
-  const isScrolling = useRef(false);
-  latestItems.current = statusItems;
+  const scroller = useRef<HTMLDivElement>(null);
+  const [hasMoreThanFits, setHasMoreThanFits] = useState(false);
+  // 0 at the start, 1 at the end.
+  const [scrolledFraction, setScrolledFraction] = useState(0);
 
-  // Standing still: show changes right away. Scrolling: they wait for the end.
-  useEffect(() => {
-    if (!isScrolling.current) setShownItems(statusItems);
+  const updateScrolledFraction = () => {
+    const scrollerElement = scroller.current;
+    if (!scrollerElement) return;
+
+    const scrollableDistance = scrollerElement.scrollWidth - scrollerElement.clientWidth;
+    const fraction = scrollableDistance > 0 ? scrollerElement.scrollLeft / scrollableDistance : 0;
+    // iOS lets the band bounce past both ends; the track stays on its ends.
+    const fractionWithinTheTrack = Math.min(Math.max(fraction, 0), 1);
+
+    setScrolledFraction(fractionWithinTheTrack);
+  };
+
+  // New items can make the band longer or shorter: is there still more than fits?
+  useLayoutEffect(() => {
+    const scrollerElement = scroller.current;
+    if (!scrollerElement) return;
+
+    setHasMoreThanFits(scrollerElement.scrollWidth > scrollerElement.clientWidth);
+    updateScrolledFraction();
   }, [statusItems]);
 
-  useEffect(() => {
-    let isStopped = false;
-
-    const slide = (fromPixels: number, toPixels: number, durationMs: number, easing: string) => {
-      const beltElement = belt.current;
-      if (!beltElement) return Promise.reject(new Error('The band is gone'));
-      beltElement.getAnimations().forEach((animation) => animation.cancel());
-      const keyframes = [{ transform: `translateX(${fromPixels}px)` }, { transform: `translateX(${toPixels}px)` }];
-
-      return beltElement.animate(keyframes, { duration: durationMs, easing, fill: 'forwards' }).finished;
-    };
-
-    const scrollForever = async () => {
-      while (!isStopped) {
-        const beltElement = belt.current;
-        const windowElement = visibleWindow.current;
-        if (!beltElement || !windowElement) return;
-
-        const distanceToTheEnd = beltElement.offsetWidth - windowElement.clientWidth;
-        const doesEverythingFit = distanceToTheEnd <= 0;
-        if (doesEverythingFit) {
-          isScrolling.current = false;
-          await wait(CHECK_IF_IT_FITS_MS);
-          continue;
-        }
-
-        isScrolling.current = true;
-        const scrollDurationMs = (distanceToTheEnd / SPEED_IN_PIXELS_PER_SECOND) * 1000;
-        await slide(0, -distanceToTheEnd, scrollDurationMs, 'linear');
-        await wait(REST_AT_THE_END_MS);
-        if (isStopped) return;
-
-        setShownItems(latestItems.current);
-        await slide(-distanceToTheEnd, 0, BACK_TO_THE_START_MS, 'ease-in-out');
-      }
-    };
-
-    // A cancelled animation (the band left the page) ends the loop.
-    scrollForever().catch(() => undefined);
-
-    return () => {
-      isStopped = true;
-      belt.current?.getAnimations().forEach((animation) => animation.cancel());
-    };
-  }, []);
-
-  const readableStatus = shownItems.map((statusItem) => [statusItem.highlighted, statusItem.text].filter(Boolean).join(' ')).join(', ');
+  const readableStatus = statusItems.map((statusItem) => [statusItem.highlighted, statusItem.text].filter(Boolean).join(' ')).join(', ');
 
   return (
     <div
@@ -96,9 +54,9 @@ export function StatusTicker({ statusItems, onOpen }: Props) {
         if (isOpenKey) onOpen();
       }}
     >
-      <div ref={visibleWindow} className="status-ticker__window" aria-hidden>
-        <div ref={belt} className="status-ticker__belt">
-          {shownItems.map((statusItem, position) => (
+      <div ref={scroller} className="status-ticker__scroller" onScroll={updateScrolledFraction} aria-hidden>
+        <div className="status-ticker__items">
+          {statusItems.map((statusItem, position) => (
             <span key={position} className="status-ticker__item">
               <span className="status-ticker__icon" style={statusItem.iconColor ? { color: statusItem.iconColor } : undefined}>
                 <Icon name={statusItem.icon} />
@@ -112,6 +70,11 @@ export function StatusTicker({ statusItems, onOpen }: Props) {
           ))}
         </div>
       </div>
+      {hasMoreThanFits && (
+        <span className="status-ticker__track" aria-hidden>
+          <span className="status-ticker__thumb" style={{ '--scrolled-fraction': scrolledFraction } as CSSProperties} />
+        </span>
+      )}
     </div>
   );
 }

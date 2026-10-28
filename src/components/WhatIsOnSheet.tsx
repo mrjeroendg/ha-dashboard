@@ -99,6 +99,7 @@ function Birthdays({ birthdayNames }: { birthdayNames: string[] }) {
             </span>
             <span className="card-text">
               <span className="row__name">{birthdayName}</span>
+              <span className="card-detail">Sturen via WhatsApp</span>
             </span>
             <a
               className="pill-button"

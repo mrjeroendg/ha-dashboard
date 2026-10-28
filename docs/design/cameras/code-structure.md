@@ -1,6 +1,6 @@
 # Cameras: target code structure
 
-> 📝 **Proposal, to be approved before the refactor starts.** No code has been changed yet.
+> ✅ **Approved and built** (28 October).
 
 The goal: the bare minimum, written so you can read in the code **what happens when**. The camera behaves the same as now for everything that stays.
 
@@ -104,7 +104,7 @@ Following `CLAUDE.md`: descriptive names everywhere (`peerConnection` instead of
 
 ## Testing
 
-- **In dev mode:** the tiles, opening and closing the sheet, and the order of the steps. The mock has no WebRTC or HLS, so it goes through WebRTC 1 → 2 → 3 → MJPEG, and MJPEG "plays" the still image.
+- **In dev mode:** the tiles, opening and closing the sheet, and the order of the steps. The mock's websocket never answers a WebRTC offer, so it goes through WebRTC 1 → 2 → 3 (at about 0, 6 and 12 s) → MJPEG (about 17 s), and MJPEG "plays" the still image. Also tested: HLS failing straight away goes to MJPEG; an error after it played starts again at WebRTC 1; no access token ends on the still image.
 - **On your devices (needed):** open the Achterdeur on the iPhone, at home and on mobile data, and check the status line: "WebRTC · lokaal" at home, "WebRTC · relay" away. If it ends on something else, the line shows on which.
 
 ## The design README

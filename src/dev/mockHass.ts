@@ -303,17 +303,6 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     emit();
   };
 
-  // Today's Frigate events for the garage, as text like the integration sends them.
-  const frigateEvents = () => {
-    const midnight = new Date().setHours(0, 0, 0, 0);
-    const events = [
-      { id: 'e1', label: 'person', start_time: (Date.now() - 60_000) / 1000 },
-      { id: 'e2', label: 'car', start_time: (Date.now() - 131 * 60_000) / 1000 },
-      { id: 'e3', label: 'person', start_time: (Date.now() - 689 * 60_000) / 1000 },
-    ].filter((e) => e.start_time * 1000 > midnight);
-    return JSON.stringify(events);
-  };
-
   // The 6 days before today per daily sensor (docs/design/verbruik), oldest first.
   const DAILY_TOTALS: Record<string, number[]> = {
     'sensor.p1_meter_energy_consumption_daily': [9.4, 8.8, 10.2, 7.9, 9.1, 11.3],
@@ -324,8 +313,6 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
 
   const callWS = async <T,>(msg: { type: string; [key: string]: unknown }) => {
     console.info('[mock] callWS', msg);
-    if (msg.type === 'frigate/events/get') return frigateEvents() as T;
-    if (msg.type === 'auth/sign_path') return { path: cameraImage('#4a4d50', '#2a2c2e', '#c0b49a') } as T;
     if (msg.type === 'camera/stream') throw new Error('No stream in mock mode');
     if (msg.type === 'camera/capabilities') return { frontend_stream_types: ['web_rtc', 'hls'] } as T;
     if (msg.type === 'camera/webrtc/get_client_config') return { configuration: { iceServers: [] } } as T;
@@ -359,7 +346,16 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
       callService,
       callWS,
       // WebRTC offers go nowhere: no answer ever comes, so it times out like a blocked network.
-      connection: { subscribeMessage: async () => async () => undefined } as unknown as Connection,
+      // A todo list answers once, with the same items as todo/item/list.
+      connection: {
+        subscribeMessage: async (onMessage: (message: unknown) => void, subscription: { type: string; entity_id?: string }) => {
+          if (subscription.type === 'todo/item/subscribe') {
+            const todoList = await callWS({ type: 'todo/item/list', entity_id: subscription.entity_id });
+            if (todoList) onMessage(todoList);
+          }
+          return async () => undefined;
+        },
+      } as unknown as Connection,
     });
 
   for (const [id, value] of Object.entries(SCENARIOS[scenarioFor(new Date())])) {

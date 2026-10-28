@@ -1,80 +1,47 @@
-import { useLayoutEffect, useRef, useState, type PointerEvent } from 'react';
+import { useLayoutEffect } from 'react';
 import type { Camera } from '../../config/cameras';
 import { usePager } from '../../hooks/usePager';
 import type { HomeAssistant } from '../../types/hass';
+import { BottomSheet } from '../BottomSheet';
 import { CameraPage } from './CameraPage';
 
 interface Props {
   hass: HomeAssistant;
   cameras: Camera[];
-  initialPage: number;
+  /** The camera that was tapped: the sheet opens on its page. */
+  openedCameraNumber: number;
   onClose(): void;
 }
 
-/** How far you have to drag the handle down before the sheet closes. */
-const CLOSE_DISTANCE = 90;
-
 /**
- * Live sheet (docs/design/cameras): one page per camera, swiped sideways with
- * the same snapping as the media card. Only the camera in view streams. Swipe
- * the handle down or tap the dimmed page to close.
+ * The live sheet (docs/design/cameras): one page per camera, swiped sideways
+ * with the same snapping as the media card. Only the camera in view streams.
  */
-export function CameraSheet({ hass, cameras, initialPage, onClose }: Props) {
+export function CameraSheet({ hass, cameras, openedCameraNumber, onClose }: Props) {
   const pager = usePager();
-  const [drag, setDrag] = useState(0);
-  const dragStart = useRef<number | null>(null);
 
   useLayoutEffect(() => {
-    pager.jumpTo(initialPage);
-  }, [initialPage, pager.jumpTo]);
+    pager.jumpTo(openedCameraNumber);
+  }, [openedCameraNumber, pager.jumpTo]);
 
-  const onPointerDown = (e: PointerEvent) => {
-    dragStart.current = e.clientY;
-    e.currentTarget.setPointerCapture(e.pointerId);
-  };
-  const onPointerMove = (e: PointerEvent) => {
-    if (dragStart.current !== null) setDrag(Math.max(0, e.clientY - dragStart.current));
-  };
-  const onPointerUp = () => {
-    const distance = drag;
-    dragStart.current = null;
-    setDrag(0);
-    if (distance > CLOSE_DISTANCE) onClose();
-  };
+  const hasMoreThanOneCamera = cameras.length > 1;
+  const pageDots = hasMoreThanOneCamera && (
+    <div className="page-dots page-dots--top" aria-hidden>
+      {cameras.map((camera, cameraNumber) => (
+        <i key={camera.entity} className={pager.page === cameraNumber ? 'is-active' : undefined} />
+      ))}
+    </div>
+  );
 
   return (
-    <>
-      <div className="camera-backdrop" onClick={onClose} />
-      <div
-        className={`camera-sheet${drag ? ' is-dragging' : ''}`}
-        style={drag ? { transform: `translateY(${drag}px)` } : undefined}
-        role="dialog"
-        aria-label="Camera's"
-      >
-        <div
-          className="camera-sheet__grab"
-          onPointerDown={onPointerDown}
-          onPointerMove={onPointerMove}
-          onPointerUp={onPointerUp}
-          onPointerCancel={onPointerUp}
-        >
-          <span className="xp__handle" />
-          {cameras.length > 1 && (
-            <div className="page-dots page-dots--top" aria-hidden>
-              {cameras.map((c, i) => (
-                <i key={c.entity} className={pager.page === i ? 'is-active' : undefined} />
-              ))}
-            </div>
-          )}
-        </div>
-        <div className="media-card__pages camera-sheet__pages" ref={pager.ref} onScroll={pager.onScroll}>
-          {cameras.map((camera, i) => (
-            <div key={camera.entity} className="media-card__page camera-sheet__page">
-              <CameraPage hass={hass} camera={camera} live={pager.page === i} />
-            </div>
-          ))}
-        </div>
+    <BottomSheet label="Camera's" besideHandle={pageDots} onClose={onClose}>
+      <div className="media-card__pages" ref={pager.ref} onScroll={pager.onScroll}>
+        {cameras.map((camera, cameraNumber) => (
+          <div key={camera.entity} className="media-card__page">
+            <CameraPage hass={hass} camera={camera} isInView={pager.page === cameraNumber} />
+          </div>
+        ))}
       </div>
-    </>
+    </BottomSheet>
   );
 }

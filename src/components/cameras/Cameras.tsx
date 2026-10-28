@@ -1,6 +1,7 @@
+import type { HassEntity } from 'home-assistant-js-websocket';
 import { useEffect, useState } from 'react';
 import type { Camera } from '../../config/cameras';
-import { camerasIn, stillUrl } from '../../lib/cameras';
+import { configuredCameras, stillImageUrl } from '../../lib/cameras';
 import { haptic } from '../../lib/haptic';
 import type { HomeAssistant } from '../../types/hass';
 import { CameraSheet } from './CameraSheet';
@@ -10,7 +11,7 @@ interface Props {
 }
 
 /** How often the tiles fetch a new still image. */
-const REFRESH_MS = 10_000;
+const TILE_REFRESH_MS = 10_000;
 
 /**
  * "Camera's" on Thuis (docs/design/cameras): the first camera as one large
@@ -18,16 +19,18 @@ const REFRESH_MS = 10_000;
  * refreshed every 10 s. Tapping a tile opens the live sheet on that camera.
  */
 export function Cameras({ hass }: Props) {
-  const cameras = camerasIn(hass.states);
-  const [open, setOpen] = useState<number | null>(null);
-  const [stamp, setStamp] = useState(() => Date.now());
+  const cameras = configuredCameras(hass.states);
+  const [openedCameraNumber, setOpenedCameraNumber] = useState<number | null>(null);
+  const [refreshStamp, setRefreshStamp] = useState(() => Date.now());
+  const isSheetOpen = openedCameraNumber !== null;
 
   useEffect(() => {
-    // Stop refreshing behind the live sheet: only the visible camera streams.
-    if (open !== null) return;
-    const id = window.setInterval(() => setStamp(Date.now()), REFRESH_MS);
-    return () => window.clearInterval(id);
-  }, [open]);
+    // Not behind the live sheet: there, only the camera in view streams.
+    if (isSheetOpen) return;
+
+    const refreshTimer = window.setInterval(() => setRefreshStamp(Date.now()), TILE_REFRESH_MS);
+    return () => window.clearInterval(refreshTimer);
+  }, [isSheetOpen]);
 
   if (cameras.length === 0) return null;
 
@@ -35,41 +38,43 @@ export function Cameras({ hass }: Props) {
     <section>
       <h2 className="section-title">Camera's</h2>
       <div className="camera-grid">
-        {cameras.map((camera, i) => (
+        {cameras.map((camera, cameraNumber) => (
           <CameraTile
             key={camera.entity}
             camera={camera}
+            cameraEntity={hass.states[camera.entity]}
             hass={hass}
-            stamp={stamp}
-            large={i === 0}
+            refreshStamp={refreshStamp}
+            isLarge={cameraNumber === 0}
             onOpen={() => {
               haptic('light');
-              setOpen(i);
+              setOpenedCameraNumber(cameraNumber);
             }}
           />
         ))}
       </div>
-      {open !== null && (
-        <CameraSheet hass={hass} cameras={cameras} initialPage={open} onClose={() => setOpen(null)} />
+      {isSheetOpen && (
+        <CameraSheet hass={hass} cameras={cameras} openedCameraNumber={openedCameraNumber} onClose={() => setOpenedCameraNumber(null)} />
       )}
     </section>
   );
 }
 
-interface TileProps {
+interface CameraTileProps {
   camera: Camera;
+  cameraEntity: HassEntity;
   hass: HomeAssistant;
-  stamp: number;
-  large: boolean;
+  refreshStamp: number;
+  isLarge: boolean;
   onOpen(): void;
 }
 
-function CameraTile({ camera, hass, stamp, large, onOpen }: TileProps) {
-  const src = stillUrl(hass, hass.states[camera.entity], stamp);
+function CameraTile({ camera, cameraEntity, hass, refreshStamp, isLarge, onOpen }: CameraTileProps) {
+  const imageUrl = stillImageUrl(hass, cameraEntity, refreshStamp);
 
   return (
-    <button type="button" className={`camera-tile${large ? ' camera-tile--large' : ''}`} onClick={onOpen}>
-      {src && <img className="camera-tile__image" src={src} alt="" />}
+    <button type="button" className={`camera-tile${isLarge ? ' camera-tile--large' : ''}`} onClick={onOpen}>
+      {imageUrl && <img className="camera-tile__image" src={imageUrl} alt="" />}
       <span className="camera-tile__name">{camera.name}</span>
     </button>
   );

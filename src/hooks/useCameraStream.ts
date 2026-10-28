@@ -1,144 +1,144 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
-import { useEffect, useRef, useState } from 'react';
-import { canPlayHls, hlsUrl, mjpegUrl, platformName } from '../lib/cameras';
-import { connectWebRtc, type WebRtcRoute } from '../lib/webrtc';
+import { useEffect, useState } from 'react';
+import { canPlayHls, hlsUrl, mjpegUrl, streamTypes } from '../lib/cameras';
+import { connectWebRtc, type WebRtcConnection, type WebRtcRoute } from '../lib/webrtc';
 import type { HomeAssistant } from '../types/hass';
 
-export type StreamPhase = 'webrtc' | 'hls' | 'mjpeg' | 'still';
+/** One step in getting live video, tried in order until one shows a picture (docs/design/cameras). */
+export type StreamStep = { kind: 'webrtc'; attempt: number } | { kind: 'hls' } | { kind: 'mjpeg' } | { kind: 'still' };
 
-export type StreamMedia =
-  | { kind: 'webrtc'; stream: MediaStream }
+/** What `LiveImage` shows for a step: WebRTC's video, or the address of the HLS or MJPEG stream. */
+export type StreamSource =
+  | { kind: 'webrtc'; videoStream: MediaStream; route?: WebRtcRoute }
   | { kind: 'hls'; url: string }
   | { kind: 'mjpeg'; url: string };
 
-export interface StreamState {
-  status: 'idle' | 'trying' | 'playing' | 'still';
-  phase: StreamPhase;
-  /** WebRTC only: which try this is (1, 2, …). */
-  attempt: number;
-  /** When the current phase started, and how long it gets before giving up (for the countdown bar). */
-  phaseStart: number;
-  timeout: number;
-  media?: StreamMedia;
-  route?: WebRtcRoute;
-  /** Time from opening to the first frame. */
-  connectMs?: number;
+const WEBRTC_ATTEMPTS = [1, 2, 3];
+const PAUSE_BEFORE_WEBRTC_RETRY_MS = 1000;
+/** How long a step gets to show a picture. HLS gets longer: HA first has to build the stream. */
+const TIME_LIMIT_MS = { webrtc: 5000, hls: 15000, mjpeg: 8000 };
+
+/** All the steps this camera and browser can do, in order, ending on the still image. */
+function possibleSteps(hass: HomeAssistant, haStreamTypes: string[]): StreamStep[] {
+  const canUseWebRtc = haStreamTypes.includes('web_rtc') && hass.connection !== undefined && 'RTCPeerConnection' in window;
+  const canUseHls = haStreamTypes.includes('hls') && canPlayHls();
+
+  const webRtcSteps: StreamStep[] = canUseWebRtc ? WEBRTC_ATTEMPTS.map((attempt) => ({ kind: 'webrtc', attempt })) : [];
+  const hlsSteps: StreamStep[] = canUseHls ? [{ kind: 'hls' }] : [];
+
+  return [...webRtcSteps, ...hlsSteps, { kind: 'mjpeg' }, { kind: 'still' }];
 }
 
-/** How long each phase gets before switching to the next one. HLS starts slower: HA first builds the stream. */
-const TIMEOUT: Record<StreamPhase, number> = { webrtc: 8000, hls: 15000, mjpeg: 8000, still: 0 };
+/** A WebRTC retry first waits a second, so its time limit is a second longer. */
+function timeLimitMs(step: Exclude<StreamStep, { kind: 'still' }>): number {
+  const isWebRtcRetry = step.kind === 'webrtc' && step.attempt > 1;
+  return TIME_LIMIT_MS[step.kind] + (isWebRtcRetry ? PAUSE_BEFORE_WEBRTC_RETRY_MS : 0);
+}
 
-const IDLE: StreamState = { status: 'idle', phase: 'still', attempt: 0, phaseStart: 0, timeout: 0 };
+const wait = (milliseconds: number) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 
 /**
- * Live video for one camera (docs/design/cameras, "Stream status"): tries
- * WebRTC first (like HA's own player), then HLS where the browser plays it
- * itself (iOS, Safari), then MJPEG, and ends on the still image. Exposes the
- * active phase, so the sheet can show what it's trying.
+ * Live video for one camera: remembers which step it's on, and moves to the
+ * next one when a step fails or runs out of time. `LiveImage` shows the
+ * step's source and reports back with `onPlaying` and `onError`. Only while
+ * `isInView`; leaving view stops it.
  */
-export function useCameraStream(hass: HomeAssistant, entity: HassEntity, live: boolean) {
-  const [state, setState] = useState<StreamState>(IDLE);
-  const hassRef = useRef(hass);
-  const entityRef = useRef(entity);
-  hassRef.current = hass;
-  entityRef.current = entity;
-  const waiter = useRef<{ resolve(): void; reject(err: Error): void } | undefined>(undefined);
-  const id = entity.entity_id;
+export function useCameraStream(hass: HomeAssistant, cameraEntity: HassEntity, isInView: boolean) {
+  const entityId = cameraEntity.entity_id;
+  const [steps, setSteps] = useState<StreamStep[] | undefined>(undefined);
+  const [stepNumber, setStepNumber] = useState(0);
+  // Counts the restarts after a drop: going back to step 0 must restart it, also when it's already on step 0.
+  const [restartCount, setRestartCount] = useState(0);
+  const [source, setSource] = useState<StreamSource | undefined>(undefined);
+  const [isPlaying, setIsPlaying] = useState(false);
 
+  const currentStep = steps?.[stepNumber];
+  const goToNextStep = () => setStepNumber((previousStepNumber) => previousStepNumber + 1);
+  const startAgainFromTheTop = () => {
+    setStepNumber(0);
+    setRestartCount((previousRestartCount) => previousRestartCount + 1);
+  };
+
+  // 1. Coming into view: which steps are possible. Leaving view: forget them, which stops the stream.
   useEffect(() => {
-    if (!live) {
-      setState(IDLE);
+    if (!isInView) {
+      setSteps(undefined);
+      setStepNumber(0);
       return;
     }
-    const controller = new AbortController();
-    const { signal } = controller;
-    const opened = Date.now();
 
-    /** Wait for the media element to report its first frame, at most `ms`. */
-    const firstFrame = (ms: number) =>
-      new Promise<void>((resolve, reject) => {
-        const timer = window.setTimeout(() => reject(new Error('Te traag')), ms);
-        const done = (fn: () => void) => () => {
-          window.clearTimeout(timer);
-          fn();
-        };
-        waiter.current = { resolve: done(resolve), reject: (err) => done(() => reject(err))() };
-        signal.addEventListener('abort', done(() => reject(new Error('Afgebroken'))));
+    let hasLeftView = false;
+    streamTypes(hass, entityId).then((haStreamTypes) => {
+      if (!hasLeftView) setSteps(possibleSteps(hass, haStreamTypes));
+    });
+    return () => {
+      hasLeftView = true;
+    };
+    // Once per time it comes into view; hass changes on every state update.
+  }, [entityId, isInView]);
+
+  // 2. Start the current step: get its source and hand it to LiveImage. A failure goes to the next step.
+  useEffect(() => {
+    setSource(undefined);
+    setIsPlaying(false);
+    if (!currentStep || currentStep.kind === 'still') return;
+
+    const stepController = new AbortController();
+    let webRtcConnection: WebRtcConnection | undefined;
+
+    const sourceOfStep = async (): Promise<StreamSource> => {
+      if (currentStep.kind === 'webrtc') {
+        const isRetry = currentStep.attempt > 1;
+        if (isRetry) await wait(PAUSE_BEFORE_WEBRTC_RETRY_MS);
+
+        const connection = await connectWebRtc(hass, entityId, stepController.signal, startAgainFromTheTop);
+        // Stopped while it was connecting: close it, nobody will show it.
+        if (stepController.signal.aborted) {
+          connection.close();
+          throw new Error('Afgebroken');
+        }
+        webRtcConnection = connection;
+
+        return { kind: 'webrtc', videoStream: connection.videoStream, route: await connection.route() };
+      }
+      if (currentStep.kind === 'hls') return { kind: 'hls', url: await hlsUrl(hass, entityId) };
+
+      const url = mjpegUrl(hass, cameraEntity);
+      if (!url) throw new Error('Geen toegangstoken');
+      return { kind: 'mjpeg', url };
+    };
+
+    sourceOfStep()
+      .then((stepSource) => {
+        if (!stepController.signal.aborted) setSource(stepSource);
+      })
+      .catch(() => {
+        if (!stepController.signal.aborted) goToNextStep();
       });
 
-    const startPhase = (phase: StreamPhase, attempt = 1, phaseStart = Date.now()) =>
-      setState({ status: 'trying', phase, attempt, phaseStart, timeout: TIMEOUT[phase] });
-
-    const playing = (route?: WebRtcRoute) =>
-      setState((s) => ({ ...s, status: 'playing', route, connectMs: Date.now() - opened }));
-
-    const tryWebRtc = async () => {
-      const phaseStart = Date.now();
-      const deadline = phaseStart + TIMEOUT.webrtc;
-      for (let attempt = 1; Date.now() < deadline - 500; attempt++) {
-        startPhase('webrtc', attempt, phaseStart);
-        const attemptController = new AbortController();
-        const stop = () => attemptController.abort();
-        signal.addEventListener('abort', stop);
-        const timer = window.setTimeout(stop, deadline - Date.now());
-        try {
-          const connection = await connectWebRtc(hassRef.current, id, attemptController.signal);
-          setState((s) => ({ ...s, media: { kind: 'webrtc', stream: connection.stream } }));
-          await firstFrame(Math.max(deadline - Date.now(), 1000));
-          window.clearTimeout(timer);
-          playing(await connection.route());
-          return true;
-        } catch {
-          window.clearTimeout(timer);
-          stop();
-          if (signal.aborted) return false;
-          await new Promise((r) => window.setTimeout(r, 300));
-        }
-      }
-      return false;
+    return () => {
+      stepController.abort();
+      webRtcConnection?.close();
     };
+    // Once per step; it reads hass and the entity when it starts. hass changes on every state update.
+  }, [currentStep, restartCount]);
 
-    const tryMedia = async (phase: 'hls' | 'mjpeg', url: () => Promise<string | undefined>) => {
-      startPhase(phase);
-      try {
-        const src = await url();
-        if (!src) return false;
-        setState((s) => ({ ...s, media: phase === 'hls' ? { kind: 'hls', url: src } : { kind: 'mjpeg', url: src } }));
-        await firstFrame(TIMEOUT[phase]);
-        playing();
-        return true;
-      } catch {
-        return false;
-      }
-    };
+  // 3. The time limit: no picture in time means the next step. A picture stops the clock.
+  useEffect(() => {
+    if (!currentStep || currentStep.kind === 'still' || isPlaying) return;
 
-    const run = async () => {
-      const capabilities = await hassRef.current
-        .callWS<{ frontend_stream_types: string[] }>({ type: 'camera/capabilities', entity_id: id })
-        .then((c) => c.frontend_stream_types)
-        .catch(() => [] as string[]);
-      if (signal.aborted) return;
+    const giveUpTimer = window.setTimeout(goToNextStep, timeLimitMs(currentStep));
+    return () => window.clearTimeout(giveUpTimer);
+  }, [currentStep, restartCount, isPlaying]);
 
-      const webRtc = capabilities.includes('web_rtc') && !!hassRef.current.connection && 'RTCPeerConnection' in window;
-      const hls = capabilities.includes('hls') && canPlayHls();
+  /** From LiveImage: there's a picture. */
+  const onPlaying = () => setIsPlaying(true);
 
-      if (webRtc && (await tryWebRtc())) return;
-      if (signal.aborted) return;
-      if (hls && (await tryMedia('hls', () => hlsUrl(hassRef.current, id)))) return;
-      if (signal.aborted) return;
-      if (await tryMedia('mjpeg', async () => mjpegUrl(hassRef.current, entityRef.current))) return;
-      if (signal.aborted) return;
-      setState({ ...IDLE, status: 'still', phase: 'still' });
-    };
-
-    run();
-    return () => controller.abort();
-  }, [id, live]);
-
-  return {
-    state,
-    platform: platformName(),
-    onFirstFrame: () => waiter.current?.resolve(),
-    onMediaError: () => waiter.current?.reject(new Error('Mediafout')),
+  /** From LiveImage: the video or image failed. Before it played, the next step; after, start again. */
+  const onError = () => {
+    if (isPlaying) startAgainFromTheTop();
+    else goToNextStep();
   };
+
+  return { currentStep, source, isPlaying, onPlaying, onError };
 }

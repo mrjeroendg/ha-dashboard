@@ -33,9 +33,10 @@ The four ways to show it scrolls, and D1–D3: [`swipe-options.html`](./swipe-op
 
 - **Items, in this order:**
   1. who's home, with an orange house: "Iedereen thuis", "Jeroen thuis", "Eline thuis", "Niemand thuis";
-  2. the travel time home on Jeroen's office days, with a car: "34 min naar huis" (same conditions as [commute](../commute/README.md));
-  3. lights, aircos, doors and windows, as the status line had them;
-  4. what's happening now: "Cara is aan het drinken" with a cat in water blue (`#6cb8e6`), while `switch.0x94a081fffe562fad` (her water fountain) is on.
+  2. today's birthdays, with a pink cake (`#ec8fb5`): "Jan is jarig", or "2 jarigen vandaag" for more (see [Birthdays](#birthdays));
+  3. the travel time home on Jeroen's office days, with a car: "34 min naar huis" (same conditions as [commute](../commute/README.md));
+  4. lights, aircos, doors and windows, as the status line had them;
+  5. what's happening now: "Cara is aan het drinken" with a cat in water blue (`#6cb8e6`), while `switch.0x94a081fffe562fad` (her water fountain) is on.
 - **Nothing bold.** Who's home, the travel time and the names are white, the rest grey. A small dot between the items; soft edges left and right, with room so the first and last item end up clear of them.
 - **Tapping it** opens "Nu". The Waze link is no longer in the band itself.
 
@@ -43,7 +44,18 @@ The four ways to show it scrolls, and D1–D3: [`swipe-options.html`](./swipe-op
 
 - **The title is "Nu"** (was "Wat staat aan"). **No count** under it any more ("3 dingen aan").
 - **"Naar huis"** on top when the travel time applies: a car tile, "34 min naar huis", "Route in Waze" and a **"Start route"** button. It opens `https://waze.com/ul?favorite=home&navigate=yes`, which starts the route to the "Home" favourite saved in Waze right away.
+- **"Jarig"** next, when there are birthdays today: a row per person with a pink cake tile, the name, and "Vandaag". Nothing to tap.
 - **Then the sections as before:** "Lichten", "Airco's", each with only a switch. Nothing on: "Alles staat uit".
+
+## Birthdays
+
+- **From the todo list `todo.birthdays_today`** (`BIRTHDAYS` in `src/config/status.ts`), one open item per birthday, with the name as its title. The dashboard follows it live (`todo/item/subscribe`).
+- **An HA automation fills it**, "Fill today's birthdays to-do list": just after midnight and when HA starts, it removes all items and adds today's events from `calendar.birthdays`, with the 🎂 stripped from their titles.
+- **Only today.** No age: the calendar has no year of birth.
+
+Built (dev mode, mock data: one birthday, two birthdays, "Nu"):
+
+![Birthdays](./birthdays-built.png)
 
 ## Adding something that's happening now
 

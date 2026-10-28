@@ -100,6 +100,8 @@ function baseStates(): HassEntities {
     entity('sensor.auto_batterij', '62', { unit_of_measurement: '%' }),
     entity('switch.auto_laden', 'off', { friendly_name: 'Auto laden' }),
     entity('media_player.woonkamer', 'idle', { friendly_name: 'Woonkamer' }),
+    // Today's birthdays (src/config/status.ts BIRTHDAYS): the state is the number of open items.
+    entity('todo.birthdays_today', '2', { friendly_name: 'Birthdays today' }),
     // Cara's water fountain (src/config/status.ts NOW): on, so the status band shows her drinking.
     entity('switch.0x94a081fffe562fad', 'on', { friendly_name: 'Drinkfontein Cara' }),
     // The media card uses the IDs from src/config/media.ts, so mock those.
@@ -315,6 +317,9 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
       ) as T;
     }
     if (msg.type === 'recorder/statistic_during_period') return { max: 2400 } as T;
+    if (msg.type === 'todo/item/list' && msg.entity_id === 'todo.birthdays_today') {
+      return { items: [{ uid: 'birthday-1', summary: 'Jan', status: 'needs_action' }, { uid: 'birthday-2', summary: 'An', status: 'needs_action' }] } as T;
+    }
     return undefined as T;
   };
 

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useRunAction } from '../hooks/useRunAction';
 import { haptic } from '../lib/haptic';
 import type { StatusEntity } from '../config/status';
+import { BIRTHDAYS } from '../config/status';
 import { entriesThatAreOn, WAZE_ROUTE_HOME, WHAT_IS_ON_GROUPS } from '../lib/houseStatus';
 import { rowModel } from '../lib/rooms';
 import type { HomeAssistant } from '../types/hass';
@@ -13,16 +14,18 @@ interface Props {
   hass: HomeAssistant;
   /** "34 min naar huis" on Jeroen's office days; without it, no "Naar huis". */
   travelTimeHome?: string;
+  /** Today's birthdays; without any, no "Jarig". */
+  birthdayNames: string[];
   onClose(): void;
 }
 
 /**
  * "Nu" (docs/design/whats-on, now-ticker), opened from the status band: the
- * route home in Waze on office days, then what the band counts as on, per
+ * route home in Waze on office days, today's birthdays, then what the band counts as on, per
  * group, each with only a switch. What you turn off stays in the list until
  * the sheet closes, so you can turn it back on.
  */
-export function WhatIsOnSheet({ hass, travelTimeHome, onClose }: Props) {
+export function WhatIsOnSheet({ hass, travelTimeHome, birthdayNames, onClose }: Props) {
   // Taken once when the sheet opens: rows don't disappear while you're looking at them.
   const [groupsWhenOpened] = useState(() =>
     WHAT_IS_ON_GROUPS.map((group) => ({ ...group, entriesOn: entriesThatAreOn(hass.states, group.statusEntries) })).filter(
@@ -34,6 +37,7 @@ export function WhatIsOnSheet({ hass, travelTimeHome, onClose }: Props) {
     <BottomSheet label="Nu" className="whats-on-sheet" onClose={onClose}>
       <h2 className="whats-on-sheet__title">Nu</h2>
       {travelTimeHome && <RouteHome travelTimeHome={travelTimeHome} />}
+      {birthdayNames.length > 0 && <Birthdays birthdayNames={birthdayNames} />}
       {groupsWhenOpened.length === 0 ? (
         <EmptyState icon="check" text="Alles staat uit" />
       ) : (
@@ -70,6 +74,28 @@ function RouteHome({ travelTimeHome }: { travelTimeHome: string }) {
             Start route
           </a>
         </div>
+      </div>
+    </section>
+  );
+}
+
+/** "Jarig" (docs/design/now-ticker): one row per birthday today; nothing to tap. */
+function Birthdays({ birthdayNames }: { birthdayNames: string[] }) {
+  return (
+    <section>
+      <h3 className="safety-sheet__section">Jarig</h3>
+      <div className="row-group">
+        {birthdayNames.map((birthdayName, position) => (
+          <div key={`${position}-${birthdayName}`} className="row-item row">
+            <span className="icon-tile is-on" style={{ background: BIRTHDAYS.color }}>
+              <Icon name={BIRTHDAYS.icon} />
+            </span>
+            <span className="card-text">
+              <span className="row__name">{birthdayName}</span>
+              <span className="card-detail">Vandaag</span>
+            </span>
+          </div>
+        ))}
       </div>
     </section>
   );

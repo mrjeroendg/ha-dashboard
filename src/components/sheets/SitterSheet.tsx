@@ -1,7 +1,8 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import type { CSSProperties } from 'react';
 import type { WarningSheetProps } from '../../config/attention';
 import { useRunAction } from '../../hooks/useRunAction';
-import { BABYSIT_MARK, CATSIT_MARK, sitterAppointments, type TodoItem } from '../../lib/sitters';
+import { useTodoItems } from '../../hooks/useTodoItems';
+import { BABYSIT_MARK, CATSIT_MARK, sitterAppointments } from '../../lib/sitters';
 import { haptic } from '../../lib/haptic';
 import { EmptyState } from '../EmptyState';
 import { Icon } from '../Icon';
@@ -81,33 +82,6 @@ function SitterSheet({ hass, todoListId, title, sitterMark, refreshAutomation, c
       </ul>
     </div>
   );
-}
-
-/** The todo list's items, kept up to date by HA (todo/item/subscribe); undefined until HA first answers. */
-function useTodoItems(hass: WarningSheetProps['hass'], todoListId: string): TodoItem[] | undefined {
-  const [todoItems, setTodoItems] = useState<TodoItem[] | undefined>(undefined);
-
-  useEffect(() => {
-    const connection = hass.connection;
-    // Without a live connection (dev mock), fetch the list once.
-    if (!connection) {
-      hass
-        .callWS<{ items: TodoItem[] }>({ type: 'todo/item/list', entity_id: todoListId })
-        .then((response) => setTodoItems(response.items))
-        .catch((error) => console.error(error));
-      return;
-    }
-    const unsubscribe = connection.subscribeMessage<{ items: TodoItem[] }>((update) => setTodoItems(update.items), {
-      type: 'todo/item/subscribe',
-      entity_id: todoListId,
-    });
-    return () => {
-      unsubscribe.then((stopListening) => stopListening()).catch(() => undefined);
-    };
-    // Subscribe once per list; hass changes on every state update.
-  }, [todoListId]);
-
-  return todoItems;
 }
 
 /** Runs the calendar scan: "Bijwerken", spinner while it runs, then "Bijgewerkt" or "Dat lukte niet". */

@@ -115,6 +115,9 @@ export enum Entity {
   SCAN_CALENDAR_FOR_CATSITTER_AUTOMATION = 'automation.scan_google_calendar_for_catsit_requirements',
   JEROEN_TRAVEL_TIME_HOME = 'sensor.commuting_home_travel_time_jeroen',
 
+  // Today's birthdays, filled each night by an HA automation from calendar.birthdays
+  BIRTHDAYS_TODAY_LIST = 'todo.birthdays_today',
+
   // Cara's water fountain: the pump runs for a while every 15 minutes
   CARA_WATER_FOUNTAIN = 'switch.0x94a081fffe562fad',
 }

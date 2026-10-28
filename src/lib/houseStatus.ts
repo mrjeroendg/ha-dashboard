@@ -1,6 +1,6 @@
 import type { HassEntities, HassEntity } from 'home-assistant-js-websocket';
 import type { IconName } from '../components/Icon';
-import { NOW, STATUS, type StatusEntity } from '../config/status';
+import { BIRTHDAYS, NOW, STATUS, type StatusEntity } from '../config/status';
 import type { HomeAssistant } from '../types/hass';
 import { isAircoOn } from './airco';
 import { Entity } from '../config/entities';
@@ -143,12 +143,23 @@ function nowItems(states: HassEntities): StatusItem[] {
   }));
 }
 
+/** "Jan is jarig" for one birthday, "2 jarigen vandaag" for more; nothing without. */
+function birthdaysItem(birthdayNames: string[]): StatusItem | undefined {
+  if (birthdayNames.length === 0) return undefined;
+
+  const cake = { icon: BIRTHDAYS.icon, iconColor: BIRTHDAYS.color };
+  const isOneBirthday = birthdayNames.length === 1;
+
+  return isOneBirthday ? { ...cake, highlighted: birthdayNames[0], text: 'is jarig' } : { ...cake, text: `${birthdayNames.length} jarigen vandaag` };
+}
+
 /**
  * The status band on Thuis (docs/design/now-ticker), in this order: who's
- * home, the travel time home, lights, aircos, doors and windows, then what's
- * happening now. Only the entities in src/config/status.ts count.
+ * home, today's birthdays, the travel time home, lights, aircos, doors and
+ * windows, then what's happening now. Only the entities in
+ * src/config/status.ts count.
  */
-export function houseStatusItems(hass: HomeAssistant, now: Date): StatusItem[] {
+export function houseStatusItems(hass: HomeAssistant, now: Date, birthdayNames: string[]): StatusItem[] {
   const states = hass.states;
   const whoIsHome = presence(states);
   const travelTimeHome = commute(hass, now);
@@ -158,6 +169,7 @@ export function houseStatusItems(hass: HomeAssistant, now: Date): StatusItem[] {
 
   const statusItems: Array<StatusItem | undefined> = [
     whoIsHome ? { icon: 'home', iconColor: 'var(--accent)', highlighted: whoIsHome } : undefined,
+    birthdaysItem(birthdayNames),
     travelTimeHome ? { icon: 'car', highlighted: travelTimeHome } : undefined,
     lightsPart ? { icon: 'bulb', text: lightsPart } : undefined,
     aircosPart ? { icon: 'snowflake', text: aircosPart } : undefined,

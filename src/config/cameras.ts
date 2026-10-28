@@ -1,4 +1,5 @@
 import type { IconName } from '../components/Icon';
+import { Entity } from './entities';
 
 export interface CameraAction {
   label: string;
@@ -7,27 +8,17 @@ export interface CameraAction {
 }
 
 export interface Camera {
-  entity: string;
+  entity: Entity;
   name: string;
   frigate?: string;
   actions: CameraAction[];
 }
 
+/** For now only the back door; the garage and the side path follow once their entities are known. */
 export const CAMERAS: Camera[] = [
   {
-    entity: 'camera.garage',
-    name: 'Garage',
-    frigate: 'garage',
-    actions: [],
-  },
-  {
-    entity: 'camera.achterdeur',
+    entity: Entity.BACK_DOOR_CAMERA,
     name: 'Achterdeur',
-    actions: [],
-  },
-  {
-    entity: 'camera.zijpad',
-    name: 'Zijpad',
     actions: [],
   },
 ];

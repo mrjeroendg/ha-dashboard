@@ -153,4 +153,4 @@ Questions for that discussion:
 
 - Final action scripts per camera.
 - Garage on a quiet day (Frigate, but no events yet today): reuse the placeholder with *"Nog niets gebeurd vandaag"*?
-- Camera entity IDs.
+- Camera entity IDs. *For now only Achterdeur is configured* (`camera.back_door_fluent_lens_0`, `Entity.BACK_DOOR_CAMERA`); as the only camera it gets the large tile. Garage and Zijpad follow once their entities are known.

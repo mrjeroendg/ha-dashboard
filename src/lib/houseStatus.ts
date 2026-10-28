@@ -20,8 +20,9 @@ const COMMUTE = {
   untilHour: 18,
 };
 
-/** Opens Waze on the phone and starts the route to the "Home" favourite saved in Waze. */
 export const WAZE_ROUTE_HOME = 'https://waze.com/ul?favorite=home&navigate=yes';
+export const SEND_WHATSAPP_MESSAGE = 'whatsapp://';
+
 
 /** A status entry whose entity exists in HA and is available, with its name. */
 export interface ListedEntity {

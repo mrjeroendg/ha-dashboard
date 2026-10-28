@@ -3,7 +3,7 @@ import { useRunAction } from '../hooks/useRunAction';
 import { haptic } from '../lib/haptic';
 import type { StatusEntity } from '../config/status';
 import { BIRTHDAYS } from '../config/status';
-import { entriesThatAreOn, WAZE_ROUTE_HOME, WHAT_IS_ON_GROUPS } from '../lib/houseStatus';
+import { entriesThatAreOn, SEND_WHATSAPP_MESSAGE, WAZE_ROUTE_HOME, WHAT_IS_ON_GROUPS } from '../lib/houseStatus';
 import { rowModel } from '../lib/rooms';
 import type { HomeAssistant } from '../types/hass';
 import { BottomSheet } from './BottomSheet';
@@ -92,8 +92,10 @@ function Birthdays({ birthdayNames }: { birthdayNames: string[] }) {
             </span>
             <span className="card-text">
               <span className="row__name">{birthdayName}</span>
-              <span className="card-detail">Vandaag</span>
             </span>
+            <a className="pill-button" href={SEND_WHATSAPP_MESSAGE} target="_blank" rel="noreferrer" onClick={() => haptic('light')}>
+              Stuur bericht
+            </a>
           </div>
         ))}
       </div>

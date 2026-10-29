@@ -35,7 +35,8 @@ export type SnelShortcut = RoomEntity | SnelSheetShortcut;
  *
  * Icons: sun coffee blinds leave thermometer car sofa tv moon lock power
  * window music sprout home bulb plug door monitor droplet gauge play radio
- * alert update garage garageCar bed shower up down stop star baby phone tablet
+ * alert update garage garageCar bed shower up down left right stop star baby phone
+ * tablet
  */
 export const SHORTCUTS: SnelShortcut[] = [
   { entity: Entity.PRE_SLEEP_SCENE, name: 'Slapen', icon: 'baby' },
@@ -51,11 +52,13 @@ export const SHORTCUTS: SnelShortcut[] = [
       {
         entity: Entity.LIVING_SCREEN_LEFT_FRONT,
         name: 'Linksvoor',
+        icon: 'left',
         myPosition: Entity.LIVING_SCREEN_LEFT_FRONT_MY_POSITION,
       },
       {
         entity: Entity.LIVING_SCREEN_RIGHT_FRONT,
         name: 'Rechtsvoor',
+        icon: 'right',
         myPosition: Entity.LIVING_SCREEN_RIGHT_FRONT_MY_POSITION
       },
       {
@@ -70,32 +73,38 @@ export const SHORTCUTS: SnelShortcut[] = [
     sheet: [
       {
         entity: Entity.ALL_ROLLER_SHUTTERS,
-        name: 'Alle'
+        name: 'Alle',
+        icon: 'home',
       },
       {
         entity: Entity.MASTER_BEDROOM_ROLLER_SHUTTER,
         name: 'Slaapkamer',
+        icon: 'moon',
         myPosition: Entity.MASTER_BEDROOM_ROLLER_SHUTTER_MY_POSITION
       },
       {
         entity: Entity.BUREAU_ROLLER_SHUTTER,
         name: 'Bureau',
+        icon: 'monitor',
         myPosition: Entity.BUREAU_ROLLER_SHUTTER_MY_POSITION
       },
       {
         entity: Entity.MARIELOU_ROLLER_SHUTTER,
         name: 'Marielou',
+        icon: 'baby',
         myPosition: Entity.MARIELOU_ROLLER_SHUTTER_MY_POSITION
       },
 
       {
         entity: Entity.GUEST_ROOM_ROLLER_SHUTTER,
         name: 'Gasten',
+        icon: 'bed',
         myPosition: Entity.GUEST_ROOM_ROLLER_SHUTTER_MY_POSITION
       },
       {
         entity: Entity.GUEST_ROOM_ROLLER_SHUTTER,
         name: 'Badkamer',
+        icon: 'shower',
         myPosition: Entity.GUEST_ROOM_ROLLER_SHUTTER_MY_POSITION
       },
 

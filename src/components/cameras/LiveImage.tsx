@@ -16,7 +16,7 @@ export function LiveImage({ stillImageUrl, source, onPlaying, onError }: Props) 
       {stillImageUrl && <img className="camera-live__media" src={stillImageUrl} alt="" />}
       {source?.kind === 'webrtc' && <WebRtcVideo videoStream={source.videoStream} onPlaying={onPlaying} onError={onError} />}
       {source?.kind === 'hls' && (
-        <video key={source.url} className="camera-live__media" src={source.url} autoPlay muted playsInline onPlaying={onPlaying} onError={onError} />
+        <video key={source.url} className="camera-live__media" src={source.url} autoPlay muted playsInline controls onPlaying={onPlaying} onError={onError} />
       )}
       {source?.kind === 'mjpeg' && <MjpegImage key={source.url} url={source.url} onPlaying={onPlaying} onError={onError} />}
     </>
@@ -37,7 +37,7 @@ function WebRtcVideo({ videoStream, onPlaying, onError }: WebRtcVideoProps) {
     if (video.current) video.current.srcObject = videoStream;
   }, [videoStream]);
 
-  return <video ref={video} className="camera-live__media" autoPlay muted playsInline onPlaying={onPlaying} onError={onError} />;
+  return <video ref={video} className="camera-live__media" autoPlay muted playsInline controls onPlaying={onPlaying} onError={onError} />;
 }
 
 interface MjpegImageProps {

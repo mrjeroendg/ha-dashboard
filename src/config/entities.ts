@@ -29,6 +29,7 @@ export enum Entity {
   KITCHEN_SLIDING_WINDOW_CONTACT = 'binary_sensor.0x00178801100445ff_contact',
   BACK_DOOR_CONTACT = 'binary_sensor.0x0017880110044edb_contact',
   BACK_DOOR_CAMERA = 'camera.back_door_fluent_lens_0',
+  PATHWAY_CAMERA = 'camera.right_pathway_fluent_lens_0',
   CENTRIS_LIGHT = 'light.centris',
 
   // Master bedroom
@@ -51,6 +52,7 @@ export enum Entity {
   // Garage
   GARAGE_DOOR_STATE = 'sensor.garage_door_state_classification',
   GARAGE_DOOR_IMPULSE_SCRIPT = 'script.garage_door_impuls',
+  GARAGE_DOOR_CAMERA = 'camera.living_clear',
   GARAGE_STORAGE_LIGHT = 'light.storage_switch',
   GARAGE_SMOKE_DETECTOR = 'binary_sensor.0x0015bc003106405f_smoke',
   GARAGE_SMOKE_DETECTOR_BATTERY = 'sensor.0x0015bc003106405f_battery',

@@ -10,4 +10,8 @@ export interface Camera {
  * In this order on Thuis; the first one gets the large tile. For now only the
  * back door; the garage and the side path follow once their entities are known.
  */
-export const CAMERAS: Camera[] = [{ entity: Entity.BACK_DOOR_CAMERA, name: 'Achterdeur' }];
+export const CAMERAS: Camera[] = [
+  { entity: Entity.BACK_DOOR_CAMERA, name: 'Achterdeur' },
+  { entity: Entity.PATHWAY_CAMERA, name: 'Zijpad' },
+  { entity: Entity.GARAGE_DOOR_CAMERA, name: 'Garage' }
+];

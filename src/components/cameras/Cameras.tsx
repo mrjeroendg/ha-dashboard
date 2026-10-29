@@ -1,6 +1,5 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
 import { useEffect, useState } from 'react';
-import type { Camera } from '../../config/cameras';
 import { configuredCameras, stillImageUrl } from '../../lib/cameras';
 import { haptic } from '../../lib/haptic';
 import type { HomeAssistant } from '../../types/hass';
@@ -41,7 +40,6 @@ export function Cameras({ hass }: Props) {
         {cameras.map((camera, cameraNumber) => (
           <CameraTile
             key={camera.entity}
-            camera={camera}
             cameraEntity={hass.states[camera.entity]}
             hass={hass}
             refreshStamp={refreshStamp}
@@ -61,7 +59,6 @@ export function Cameras({ hass }: Props) {
 }
 
 interface CameraTileProps {
-  camera: Camera;
   cameraEntity: HassEntity;
   hass: HomeAssistant;
   refreshStamp: number;
@@ -69,13 +66,12 @@ interface CameraTileProps {
   onOpen(): void;
 }
 
-function CameraTile({ camera, cameraEntity, hass, refreshStamp, isLarge, onOpen }: CameraTileProps) {
+function CameraTile({ cameraEntity, hass, refreshStamp, isLarge, onOpen }: CameraTileProps) {
   const imageUrl = stillImageUrl(hass, cameraEntity, refreshStamp);
 
   return (
     <button type="button" className={`camera-tile${isLarge ? ' camera-tile--large' : ''}`} onClick={onOpen}>
       {imageUrl && <img className="camera-tile__image" src={imageUrl} alt="" />}
-      <span className="camera-tile__name">{camera.name}</span>
     </button>
   );
 }

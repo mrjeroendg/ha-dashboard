@@ -376,7 +376,7 @@
 /* ---------------------------------------------------------------- quick actions */
 
 .section-title {
-  margin: 34px 4px 12px;
+  margin: 24px 4px 10px;
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.04em;
@@ -1920,7 +1920,7 @@ a.pill-button { text-decoration: none; }
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
-  border-radius: 18px;
+  border-radius: 20px;
   background: rgba(48, 48, 46, 0.55);
   -webkit-backdrop-filter: blur(18px) saturate(1.5);
   backdrop-filter: blur(18px) saturate(1.5);
@@ -1933,7 +1933,7 @@ a.pill-button { text-decoration: none; }
   grid-template-columns: repeat(5, 1fr);
   gap: 2px;
   box-sizing: border-box;
-  padding: 8px 4px 7px;
+  padding: 12px 4px 10px;
   scroll-snap-align: start;
   scroll-snap-stop: always;
 }
@@ -1945,10 +1945,10 @@ a.pill-button { text-decoration: none; }
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   padding: 0;
   background: none;
-  font: 500 10px var(--font-sans);
+  font: 500 11px var(--font-sans);
   color: var(--text-muted);
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
@@ -1962,17 +1962,17 @@ a.pill-button { text-decoration: none; }
   position: relative;
   display: grid;
   place-items: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 11px;
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
   background: rgba(0, 0, 0, 0.25);
   color: var(--accent);
   transition: transform 120ms ease, background-color 200ms ease;
 }
 
 .snel-tile:active .snel-tile__icon { transform: scale(0.94); }
-.snel-tile__icon .icon { width: 16px; height: 16px; }
-.snel-tile__icon .spinner { width: 14px; height: 14px; }
+.snel-tile__icon .icon { width: 20px; height: 20px; }
+.snel-tile__icon .spinner { width: 18px; height: 18px; }
 .snel-tile__icon.is-on { background: var(--accent); color: #fff; }
 
 /* A sheet shortcut: a thin orange ring around the tile says a tap opens a sheet. */
@@ -1980,7 +1980,7 @@ a.pill-button { text-decoration: none; }
 
 .snel-tile__name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
-.page-dots--small { gap: 5px; margin-top: 8px; }
+.page-dots--small { gap: 5px; margin-top: 10px; }
 .page-dots--small i { width: 5px; height: 5px; }
 .page-dots--small i.is-active { width: 12px; }
 

@@ -148,7 +148,7 @@ interface SheetTileProps {
   onOpen(): void;
 }
 
-/** One sheet shortcut: its icon with the orange dot, and its name. A tap opens its sheet. */
+/** One sheet shortcut: its icon in an orange ring, and its name. A tap opens its sheet. */
 function SheetTile({ name, icon, onOpen }: SheetTileProps) {
   const onTap = () => {
     haptic('selection');
@@ -157,9 +157,8 @@ function SheetTile({ name, icon, onOpen }: SheetTileProps) {
 
   return (
     <button type="button" className="snel-tile" aria-haspopup="dialog" onClick={onTap}>
-      <span className="snel-tile__icon">
+      <span className="snel-tile__icon has-sheet">
         <Icon name={icon} />
-        <span className="snel-tile__dot" aria-hidden />
       </span>
       <span className="snel-tile__name">{name}</span>
     </button>

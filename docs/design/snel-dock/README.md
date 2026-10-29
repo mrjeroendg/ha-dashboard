@@ -43,7 +43,7 @@ As built (dev mode, a test config with 13 shortcuts), the dock and a sheet short
 - **The dock:** one glass card (radius 18) over soft colour blobs, five shortcuts per page side by side: a 32px icon tile (radius 11) and the name under it (10px, cut off with "…" when too long). No limit on the number of pages.
 - **Swiping** moves exactly one page of five at once, and the pages slide as one belt in the same card. Swipe left for the next page. **Page dots** under the card only with more than one page; no counter.
 - **An entity shortcut:** a tap starts a scene or script (spinner, then a check) or switches a light or switch (the icon tile turns accent while on). On an error the name reads "Mislukt".
-- **A sheet shortcut:** a small orange dot (4px, the accent colour at 80%) inside the icon tile, top right. No on/off state. A tap opens its sheet.
+- **A sheet shortcut:** a thin orange ring (1px, the accent colour) around the icon tile. No on/off state. A tap opens its sheet.
 
 ## The sheet
 

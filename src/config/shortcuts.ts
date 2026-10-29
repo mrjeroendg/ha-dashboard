@@ -27,7 +27,7 @@ export type SnelShortcut = RoomEntity | SnelSheetShortcut;
  *   src/config/rooms.ts). A tap does that control's main thing: start a scene
  *   or script, switch a light or switch on or off. For anything else (a cover,
  *   an airco), use a sheet.
- * - A sheet (`sheet`): the tile gets an orange dot, and a tap opens a sheet
+ * - A sheet (`sheet`): the tile gets an orange ring, and a tap opens a sheet
  *   with these entities, each as the same control as in a room.
  *
  * `name` and `icon` replace HA's name and the domain's icon. The config is

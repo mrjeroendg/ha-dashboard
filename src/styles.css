@@ -1975,16 +1975,16 @@ a.pill-button { text-decoration: none; }
 .snel-tile__icon .spinner { width: 14px; height: 14px; }
 .snel-tile__icon.is-on { background: var(--accent); color: #fff; }
 
-/* A sheet shortcut: the orange dot top right says a tap opens a sheet. */
+/* A sheet shortcut: the small orange dot top right, inside the tile, says a tap opens a sheet. */
 .snel-tile__dot {
   position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 8px;
-  height: 8px;
+  top: 4px;
+  right: 4px;
+  width: 4px;
+  height: 4px;
   border-radius: 50%;
   background: var(--accent);
-  box-shadow: 0 0 0 2px #2f2e2c;
+  opacity: 0.8;
 }
 
 .snel-tile__name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

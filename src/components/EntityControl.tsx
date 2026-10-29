@@ -22,11 +22,6 @@ interface Props {
   hass: HomeAssistant;
   /** Overrides the icon that goes with the entity's domain, e.g. a shortcut's own icon. */
   icon?: IconName;
-  /**
-   * 'slim' (docs/design/snel-list): smaller, and no second line except
-   * "Dat lukte niet". Only the look changes; tapping behaves the same.
-   */
-  look?: 'slim';
 }
 
 /**
@@ -36,16 +31,15 @@ interface Props {
  * sheet, the mower sheet. Nothing extra by itself: a light only opens the light sheet when its
  * `members` are configured.
  */
-export function EntityControl({ entity, name, options = {}, myPosition, members, mower, hass, icon, look }: Props) {
+export function EntityControl({ entity, name, options = {}, myPosition, members, mower, hass, icon }: Props) {
   const model = rowModel(entity, options);
   const [status, run] = useRunAction();
   const isBusy = status === 'busy';
-  const isSlim = look === 'slim';
   const detailWhileOn =
     model.brightness !== undefined
       ? ['Aan', `${model.brightness}%`, model.kelvin !== undefined && `${model.kelvin} K`].filter(Boolean).join(' · ')
       : model.detail;
-  const detail = status === 'error' ? 'Dat lukte niet' : isSlim ? undefined : detailWhileOn;
+  const detail = status === 'error' ? 'Dat lukte niet' : detailWhileOn;
 
   // The icon tile shows a colour light's current colour.
   const tint = model.color ? tintFor(model.color.rgb) : undefined;

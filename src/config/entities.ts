@@ -123,4 +123,7 @@ export enum Entity {
 
   // Cara's water fountain: the pump runs for a while every 15 minutes
   CARA_WATER_FOUNTAIN = 'switch.0x94a081fffe562fad',
+
+  // General groups
+  ALL_ROLLER_SHUTTERS = 'cover.roller_shutters'
 }

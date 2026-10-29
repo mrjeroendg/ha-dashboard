@@ -1,44 +1,53 @@
 # Snel as a glass dock (D2)
 
-"Snel" on Thuis: the shortcuts as small icons in one glass card, five per page, with every shortcut in a sheet behind "Alle". Dark mode only. Replaces the list in [`snel-list`](../snel-list/README.md) on Thuis; that list lives on in the sheet.
+"Snel" on Thuis: every shortcut as a small icon in one glass card, five per page. A shortcut either triggers its entity, or opens a sheet with several entities. Dark mode only. Replaces the list in [`snel-list`](../snel-list/README.md); its controls live on in the sheets.
 
-> ✅ **Approved (D2) and built** (28 October). Don't change proportions or behaviour without asking first.
+> ✅ **Approved (D2) and built** (28 October). **Sheet shortcuts approved and built** (29 October); the "Alle" sheet and `onThuis` are gone. Don't change proportions or behaviour without asking first.
 >
 > Code: `src/components/QuickActions.tsx`, config in `src/config/shortcuts.ts`, styles under "Snel (docs/design/snel-dock, D2)" in `src/styles.css`.
 
-The mockup: [`mockup.png`](./mockup.png) ([`mockup.html`](./mockup.html)). The options before it (C4, D1–D3): [`options.png`](./options.png) ([`options.html`](./options.html)).
+The dock's mockup: [`mockup.png`](./mockup.png) ([`mockup.html`](./mockup.html)), the options before it (C4, D1–D3): [`options.png`](./options.png) ([`options.html`](./options.html)). The sheet shortcut's mockup: [`sheet-mockup.png`](./sheet-mockup.png) ([`sheet-mockup.html`](./sheet-mockup.html)).
 
-As built (dev mode, mock data), with three shortcuts, the sheet, and with seven (two pages):
+As built (dev mode, a test config with 13 shortcuts), the dock and a sheet shortcut's sheet:
 
-![Built](./built.png)
+![Three pages](./built-three-pages.png)
 
 ![Sheet](./built-sheet.png)
 
-![Two pages](./built-two-pages.png)
-
 ## Config
 
-`src/config/shortcuts.ts`. As many shortcuts as you like, each configured exactly like a control in a room (`RoomEntity`), plus `onThuis`:
+`src/config/shortcuts.ts`, as many shortcuts as you like, in display order. Two kinds:
 
 ```ts
-{ entity: Entity.CENTRIS_LIGHT, name: 'Centris', icon: 'moon', onThuis: true },
+// An entity, configured exactly like a control in a room (RoomEntity).
+{ entity: Entity.CENTRIS_LIGHT, name: 'Centris', icon: 'moon' },
+
+// A sheet: its name and icon on the tile, its entities in the sheet.
+{
+  name: 'Screens',
+  icon: 'blinds',
+  sheet: [
+    { entity: Entity.LIVING_SCREENS_ALL, name: 'Alle' },
+    { entity: Entity.LIVING_SCREEN_LEFT_FRONT, name: 'Linksvoor', myPosition: Entity.LIVING_SCREEN_LEFT_FRONT_MY_POSITION },
+  ],
+},
 ```
 
-- **`onThuis: true`:** in the dock on Thuis, in config order.
-- **Without it:** only in the sheet behind "Alle".
-- At most **10** fit on Thuis (two pages of five). More than that: the first 10, and a warning in the console.
+- **An entity shortcut** is for what a tap can do by itself: a scene or script (start), a light or switch (on/off). A cover, an airco and the like go in a sheet, even on their own; as an entity shortcut, a tap on them does nothing.
+- **A sheet's entries** are configured exactly like a room's, so `myPosition`, `members` and so on work there too. The sheet's title is the shortcut's `name`, so the group's own entry gets its own name, e.g. "Alle".
+- Entities missing in HA are left out; a sheet with none of its entities in HA is left out entirely; with no shortcuts left, there is no section.
 
 ## On Thuis
 
-- **The heading:** "SNEL" on the left, **"Alle N ›"** on the right in the accent colour, N being the number of all shortcuts. Opens the sheet.
-- **The dock:** one glass card (radius 18) over soft colour blobs, with five shortcuts per page side by side: a 32px icon tile (radius 11) and the name under it (10px, cut off with "…" when too long).
-- **Swiping** moves exactly one page of five at once, and both pages slide as one belt in the same card, not as two separate cards. Swipe left for the second page. **Page dots** under the card only with more than one page.
-- **A tap** does the control's main thing: start a scene or script (spinner, then a check), switch a light or switch (the icon tile turns accent while on). Anything else (a cover, an airco) opens the sheet, where its full control is. On an error the name reads "Mislukt".
-- **No shortcuts with `onThuis`:** only the heading with "Alle". **No shortcuts at all:** no section.
+- **The heading:** "SNEL", nothing else.
+- **The dock:** one glass card (radius 18) over soft colour blobs, five shortcuts per page side by side: a 32px icon tile (radius 11) and the name under it (10px, cut off with "…" when too long). No limit on the number of pages.
+- **Swiping** moves exactly one page of five at once, and the pages slide as one belt in the same card. Swipe left for the next page. **Page dots** under the card only with more than one page; no counter.
+- **An entity shortcut:** a tap starts a scene or script (spinner, then a check) or switches a light or switch (the icon tile turns accent while on). On an error the name reads "Mislukt".
+- **A sheet shortcut:** a small orange dot (8px, the accent colour) at the top right of the icon tile. No on/off state. A tap opens its sheet.
 
 ## The sheet
 
-The shared `BottomSheet`, titled "Snel" (serif, 24px), with every shortcut as the slim control from [`snel-list`](../snel-list/README.md), in config order.
+The shared `BottomSheet`, titled with the shortcut's name (serif, 24px), with its entities as the same controls as in a room (not the slim ones), in config order. A long list scrolls inside the sheet (at most 85% of the screen high).
 
 ## Open
 

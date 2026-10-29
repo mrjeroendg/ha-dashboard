@@ -2,7 +2,7 @@
 
 "Snel" on Thuis becomes one list of controls (option C), in the slim variant (S1). Dark mode only.
 
-> ↪ **On Thuis replaced by the [glass dock](../snel-dock/README.md)** (28 October). The list below lives on as the sheet behind "Alle".
+> ↪ **On Thuis replaced by the [glass dock](../snel-dock/README.md)** (28 October). Its controls live on in the sheets of sheet shortcuts; the slim look (S1) was removed along with the "Alle" sheet.
 >
 > ✅ **Approved (C + slim S1) and built.** Don't change proportions or behaviour without asking first.
 >

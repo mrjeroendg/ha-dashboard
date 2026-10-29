@@ -1897,25 +1897,6 @@ a.pill-button { text-decoration: none; }
 
 /* ---------------------------------------------------------------- Snel (docs/design/snel-dock, D2) */
 
-.snel__head { display: flex; align-items: baseline; justify-content: space-between; }
-
-.snel__all {
-  appearance: none;
-  border: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-  margin-right: 4px;
-  padding: 0;
-  background: none;
-  font: 500 14px var(--font-sans);
-  color: var(--accent);
-  cursor: pointer;
-  -webkit-tap-highlight-color: transparent;
-}
-
-.snel__all .icon { width: 14px; height: 14px; }
-
 /* Soft patches of colour behind the glass card. */
 .snel-dock { position: relative; }
 
@@ -1978,6 +1959,7 @@ a.pill-button { text-decoration: none; }
 .snel-tile.status-error .snel-tile__name { color: var(--accent); }
 
 .snel-tile__icon {
+  position: relative;
   display: grid;
   place-items: center;
   width: 32px;
@@ -1993,14 +1975,30 @@ a.pill-button { text-decoration: none; }
 .snel-tile__icon .spinner { width: 14px; height: 14px; }
 .snel-tile__icon.is-on { background: var(--accent); color: #fff; }
 
+/* A sheet shortcut: the orange dot top right says a tap opens a sheet. */
+.snel-tile__dot {
+  position: absolute;
+  top: -2px;
+  right: -2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px #2f2e2c;
+}
+
 .snel-tile__name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .page-dots--small { gap: 5px; margin-top: 8px; }
 .page-dots--small i { width: 5px; height: 5px; }
 .page-dots--small i.is-active { width: 12px; }
 
-/* "Alle": every shortcut, as the same control as in a room. */
-.snel-sheet { padding: 0 16px calc(34px + env(safe-area-inset-bottom)); }
+/* A sheet shortcut's entities, as the same controls as in a room; a long list scrolls. */
+.snel-sheet {
+  max-height: 85dvh;
+  overflow-y: auto;
+  padding: 0 16px calc(34px + env(safe-area-inset-bottom));
+}
 
 .snel-sheet__title {
   margin: 0 4px 12px;
@@ -2008,24 +2006,6 @@ a.pill-button { text-decoration: none; }
   font-weight: 400;
   font-size: 24px;
 }
-
-/* ---------------------------------------------------------------- slim controls (docs/design/snel-list, S1) */
-
-/* The room controls, smaller: Snel on Thuis. Only sizes change; the markup and
-   what a tap does are the same as in a room. */
-.row-group--slim { margin-top: 0; }
-.row-group--slim .row { gap: 12px; padding: 8px 14px; }
-.row-group--slim .row--sheet { padding: 0; }
-.row-group--slim .row__open { gap: 12px; padding: 8px 4px 8px 14px; }
-.row-group--slim .row__switch { padding: 8px 14px; }
-.row-group--slim .icon-tile { width: 28px; height: 28px; border-radius: 9px; }
-.row-group--slim .icon-tile .icon { width: 16px; height: 16px; }
-.row-group--slim .row__name { font-size: 15px; }
-.row-group--slim .pill-button { min-width: 60px; height: 26px; padding: 0 12px; font-size: 12px; }
-.row-group--slim .pill-button .icon { width: 15px; height: 15px; }
-.row-group--slim .switch { width: 40px; height: 24px; }
-.row-group--slim .switch::after { top: 2px; left: 2px; width: 20px; height: 20px; }
-.row-group--slim .switch.is-on::after { transform: translateX(16px); }
 
 /* ---------------------------------------------------------------- lawn mower (docs/design/lawn-mower) */
 

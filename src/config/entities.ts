@@ -125,5 +125,5 @@ export enum Entity {
   CARA_WATER_FOUNTAIN = 'switch.0x94a081fffe562fad',
 
   // General groups
-  ALL_ROLLER_SHUTTERS = 'cover.roller_shutters'
+  ALL_ROLLER_SHUTTERS = 'cover.roller_shutters',
 }

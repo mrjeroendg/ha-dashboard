@@ -38,9 +38,69 @@ export type SnelShortcut = RoomEntity | SnelSheetShortcut;
  * alert update garage garageCar bed shower up down stop star baby phone tablet
  */
 export const SHORTCUTS: SnelShortcut[] = [
-  { entity: Entity.PRE_SLEEP_SCENE, name: 'Pré slaapje', icon: 'baby' },
+  { entity: Entity.PRE_SLEEP_SCENE, name: 'Slapen', icon: 'baby' },
   { entity: Entity.GARAGE_DOOR_IMPULSE_SCRIPT, name: 'Garagedeur', icon: 'garage' },
   { entity: Entity.CENTRIS_LIGHT, name: 'Centris', icon: 'moon' },
+  {
+    name: 'Screens', icon: 'sun',
+    sheet: [
+      {
+        entity: Entity.LIVING_SCREENS_ALL,
+        name: 'Alle'
+      },
+      {
+        entity: Entity.LIVING_SCREEN_LEFT_FRONT,
+        name: 'Linksvoor',
+        myPosition: Entity.LIVING_SCREEN_LEFT_FRONT_MY_POSITION,
+      },
+      {
+        entity: Entity.LIVING_SCREEN_RIGHT_FRONT,
+        name: 'Rechtsvoor',
+        myPosition: Entity.LIVING_SCREEN_RIGHT_FRONT_MY_POSITION
+      },
+      {
+        entity: Entity.LIVING_SCREEN_SIDE,
+        name: 'Zijkant',
+        myPosition: Entity.LIVING_SCREEN_SIDE_MY_POSITION
+      }
+    ],
+  },
+  {
+    name: 'Covers', icon: 'blinds',
+    sheet: [
+      {
+        entity: Entity.ALL_ROLLER_SHUTTERS,
+        name: 'Alle'
+      },
+      {
+        entity: Entity.MASTER_BEDROOM_ROLLER_SHUTTER,
+        name: 'Slaapkamer',
+        myPosition: Entity.MASTER_BEDROOM_ROLLER_SHUTTER_MY_POSITION
+      },
+      {
+        entity: Entity.BUREAU_ROLLER_SHUTTER,
+        name: 'Bureau',
+        myPosition: Entity.BUREAU_ROLLER_SHUTTER_MY_POSITION
+      },
+      {
+        entity: Entity.MARIELOU_ROLLER_SHUTTER,
+        name: 'Marielou',
+        myPosition: Entity.MARIELOU_ROLLER_SHUTTER_MY_POSITION
+      },
+
+      {
+        entity: Entity.GUEST_ROOM_ROLLER_SHUTTER,
+        name: 'Gasten',
+        myPosition: Entity.GUEST_ROOM_ROLLER_SHUTTER_MY_POSITION
+      },
+      {
+        entity: Entity.GUEST_ROOM_ROLLER_SHUTTER,
+        name: 'Badkamer',
+        myPosition: Entity.GUEST_ROOM_ROLLER_SHUTTER_MY_POSITION
+      },
+
+    ],
+  },
 ];
 
 /**

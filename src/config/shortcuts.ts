@@ -102,10 +102,10 @@ export const SHORTCUTS: SnelShortcut[] = [
         myPosition: Entity.GUEST_ROOM_ROLLER_SHUTTER_MY_POSITION
       },
       {
-        entity: Entity.GUEST_ROOM_ROLLER_SHUTTER,
+        entity: Entity.BATHROOM_VELUX,
         name: 'Badkamer',
         icon: 'shower',
-        myPosition: Entity.GUEST_ROOM_ROLLER_SHUTTER_MY_POSITION
+        myPosition: Entity.BATHROOM_VELUX_MY_POSITION
       },
 
     ],

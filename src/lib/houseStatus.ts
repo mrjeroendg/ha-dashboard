@@ -173,13 +173,13 @@ export function houseStatusItems(hass: HomeAssistant, now: Date, birthdayNames: 
   const openingsPart = openings(states);
 
   const statusItems: Array<StatusItem | undefined> = [
+    ...nowItems(states),
     whoIsHome ? { icon: 'home', iconColor: 'var(--accent)', highlighted: whoIsHome } : undefined,
     birthdaysItem(birthdayNames),
     travelTimeHome ? { icon: 'car', highlighted: travelTimeHome } : undefined,
     lightsPart ? { icon: 'bulb', text: lightsPart } : undefined,
     aircosPart ? { icon: 'snowflake', text: aircosPart } : undefined,
-    openingsPart ? { icon: 'door', text: openingsPart } : undefined,
-    ...nowItems(states),
+    openingsPart ? { icon: 'door', text: openingsPart } : undefined
   ];
 
   return statusItems.filter((statusItem): statusItem is StatusItem => statusItem !== undefined);

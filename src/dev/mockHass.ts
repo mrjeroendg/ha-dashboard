@@ -21,19 +21,6 @@ const entity = (entity_id: string, state: string, attributes: Attrs = {}): HassE
   context: { id: 'mock', user_id: null, parent_id: null },
 });
 
-/** The 8 months before this one, in W by month ("2026-10"), oldest first. */
-const earlierMonthlyPeaks = () => {
-  const peaks = [3100, 2100, 1900, 2600, 2900, 3300, 4400, 3400];
-  return Object.fromEntries(
-    peaks.map((watts, monthIndex) => {
-      const month = new Date();
-      month.setDate(1);
-      month.setMonth(month.getMonth() - peaks.length + monthIndex);
-      return [`${month.getFullYear()}-${String(month.getMonth() + 1).padStart(2, '0')}`, watts];
-    }),
-  );
-};
-
 /** A fake camera image: a dark gradient, as a data URL. The trailing "#" keeps a cache-buster harmless. */
 const cameraImage = (a: string, b: string, glow: string) => {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="640" height="360"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient><radialGradient id="r" cx=".35" cy=".75" r=".5"><stop offset="0" stop-color="${glow}" stop-opacity=".55"/><stop offset="1" stop-color="${glow}" stop-opacity="0"/></radialGradient></defs><rect width="640" height="360" fill="url(#g)"/><rect width="640" height="360" fill="url(#r)"/></svg>`;
@@ -82,8 +69,8 @@ function baseStates(): HassEntities {
     entity('sensor.p1_meter_power', '196', { unit_of_measurement: 'W', device_class: 'power', state_class: 'measurement' }),
     entity('sensor.p1_meter_average_demand', '4600', { unit_of_measurement: 'W', device_class: 'power' }),
     entity('sensor.p1_meter_peak_demand_current_month', '3600', { unit_of_measurement: 'W', device_class: 'power' }),
-    // The text helper with the earlier months' peaks (docs/design/energie-capaciteit); the oldest 3 are missing.
-    entity('input_text.p1_maandpieken', JSON.stringify(earlierMonthlyPeaks()), { max: 255 }),
+    // The copy of the month's peak with a state class (docs/design/energie-capaciteit).
+    entity('sensor.p1_piek_deze_maand', '3600', { unit_of_measurement: 'W', device_class: 'power', state_class: 'measurement' }),
     entity('sensor.p1_meter_energy_consumption_daily', '8.13', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.garage_smappee_total_production_today', '3.86', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.p1_meter_energy_production_daily', '1.24', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
@@ -357,6 +344,20 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
           averages.map((mean, barNumber) => ({ start: firstStart + barNumber * fiveMinutes, mean })),
         ]),
       ) as T;
+    }
+    // The copy of the month's peak per day (docs/design/energie-capaciteit): rising to each month's peak; the oldest 3 months are missing.
+    if (msg.type === 'recorder/statistics_during_period' && msg.period === 'day' && (msg.types as string[]).includes('max')) {
+      const monthlyPeaks = [undefined, undefined, undefined, 3100, 2100, 1900, 2600, 2900, 3300, 4400, 3400];
+      const firstMonth = new Date(String(msg.start_time));
+      const days = monthlyPeaks.flatMap((peakWatts, monthIndex) => {
+        if (peakWatts === undefined) return [];
+        const daysInMonth = new Date(firstMonth.getFullYear(), firstMonth.getMonth() + monthIndex + 1, 0).getDate();
+        return Array.from({ length: daysInMonth }, (_unused, dayIndex) => ({
+          start: new Date(firstMonth.getFullYear(), firstMonth.getMonth() + monthIndex, dayIndex + 1).getTime(),
+          max: Math.round((peakWatts * (dayIndex + 1)) / daysInMonth),
+        }));
+      });
+      return Object.fromEntries((msg.statistic_ids as string[]).map((statisticId) => [statisticId, days])) as T;
     }
     // This month's peak was reached on the 2nd at 18:22.
     if (msg.type === 'history/history_during_period') {

@@ -36,9 +36,12 @@ export const ENERGY_QUARTER = {
   marksAtKilowatts: [4, 6],
   /** The sheet (docs/design/energie-capaciteit): the bill takes the average of this many monthly peaks. */
   monthsInAverage: 12,
-  /** The text helper that keeps the earlier months' peaks, as JSON (filled by an automation in HA). */
-  monthlyPeaks: Entity.ELECTRICITY_MONTHLY_PEAKS,
-  /** A month the text helper doesn't have (yet), in W. */
+  /**
+   * A copy of `monthPeak` with a state class (a template helper in HA), so HA
+   * keeps its statistics forever: the earlier months' peaks come from it.
+   */
+  monthPeakWithStatistics: Entity.ELECTRICITY_PEAK_DEMAND_THIS_MONTH_WITH_STATISTICS,
+  /** A month without statistics (e.g. before the copy existed), in W. */
   assumedPeakWattsForMissingMonth: 3500,
   /** Every monthly peak counts as at least this much. */
   minimumKilowatts: 2.5,

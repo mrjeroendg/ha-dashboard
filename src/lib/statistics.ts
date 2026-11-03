@@ -150,6 +150,43 @@ export function startOfMonth(monthsAgo: number) {
   return firstOfMonth;
 }
 
+export interface MonthlyPeak {
+  /** Local midnight on the 1st of the month, in ms. */
+  monthStart: number;
+  peakWatts: number;
+}
+
+/**
+ * The peak of each of the `numberOfMonths` months before this one, oldest
+ * first: the highest value on the last day of the month with statistics. A
+ * month's peak only rises, so that's the month's peak; the month's own
+ * highest value could still hold the previous month's peak from before the
+ * meter's reset just after midnight on the 1st. A month without statistics is
+ * missing.
+ */
+export async function fetchEarlierMonthlyPeaks(hass: HomeAssistant, entityId: string, numberOfMonths: number): Promise<MonthlyPeak[]> {
+  const statisticsPerEntity = await hass.callWS<Record<string, Array<{ start: number | string; max?: number | null }>> | undefined>({
+    type: 'recorder/statistics_during_period',
+    start_time: startOfMonth(numberOfMonths).toISOString(),
+    end_time: startOfMonth(0).toISOString(),
+    statistic_ids: [entityId],
+    period: 'day',
+    types: ['max'],
+  });
+
+  const dailyRows = statisticsPerEntity?.[entityId] ?? [];
+  // Oldest first, so each month ends up with its last day.
+  const peakWattsPerMonthStart = new Map<number, number>();
+  for (const dailyRow of dailyRows) {
+    if (!isNumber(dailyRow.max)) continue;
+    const dayStart = new Date(typeof dailyRow.start === 'number' ? dailyRow.start : Date.parse(dailyRow.start));
+    const monthStart = new Date(dayStart.getFullYear(), dayStart.getMonth(), 1).getTime();
+    peakWattsPerMonthStart.set(monthStart, dailyRow.max);
+  }
+
+  return [...peakWattsPerMonthStart].map(([monthStart, peakWatts]) => ({ monthStart, peakWatts }));
+}
+
 /**
  * When the sensor got its current value this month, from HA's history, in ms;
  * undefined when the history doesn't go back far enough to tell (HA keeps it

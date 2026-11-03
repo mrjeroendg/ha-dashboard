@@ -6,7 +6,7 @@ import 'apexcharts/bar';
 import 'apexcharts/features/annotations';
 import { ENERGY_QUARTER } from '../../config/energy';
 import { usePeriodicFetch } from '../../hooks/usePeriodicFetch';
-import { fetchWhenValueWasReachedThisMonth, numberState, startOfMonth } from '../../lib/statistics';
+import { fetchEarlierMonthlyPeaks, fetchWhenValueWasReachedThisMonth, numberState, startOfMonth } from '../../lib/statistics';
 import type { HomeAssistant } from '../../types/hass';
 import { BottomSheet } from '../BottomSheet';
 
@@ -15,8 +15,8 @@ interface Props {
   onClose(): void;
 }
 
-/** When the peak was reached only changes with the peak itself; this is plenty. */
-const REFRESH_PEAK_MOMENT_EVERY_MILLISECONDS = 5 * 60_000;
+/** The earlier months don't change, and when the peak was reached only changes with the peak itself; this is plenty. */
+const REFRESH_EVERY_MILLISECONDS = 5 * 60_000;
 const QUARTER_HOUR = 15 * 60_000;
 const CHART_HEIGHT = 140;
 /** The earlier months' bars: their colour at 60% ("99" in hex); this month's is the full colour. */
@@ -25,7 +25,7 @@ const TEXT_COLOR = '#f5f4ef';
 const MUTED_TEXT_COLOR = '#a6a39b';
 const SHEET_COLOR = '#2b2b29';
 
-interface MonthlyPeak {
+interface MonthlyPeakInKilowatts {
   monthStart: number;
   kilowatts: number;
 }
@@ -37,25 +37,31 @@ interface MonthlyPeak {
  */
 export function CapacitySheet({ hass, onClose }: Props) {
   const peakThisMonthWatts = numberState(hass.states, ENERGY_QUARTER.monthPeak);
+  const earlierMonthlyPeaks = usePeriodicFetch(
+    () => fetchEarlierMonthlyPeaks(hass, ENERGY_QUARTER.monthPeakWithStatistics, ENERGY_QUARTER.monthsInAverage - 1),
+    ENERGY_QUARTER.monthPeakWithStatistics,
+    REFRESH_EVERY_MILLISECONDS,
+  );
   const peakReachedAt = usePeriodicFetch(
     () => fetchWhenValueWasReachedThisMonth(hass, ENERGY_QUARTER.monthPeak),
     `${ENERGY_QUARTER.monthPeak} ${peakThisMonthWatts}`,
-    REFRESH_PEAK_MOMENT_EVERY_MILLISECONDS,
+    REFRESH_EVERY_MILLISECONDS,
   );
   if (peakThisMonthWatts === undefined) return null;
 
-  const savedPeakWattsPerMonth = savedMonthlyPeaks(hass);
-  const earlierMonthlyPeaks: MonthlyPeak[] = Array.from(
+  const peakWattsPerMonthStart = new Map(
+    (earlierMonthlyPeaks ?? []).map((monthlyPeak) => [monthlyPeak.monthStart, monthlyPeak.peakWatts]),
+  );
+  const earlierMonthlyPeaksInKilowatts: MonthlyPeakInKilowatts[] = Array.from(
     { length: ENERGY_QUARTER.monthsInAverage - 1 },
     (_unused, monthNumber) => {
-      const monthStart = startOfMonth(ENERGY_QUARTER.monthsInAverage - 1 - monthNumber);
-      const savedPeakWatts = savedPeakWattsPerMonth[monthKey(monthStart)];
-      const peakWatts = savedPeakWatts ?? ENERGY_QUARTER.assumedPeakWattsForMissingMonth;
-      return { monthStart: monthStart.getTime(), kilowatts: peakWatts / 1000 };
+      const monthStart = startOfMonth(ENERGY_QUARTER.monthsInAverage - 1 - monthNumber).getTime();
+      const peakWatts = peakWattsPerMonthStart.get(monthStart) ?? ENERGY_QUARTER.assumedPeakWattsForMissingMonth;
+      return { monthStart, kilowatts: peakWatts / 1000 };
     },
   );
-  const thisMonthPeak: MonthlyPeak = { monthStart: startOfMonth(0).getTime(), kilowatts: peakThisMonthWatts / 1000 };
-  const monthlyPeaks = [...earlierMonthlyPeaks, thisMonthPeak];
+  const thisMonthPeak: MonthlyPeakInKilowatts = { monthStart: startOfMonth(0).getTime(), kilowatts: peakThisMonthWatts / 1000 };
+  const monthlyPeaks = [...earlierMonthlyPeaksInKilowatts, thisMonthPeak];
 
   const countedKilowatts = monthlyPeaks.map((monthlyPeak) => Math.max(ENERGY_QUARTER.minimumKilowatts, monthlyPeak.kilowatts));
   const averageKilowatts = countedKilowatts.reduce((sum, kilowatts) => sum + kilowatts, 0) / countedKilowatts.length;
@@ -126,7 +132,13 @@ function Figure({ label, value, unit, detail }: { label: string; value: string; 
  * this month's brightest, with the minimum of 2,50 kW as a line over a shaded
  * band and the average as a dashed line.
  */
-function MonthlyPeaksChart({ monthlyPeaks, averageKilowatts }: { monthlyPeaks: MonthlyPeak[]; averageKilowatts: number }) {
+function MonthlyPeaksChart({
+  monthlyPeaks,
+  averageKilowatts,
+}: {
+  monthlyPeaks: MonthlyPeakInKilowatts[];
+  averageKilowatts: number;
+}) {
   const lastMonthIndex = monthlyPeaks.length - 1;
   const barColors = monthlyPeaks.map((monthlyPeak, monthIndex) => {
     const isThisMonth = monthIndex === lastMonthIndex;
@@ -229,29 +241,6 @@ function MonthlyPeaksChart({ monthlyPeaks, averageKilowatts }: { monthlyPeaks: M
     </div>
   );
 }
-
-/**
- * The peaks of the months before this one, in W by month ("2026-10"), as the
- * text helper "P1 maandpieken" keeps them, as JSON (docs/design/energie-capaciteit).
- * Empty while it doesn't exist or holds something else.
- */
-function savedMonthlyPeaks(hass: HomeAssistant): Record<string, number | undefined> {
-  const peaksText = hass.states[ENERGY_QUARTER.monthlyPeaks]?.state ?? '';
-  let peaksFromText: unknown;
-  try {
-    peaksFromText = JSON.parse(peaksText);
-  } catch {
-    return {};
-  }
-  const isPeaksObject = typeof peaksFromText === 'object' && peaksFromText !== null;
-  if (!isPeaksObject) return {};
-
-  const numberPeaks = Object.entries(peaksFromText).map(([month, watts]) => [month, Number(watts)] as const);
-  return Object.fromEntries(numberPeaks.filter(([_month, watts]) => !Number.isNaN(watts)));
-}
-
-/** "2026-11", the way the automation names a month. */
-const monthKey = (monthStart: Date) => `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, '0')}`;
 
 /** The quarter-hour bar's colour band a peak falls in: green up to 3 kW, orange up to 5, then red. */
 function colorFor(kilowatts: number): string {

@@ -4,7 +4,7 @@ A bottom sheet with the capaciteitstarief over the year, opened from "Dit kwarti
 
 > ✅ **Sheet approved and built.** **How it opens isn't decided yet:** the owner didn't like L1–L3 in the options. For now a tap anywhere on the quarter-hour part opens it, with nothing on the card to show it. Don't change proportions or behaviour without asking first.
 >
-> Code: `CapacitySheet.tsx` and `QuarterPeak.tsx` in `src/components/energy/`, `ENERGY_QUARTER` in `src/config/energy.ts`, `fetchWhenValueWasReachedThisMonth` in `src/lib/statistics.ts`, the text helper `input_text.p1_maandpieken` (below), styles under "Capaciteitstarief" in `src/styles.css`.
+> Code: `CapacitySheet.tsx` and `QuarterPeak.tsx` in `src/components/energy/`, `ENERGY_QUARTER` in `src/config/energy.ts`, `fetchEarlierMonthlyPeaks` and `fetchWhenValueWasReachedThisMonth` in `src/lib/statistics.ts`, the template helper `sensor.p1_piek_deze_maand` (below), styles under "Capaciteitstarief" in `src/styles.css`.
 
 The approved sheet: [`mockup.png`](./mockup.png) ([`mockup.html`](./mockup.html)). The first options for opening it (L1–L3, none chosen) and the first sheets (S1, S2): [`options.png`](./options.png) ([`options.html`](./options.html)). As built (dev mode, mock values):
 
@@ -29,43 +29,21 @@ All numbers with **two decimals** (the owner's choice), except the days.
 
 ## Where the numbers come from
 
-- **The earlier 11 months:** the text helper `input_text.p1_maandpieken` (below): the peak in W per month as JSON (`{"2026-10": 3400}`), filled by an automation. HA keeps a helper's value across restarts and the 10-day purge, so the list grows by itself. **A month it doesn't have counts as 3,5 kW** (`ENERGY_QUARTER.assumedPeakWattsForMissingMonth`), the owner's choice to keep it simple; it isn't shown any differently. Without the helper, all 11 are 3,5 kW.
+- **The earlier 11 months:** HA's daily long-term statistics (`max`) of `sensor.p1_piek_deze_maand`, a copy of the peak sensor with a state class (below), fetched again every 5 minutes. Per month the **last day with statistics**: the peak only rises within a month, so that's the month's peak. Not the month's own maximum: if the meter resets a few minutes after midnight on the 1st, the new month's first minutes still hold the previous month's peak. **A month without statistics counts as 3,5 kW** (`ENERGY_QUARTER.assumedPeakWattsForMissingMonth`), the owner's choice to keep it simple; it isn't shown any differently. HA keeps long-term statistics forever (one row per hour).
 - **This month:** the sensor's state.
 - **When the peak was reached:** HA's history of the same sensor this month, the first moment of its current value. HA keeps history about 10 days, so for an older peak there's no time. Whether the meter updates the peak during the quarter-hour or at its end isn't checked: at its end, the shown quarter-hour would be one too late.
 - **The chart:** ApexCharts keeps 30px free above the bars; `grid.padding.top: -22` takes most of it away.
 
-## The helper and the automation (made in HA's app)
+## The template helper (made in HA's app)
 
-The owner wanted it as a helper in the app, not in `configuration.yaml`.
+The P1 meter's own peak sensors have no `state_class`, so HA keeps no statistics for them, and that can't be changed in the app. A copy can: Settings → Devices & services → Helpers → Create helper → Template → **Sensor**:
 
-1. **Helper:** Settings → Devices & services → Helpers → Create helper → **Text**. Name "P1 maandpieken", maximum length **255**. That gives `input_text.p1_maandpieken`. 12 months as JSON take about 210 characters.
-2. **Automation:** on every change of `sensor.p1_meter_peak_demand_current_month` (only numbers), it stores that value under the current month and keeps the last 12 months. The peak only rises within a month, so the latest value is the month's peak; a reset that comes in a few minutes late corrects itself with the next value.
+| Field | Value |
+|---|---|
+| Name | `P1 piek deze maand` (→ `sensor.p1_piek_deze_maand`) |
+| State template | `{{ states('sensor.p1_meter_peak_demand_current_month') \| float(none) }}` |
+| Unit of measurement | `W` |
+| Device class | Power |
+| State class | **Measurement** |
 
-```yaml
-alias: P1 maandpieken bijhouden
-triggers:
-  - trigger: state
-    entity_id: sensor.p1_meter_peak_demand_current_month
-conditions:
-  - condition: template
-    value_template: "{{ trigger.to_state.state | is_number }}"
-actions:
-  - action: input_text.set_value
-    target:
-      entity_id: input_text.p1_maandpieken
-    data:
-      value: >
-        {% set month = now().strftime('%Y-%m') %}
-        {% set saved_text = states('input_text.p1_maandpieken') %}
-        {% set peaks = saved_text | from_json if saved_text.startswith('{') else {} %}
-        {% set merged = dict(peaks, **{month: trigger.to_state.state | float | int}) %}
-        {% set newest_months = (merged.keys() | list | sort)[-12:] %}
-        {% set kept = namespace(peaks={}) %}
-        {% for kept_month in newest_months %}
-          {% set kept.peaks = dict(kept.peaks, **{kept_month: merged[kept_month]}) %}
-        {% endfor %}
-        {{ kept.peaks | to_json }}
-mode: queued
-```
-
-Earlier months can be added by hand once (e.g. from mijn.fluvius.be) by editing the helper's value, as long as it stays valid JSON.
+`float(none)` makes it "unknown" instead of failing while the original is unavailable. Before this, a text helper with an automation, and a trigger-based template sensor in `configuration.yaml`, were tried and dropped: more code for the same result.

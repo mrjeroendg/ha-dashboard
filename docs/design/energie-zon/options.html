@@ -1,0 +1,85 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Zon onder Stroom</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,390px);gap:28px}
+.cap{min-height:96px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--gas:#5cb8f2;--accent:#d97757;
+position:relative;width:390px;height:760px;border-radius:44px 44px 0 0;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:26px 24px 0}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kicker{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+h1{margin:6px 0 14px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:34px}
+.card{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:14px 16px 10px;overflow:hidden}
+.lbl{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}.lbl i{width:8px;height:8px;border-radius:50%;background:var(--gas)}
+.big{font-size:40px;font-weight:600;letter-spacing:-.01em;color:var(--gas)}.big small{font-size:15px;color:var(--muted);font-weight:500;margin-left:3px}
+.bars{display:block;width:calc(100% + 32px);margin:6px -16px 0}
+.axis{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px}
+.tile{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:12px 16px 8px;margin-top:20px}
+.name{display:flex;align-items:center;gap:6px;margin:0;font-size:13px;color:var(--muted)}.name span{display:grid;color:var(--gas)}
+.values{display:flex;justify-content:space-between;align-items:baseline}
+.value{margin:6px 0 0;font-size:26px;font-weight:600}.value small{margin-left:3px;font-size:13px;font-weight:500;color:var(--muted)}
+.price{font-size:15px;font-weight:600}.price small{font-size:12px;font-weight:500;color:var(--muted);margin-right:3px}
+svg.chart{display:block;width:100%;margin-top:10px}
+.days{display:grid;grid-template-columns:repeat(14,1fr);font-size:10px;color:var(--muted);text-align:center;margin-top:4px}.days span.today{color:var(--text);font-weight:700}
+.nav{position:absolute;left:14px;right:14px;bottom:16px;border-radius:30px;background:color-mix(in srgb,var(--surface) 82%,transparent);box-shadow:inset 0 0 0 1px var(--border)}
+.scroller{display:flex;align-items:center;gap:4px;padding:6px 14px;overflow:hidden}
+.item{flex:none;min-width:52px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 10px 7px;font-size:12px;color:var(--muted)}
+.item svg{width:18px;height:18px}.item.on{color:var(--accent)}
+.divider{flex:none;width:1px;height:30px;background:rgba(245,244,239,.14);margin:0 4px}
+
+.tabs{display:flex;gap:6px;margin:0 0 14px}.tab{padding:8px 14px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);color:var(--muted);font-size:14px;font-weight:500}
+.tab.on{background:rgba(217,119,87,.18);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(217,119,87,.45)}
+.group{display:flex;gap:0;padding:0 2px;border-radius:22px;background:rgba(245,244,239,.05);box-shadow:inset 0 0 0 1px rgba(245,244,239,.06);margin-right:6px}
+
+.card{margin-bottom:20px}
+.big.sun{color:var(--sun)}.lbl i.sun{background:var(--sun)}.big.idle{color:var(--muted)}.lbl i.idle{background:var(--muted)}
+.phone{--sun:#f2c230}
+.split{margin-top:12px}.splitbar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px}
+.splitbar b{display:block}.legend{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+.legend strong{color:var(--text);font-weight:600}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.sub{font-size:12px;color:var(--muted);margin-top:4px}.big.water{color:#3987e5}.big.idle{color:var(--muted)}
+.lbl i.water{background:#3987e5}.lbl i.idle{background:var(--muted)}
+
+.tile{margin-top:12px}.tiles{margin-top:20px}.tiles .tile:first-child{margin-top:0}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.trio div{border-radius:12px;background:rgba(245,244,239,.04);padding:7px 10px}.trio p{margin:0;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.trio strong{display:block;font-size:17px;font-weight:600;margin-top:2px}.trio small{font-size:11px;color:var(--muted);font-weight:500;margin-left:2px}
+.trio p i{width:7px;height:7px;border-radius:50%}
+.line{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-top:2px}.line strong{color:var(--text);font-weight:600}
+.q{border-top:1px solid var(--border);margin-top:12px;padding-top:12px}
+.qf{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}.qf strong{display:block;color:var(--text);font-size:20px;margin-top:2px}
+.qbar{position:relative;height:8px;border-radius:4px;background:rgba(245,244,239,.08);margin-top:10px}.qbar b{position:absolute;left:0;top:0;bottom:0;width:15%;border-radius:4px;background:#6bab3e}.qbar u{position:absolute;left:45%;top:-3px;bottom:-3px;width:2px;background:#f5f4ef}
+.qleft{font-size:11px;color:var(--muted);margin-top:8px}
+</style></head><body></body>
+<script>
+const svg=(inner)=>`<svg class="i" viewBox="0 0 24 24">${inner}</svg>`;
+const I={sun:svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),pylon:svg('<path d="M8 21l4-18 4 18M6 8h12M5 13h14M9.5 16l5 0"/>'),back:svg('<path d="M12 19V5M6 11l6-6 6 6"/>'),bolt:svg('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),home:svg('<path d="M4 11l8-7 8 7v9H4z"/>'),sofa:svg('<path d="M4 11V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3M3 11h18v6H3zM5 17v2M19 17v2"/>'),baby:svg('<circle cx="12" cy="13" r="8"/><path d="M12 5c0-1.7 1.8-2.5 2.8-1.3M9 12.5h.01M15 12.5h.01M9.8 16.3c1.3.9 3.1.9 4.4 0"/>')};
+const SUN='#f2c230', SUN_EARLIER='#a8902f', GREEN='#6bab3e', PINK='#d55181';
+const DAYS=['D','V','Z','Z','M','D','W','D','V','Z','Z','M','D','W'];
+function dayChart(values,color,earlier){const W=326,H=56,avg=values.slice(0,-1).reduce((s,v)=>s+v,0)/13,top=Math.max(...values)*1.15,slot=W/values.length,width=slot*.62,y=(v)=>H-(v/top)*H;
+ return `<svg class="chart" viewBox="0 0 ${W} ${H}" height="${H}">${values.map((v,i)=>`<rect x="${(i*slot+(slot-width)/2).toFixed(1)}" y="${y(v).toFixed(1)}" width="${width.toFixed(1)}" height="${(H-y(v)).toFixed(1)}" rx="2" fill="${i===13?color:(earlier||color)}" opacity="${i===13||earlier?1:.45}"/>`).join('')}<line x1="0" x2="${W}" y1="${y(avg)}" y2="${y(avg)}" stroke="#f5f4ef" stroke-dasharray="3 3" opacity=".7"/><rect x="0" y="${y(avg)-16}" width="54" height="14" rx="4" fill="#262624"/><text x="5" y="${y(avg)-6}" font-size="10" fill="#f5f4ef">gem. ${avg.toFixed(1).replace('.',',')}</text></svg><div class="days">${DAYS.map((d,i)=>`<span class="${i===13?'today':''}">${d}</span>`).join('')}</div>`;}
+const tile=({name,icon,color,value,euro,extra='',values,earlier})=>`<div class="tile"><p class="name"><span style="color:${color}">${icon}</span>${name}</p><div class="values"><p class="value">${value}<small>kWh</small></p>${euro?`<span class="price"><small>≈</small>€ ${euro}</span>`:''}</div>${extra}${dayChart(values,color,earlier)}</div>`;
+const TAKEN=[9.4,8.8,10.2,7.9,9.1,11.3,9.4,8.8,10.2,7.9,9.1,11.3,9.0,4.1];
+const BACK=[3.1,4.6,1.2,0.8,2.9,5.1,3.1,4.6,1.2,0.8,2.9,5.1,2.4,2.7];
+const SOLAR=[6.1,4.2,8.9,7.4,2.1,5.6,9.8,8.2,3.4,6.7,10.1,7.9,4.8,7.2];
+const split=`<div class="split"><div class="splitbar"><b style="flex:4.5;background:${SUN}"></b><b style="flex:2.7;background:${GREEN}"></b></div><div class="legend"><span><i style="background:${SUN}"></i>Zelf verbruikt <strong>4,5 · 62%</strong></span><span><i style="background:${GREEN}"></i>Teruggeleverd <strong>2,7</strong></span></div></div>`;
+const tTaken=tile({name:'Afgenomen vandaag',icon:I.pylon,color:PINK,value:'4,1',euro:'1,44',values:TAKEN});
+const tBack=tile({name:'Teruggeleverd vandaag',icon:I.back,color:GREEN,value:'2,7',euro:'0,11',values:BACK});
+const tSolar=(withSplit)=>tile({name:'Zon vandaag',icon:I.sun,color:SUN,value:'7,2',euro:withSplit?'1,68':'',extra:withSplit?split:'',values:SOLAR,earlier:SUN_EARLIER});
+const item=(icon,name,on)=>`<span class="item${on?' on':''}">${icon}<span>${name}</span></span>`;
+const nav=`<div class="nav"><div class="scroller">${item(I.bolt,'Energie',true)}<span class="divider"></span>${item(I.home,'Thuis')}${item(I.sofa,'Living')}${item(I.baby,'Marielou')}</div></div>`;
+const NET=[310,280,260,180,90,-40,-180,-320,-420,-610,-780,-850];
+function bars(values){const W=358,H=64,max=Math.max(...values.map(Math.abs))*1.1,mid=H*310/(310+850),slot=W/values.length,width=slot*.62;
+ return `<svg class="bars" viewBox="0 0 ${W} ${H}" height="${H}"><line x1="0" x2="${W}" y1="${mid}" y2="${mid}" stroke="rgba(245,244,239,.16)"/>${values.map((v,i)=>{const h=Math.abs(v)/max*H;return `<rect x="${(i*slot+(slot-width)/2).toFixed(1)}" y="${(v>0?mid-h:mid).toFixed(1)}" width="${width.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${v>0?PINK:GREEN}"/>`}).join('')}</svg>`;}
+const quarter=`<div class="q"><div class="qf"><span>Gemiddeld dit kwartier<strong>1,2<small style="font-size:12px;color:var(--muted)"> kW</small></strong></span><span style="text-align:right">Piek deze maand<strong>3,6<small style="font-size:12px;color:var(--muted)"> kW</small></strong></span></div><div class="qbar"><b></b><u></u></div><div class="qleft">Nog 8 min</div></div>`;
+const head=(extra='')=>`<span class="lbl"><i style="background:${GREEN}"></i>Terug naar het net</span><div class="big" style="color:${GREEN}">1.220<small>W</small></div>${extra}`;
+const lineExtra=`<div class="line"><span style="color:${SUN};display:grid">${I.sun}</span>Zon <strong>1.840 W</strong> · huis <strong>620 W</strong></div>`;
+const trioExtra=`<div class="trio"><div><p><i style="background:${SUN}"></i>Zon</p><strong>1.840<small>W</small></strong></div><div><p><i style="background:var(--muted)"></i>Huis</p><strong>620<small>W</small></strong></div><div><p><i style="background:${GREEN}"></i>Net</p><strong style="color:${GREEN}">−1.220<small>W</small></strong></div></div>`;
+const card=(extra)=>`<div class="card">${head(extra)}${bars(NET)}<div class="axis"><span>1 uur geleden</span><span>nu</span></div>${quarter}</div>`;
+const tabs=`<div class="tabs"><span class="tab on">Stroom</span><span class="tab">Gas</span><span class="tab">Water</span></div>`;
+const page=(c,t)=>`<div class="in"><div class="kicker">Categorie</div><h1>Energie</h1>${tabs}${c}<div class="tiles">${t}</div></div>`;
+const S=[
+ ['A · Een regel en een tegel erbij','In de Nu-kaart, onder het getal van het net, één regel: wat de zon nu opbrengt en wat het huis verbruikt (net + zon). Bij de dagtegels komt "Zon vandaag" (geel) erbij, als derde. Teruggeleverd krijgt een pijl in plaats van de zon.',page(card(lineExtra),tTaken+tBack+tSolar(false))],
+ ['B · Zon, huis, net; Zon vervangt Teruggeleverd','In de Nu-kaart drie kleine cijfers: zon, huis en net. De tegel "Teruggeleverd" gaat op in "Zon vandaag": de balk toont wat je zelf verbruikte en wat terugging, met ≈ € (zelf verbruikt × €0,35 + terug × €0,04). Twee dagtegels in plaats van drie.',page(card(trioExtra),tTaken+tSolar(true))],
+ ['C · A\'s regel, B\'s tegels','De rustige regel uit A in de Nu-kaart, en de twee dagtegels uit B. Het minst extra op het scherm.',page(card(lineExtra),tTaken+tSolar(true))],
+];
+document.body.innerHTML=S.map(([t,sub,h])=>`<div><p class="cap">${t}<small>${sub}</small></p><div class="phone" style="height:1180px">${h}</div></div>`).join('');
+</script></html>

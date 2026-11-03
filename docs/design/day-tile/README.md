@@ -22,7 +22,10 @@ How it got here: the options for extra information (E1: yesterday, E2: per hour,
   decimals={2}
   previousDays={dailyTotals}         // optional: the bars and the dashed average
   euros={1.69}                       // optional: "≈ € 1,69"
-/>
+  earlierDaysColor="#a8902f"         // optional: instead of the colour at 45%
+>
+  {/* optional: shown between the value and the chart, e.g. Zon vandaag's split (energie-zon) */}
+</DayTile>
 ```
 
 `previousDays` is a list of `{ dayStart, total }`, oldest first, from `fetchDailyTotalsWithDays(hass, entityIds, numberOfDays)`. In a `day-tiles` list the tiles are full width, one under the other, 10px apart.
@@ -31,7 +34,7 @@ How it got here: the options for extra information (E1: yesterday, E2: per hour,
 
 - **Name** (13px, muted) with its **icon** (16px) in `color`.
 - **Value** (26px, 600) with `decimals` decimals and its unit on the left; **"≈ € 1,69"** (15px, 600; the "≈" muted) on the right, on the same line. The average isn't next to the price any more: it's on the chart.
-- **With `previousDays`:** an ApexCharts bar chart (110px): a bar per day before today and **today's bar last**, today in the full `color`, the others at 45%. Under each bar the **first letter of its day** in Dutch ("D V Z Z M D W": D and Z each stand for two days, as the owner chose); today's letter is white and bold. The **average of the days before today** is a dashed line with the label "gem. 9,59". No y-axis, no grid, no tooltip.
+- **With `previousDays`:** an ApexCharts bar chart (110px): a bar per day before today and **today's bar last**, today in the full `color`, the others at 45% (or `earlierDaysColor`, for a colour that turns muddy at 45%, like yellow). Under each bar the **first letter of its day** in Dutch ("D V Z Z M D W": D and Z each stand for two days, as the owner chose); today's letter is white and bold. The **average of the days before today** is a dashed line with the label "gem. 9,59". No y-axis, no grid, no tooltip.
 - Without `previousDays` (or while they're being fetched) it's just the name, the value and the euros.
 
 ## In ApexCharts

@@ -1,0 +1,67 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Zon</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(2,390px);gap:28px}
+.cap{min-height:96px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--gas:#5cb8f2;--accent:#d97757;
+position:relative;width:390px;height:760px;border-radius:44px 44px 0 0;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:26px 24px 0}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kicker{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+h1{margin:6px 0 14px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:34px}
+.card{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:14px 16px 10px;overflow:hidden}
+.lbl{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}.lbl i{width:8px;height:8px;border-radius:50%;background:var(--gas)}
+.big{font-size:40px;font-weight:600;letter-spacing:-.01em;color:var(--gas)}.big small{font-size:15px;color:var(--muted);font-weight:500;margin-left:3px}
+.bars{display:block;width:calc(100% + 32px);margin:6px -16px 0}
+.axis{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px}
+.tile{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:12px 16px 8px;margin-top:20px}
+.name{display:flex;align-items:center;gap:6px;margin:0;font-size:13px;color:var(--muted)}.name span{display:grid;color:var(--gas)}
+.values{display:flex;justify-content:space-between;align-items:baseline}
+.value{margin:6px 0 0;font-size:26px;font-weight:600}.value small{margin-left:3px;font-size:13px;font-weight:500;color:var(--muted)}
+.price{font-size:15px;font-weight:600}.price small{font-size:12px;font-weight:500;color:var(--muted);margin-right:3px}
+svg.chart{display:block;width:100%;margin-top:10px}
+.days{display:grid;grid-template-columns:repeat(14,1fr);font-size:10px;color:var(--muted);text-align:center;margin-top:4px}.days span.today{color:var(--text);font-weight:700}
+.nav{position:absolute;left:14px;right:14px;bottom:16px;border-radius:30px;background:color-mix(in srgb,var(--surface) 82%,transparent);box-shadow:inset 0 0 0 1px var(--border)}
+.scroller{display:flex;align-items:center;gap:4px;padding:6px 14px;overflow:hidden}
+.item{flex:none;min-width:52px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 10px 7px;font-size:12px;color:var(--muted)}
+.item svg{width:18px;height:18px}.item.on{color:var(--accent)}
+.divider{flex:none;width:1px;height:30px;background:rgba(245,244,239,.14);margin:0 4px}
+
+.tabs{display:flex;gap:6px;margin:0 0 14px}.tab{padding:8px 14px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);color:var(--muted);font-size:14px;font-weight:500}
+.tab.on{background:rgba(217,119,87,.18);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(217,119,87,.45)}
+.group{display:flex;gap:0;padding:0 2px;border-radius:22px;background:rgba(245,244,239,.05);box-shadow:inset 0 0 0 1px rgba(245,244,239,.06);margin-right:6px}
+
+.card{margin-bottom:20px}
+.big.sun{color:var(--sun)}.lbl i.sun{background:var(--sun)}.big.idle{color:var(--muted)}.lbl i.idle{background:var(--muted)}
+.phone{--sun:#f2c230}
+.split{margin-top:12px}.splitbar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px}
+.splitbar b{display:block}.legend{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+.legend strong{color:var(--text);font-weight:600}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.sub{font-size:12px;color:var(--muted);margin-top:4px}.big.water{color:#3987e5}.big.idle{color:var(--muted)}
+.lbl i.water{background:#3987e5}.lbl i.idle{background:var(--muted)}
+</style></head><body></body>
+<script>
+const svg=(inner)=>`<svg class="i" viewBox="0 0 24 24">${inner}</svg>`;
+const I={sun:svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),bolt:svg('<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>'),home:svg('<path d="M4 11l8-7 8 7v9H4z"/>'),sofa:svg('<path d="M4 11V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v3M3 11h18v6H3zM5 17v2M19 17v2"/>'),baby:svg('<circle cx="12" cy="13" r="8"/><path d="M12 5c0-1.7 1.8-2.5 2.8-1.3M9 12.5h.01M15 12.5h.01M9.8 16.3c1.3.9 3.1.9 4.4 0"/>')};
+const SUN='#f2c230', GREEN='#6bab3e';
+const DAYS=['D','V','Z','Z','M','D','W','D','V','Z','Z','M','D','W'];
+const KWH=[6.1,4.2,8.9,7.4,2.1,5.6,9.8,8.2,3.4,6.7,10.1,7.9,4.8,7.2];
+function dayChart(values){const W=326,H=64,avg=values.slice(0,-1).reduce((s,v)=>s+v,0)/13,top=Math.max(...values)*1.15,slot=W/values.length,width=slot*.62,y=(v)=>H-(v/top)*H;
+ return `<svg class="chart" viewBox="0 0 ${W} ${H}" height="${H}">${values.map((v,i)=>`<rect x="${(i*slot+(slot-width)/2).toFixed(1)}" y="${y(v).toFixed(1)}" width="${width.toFixed(1)}" height="${(H-y(v)).toFixed(1)}" rx="2" fill="${SUN}" opacity="${i===13?1:.45}"/>`).join('')}<line x1="0" x2="${W}" y1="${y(avg)}" y2="${y(avg)}" stroke="#f5f4ef" stroke-dasharray="3 3" opacity=".7"/><rect x="0" y="${y(avg)-16}" width="54" height="14" rx="4" fill="#262624"/><text x="5" y="${y(avg)-6}" font-size="10" fill="#f5f4ef">gem. ${avg.toFixed(1).replace('.',',')}</text></svg><div class="days">${DAYS.map((d,i)=>`<span class="${i===13?'today':''}">${d}</span>`).join('')}</div>`;}
+const split=`<div class="split"><div class="splitbar"><b style="flex:4.5;background:${SUN}"></b><b style="flex:2.7;background:${GREEN}"></b></div><div class="legend"><span><i style="background:${SUN}"></i>Zelf verbruikt <strong>4,5 kWh · 62%</strong></span><span><i style="background:${GREEN}"></i>Terug <strong>2,7</strong></span></div></div>`;
+const tile=(withSplit,withEuro)=>`<div class="tile" style="margin-top:0"><p class="name"><span style="color:${SUN}">${I.sun}</span>Zon vandaag</p><div class="values"><p class="value">7,2<small>kWh</small></p>${withEuro?'<span class="price"><small>≈</small>€ 1,68</span>':''}</div>${withSplit?split:''}${dayChart(KWH)}</div>`;
+const item=(icon,name,on)=>`<span class="item${on?' on':''}">${icon}<span>${name}</span></span>`;
+const nav=`<div class="nav"><div class="scroller">${item(I.bolt,'Energie',true)}<span class="divider"></span>${item(I.home,'Thuis')}${item(I.sofa,'Living')}${item(I.baby,'Marielou')}</div></div>`;
+function bars(values,W=358){const H=64,top=Math.max(...values,1)*1.1,slot=W/values.length,width=slot*.62,y=(v)=>H-(v/top)*(H-4);
+ return `<svg class="bars" viewBox="0 0 ${W} ${H}" height="${H}"><line x1="0" x2="${W}" y1="${H-0.5}" y2="${H-0.5}" stroke="rgba(245,244,239,.16)"/>${values.map((v,i)=>`<rect x="${(i*slot+(slot-width)/2).toFixed(1)}" y="${y(v).toFixed(1)}" width="${width.toFixed(1)}" height="${Math.max(1.5,H-y(v)).toFixed(1)}" rx="2" fill="${SUN}" opacity="${v===0?.35:1}"/>`).join('')}</svg>`;}
+const HOUR=[1620,1710,1580,1890,2010,1940,1210,980,1760,2080,2150,1840];
+const DAY=[0,0,0,0,0,0,40,320,880,1450,1920,2180,2310,1980,1840,0,0,0,0,0,0,0,0,0].slice(0,15);
+const tabs=`<div class="tabs"><span class="tab">Stroom</span><span class="tab on">Zon</span><span class="tab">Gas</span><span class="tab">Water</span></div>`;
+const nowCard=({running=true,values=HOUR,axis=['1 uur geleden','nu'],house=false})=>`<div class="card"><span class="lbl"><i class="${running?'sun':'idle'}"></i>${running?'Zon nu':'Geen zon'}</span><div class="big ${running?'sun':'idle'}">${running?'1.840':'0'}<small>W</small></div>${house?`<div class="sub">Huis verbruikt nu <strong style="color:var(--text)">620 W</strong> · 1.220 W terug naar het net</div>`:''}${bars(values)}<div class="axis"><span>${axis[0]}</span><span>${axis[1]}</span></div></div>`;
+const page=(card,t)=>`<div class="in"><div class="kicker">Categorie</div><h1>Energie</h1>${tabs}${card}${t}</div>${nav}`;
+const S=[
+ ['Z1 · Zoals Water','Een chip "Zon" naast Stroom. Bovenaan de zon nu (live, telt mee, geel), 12 staafjes van 5 minuten (laatste uur). Daaronder "Zon vandaag" in kWh met de 14 dagen. Geen euro: wat zon waard is hangt af van wat je zelf verbruikt.',page(nowCard({}),tile(false,false))],
+ ['Z2 · Z1 + waar gaat je zon heen','Zelfde kaart, plus in de dagtegel een balk: hoeveel van de zon van vandaag je zelf verbruikte (geel) en hoeveel terugging (groen, van de P1-meter). Met ≈ €: zelf verbruikt × €0,35 + terug × €0,04.',page(nowCard({}),tile(true,true))],
+ ['Z3 · De dag als curve','De staafjes tonen de hele dag per uur, van middernacht tot nu: de zonnecurve. Onder het getal wat het huis nu verbruikt (P1 + zon) en wat teruggaat. Dagtegel zoals Z2.',page(nowCard({values:DAY,axis:['0 u','nu'],house:true}),tile(true,true))],
+ ['\'s Nachts (alle opties)','Bij 0 W: "Geen zon" en het getal grijs, zoals "Geen water".',page(nowCard({running:false,values:HOUR.map(()=>0)}),tile(true,true))],
+];
+document.body.innerHTML=S.map(([t,sub,h])=>`<div><p class="cap">${t}<small>${sub}</small></p><div class="phone" style="height:760px">${h}</div></div>`).join('');
+</script></html>

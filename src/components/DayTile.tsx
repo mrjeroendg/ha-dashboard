@@ -1,5 +1,5 @@
 import type { ApexOptions } from 'apexcharts';
-import type { CSSProperties } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import Chart from 'react-apexcharts/core';
 // Only the bar chart and annotations (the dashed average): the full ApexCharts
 // would add ~0.5 MB to the bundle.
@@ -13,6 +13,8 @@ interface Props {
   icon: IconName;
   /** The icon and the bars. */
   color: string;
+  /** The earlier days' bars; by default the tile's colour at 45%. */
+  earlierDaysColor?: string;
   /** Today so far. */
   value: number;
   unit: string;
@@ -21,6 +23,8 @@ interface Props {
   previousDays?: DailyTotal[];
   /** Shows "≈ € 1,45" next to the value. */
   euros?: number;
+  /** Between the value and the chart, e.g. Zon vandaag's split. */
+  children?: ReactNode;
 }
 
 const CHART_HEIGHT = 110;
@@ -35,7 +39,7 @@ const MUTED_TEXT_COLOR = '#a6a39b';
  * before today and today, each with the first letter of its day, and their
  * average as a dashed line. Shared by every tile that shows a total for today.
  */
-export function DayTile({ name, icon, color, value, unit, decimals, previousDays, euros }: Props) {
+export function DayTile({ name, icon, color, earlierDaysColor, value, unit, decimals, previousDays, euros, children }: Props) {
   const readable = (amount: number) => amount.toLocaleString('nl-BE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   const hasChart = previousDays !== undefined && previousDays.length > 0;
 
@@ -57,7 +61,16 @@ export function DayTile({ name, icon, color, value, unit, decimals, previousDays
           </p>
         )}
       </div>
-      {hasChart && <DaysChart previousDays={previousDays} today={value} color={color} readable={readable} />}
+      {children}
+      {hasChart && (
+        <DaysChart
+          previousDays={previousDays}
+          today={value}
+          color={color}
+          earlierDaysColor={earlierDaysColor ?? `${color}${EARLIER_DAY_OPACITY_HEX}`}
+          readable={readable}
+        />
+      )}
     </div>
   );
 }
@@ -66,13 +79,14 @@ interface DaysChartProps {
   previousDays: DailyTotal[];
   today: number;
   color: string;
+  earlierDaysColor: string;
   readable(amount: number): string;
 }
 
-function DaysChart({ previousDays, today, color, readable }: DaysChartProps) {
+function DaysChart({ previousDays, today, color, earlierDaysColor, readable }: DaysChartProps) {
   const average = previousDays.reduce((sum, previousDay) => sum + previousDay.total, 0) / previousDays.length;
   const dayLetters = [...previousDays.map((previousDay) => dayLetter(new Date(previousDay.dayStart))), dayLetter(new Date())];
-  const barColors = [...previousDays.map(() => `${color}${EARLIER_DAY_OPACITY_HEX}`), color];
+  const barColors = [...previousDays.map(() => earlierDaysColor), color];
   const labelColors = [...previousDays.map(() => MUTED_TEXT_COLOR), TEXT_COLOR];
   const highestDay = Math.max(today, ...previousDays.map((previousDay) => previousDay.total));
 

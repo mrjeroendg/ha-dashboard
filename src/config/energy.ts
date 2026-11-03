@@ -40,13 +40,18 @@ export const ENERGY_QUARTER = {
 export const ENERGY_TODAY = {
   /** Taken from the grid since midnight. */
   takenFromGrid: Entity.ELECTRICITY_CONSUMPTION_TODAY,
-  /** Fed back to the grid since midnight. */
+  /** Fed back to the grid since midnight: the part of the solar that the house didn't use. */
   fedBackToGrid: Entity.ELECTRICITY_PRODUCTION_TODAY,
+  /** What the solar panels made since midnight (Smappee), in kWh or Wh (its unit says which). */
+  solarToday: Entity.SOLAR_PRODUCTION_TODAY,
+  /** "Zon vandaag" (docs/design/energie-zon): yellow, and a darker yellow for the earlier days (45% of it looks olive). */
+  solarColor: '#f2c230',
+  solarEarlierDaysColor: '#a8902f',
   /** The chart shows this many days before today, plus today; the dashed line is their average. */
   previousDays: 13,
   /**
    * € per kWh, for "≈ € 1,45": what taking from the grid costs, and what
-   * feeding back earns. The contract is dynamic (Eneco), so these are fixed
+   * feeding back earns. Solar used yourself saves what taking would cost. The contract is dynamic (Eneco), so these are fixed
    * approximations: taking at the higher price, all-in. Feeding back is still a
    * placeholder. Live prices are on the to-do list (docs/TODO.md).
    */

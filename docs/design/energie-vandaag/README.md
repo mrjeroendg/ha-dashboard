@@ -4,6 +4,8 @@ What the P1 meter counted since midnight, on the [Energie](../nav-categories/REA
 
 > ✅ **Approved and built** (4 November): two tiles side by side, the **net** figures from the P1 meter, each as the shared [day tile](../day-tile/README.md) (D2): in euros and with the last 14 days. Don't change proportions or behaviour without asking first.
 >
+> **"Teruggeleverd vandaag" is replaced by "Zon vandaag"** ([energie-zon](../energie-zon/README.md)), which shows the feeding back as part of the solar. The rest below still holds for "Afgenomen vandaag".
+>
 > Code: `TodaySoFar.tsx` in `src/components/energy/`, `ENERGY_TODAY` in `src/config/energy.ts`, `DayTile`, the `pylon` icon in `Icon.tsx`.
 
 The earlier options (A: three tiles, B: a list, C: a balance, D: four tiles with water): [`options.png`](./options.png) ([`options.html`](./options.html)). Instead, the owner chose two tiles, without gas or water, then the extra information of the day tile. As built (dev mode, mock values, placeholder prices):

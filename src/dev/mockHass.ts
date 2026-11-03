@@ -70,6 +70,7 @@ function baseStates(): HassEntities {
     entity('sensor.p1_meter_average_demand', '4600', { unit_of_measurement: 'W', device_class: 'power' }),
     entity('sensor.p1_meter_peak_demand_current_month', '3600', { unit_of_measurement: 'W', device_class: 'power' }),
     entity('sensor.p1_meter_energy_consumption_daily', '8.13', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
+    entity('sensor.garage_smappee_total_production_today', '3.86', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.p1_meter_energy_production_daily', '1.24', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.garage_water_meter_water_usage', '0', { unit_of_measurement: 'L/min', state_class: 'measurement' }),
     entity('sensor.garage_water_meter_consumption_daily', '0.102', { unit_of_measurement: 'm³', state_class: 'total_increasing' }),
@@ -310,6 +311,7 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
   const DAILY_TOTALS: Record<string, number[]> = {
     'sensor.p1_meter_energy_consumption_daily': [9.4, 8.8, 10.2, 7.9, 9.1, 11.3],
     'sensor.p1_meter_energy_production_daily': [3.1, 4.6, 1.2, 0.8, 2.9, 5.1],
+    'sensor.garage_smappee_total_production_today': [6.1, 8.9, 3.4, 2.1, 5.6, 9.8],
     'sensor.garage_water_meter_consumption_daily': [0.131, 0.118, 0.152, 0.097, 0.141, 0.126],
     'sensor.gas_meter_consumption_daily': [2.41, 2.9, 3.1, 2.2, 2.6, 3.4],
   };

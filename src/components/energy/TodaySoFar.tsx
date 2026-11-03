@@ -95,7 +95,7 @@ function SolarToday({ solarKilowattHours, fedBackToGridKilowattHours, previousDa
               Verbruikt <strong>{readableKilowattHours(usedYourselfKilowattHours)} · {usedYourselfPercentage}%</strong>
             </span>
             <span style={{ '--solar-split-color': ENERGY_TODAY.solarFedBackColor } as CSSProperties}>
-              Teruggeleverd <strong>{readableKilowattHours(fedBackToGridKilowattHours)}</strong>
+              Geïnjecteerd <strong>{readableKilowattHours(fedBackToGridKilowattHours)}</strong>
             </span>
           </p>
         </div>

@@ -50,3 +50,12 @@ export const ENERGY_TODAY = {
    */
   euroPerKilowattHour: { takenFromGrid: 0.35, fedBackToGrid: 0.04 },
 };
+
+/** The "Gas" chip on the Energie page (docs/design/energie-gas): the gas meter's daily sensor, in m³. */
+export const ENERGY_GAS = {
+  gasToday: Entity.GAS_CONSUMPTION_TODAY,
+  /** Light blue, like a gas flame; Thuis' gas tile keeps its own colour for now. */
+  color: '#5cb8f2',
+  /** The chart shows this many days before today, plus today. */
+  previousDays: 13,
+};

@@ -12,6 +12,9 @@ The options (S1: no titles, S2: now in one card, S3: only "Vandaag", S4: a line 
 
 ## The layout (S2)
 
+Since 4 November all of this sits under the **"Stroom" chip**; a "Gas" chip next to it shows gas ([energie-gas](../energie-gas/README.md)).
+
+
 The section titles ("NU", "DIT KWARTIER", "VANDAAG TOT NU") are gone: each part already says what it is.
 
 1. **One card for now:** [the power and its 5-minute bars](../energie-nu/README.md), a thin line (1px, the border colour), then [the quarter-hour](../energie-kwartier/README.md). The two parts are their own components (`EnergyNow`, `QuarterPeak`); only the card is shared. A part whose sensor is missing is left out, and so is the line; with neither, there's no card.

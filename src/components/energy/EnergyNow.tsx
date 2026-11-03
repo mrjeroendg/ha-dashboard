@@ -1,27 +1,29 @@
 import type { ApexOptions } from 'apexcharts';
 import type { CSSProperties } from 'react';
 import Chart from 'react-apexcharts/core';
-// Only the area chart and annotations (the zero line): the full ApexCharts
+// Only the bar chart and annotations (the zero line): the full ApexCharts
 // would add ~0.5 MB to the bundle.
-import 'apexcharts/area';
+import 'apexcharts/bar';
 import 'apexcharts/features/annotations';
 import { ENERGY_NOW } from '../../config/energy';
 import { useEasedNumber } from '../../hooks/useEasedNumber';
-import { REMEMBER_MILLISECONDS, SAMPLE_EVERY_MILLISECONDS, useLivePowerSamples } from '../../hooks/useLivePowerSamples';
+import { usePeriodicFetch } from '../../hooks/usePeriodicFetch';
 import { usePrefersReducedMotion } from '../../hooks/usePrefersReducedMotion';
-import { numberState, readableNumber } from '../../lib/statistics';
+import { fetchFiveMinuteAverages, numberState, readableNumber } from '../../lib/statistics';
 import type { HomeAssistant } from '../../types/hass';
 
 interface Props {
   hass: HomeAssistant;
 }
 
-const CHART_HEIGHT = 130;
+/** A new 5 minutes is at most a minute late; the page is rarely open longer. */
+const REFRESH_BARS_EVERY_MILLISECONDS = 60_000;
+const BARS_HEIGHT = 64;
 
 /**
- * "Nu" on the Energie page (docs/design/energie-nu): what goes through the P1
- * meter right now, as a number that counts to each new value, and a live line
- * of the last 30 s.
+ * "Nu" on the Energie page (docs/design/energie-nu, option B): what goes
+ * through the P1 meter right now, as a number that counts to each new value,
+ * with the last hour as bars of 5 minutes below it.
  */
 export function EnergyNow({ hass }: Props) {
   const currentWatts = numberState(hass.states, ENERGY_NOW.gridPower);
@@ -29,83 +31,72 @@ export function EnergyNow({ hass }: Props) {
 
   return (
     <section>
-      <h2 className="section-title energy-now__title">
-        Nu
-        <span className="energy-now__live">live</span>
-      </h2>
-      <GridPowerCard currentWatts={currentWatts} />
+      <h2 className="section-title">Nu</h2>
+      <GridPowerCard hass={hass} currentWatts={currentWatts} />
     </section>
   );
 }
 
-function GridPowerCard({ currentWatts }: { currentWatts: number }) {
+function GridPowerCard({ hass, currentWatts }: Props & { currentWatts: number }) {
   const isMotionReduced = usePrefersReducedMotion();
   const shownWatts = useEasedNumber(currentWatts, isMotionReduced);
   const isFeedingBack = shownWatts < 0;
-  const color = isFeedingBack ? ENERGY_NOW.backToGridColor : ENERGY_NOW.fromGridColor;
 
   return (
-    <div className="energy-card" style={{ '--energy-color': color } as CSSProperties}>
-      <p className="energy-card__label">{isFeedingBack ? 'Terug naar het net' : 'Van het net'}</p>
-      <p className="energy-card__value">
-        {readableWatts(shownWatts)}
-        <small>W</small>
-      </p>
-      <LivePowerLine currentWatts={currentWatts} />
+    <div className="energy-card" style={{ '--energy-color': colorFor(shownWatts) } as CSSProperties}>
+      <div className="energy-card__top">
+        <div>
+          <p className="energy-card__label">{isFeedingBack ? 'Terug naar het net' : 'Van het net'}</p>
+          <p className="energy-card__value">
+            {readableWatts(shownWatts)}
+            <small>W</small>
+          </p>
+        </div>
+        <span className="energy-card__live">Live</span>
+      </div>
+      <LastHourBars hass={hass} />
     </div>
   );
 }
 
 /**
- * The last 30 s, a point every 4 s, the newest at the right edge. ApexCharts
- * scrolls the line itself (`xaxis.range`), and colours it pink above zero and
- * green below (`plotOptions.line.colors`).
+ * The last hour as 12 bars, each the average of 5 minutes: pink upwards for
+ * taking from the grid, green downwards for feeding back. Fetched again every
+ * minute, without animation.
  */
-function LivePowerLine({ currentWatts }: { currentWatts: number }) {
-  const samples = useLivePowerSamples(currentWatts);
-  // ApexCharts recognises a scroll from 3 points on; before that it would morph the shape.
-  const canScroll = samples.length > 3;
-  const wattsOnTheLine = samples.map((sample) => sample.watts);
+function LastHourBars({ hass }: Props) {
+  const fiveMinuteAverages = usePeriodicFetch(
+    () => fetchFiveMinuteAverages(hass, ENERGY_NOW.gridPower),
+    ENERGY_NOW.gridPower,
+    REFRESH_BARS_EVERY_MILLISECONDS,
+  );
+  const averages = fiveMinuteAverages ?? [];
+  const knownAverages = averages.filter((average) => average !== null);
 
   const options: ApexOptions = {
-    chart: {
-      sparkline: { enabled: true },
-      // Each scroll lasts until the next point, so the line keeps moving.
-      animations: { enabled: true, dynamicAnimation: { enabled: canScroll, speed: SAMPLE_EVERY_MILLISECONDS } },
-      toolbar: { show: false },
-      zoom: { enabled: false },
-    },
-    // A non-solid line fill makes ApexCharts colour the line by the threshold too, not only the area.
-    stroke: { width: 2, curve: 'monotoneCubic', fill: { type: 'gradient', opacity: 1 } },
-    fill: { type: 'solid', opacity: 0.25 },
-    plotOptions: {
-      area: { fillTo: 'origin' },
-      line: {
-        colors: { threshold: 0, colorAboveThreshold: ENERGY_NOW.fromGridColor, colorBelowThreshold: ENERGY_NOW.backToGridColor },
-      },
-    },
-    markers: { size: 0 },
-    xaxis: { type: 'numeric', range: REMEMBER_MILLISECONDS },
-    // Always include zero, so the zero line is in view, with a little room above and below.
-    // (`|| 1`: a line that is exactly 0 W still gets a range.)
-    yaxis: { show: false, min: Math.min(0, ...wattsOnTheLine) * 1.1, max: Math.max(0, ...wattsOnTheLine) * 1.1 || 1 },
-    annotations: { yaxis: [{ y: 0, borderColor: 'rgba(245, 244, 239, 0.18)', strokeDashArray: 0 }] },
+    chart: { sparkline: { enabled: true }, animations: { enabled: false }, toolbar: { show: false }, zoom: { enabled: false } },
+    plotOptions: { bar: { columnWidth: '62%', borderRadius: 2 } },
+    dataLabels: { enabled: false },
+    // Always include zero, with a little room above and below (`|| 1`: an hour of exactly 0 W still gets a range).
+    yaxis: { show: false, min: Math.min(0, ...knownAverages) * 1.1, max: Math.max(0, ...knownAverages) * 1.1 || 1 },
+    annotations: { yaxis: [{ y: 0, borderColor: 'rgba(245, 244, 239, 0.16)', strokeDashArray: 0 }] },
     tooltip: { enabled: false },
     states: { hover: { filter: { type: 'none' } }, active: { filter: { type: 'none' } } },
   };
+  const bars = averages.map((average, barNumber) => ({ x: barNumber, y: average, fillColor: colorFor(average ?? 0) }));
 
   return (
-    <div className="energy-chart" aria-hidden>
-      <Chart
-        type="area"
-        height={CHART_HEIGHT}
-        width="100%"
-        series={[{ name: 'Net', data: samples.map((sample) => [sample.time, sample.watts]) }]}
-        options={options}
-      />
+    <div className="energy-card__bars" aria-hidden>
+      <Chart type="bar" height={BARS_HEIGHT} width="100%" series={[{ name: 'Gemiddeld per 5 minuten', data: bars }]} options={options} />
+      <div className="energy-card__axis">
+        <span>1 uur geleden</span>
+        <span>nu</span>
+      </div>
     </div>
   );
 }
+
+const colorFor = (watts: number) => (watts < 0 ? ENERGY_NOW.backToGridColor : ENERGY_NOW.fromGridColor);
 
 /** "850" for −850 W: the label says which way it goes, so no minus sign. */
 const readableWatts = (watts: number) => readableNumber(Math.round(Math.abs(watts)), 0);

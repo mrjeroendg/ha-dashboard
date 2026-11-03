@@ -55,6 +55,43 @@ export async function fetchPeakToday(hass: HomeAssistant, powerEntityId: string)
   return isNumber(statisticToday?.max) ? statisticToday.max : undefined;
 }
 
+const FIVE_MINUTES = 5 * 60_000;
+/** The bars under "Nu" on the Energie page (docs/design/energie-nu): the last hour. */
+export const FIVE_MINUTE_BARS = 12;
+
+interface FiveMinuteRow {
+  start: number | string;
+  mean?: number | null;
+}
+
+/**
+ * The power sensor's average per 5 minutes over the last hour, oldest first:
+ * HA's short-term statistics, what its history graph calls "5-minute
+ * aggregated" (time-weighted). The newest is the last 5 minutes that are over.
+ * A 5 minutes without statistics (e.g. while HA restarted) is `null`.
+ */
+export async function fetchFiveMinuteAverages(hass: HomeAssistant, powerEntityId: string): Promise<Array<number | null>> {
+  const startOfCurrentFiveMinutes = Math.floor(Date.now() / FIVE_MINUTES) * FIVE_MINUTES;
+  const startOfFirstBar = startOfCurrentFiveMinutes - FIVE_MINUTE_BARS * FIVE_MINUTES;
+  const statisticsPerEntity = await hass.callWS<Record<string, FiveMinuteRow[]> | undefined>({
+    type: 'recorder/statistics_during_period',
+    start_time: new Date(startOfFirstBar).toISOString(),
+    end_time: new Date(startOfCurrentFiveMinutes).toISOString(),
+    statistic_ids: [powerEntityId],
+    period: '5minute',
+    types: ['mean'],
+  });
+
+  const rows = statisticsPerEntity?.[powerEntityId] ?? [];
+  const averageAt = new Map(rows.map((row) => [typeof row.start === 'number' ? row.start : Date.parse(row.start), row.mean]));
+  const barStarts = Array.from({ length: FIVE_MINUTE_BARS }, (_unused, barNumber) => startOfFirstBar + barNumber * FIVE_MINUTES);
+
+  return barStarts.map((barStart) => {
+    const average = averageAt.get(barStart);
+    return isNumber(average) ? average : null;
+  });
+}
+
 /** A sensor's state as a number, or undefined when it's missing or unavailable. */
 export function numberState(states: HassEntities, entityId: string): number | undefined {
   const numberFromEntity = Number.parseFloat(states[entityId]?.state ?? '');

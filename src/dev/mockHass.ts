@@ -316,6 +316,18 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     if (msg.type === 'camera/stream') throw new Error('No stream in mock mode');
     if (msg.type === 'camera/capabilities') return { frontend_stream_types: ['web_rtc', 'hls'] } as T;
     if (msg.type === 'camera/webrtc/get_client_config') return { configuration: { iceServers: [] } } as T;
+    // The last hour per 5 minutes (docs/design/energie-nu): taking in the morning, then the sun takes over.
+    if (msg.type === 'recorder/statistics_during_period' && msg.period === '5minute') {
+      const fiveMinutes = 5 * 60_000;
+      const firstStart = Date.parse(String(msg.start_time));
+      const averages = [310, 280, 260, 180, 90, -40, -180, -320, -420, -610, -780, -850];
+      return Object.fromEntries(
+        (msg.statistic_ids as string[]).map((statisticId) => [
+          statisticId,
+          averages.map((mean, barNumber) => ({ start: firstStart + barNumber * fiveMinutes, mean })),
+        ]),
+      ) as T;
+    }
     if (msg.type === 'recorder/statistics_during_period') {
       const statisticIds = msg.statistic_ids as string[];
       const dayLength = 24 * 3600_000;

@@ -59,8 +59,9 @@ export const ENERGY_GAS = {
   /** The chart shows this many days before today, plus today. */
   previousDays: 13,
   /**
-   * € per m³, for "≈ € 2,02": an estimate (all-in about €0,10 per kWh × about
-   * 10,8 kWh per m³) until it's replaced by the price on the bill.
+   * € per m³, for "≈ € 2,39": an estimate on the high side (all-in about
+   * €0,12 per kWh × about 10,8 kWh per m³) until it's replaced by the price on
+   * the bill.
    */
-  euroPerCubicMetre: 1.1,
+  euroPerCubicMetre: 1.3,
 };

@@ -363,4 +363,14 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     if (id === 'sensor.woonkamer_temperatuur') set('climate.woonkamer', 'heat', { current_temperature: Number(value) });
   }
   emit();
+
+  // The P1 meter reports about every 3 s (docs/design/energie-nu): a wandering
+  // value with the odd device switching on, sometimes feeding back.
+  window.setInterval(() => {
+    const currentWatts = Number(states['sensor.p1_meter_power'].state);
+    const deviceSwitching = Math.random() < 0.1 ? (Math.random() - 0.4) * 1600 : 0;
+    const nextWatts = Math.max(-1800, Math.min(3200, currentWatts + (Math.random() - 0.55) * 180 + deviceSwitching));
+    set('sensor.p1_meter_power', String(Math.round(nextWatts)));
+    emit();
+  }, 3_000);
 }

@@ -7,8 +7,11 @@ import type { IconName } from '../components/Icon';
  *
  * `id` must differ from every room's id in src/config/rooms.ts.
  */
+/** Each category's page has its own content (CategoryPage.tsx), so the ids are fixed. */
+export type CategoryId = 'energie';
+
 export interface Category {
-  id: string;
+  id: CategoryId;
   name: string;
   icon: IconName;
 }

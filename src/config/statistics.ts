@@ -34,7 +34,7 @@ export interface StatisticTileConfig {
 }
 
 /** The approved colours (docs/design/nutsvoorzieningen), validated together in this order. */
-const COLORS = {
+export const UTILITY_COLORS = {
   stroom: '#d55181',
   zon: '#c98500',
   water: '#3987e5',
@@ -45,12 +45,12 @@ const COLORS = {
 export const STATISTICS: StatisticsSectionConfig[] = [
   {
     title: 'Verbruik',
-    power: { entity: Entity.ELECTRICITY_POWER, color: COLORS.stroom, feedingBackColor: COLORS.feedingBack },
+    power: { entity: Entity.ELECTRICITY_POWER, color: UTILITY_COLORS.stroom, feedingBackColor: UTILITY_COLORS.feedingBack },
     tiles: [
-      { name: 'Stroom', icon: 'bolt', color: COLORS.stroom, entity: Entity.ELECTRICITY_CONSUMPTION_TODAY, decimals: 2 },
-      { name: 'Zon', icon: 'sun', color: COLORS.zon, entity: Entity.ELECTRICITY_PRODUCTION_TODAY, decimals: 2 },
-      { name: 'Water', icon: 'droplet', color: COLORS.water, entity: Entity.WATER_CONSUMPTION_TODAY, decimals: 3 },
-      { name: 'Gas', icon: 'flame', color: COLORS.gas, entity: Entity.GAS_CONSUMPTION_TODAY, decimals: 2 },
+      { name: 'Stroom', icon: 'bolt', color: UTILITY_COLORS.stroom, entity: Entity.ELECTRICITY_CONSUMPTION_TODAY, decimals: 2 },
+      { name: 'Zon', icon: 'sun', color: UTILITY_COLORS.zon, entity: Entity.ELECTRICITY_PRODUCTION_TODAY, decimals: 2 },
+      { name: 'Water', icon: 'droplet', color: UTILITY_COLORS.water, entity: Entity.WATER_CONSUMPTION_TODAY, decimals: 3 },
+      { name: 'Gas', icon: 'flame', color: UTILITY_COLORS.gas, entity: Entity.GAS_CONSUMPTION_TODAY, decimals: 2 },
     ],
   },
 ];

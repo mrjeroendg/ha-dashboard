@@ -30,6 +30,7 @@ export const STATUS: { people: StatusEntity[]; lights: StatusEntity[]; aircos: S
   ],
   lights: [
     { entity: Entity.LIVING_CUPBOARD_LIGHTS, name: 'CB3' },
+    { entity: Entity.LIVING_FLOOR_LAMP, name: 'Staanlamp' },
     { entity: Entity.CENTRIS_LIGHT, name: 'Centris' },
     { entity: Entity.MARIELOU_HERSTAL_LIGHT, name: 'Herstal' },
     { entity: Entity.GARAGE_STORAGE_LIGHT, name: 'Berging' },

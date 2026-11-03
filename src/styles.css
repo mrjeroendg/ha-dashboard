@@ -2036,46 +2036,8 @@ a.pill-button { text-decoration: none; }
 
 .energy-card__value small { margin-left: 3px; font-size: 15px; font-weight: 500; color: var(--text-muted); }
 
-/* The live line: ApexCharts draws the line, the dot and its value sit on top. */
-.energy-chart { position: relative; height: 130px; margin-top: 8px; }
-
-/* ApexCharts draws a dot for a point on its own between two gaps, whatever its marker size. */
-.energy-chart .apexcharts-marker { display: none; }
-
-.energy-chart__zero { position: absolute; left: 0; right: 0; height: 1px; background: rgba(245, 244, 239, 0.18); }
-
-.energy-chart__dot,
-.energy-chart__pulse {
-  position: absolute;
-  width: 8px;
-  height: 8px;
-  margin: -4px 0 0 -4px;
-  border-radius: 50%;
-  background: var(--energy-color);
-}
-
-.energy-chart__pulse.is-pulsing { animation: energy-pulse 1.6s ease-out infinite; }
-
-@keyframes energy-pulse {
-  from { transform: scale(1); opacity: 0.6; }
-  to { transform: scale(3); opacity: 0; }
-}
-
-.energy-chart__value {
-  position: absolute;
-  margin: -10px 0 0 12px;
-  padding: 2px 6px;
-  border-radius: 8px;
-  background: rgba(0, 0, 0, 0.35);
-  font-size: 12px;
-  font-weight: 600;
-  line-height: 16px;
-  white-space: nowrap;
-  font-variant-numeric: tabular-nums;
-}
-
-.energy-chart__axis { position: relative; height: 16px; margin-top: 6px; font-size: 12px; color: var(--text-muted); }
-.energy-chart__now { position: absolute; top: 0; transform: translateX(-50%); }
+/* The live line, drawn entirely by ApexCharts. */
+.energy-chart { margin-top: 8px; }
 
 /* ---------------------------------------------------------------- lawn mower (docs/design/lawn-mower) */
 

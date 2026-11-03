@@ -4,7 +4,7 @@ A bottom sheet with the capaciteitstarief over the year, opened from "Dit kwarti
 
 > ✅ **Sheet approved and built.** **How it opens isn't decided yet:** the owner didn't like L1–L3 in the options. For now a tap anywhere on the quarter-hour part opens it, with nothing on the card to show it. Don't change proportions or behaviour without asking first.
 >
-> Code: `CapacitySheet.tsx` and `QuarterPeak.tsx` in `src/components/energy/`, `ENERGY_QUARTER` in `src/config/energy.ts`, `fetchEarlierMonthlyPeaks` and `fetchWhenValueWasReachedThisMonth` in `src/lib/statistics.ts`, the template helper `sensor.p1_piek_deze_maand` (below), styles under "Capaciteitstarief" in `src/styles.css`.
+> Code: `CapacitySheet.tsx` and `QuarterPeak.tsx` in `src/components/energy/`, `ENERGY_QUARTER` in `src/config/energy.ts`, `fetchEarlierMonthlyPeaks` and `fetchWhenValueWasReachedThisMonth` in `src/lib/statistics.ts`, the template helper `sensor.p1_monthly_peak` (below), styles under "Capaciteitstarief" in `src/styles.css`.
 
 The approved sheet: [`mockup.png`](./mockup.png) ([`mockup.html`](./mockup.html)). The first options for opening it (L1–L3, none chosen) and the first sheets (S1, S2): [`options.png`](./options.png) ([`options.html`](./options.html)). As built (dev mode, mock values):
 
@@ -29,7 +29,7 @@ All numbers with **two decimals** (the owner's choice), except the days.
 
 ## Where the numbers come from
 
-- **The earlier 11 months:** HA's daily long-term statistics (`max`) of `sensor.p1_piek_deze_maand`, a copy of the peak sensor with a state class (below), fetched again every 5 minutes. Per month the **last day with statistics**: the peak only rises within a month, so that's the month's peak. Not the month's own maximum: if the meter resets a few minutes after midnight on the 1st, the new month's first minutes still hold the previous month's peak. **A month without statistics counts as 3,5 kW** (`ENERGY_QUARTER.assumedPeakWattsForMissingMonth`), the owner's choice to keep it simple; it isn't shown any differently. HA keeps long-term statistics forever (one row per hour).
+- **The earlier 11 months:** HA's daily long-term statistics (`max`) of `sensor.p1_monthly_peak`, a copy of the peak sensor with a state class (below), fetched again every 5 minutes. Per month the **last day with statistics**: the peak only rises within a month, so that's the month's peak. Not the month's own maximum: if the meter resets a few minutes after midnight on the 1st, the new month's first minutes still hold the previous month's peak. **A month without statistics counts as 3,5 kW** (`ENERGY_QUARTER.assumedPeakWattsForMissingMonth`), the owner's choice to keep it simple; it isn't shown any differently. HA keeps long-term statistics forever (one row per hour).
 - **This month:** the sensor's state.
 - **When the peak was reached:** HA's history of the same sensor this month, the first moment of its current value. HA keeps history about 10 days, so for an older peak there's no time. Whether the meter updates the peak during the quarter-hour or at its end isn't checked: at its end, the shown quarter-hour would be one too late.
 - **The chart:** ApexCharts keeps 30px free above the bars; `grid.padding.top: -22` takes most of it away.
@@ -40,7 +40,7 @@ The P1 meter's own peak sensors have no `state_class`, so HA keeps no statistics
 
 | Field | Value |
 |---|---|
-| Name | `P1 piek deze maand` (→ `sensor.p1_piek_deze_maand`) |
+| Name | any; the owner's is `sensor.p1_monthly_peak` |
 | State template | `{{ states('sensor.p1_meter_peak_demand_current_month') \| float(none) }}` |
 | Unit of measurement | `W` |
 | Device class | Power |

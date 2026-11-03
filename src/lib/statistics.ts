@@ -215,6 +215,111 @@ export async function fetchWhenValueWasReachedThisMonth(hass: HomeAssistant, ent
   return (reachedState.lc ?? reachedState.lu) * 1000;
 }
 
+const ONE_HOUR = 3600_000;
+
+const startTimeOf = (row: { start: number | string }) => (typeof row.start === 'number' ? row.start : Date.parse(row.start));
+
+/**
+ * How much a daily sensor counted in each hour of today, from midnight, a
+ * value per hour (24): HA's hourly long-term statistics (`change`). An hour
+ * without statistics yet, like the current one, is `null`.
+ */
+export async function fetchHourlyTotalsToday(hass: HomeAssistant, entityId: string): Promise<Array<number | null>> {
+  const startOfToday = midnight(0).getTime();
+  const statisticsPerEntity = await hass.callWS<Record<string, Array<{ start: number | string; change?: number | null }>> | undefined>({
+    type: 'recorder/statistics_during_period',
+    start_time: new Date(startOfToday).toISOString(),
+    statistic_ids: [entityId],
+    period: 'hour',
+    types: ['change'],
+  });
+
+  const hourlyRows = statisticsPerEntity?.[entityId] ?? [];
+  const totalAt = new Map(hourlyRows.map((hourlyRow) => [startTimeOf(hourlyRow), hourlyRow.change]));
+
+  return Array.from({ length: 24 }, (_unused, hour) => {
+    const total = totalAt.get(startOfToday + hour * ONE_HOUR);
+    return isNumber(total) ? total : null;
+  });
+}
+
+/**
+ * How much a daily sensor counted in each of the `numberOfMonths` months
+ * before this one, by the month's start (local midnight on the 1st): HA's
+ * monthly long-term statistics (`change`). A month without statistics is
+ * missing.
+ */
+export async function fetchEarlierMonthlyTotals(hass: HomeAssistant, entityId: string, numberOfMonths: number): Promise<Map<number, number>> {
+  const statisticsPerEntity = await hass.callWS<Record<string, Array<{ start: number | string; change?: number | null }>> | undefined>({
+    type: 'recorder/statistics_during_period',
+    start_time: startOfMonth(numberOfMonths).toISOString(),
+    end_time: startOfMonth(0).toISOString(),
+    statistic_ids: [entityId],
+    period: 'month',
+    types: ['change'],
+  });
+
+  const monthlyRows = (statisticsPerEntity?.[entityId] ?? []).filter((monthlyRow) => isNumber(monthlyRow.change));
+  return new Map(
+    monthlyRows.map((monthlyRow) => {
+      const rowStart = new Date(startTimeOf(monthlyRow));
+      const monthStart = new Date(rowStart.getFullYear(), rowStart.getMonth(), 1).getTime();
+      return [monthStart, monthlyRow.change as number];
+    }),
+  );
+}
+
+/** Last night from 1:00 to 5:00: this morning's, or yesterday's before 5:00. */
+function lastNight() {
+  const nightStart = new Date();
+  if (nightStart.getHours() < 5) nightStart.setDate(nightStart.getDate() - 1);
+  nightStart.setHours(1, 0, 0, 0);
+  return { nightStart: nightStart.getTime(), nightEnd: nightStart.getTime() + 4 * ONE_HOUR };
+}
+
+/**
+ * The lowest hourly average of a power sensor last night (1:00 to 5:00), in
+ * its unit: what the house always uses, with nothing switched on. Undefined
+ * without statistics.
+ */
+export async function fetchLowestHourlyAverageLastNight(hass: HomeAssistant, powerEntityId: string): Promise<number | undefined> {
+  const { nightStart, nightEnd } = lastNight();
+  const statisticsPerEntity = await hass.callWS<Record<string, Array<{ start: number | string; mean?: number | null }>> | undefined>({
+    type: 'recorder/statistics_during_period',
+    start_time: new Date(nightStart).toISOString(),
+    end_time: new Date(nightEnd).toISOString(),
+    statistic_ids: [powerEntityId],
+    period: 'hour',
+    types: ['mean'],
+  });
+
+  const hourlyAverages = (statisticsPerEntity?.[powerEntityId] ?? []).map((hourlyRow) => hourlyRow.mean).filter(isNumber);
+  return hourlyAverages.length > 0 ? Math.min(...hourlyAverages) : undefined;
+}
+
+/**
+ * Whether a meter counted in every 5 minutes of last night (1:00 to 5:00), a
+ * sign of a leak: normally nothing runs then for a while. Undefined when a 5
+ * minutes is missing from the statistics (HA keeps them 10 days).
+ */
+export async function fetchHasCountedAllNight(hass: HomeAssistant, meterEntityId: string): Promise<boolean | undefined> {
+  const { nightStart, nightEnd } = lastNight();
+  const statisticsPerEntity = await hass.callWS<Record<string, Array<{ start: number | string; change?: number | null }>> | undefined>({
+    type: 'recorder/statistics_during_period',
+    start_time: new Date(nightStart).toISOString(),
+    end_time: new Date(nightEnd).toISOString(),
+    statistic_ids: [meterEntityId],
+    period: '5minute',
+    types: ['change'],
+  });
+
+  const fiveMinuteTotals = (statisticsPerEntity?.[meterEntityId] ?? []).map((fiveMinuteRow) => fiveMinuteRow.change).filter(isNumber);
+  const numberOfFiveMinutesInNight = (nightEnd - nightStart) / FIVE_MINUTES;
+  if (fiveMinuteTotals.length < numberOfFiveMinutesInNight) return undefined;
+
+  return fiveMinuteTotals.every((fiveMinuteTotal) => fiveMinuteTotal > 0);
+}
+
 /** A sensor's state as a number, or undefined when it's missing or unavailable. */
 export function numberState(states: HassEntities, entityId: string): number | undefined {
   const numberFromEntity = Number.parseFloat(states[entityId]?.state ?? '');

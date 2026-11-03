@@ -69,19 +69,19 @@ export function CapacitySheet({ hass, onClose }: Props) {
   const costThisMonth = averageKilowatts * euroPerKilowattPerMonth;
 
   return (
-    <BottomSheet label="Capaciteitstarief" className="capacity-sheet" onClose={onClose}>
-      <h2 className="capacity-sheet__title">Capaciteitstarief</h2>
-      <p className="capacity-sheet__subtitle">Je hoogste kwartier per maand, het laatste jaar.</p>
-      <div className="capacity-sheet__figures">
+    <BottomSheet label="Capaciteitstarief" className="info-sheet" onClose={onClose}>
+      <h2 className="info-sheet__title">Capaciteitstarief</h2>
+      <p className="info-sheet__subtitle">Je hoogste kwartier per maand, het laatste jaar.</p>
+      <div className="info-sheet__figures">
         <Figure label={`Gemiddelde ${ENERGY_QUARTER.monthsInAverage} maanden`} value={twoDecimals(averageKilowatts)} unit="kW" />
         <Figure label="Je betaalt nu per maand" value={`≈ ${euros(costThisMonth)}`} />
       </div>
 
-      <h3 className="capacity-sheet__heading">Maandpieken</h3>
+      <h3 className="info-sheet__heading">Maandpieken</h3>
       <MonthlyPeaksChart monthlyPeaks={monthlyPeaks} averageKilowatts={averageKilowatts} />
 
-      <h3 className="capacity-sheet__heading">Deze maand</h3>
-      <div className="capacity-sheet__figures">
+      <h3 className="info-sheet__heading">Deze maand</h3>
+      <div className="info-sheet__figures">
         <Figure
           label="Piek tot nu"
           value={twoDecimals(thisMonthPeak.kilowatts)}
@@ -91,12 +91,12 @@ export function CapacitySheet({ hass, onClose }: Props) {
         <Figure label="Maand nog" value={String(daysLeftInMonth())} unit={daysLeftInMonth() === 1 ? 'dag' : 'dagen'} />
       </div>
 
-      <h3 className="capacity-sheet__heading">Wat kost deze maand?</h3>
-      <p className="capacity-sheet__intro">
+      <h3 className="info-sheet__heading">Wat kost deze maand?</h3>
+      <p className="info-sheet__intro">
         Elke maand telt je hoogste kwartier, minstens {twoDecimals(ENERGY_QUARTER.minimumKilowatts)} kW. Je betaalt op het
         gemiddelde van de laatste {ENERGY_QUARTER.monthsInAverage} maanden.
       </p>
-      <ul className="capacity-sheet__calculation">
+      <ul className="info-sheet__calculation">
         <li>
           Gemiddelde van {ENERGY_QUARTER.monthsInAverage} maandpieken
           <strong>{twoDecimals(averageKilowatts)} kW</strong>
@@ -105,7 +105,7 @@ export function CapacitySheet({ hass, onClose }: Props) {
           × tarief ({euros(ENERGY_QUARTER.euroPerKilowattPerYear)} per jaar ÷ 12)
           <strong>{euros(euroPerKilowattPerMonth)} per kW</strong>
         </li>
-        <li className="capacity-sheet__total">
+        <li className="info-sheet__total">
           Deze maand
           <strong>≈ {euros(costThisMonth)}</strong>
         </li>
@@ -116,13 +116,13 @@ export function CapacitySheet({ hass, onClose }: Props) {
 
 function Figure({ label, value, unit, detail }: { label: string; value: string; unit?: string; detail?: string }) {
   return (
-    <div className="capacity-figure">
-      <p className="capacity-figure__label">{label}</p>
-      <p className="capacity-figure__value">
+    <div className="info-figure">
+      <p className="info-figure__label">{label}</p>
+      <p className="info-figure__value">
         {value}
         {unit && <small>{unit}</small>}
       </p>
-      {detail && <p className="capacity-figure__detail">{detail}</p>}
+      {detail && <p className="info-figure__detail">{detail}</p>}
     </div>
   );
 }
@@ -225,7 +225,7 @@ function MonthlyPeaksChart({
   };
 
   return (
-    <div className="capacity-sheet__chart" aria-hidden>
+    <div className="info-sheet__chart" aria-hidden>
       <Chart
         type="bar"
         height={CHART_HEIGHT}

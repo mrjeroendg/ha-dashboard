@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { ENERGY_GAS } from '../../config/energy';
 import { usePeriodicFetch } from '../../hooks/usePeriodicFetch';
 import { fetchDailyTotalsWithDays, numberState } from '../../lib/statistics';
 import type { HomeAssistant } from '../../types/hass';
 import { DayTile } from '../DayTile';
+import { GasSheet } from './GasSheet';
 
 interface Props {
   hass: HomeAssistant;
@@ -17,6 +19,7 @@ const REFRESH_DAYS_EVERY_MILLISECONDS = 5 * 60_000;
  * day tile.
  */
 export function GasLastDays({ hass }: Props) {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const gasTodayCubicMetres = numberState(hass.states, ENERGY_GAS.gasToday);
   const dailyTotalsPerSensor = usePeriodicFetch(
     () => fetchDailyTotalsWithDays(hass, [ENERGY_GAS.gasToday], ENERGY_GAS.previousDays),
@@ -36,7 +39,9 @@ export function GasLastDays({ hass }: Props) {
         decimals={2}
         previousDays={dailyTotalsPerSensor?.[ENERGY_GAS.gasToday]}
         euros={gasTodayCubicMetres * ENERGY_GAS.euroPerCubicMetre}
+        onOpen={() => setIsSheetOpen(true)}
       />
+      {isSheetOpen && <GasSheet hass={hass} onClose={() => setIsSheetOpen(false)} />}
     </div>
   );
 }

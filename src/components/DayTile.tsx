@@ -1,10 +1,11 @@
 import type { ApexOptions } from 'apexcharts';
-import type { CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, KeyboardEvent, ReactNode } from 'react';
 import Chart from 'react-apexcharts/core';
 // Only the bar chart and annotations (the dashed average): the full ApexCharts
 // would add ~0.5 MB to the bundle.
 import 'apexcharts/bar';
 import 'apexcharts/features/annotations';
+import { haptic } from '../lib/haptic';
 import type { DailyTotal } from '../lib/statistics';
 import { Icon, type IconName } from './Icon';
 
@@ -25,6 +26,8 @@ interface Props {
   euros?: number;
   /** Between the value and the chart, e.g. Zon vandaag's split. */
   children?: ReactNode;
+  /** A tap on the tile opens more (e.g. its sheet); nothing on the tile shows it. */
+  onOpen?(): void;
 }
 
 const CHART_HEIGHT = 110;
@@ -39,12 +42,27 @@ const MUTED_TEXT_COLOR = '#a6a39b';
  * before today and today, each with the first letter of its day, and their
  * average as a dashed line. Shared by every tile that shows a total for today.
  */
-export function DayTile({ name, icon, color, earlierDaysColor, value, unit, decimals, previousDays, euros, children }: Props) {
+export function DayTile({ name, icon, color, earlierDaysColor, value, unit, decimals, previousDays, euros, children, onOpen }: Props) {
   const readable = (amount: number) => amount.toLocaleString('nl-BE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   const hasChart = previousDays !== undefined && previousDays.length > 0;
 
   return (
-    <div className="day-tile" style={{ '--day-tile-color': color } as CSSProperties}>
+    <div
+      className={`day-tile${onOpen ? ' day-tile--opens' : ''}`}
+      style={{ '--day-tile-color': color } as CSSProperties}
+      {...(onOpen && {
+        role: 'button',
+        tabIndex: 0,
+        onClick: () => {
+          haptic('selection');
+          onOpen();
+        },
+        onKeyDown: (keyboardEvent: KeyboardEvent) => {
+          const isOpenKey = keyboardEvent.key === 'Enter' || keyboardEvent.key === ' ';
+          if (isOpenKey) onOpen();
+        },
+      })}
+    >
       <p className="day-tile__name">
         <Icon name={icon} />
         {name}

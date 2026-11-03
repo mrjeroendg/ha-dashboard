@@ -334,7 +334,11 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
         return Object.fromEntries(
           (msg.statistic_ids as string[]).map((statisticId) => [
             statisticId,
-            waterLitres.map((litres, barNumber) => ({ start: firstStart + barNumber * fiveMinutes, change: litres / 1000 })),
+            // As many as asked (the leak check asks for a whole night), the pattern repeating.
+            Array.from({ length: Math.round((Date.parse(String(msg.end_time)) - firstStart) / fiveMinutes) }, (_unused, barNumber) => ({
+              start: firstStart + barNumber * fiveMinutes,
+              change: waterLitres[barNumber % waterLitres.length] / 1000,
+            })),
           ]),
         ) as T;
       }
@@ -343,6 +347,61 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
           statisticId,
           averages.map((mean, barNumber) => ({ start: firstStart + barNumber * fiveMinutes, mean })),
         ]),
+      ) as T;
+    }
+    // The info sheets (docs/design/energie-sheets): today per hour, a share of the daily total in each hour so far.
+    if (msg.type === 'recorder/statistics_during_period' && msg.period === 'hour' && (msg.types as string[]).includes('change')) {
+      const oneHour = 3600_000;
+      const startOfToday = Date.parse(String(msg.start_time));
+      const hoursSoFar = new Date().getHours();
+      const shareOfDayPerHour = [1, 1, 1, 1, 1, 2, 4, 6, 4, 3, 3, 4, 5, 4, 3, 3, 4, 6, 8, 9, 7, 5, 3, 2];
+      return Object.fromEntries(
+        (msg.statistic_ids as string[]).map((statisticId) => {
+          // 90% of today so far in the hours before this one, so this hour gets the rest.
+          const todaySoFar = Number(states[statisticId]?.state ?? 0) * 0.9;
+          const isSolar = statisticId.includes('production');
+          const hourShares = isSolar ? [0, 0, 0, 0, 0, 0, 0, 1, 3, 6, 9, 11, 12, 12, 11, 9, 6, 3, 1, 0, 0, 0, 0, 0] : shareOfDayPerHour;
+          const sharesSoFar = hourShares.slice(0, hoursSoFar).reduce((sum, share) => sum + share, 0) || 1;
+          return [
+            statisticId,
+            Array.from({ length: hoursSoFar }, (_unused, hour) => ({
+              start: startOfToday + hour * oneHour,
+              change: (todaySoFar * hourShares[hour]) / sharesSoFar,
+            })),
+          ];
+        }),
+      ) as T;
+    }
+    // Last night's hours of the P1 meter (the sluipverbruik): the lowest is 165 W.
+    if (msg.type === 'recorder/statistics_during_period' && msg.period === 'hour') {
+      const oneHour = 3600_000;
+      const nightStart = Date.parse(String(msg.start_time));
+      return Object.fromEntries(
+        (msg.statistic_ids as string[]).map((statisticId) => [
+          statisticId,
+          [210, 172, 165, 190].map((mean, hour) => ({ start: nightStart + hour * oneHour, mean })),
+        ]),
+      ) as T;
+    }
+    // The months before this one: about 30 days of each daily sensor's usual day, gas much higher in winter.
+    if (msg.type === 'recorder/statistics_during_period' && msg.period === 'month') {
+      const firstMonth = new Date(String(msg.start_time));
+      const numberOfMonths = 12;
+      return Object.fromEntries(
+        (msg.statistic_ids as string[]).map((statisticId) => {
+          const usualDay = (DAILY_TOTALS[statisticId] ?? []).reduce((sum, total) => sum + total, 0) / 6;
+          return [
+            statisticId,
+            Array.from({ length: numberOfMonths }, (_unused, monthIndex) => {
+              const month = new Date(firstMonth.getFullYear(), firstMonth.getMonth() + monthIndex, 1);
+              const winterness = Math.cos(((month.getMonth() + 0.5) / 12) * 2 * Math.PI);
+              const isGas = statisticId.includes('gas');
+              const isSolar = statisticId.includes('production');
+              const seasonFactor = isGas ? 1 + winterness * 0.9 : isSolar ? 1 - winterness * 0.7 : 1 + winterness * 0.15;
+              return { start: month.getTime(), change: usualDay * 30 * seasonFactor };
+            }),
+          ];
+        }),
       ) as T;
     }
     // The copy of the month's peak per day (docs/design/energie-capaciteit): rising to each month's peak; the oldest 3 months are missing.

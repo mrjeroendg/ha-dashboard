@@ -23,6 +23,7 @@ How it got here: the options for extra information (E1: yesterday, E2: per hour,
   previousDays={dailyTotals}         // optional: the bars and the dashed average
   euros={1.69}                       // optional: "≈ € 1,69"
   earlierDaysColor="#a8902f"         // optional: instead of the colour at 45%
+  onOpen={() => setIsSheetOpen(true)} // optional: a tap opens more, e.g. its sheet (energie-sheets)
 >
   {/* optional: shown between the value and the chart, e.g. Zon vandaag's split (energie-zon) */}
 </DayTile>

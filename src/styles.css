@@ -2099,18 +2099,20 @@ a.pill-button { text-decoration: none; }
 /* A tap opens the capaciteitstarief; nothing on the card shows it. */
 .quarter-peak { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 
-/* ---------------------------------------------------------------- Capaciteitstarief (docs/design/energie-capaciteit) */
+/* ---------------------------------------------------------------- Info sheets (docs/design/energie-sheets)
+   The shared layout of the sheets behind Energie's tiles: Capaciteitstarief
+   (docs/design/energie-capaciteit), and Afgenomen, Zon, Gas and Water. */
 
-.capacity-sheet {
+.info-sheet {
   max-height: 85dvh;
   overflow-y: auto;
   padding-bottom: calc(28px + env(safe-area-inset-bottom));
 }
 
-.capacity-sheet__title { margin: 4px 0 2px; font-family: var(--font-serif); font-weight: 400; font-size: 24px; }
-.capacity-sheet__subtitle { margin: 0 0 14px; font-size: 13px; line-height: 1.4; color: var(--text-muted); }
+.info-sheet__title { margin: 4px 0 2px; font-family: var(--font-serif); font-weight: 400; font-size: 24px; }
+.info-sheet__subtitle { margin: 0 0 14px; font-size: 13px; line-height: 1.4; color: var(--text-muted); }
 
-.capacity-sheet__heading {
+.info-sheet__heading {
   margin: 18px 0 6px;
   font-size: 12px;
   font-weight: 600;
@@ -2120,22 +2122,22 @@ a.pill-button { text-decoration: none; }
 }
 
 /* Two figures side by side, each in a soft box. */
-.capacity-sheet__figures { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-.capacity-figure { padding: 10px 12px; border-radius: 14px; background: rgba(245, 244, 239, 0.04); }
-.capacity-figure__label { margin: 0; font-size: 12px; color: var(--text-muted); }
-.capacity-figure__value { margin: 2px 0 0; font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
-.capacity-figure__value small { margin-left: 3px; font-size: 12px; font-weight: 500; color: var(--text-muted); }
-.capacity-figure__detail { margin: 2px 0 0; font-size: 11px; color: var(--text-muted); }
+.info-sheet__figures { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.info-figure { padding: 10px 12px; border-radius: 14px; background: rgba(245, 244, 239, 0.04); }
+.info-figure__label { margin: 0; font-size: 12px; color: var(--text-muted); }
+.info-figure__value { margin: 2px 0 0; font-size: 22px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.info-figure__value small { margin-left: 3px; font-size: 12px; font-weight: 500; color: var(--text-muted); }
+.info-figure__detail { margin: 2px 0 0; font-size: 11px; color: var(--text-muted); }
 
-/* The months: ApexCharts takes one font weight for all labels, so this month's (the last) is bold here. */
-.capacity-sheet__chart { margin: 0 -6px; }
-.capacity-sheet__chart .apexcharts-xaxis-texts-g text:last-of-type { font-weight: 700; }
+/* A chart: ApexCharts takes one font weight for all labels, so the last (now) is bold here. */
+.info-sheet__chart { margin: 0 -6px; }
+.info-sheet__chart .apexcharts-xaxis-texts-g text:last-of-type { font-weight: 700; }
 
 /* What this month costs, worked out: the terms, then the total under a brighter line. */
-.capacity-sheet__intro { margin: 0 0 6px; font-size: 12px; line-height: 1.4; color: var(--text-muted); }
-.capacity-sheet__calculation { margin: 0; padding: 0; list-style: none; font-size: 13px; }
+.info-sheet__intro { margin: 0 0 6px; font-size: 12px; line-height: 1.4; color: var(--text-muted); }
+.info-sheet__calculation { margin: 0; padding: 0; list-style: none; font-size: 13px; }
 
-.capacity-sheet__calculation li {
+.info-sheet__calculation li {
   display: flex;
   justify-content: space-between;
   gap: 10px;
@@ -2144,10 +2146,19 @@ a.pill-button { text-decoration: none; }
   color: var(--text-muted);
 }
 
-.capacity-sheet__calculation li:first-child { border-top: 0; }
-.capacity-sheet__calculation strong { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
-.capacity-sheet__calculation .capacity-sheet__total { border-top-color: rgba(245, 244, 239, 0.25); color: var(--text); font-weight: 600; }
-.capacity-sheet__total strong { font-size: 15px; }
+.info-sheet__calculation li:first-child { border-top: 0; }
+.info-sheet__calculation strong { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.info-sheet__calculation .info-sheet__total { border-top-color: rgba(245, 244, 239, 0.25); color: var(--text); font-weight: 600; }
+.info-sheet__total strong { font-size: 15px; }
+
+/* A paragraph of explanation, and a highlighted tip or warning. */
+.info-sheet__text { margin: 8px 0 0; font-size: 13px; line-height: 1.45; color: var(--text-muted); }
+.info-sheet__text strong { color: var(--text); font-weight: 600; }
+.info-sheet__note { margin-top: 10px; padding: 10px 12px; border-radius: 14px; background: rgba(245, 244, 239, 0.06); font-size: 13px; line-height: 1.45; }
+.info-sheet__note--good { background: rgba(107, 171, 62, 0.14); }
+.info-sheet__note--warning { background: rgba(232, 145, 58, 0.16); }
+.info-sheet__note strong { font-weight: 600; }
+
 
 /* ---------------------------------------------------------------- Day tile (docs/design/day-tile) */
 
@@ -2174,6 +2185,7 @@ a.pill-button { text-decoration: none; }
 
 /* The days: ApexCharts takes one font weight for all labels, so today's (the last) is bold here. */
 .day-tile__chart { margin: 6px -6px 0; }
+.day-tile--opens { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .day-tile__chart .apexcharts-xaxis-texts-g text:last-of-type { font-weight: 700; }
 
 /* Zon vandaag (docs/design/energie-zon, B): the solar used yourself and fed back, as one bar. */

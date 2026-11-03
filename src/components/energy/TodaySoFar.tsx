@@ -1,9 +1,12 @@
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties } from 'react';
 import { ENERGY_NOW, ENERGY_TODAY } from '../../config/energy';
 import { usePeriodicFetch } from '../../hooks/usePeriodicFetch';
 import { type DailyTotal, fetchDailyTotalsWithDays, numberState } from '../../lib/statistics';
 import type { HomeAssistant } from '../../types/hass';
 import { DayTile } from '../DayTile';
+import { ElectricitySheet } from './ElectricitySheet';
+import { SolarSheet } from './SolarSheet';
+import { kilowattHoursPerSolarUnit } from './solarUnits';
 
 interface Props {
   hass: HomeAssistant;
@@ -22,6 +25,8 @@ const TODAY_SENSORS = [ENERGY_TODAY.takenFromGrid, ENERGY_TODAY.solarToday];
  * Afgenomen in euros.
  */
 export function TodaySoFar({ hass }: Props) {
+  const [openSheet, setOpenSheet] = useState<'electricity' | 'solar'>();
+  const closeSheet = () => setOpenSheet(undefined);
   const takenFromGridKilowattHours = numberState(hass.states, ENERGY_TODAY.takenFromGrid);
   const fedBackToGridKilowattHours = numberState(hass.states, ENERGY_TODAY.fedBackToGrid);
   const solarTodayInItsUnit = numberState(hass.states, ENERGY_TODAY.solarToday);
@@ -46,17 +51,21 @@ export function TodaySoFar({ hass }: Props) {
         decimals={2}
         previousDays={dailyTotalsPerSensor?.[ENERGY_TODAY.takenFromGrid]}
         euros={takenFromGridKilowattHours * prices.takenFromGrid}
+        onOpen={() => setOpenSheet('electricity')}
       />
       {isSolarKnown && (
         <SolarToday
           solarKilowattHours={solarTodayInItsUnit * kilowattHoursPerSolarUnit(hass)}
           fedBackToGridKilowattHours={fedBackToGridKilowattHours}
+          onOpen={() => setOpenSheet('solar')}
           previousDays={dailyTotalsPerSensor?.[ENERGY_TODAY.solarToday]?.map((dailyTotal) => ({
             dayStart: dailyTotal.dayStart,
             total: dailyTotal.total * kilowattHoursPerSolarUnit(hass),
           }))}
         />
       )}
+      {openSheet === 'electricity' && <ElectricitySheet hass={hass} onClose={closeSheet} />}
+      {openSheet === 'solar' && <SolarSheet hass={hass} onClose={closeSheet} />}
     </div>
   );
 }
@@ -65,9 +74,10 @@ interface SolarTodayProps {
   solarKilowattHours: number;
   fedBackToGridKilowattHours: number;
   previousDays?: DailyTotal[];
+  onOpen(): void;
 }
 
-function SolarToday({ solarKilowattHours, fedBackToGridKilowattHours, previousDays }: SolarTodayProps) {
+function SolarToday({ solarKilowattHours, fedBackToGridKilowattHours, previousDays, onOpen }: SolarTodayProps) {
   // Smappee and the P1 meter measure apart, so feeding back can come out a little above the solar.
   const usedYourselfKilowattHours = Math.max(0, solarKilowattHours - fedBackToGridKilowattHours);
   const hasSolarToday = solarKilowattHours > 0;
@@ -83,6 +93,7 @@ function SolarToday({ solarKilowattHours, fedBackToGridKilowattHours, previousDa
       unit="kWh"
       decimals={2}
       previousDays={previousDays}
+      onOpen={onOpen}
     >
       {hasSolarToday && (
         <div className="solar-split">
@@ -107,10 +118,6 @@ function SolarToday({ solarKilowattHours, fedBackToGridKilowattHours, previousDa
 /** A part of the split bar, as wide as its share. */
 const splitPart = (color: string, kilowattHours: number) =>
   ({ '--solar-split-color': color, flex: kilowattHours } as CSSProperties);
-
-/** Smappee may count in Wh; the tile shows kWh. */
-const kilowattHoursPerSolarUnit = (hass: HomeAssistant) =>
-  hass.states[ENERGY_TODAY.solarToday]?.attributes.unit_of_measurement === 'Wh' ? 1 / 1000 : 1;
 
 const readableKilowattHours = (kilowattHours: number) =>
   kilowattHours.toLocaleString('nl-BE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

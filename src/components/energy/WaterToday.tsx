@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { ENERGY_WATER } from '../../config/energy';
 import { usePeriodicFetch } from '../../hooks/usePeriodicFetch';
 import { fetchDailyTotalsWithDays, numberState } from '../../lib/statistics';
 import type { HomeAssistant } from '../../types/hass';
 import { DayTile } from '../DayTile';
+import { WaterSheet } from './WaterSheet';
 
 interface Props {
   hass: HomeAssistant;
@@ -18,6 +20,7 @@ const LITRES_PER_CUBIC_METRE = 1000;
  * average, as a day tile. The meter counts in m³.
  */
 export function WaterToday({ hass }: Props) {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const waterTodayCubicMetres = numberState(hass.states, ENERGY_WATER.consumptionToday);
   const dailyTotalsPerSensor = usePeriodicFetch(
     () => fetchDailyTotalsWithDays(hass, [ENERGY_WATER.consumptionToday], ENERGY_WATER.previousDays),
@@ -42,7 +45,9 @@ export function WaterToday({ hass }: Props) {
         decimals={0}
         previousDays={previousDaysInLitres}
         euros={waterTodayCubicMetres * ENERGY_WATER.euroPerCubicMetre}
+        onOpen={() => setIsSheetOpen(true)}
       />
+      {isSheetOpen && <WaterSheet hass={hass} onClose={() => setIsSheetOpen(false)} />}
     </div>
   );
 }

@@ -33,3 +33,11 @@ export const ENERGY_QUARTER = {
   /** The marks under the bar, at the borders. */
   marksAtKilowatts: [4, 6],
 };
+
+/** "Vandaag tot nu" on the Energie page (docs/design/energie-vandaag): the P1 meter's daily sensors, in kWh. */
+export const ENERGY_TODAY = {
+  /** Taken from the grid since midnight. */
+  takenFromGrid: Entity.ELECTRICITY_CONSUMPTION_TODAY,
+  /** Fed back to the grid since midnight. */
+  fedBackToGrid: Entity.ELECTRICITY_PRODUCTION_TODAY,
+};

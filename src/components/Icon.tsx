@@ -290,6 +290,7 @@ const PATHS = {
   ),
   // Verbruik (docs/design/verbruik).
   bolt: <path d="M13 2L4 14h7l-1 8 9-12h-7z" />,
+  pylon: <path d="M8 21l4-18 4 18M6 8h12M7 13h10M9.5 21l5-8M14.5 21l-5-8" />,
   flame: <path d="M12 22a7 7 0 0 0 7-7c0-4-3-6-4-10-2 2-3 4-3 6-1-1-2-2-2-4-2 2-5 5-5 8a7 7 0 0 0 7 7z" />,
   // Lawn mower (docs/design/lawn-mower).
   mower: (

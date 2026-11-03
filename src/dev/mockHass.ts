@@ -71,6 +71,7 @@ function baseStates(): HassEntities {
     entity('sensor.p1_meter_peak_demand_current_month', '3600', { unit_of_measurement: 'W', device_class: 'power' }),
     entity('sensor.p1_meter_energy_consumption_daily', '8.13', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.p1_meter_energy_production_daily', '1.24', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
+    entity('sensor.garage_water_meter_water_usage', '0', { unit_of_measurement: 'L/min', state_class: 'measurement' }),
     entity('sensor.garage_water_meter_consumption_daily', '0.102', { unit_of_measurement: 'm³', state_class: 'total_increasing' }),
     entity('sensor.gas_meter_consumption_daily', '2.78', { unit_of_measurement: 'm³', state_class: 'total_increasing' }),
     // Jaqueline, a Worx Landroid (docs/design/lawn-mower); the IDs are the real ones from src/config/rooms.ts.
@@ -323,6 +324,16 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
       const fiveMinutes = 5 * 60_000;
       const firstStart = Date.parse(String(msg.start_time));
       const averages = [310, 280, 260, 180, 90, -40, -180, -320, -420, -610, -780, -850];
+      // The water meter's last 2 hours (docs/design/energie-water): litres per 5 minutes, in m³.
+      const waterLitres = [0, 0, 12, 34, 8, 0, 0, 0, 3, 0, 0, 0, 0, 45, 38, 6, 0, 0, 2, 0, 0, 9, 4, 0];
+      if ((msg.types as string[]).includes('change')) {
+        return Object.fromEntries(
+          (msg.statistic_ids as string[]).map((statisticId) => [
+            statisticId,
+            waterLitres.map((litres, barNumber) => ({ start: firstStart + barNumber * fiveMinutes, change: litres / 1000 })),
+          ]),
+        ) as T;
+      }
       return Object.fromEntries(
         (msg.statistic_ids as string[]).map((statisticId) => [
           statisticId,
@@ -392,6 +403,10 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     const deviceSwitching = Math.random() < 0.1 ? (Math.random() - 0.4) * 1600 : 0;
     const nextWatts = Math.max(-1800, Math.min(3200, currentWatts + (Math.random() - 0.55) * 180 + deviceSwitching));
     set('sensor.p1_meter_power', String(Math.round(nextWatts)));
+    // The water runs now and then: a tap at a few l/min.
+    const currentFlow = Number(states['sensor.garage_water_meter_water_usage'].state);
+    const nextFlow = currentFlow > 0 ? (Math.random() < 0.3 ? 0 : 4 + Math.random() * 2) : Math.random() < 0.3 ? 5.2 : 0;
+    set('sensor.garage_water_meter_water_usage', nextFlow.toFixed(1));
     emit();
   }, 3_000);
 }

@@ -99,6 +99,7 @@ export enum Entity {
   ELECTRICITY_PRODUCTION_TODAY = 'sensor.p1_meter_energy_production_daily',
   GAS_CONSUMPTION_TODAY = 'sensor.gas_meter_consumption_daily',
   WATER_CONSUMPTION_TODAY = 'sensor.garage_water_meter_consumption_daily',
+  WATER_USAGE = 'sensor.garage_water_meter_water_usage',
 
   // Radio stations
   PLAY_RADIO_1_ON_CHROMECAST_SCRIPT = 'script.speel_radio1_op_chromecast',

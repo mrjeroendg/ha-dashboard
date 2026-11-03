@@ -17,7 +17,7 @@ const TODAY_SENSORS = [ENERGY_TODAY.takenFromGrid, ENERGY_TODAY.solarToday];
  * The day tiles under Stroom's card (docs/design/energie-vandaag,
  * docs/design/energie-zon): "Afgenomen vandaag" from the P1 meter, and "Zon
  * vandaag" from Smappee, split into what the house used itself and what went
- * back to the grid (the P1 meter's feeding back). Each in euros and with the
+ * back to the grid (the P1 meter's feeding back, in red: it's worth little). Each in euros and with the
  * 13 days before as bars (docs/design/day-tile, D2).
  */
 export function TodaySoFar({ hass }: Props) {
@@ -90,13 +90,13 @@ function SolarToday({ solarKilowattHours, fedBackToGridKilowattHours, previousDa
         <div className="solar-split">
           <div className="solar-split__bar" aria-hidden>
             <span style={splitPart(ENERGY_TODAY.solarColor, usedYourselfKilowattHours)} />
-            <span style={splitPart(ENERGY_NOW.backToGridColor, fedBackToGridKilowattHours)} />
+            <span style={splitPart(ENERGY_TODAY.solarFedBackColor, fedBackToGridKilowattHours)} />
           </div>
           <p className="solar-split__legend">
             <span style={{ '--solar-split-color': ENERGY_TODAY.solarColor } as CSSProperties}>
               Zelf verbruikt <strong>{readableKilowattHours(usedYourselfKilowattHours)} · {usedYourselfPercentage}%</strong>
             </span>
-            <span style={{ '--solar-split-color': ENERGY_NOW.backToGridColor } as CSSProperties}>
+            <span style={{ '--solar-split-color': ENERGY_TODAY.solarFedBackColor } as CSSProperties}>
               Teruggeleverd <strong>{readableKilowattHours(fedBackToGridKilowattHours)}</strong>
             </span>
           </p>

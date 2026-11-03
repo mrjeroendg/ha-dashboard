@@ -47,6 +47,8 @@ export const ENERGY_TODAY = {
   /** "Zon vandaag" (docs/design/energie-zon): yellow, and a darker yellow for the earlier days (45% of it looks olive). */
   solarColor: '#f2c230',
   solarEarlierDaysColor: '#a8902f',
+  /** The solar that went back to the grid, in Zon vandaag's split: red, because it's worth little. */
+  solarFedBackColor: '#e05252',
   /** The chart shows this many days before today, plus today; the dashed line is their average. */
   previousDays: 13,
   /**

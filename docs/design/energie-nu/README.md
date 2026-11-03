@@ -18,8 +18,8 @@ Only the P1 meter: `sensor.p1_meter_power` (`ENERGY_NOW.gridPower`), positive wh
 
 - **"NU"** as the section title.
 - **The label:** "Van het net" with a pink dot (`#d55181`), or "Terug naar het net" with a green dot (`#6bab3e`), following the sign.
-- **The big number** (40px, fixed-width digits), without a minus sign: it **counts** to each new value in 0.4 s. It follows every state change (about every 3 s).
-- **"Live"** as a green badge in the top right, with a slowly pulsing dot.
+- **The big number** (40px, fixed-width digits), without a minus sign, **in the colour of the bars**: pink while taking, green while feeding back. It **counts** to each new value in 0.4 s and follows every state change (about every 3 s).
+- *No "Live" badge any more* (removed on 4 November at the owner's request).
 
 ## The bars
 
@@ -33,7 +33,7 @@ Only the P1 meter: `sensor.p1_meter_power` (`ENERGY_NOW.gridPower`), positive wh
 
 ## Reduce motion
 
-No counting, and the "Live" dot doesn't pulse.
+No counting.
 
 ## Next steps
 

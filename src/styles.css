@@ -53,7 +53,6 @@
   .attention-stack.has-motion,
   .attention-stack.has-motion .attention__item,
   .attention__less { transition: none; }
-  .energy-card__live::before { animation: none; }
 }
 
 .header { padding: 4px 4px 8px; }
@@ -2016,6 +2015,7 @@ a.pill-button { text-decoration: none; }
 
 .energy-card__value {
   margin: 2px 0 0;
+  color: var(--energy-color);
   font-size: 40px;
   font-weight: 600;
   letter-spacing: -0.01em;
@@ -2023,32 +2023,6 @@ a.pill-button { text-decoration: none; }
 }
 
 .energy-card__value small { margin-left: 3px; font-size: 15px; font-weight: 500; color: var(--text-muted); }
-
-/* Option B: "Live" as a badge in the card's top right, with a pulsing dot. */
-.energy-card__top { display: flex; justify-content: space-between; align-items: flex-start; }
-
-.energy-card__live {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 10px;
-  border-radius: 999px;
-  background: rgba(63, 185, 80, 0.14);
-  color: #7fd18b;
-  font-size: 12px;
-  font-weight: 600;
-}
-
-.energy-card__live::before {
-  content: '';
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: #3fb950;
-  animation: energy-live-pulse 1.6s ease-in-out infinite;
-}
-
-@keyframes energy-live-pulse { 50% { opacity: 0.35; } }
 
 /* The last hour, 12 bars of 5 minutes, across the full width of the card. */
 .energy-card__bars { margin: 6px -16px 0; }

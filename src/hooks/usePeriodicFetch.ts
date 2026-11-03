@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useState } from 'react';
 
 /**
  * A value fetched now, again every `refreshEveryMilliseconds`, and when the app
@@ -6,18 +6,24 @@ import { useEffect, useRef, useState } from 'react';
  * `key` (e.g. other entities) fetches right away. Errors keep the last value.
  */
 export function usePeriodicFetch<Value>(fetchValue: () => Promise<Value>, key: string, refreshEveryMilliseconds: number) {
-  const [fetchedValue, setFetchedValue] = useState<Value | undefined>(undefined);
-  // The latest fetcher, so a new `hass` on every state change doesn't restart the timer.
-  const latestFetchValue = useRef(fetchValue);
-  latestFetchValue.current = fetchValue;
+  const [fetchedValue, setFetchedValue] = useState<Value>();
+
+  // The timer below starts once, but `fetchValue` is new on every render (with
+  // the latest `hass`). An effect event always calls the latest one, without
+  // restarting the timer.
+  const fetchLatestValue = useEffectEvent(fetchValue);
 
   useEffect(() => {
     let isStillMounted = true;
-    const fetchNow = () =>
-      latestFetchValue
-        .current()
-        .then((value) => isStillMounted && setFetchedValue(value))
-        .catch((error) => console.error(error));
+
+    const fetchNow = async () => {
+      try {
+        const value = await fetchLatestValue();
+        if (isStillMounted) setFetchedValue(value);
+      } catch (error) {
+        console.error(error);
+      }
+    };
     const fetchWhenVisibleAgain = () => {
       if (document.visibilityState === 'visible') fetchNow();
     };
@@ -25,6 +31,7 @@ export function usePeriodicFetch<Value>(fetchValue: () => Promise<Value>, key: s
     fetchNow();
     const refreshTimer = window.setInterval(fetchNow, refreshEveryMilliseconds);
     document.addEventListener('visibilitychange', fetchWhenVisibleAgain);
+
     return () => {
       isStillMounted = false;
       window.clearInterval(refreshTimer);

@@ -37,3 +37,13 @@ To decide in the design: what happens over midnight (`from: '22:00', until: '06:
 A double tap on an appointment in a sitter sheet ("Oppas nodig", "Oppas voor Cara") removes its todo item, e.g. one left behind after an outing moved to another date. `todo.remove_item` with the item's `uid` (`src/components/sheets/SitterSheet.tsx`); the list and the warning's count update by themselves. Removed, not completed: a completed item with the same title gets in the way of the automation.
 
 To decide in the design: whether both sheets get it, and what the row shows while it's being removed or when it fails. "Nothing can be ticked off from the dashboard" in `docs/design/babysit/README.md` changes with it.
+
+## Live electricity prices for the euros on Energie
+
+The contract is dynamic (Eneco): the price per kWh changes every hour. "Vandaag tot nu" now multiplies today's kWh by one fixed price from the config (`ENERGY_TODAY.euroPerKilowattHour` in `src/config/energy.ts`: €0,35 for taking, all-in at the higher price; feeding back still a placeholder), so the "≈ €" is an approximation.
+
+**In Home Assistant:** the hourly Belgian day-ahead prices (the ENTSO-E or Nord Pool integration, zone Belgium), and a template sensor with Eneco's formula from the tariefkaart (Belpex × factor + a fixed amount, plus network costs, levies and VAT), one for taking and one for feeding back.
+
+**In the dashboard:** today's euros as each hour's kWh (HA's hourly statistics of the two daily sensors) times that hour's price, instead of today's total times one price. The config gets the two price sensors instead of the two numbers.
+
+To decide in the design: whether the current price itself shows somewhere on Energie (e.g. "cheap now", to shift the dishwasher), and what the tiles show while the hourly prices aren't there yet.

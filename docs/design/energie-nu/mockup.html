@@ -1,0 +1,93 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Energie nu live</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,390px);gap:28px}
+.cap{min-height:76px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--from:#d55181;--back:#6bab3e;
+position:relative;width:390px;height:560px;border-radius:44px 44px 0 0;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:26px 24px 0}
+.kicker{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+h1{margin:6px 0 0;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:34px}
+.sec{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:22px 4px 10px}
+.sec .live{display:inline-flex;align-items:center;gap:6px;text-transform:none;letter-spacing:0;font-weight:400}.sec .live i{width:7px;height:7px;border-radius:50%;background:#3fb950}
+.card{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:14px 16px 12px}
+.lbl{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}.lbl i{width:8px;height:8px;border-radius:50%;background:var(--c);transition:background .3s}
+.big{font-size:40px;font-weight:600;letter-spacing:-.01em;font-variant-numeric:tabular-nums}.big small{font-size:15px;color:var(--muted);font-weight:500;margin-left:3px}
+svg.chart{display:block;width:100%;height:130px;margin-top:8px;overflow:visible}
+.axis{position:relative;height:16px;font-size:12px;color:var(--muted);margin-top:6px}.axis .now{position:absolute;top:0;transform:translateX(-50%)}
+@keyframes pulse{0%{r:4;opacity:.6}100%{r:12;opacity:0}}
+.pulse{animation:pulse 1.6s ease-out infinite}
+</style></head><body></body>
+<script>
+const N=30, TICK=2000, W=310, H=130, CENTER=W*0.7, STEP=CENTER/N;
+const scenarios=[
+ ['Net geopend: de lijn groeit','Het eerste punt staat links. Elke 2 seconden komt er een punt bij, met "nu" onder het bolletje, tot het nieuwste punt na 1 minuut op 70% van de kaart staat. Hier: na 24 seconden.', {prefill:12, start:420, drift:-6}],
+ ['Vol: "nu" op 70%','Na 30 punten blijft het nieuwste punt op 70% staan en schuift de lijn mee naar links; oudere punten vallen weg. De waarde staat naast het bolletje. Hier: terug naar het net.', {prefill:40, start:-700, drift:-4}],
+ ['Alleen van het net','Zonder terugleveren zakt de nullijn naar onder, zodat de lijn de volle hoogte krijgt. Bij terugleveren schuift ze vanzelf weer omhoog, zoals in het tweede voorbeeld.', {prefill:40, start:900, drift:-14}],
+];
+function rng(seed){return()=>{seed=(seed*16807)%2147483647;return seed/2147483647}}
+const fmt=(watts)=>Math.round(Math.abs(watts)).toLocaleString('nl-BE');
+document.body.innerHTML=scenarios.map(([t,sub],k)=>`<div><p class="cap">${t}<small>${sub}</small></p><div class="phone"><div class="in">
+ <div class="kicker">Categorie</div><h1>Energie</h1><div class="sec"><span>Nu</span><span class="live"><i></i>live</span></div>
+ <div class="card" id="c${k}"><span class="lbl"><i></i><span class="what"></span></span><div class="big"><span class="num"></span><small>W</small></div>
+ <svg class="chart" viewBox="0 0 ${W} ${H}"><defs>
+  <clipPath id="above${k}"><rect class="above" x="-20" y="-20" width="${W+40}" height="0"/></clipPath>
+  <clipPath id="below${k}"><rect class="below" x="-20" y="0" width="${W+40}" height="${H+40}"/></clipPath>
+  <linearGradient id="gf${k}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d55181" stop-opacity=".38"/><stop offset="1" stop-color="#d55181" stop-opacity=".06"/></linearGradient>
+  <linearGradient id="gb${k}" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#6bab3e" stop-opacity=".38"/><stop offset="1" stop-color="#6bab3e" stop-opacity=".06"/></linearGradient>
+ </defs>
+  <line class="zero" x1="0" x2="${W}" stroke="rgba(245,244,239,.18)" stroke-width="1"/>
+  <line x1="${CENTER}" x2="${CENTER}" y1="0" y2="${H}" stroke="rgba(245,244,239,.07)" stroke-width="1" stroke-dasharray="2 4"/>
+  <path class="fillF" fill="url(#gf${k})" clip-path="url(#above${k})"/><path class="fillB" fill="url(#gb${k})" clip-path="url(#below${k})"/>
+  <path class="lineF" fill="none" stroke="#d55181" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" clip-path="url(#above${k})"/>
+  <path class="lineB" fill="none" stroke="#6bab3e" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" clip-path="url(#below${k})"/>
+  <circle class="pulse" r="4"/><circle class="dot" r="4"/>
+  <g class="tag"><rect rx="8" height="20" fill="rgba(0,0,0,.35)"/><text font-size="12" font-weight="600" fill="#f5f4ef" y="14"></text></g>
+ </svg>
+ <div class="axis"><span class="from"></span><span class="now">nu</span></div></div></div></div></div>`).join('');
+
+scenarios.forEach(([, , cfg],k)=>{
+  const card=document.getElementById('c'+k), random=rng(7+k*31);
+  let value=cfg.start, drift=cfg.drift;
+  const nextValue=()=>{value+= drift*2 + (random()-.5)*160; if(random()<.08) value+=(random()-.3)*1400; value=Math.max(-2200,Math.min(3200,value)); return value;};
+  // points: {time, watts}; prefill as if they came in at 2 s steps before now
+  const startedAt=performance.now();
+  let points=[];
+  for(let n=cfg.prefill-1;n>=0;n--) points.push({time:startedAt-n*TICK, watts:nextValue()});
+  let live=points.at(-1).watts, shown=live, scaleTop=500, scaleBottom=-100;
+  const elapsedBeforeOpen=(cfg.prefill-1)*TICK;
+  setInterval(()=>{points.push({time:performance.now(),watts:nextValue()}); live=points.at(-1).watts; if(points.length>N+2) points.shift();},TICK);
+  const smooth=(coords)=>coords.map(([x,y],n)=>{if(n===0)return `M${x} ${y}`;const [px,py]=coords[n-1];const mx=(px+x)/2;return `C${mx} ${py} ${mx} ${y} ${x} ${y}`}).join(' ');
+  function frame(now){
+    shown+= (live-shown)*0.12;
+    const all=[...points.map(p=>p.watts),shown];
+    const targetTop=Math.max(0,...all)*1.2||100, targetBottom=Math.min(0,...all)*1.2;
+    scaleTop+=(Math.max(targetTop,150)-scaleTop)*.08; scaleBottom+=(targetBottom-scaleBottom)*.08;
+    const yOf=(watts)=>8+(scaleTop-watts)/(scaleTop-scaleBottom)*(H-16);
+    const lastTime=points.at(-1).time, isFull=(now-startedAt+elapsedBeforeOpen)>=N*TICK;
+    // the newest point sits at the centre once full; before that the line grows from the left
+    const headX=isFull?CENTER:Math.min(CENTER,((now-startedAt+elapsedBeforeOpen)/TICK)*STEP);
+    const coords=points.map(p=>[headX-((now-p.time)/TICK)*STEP, yOf(p.watts)]).filter(([x])=>x>=-STEP);
+    coords.push([headX,yOf(shown)]);
+    const line=smooth(coords), zeroY=yOf(0);
+    const area=`${line} L${headX} ${zeroY} L${coords[0][0]} ${zeroY} Z`;
+    card.querySelector('.zero').setAttribute('y1',zeroY);card.querySelector('.zero').setAttribute('y2',zeroY);
+    card.querySelector('.above').setAttribute('height',zeroY+20);
+    card.querySelector('.below').setAttribute('y',zeroY);
+    ['.fillF','.fillB'].forEach(s=>card.querySelector(s).setAttribute('d',area));
+    ['.lineF','.lineB'].forEach(s=>card.querySelector(s).setAttribute('d',line));
+    const isFeedingBack=shown<0, color=isFeedingBack?'#6bab3e':'#d55181';
+    for(const s of ['.dot','.pulse']){const c=card.querySelector(s);c.setAttribute('cx',headX);c.setAttribute('cy',yOf(shown));c.setAttribute('fill',color);}
+    const tag=card.querySelector('.tag'), text=`${fmt(shown)} W`; tag.querySelector('text').textContent=text;
+    const tagWidth=text.length*7+12; tag.querySelector('rect').setAttribute('width',tagWidth);
+    tag.setAttribute('transform',`translate(${headX+12} ${Math.max(0,Math.min(H-20,yOf(shown)-10))})`);tag.querySelector('text').setAttribute('x',6);
+    card.querySelector('.now').style.left=`${headX}px`;
+    card.querySelector('.from').style.visibility=isFull?'visible':'hidden';
+    card.querySelector('.num').textContent=fmt(shown);
+    card.querySelector('.what').textContent=isFeedingBack?'Terug naar het net':'Van het net';
+    card.style.setProperty('--c',color);
+    const seconds=Math.round(Math.min(N*TICK,now-startedAt+elapsedBeforeOpen)/1000);
+    card.querySelector('.from').textContent='1 min geleden';
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+});
+</script></html>

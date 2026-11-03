@@ -34,6 +34,12 @@ export const ENERGY_QUARTER = {
   ],
   /** The marks under the bar, at the borders. */
   marksAtKilowatts: [4, 6],
+  /** The sheet (docs/design/energie-capaciteit): the bill takes the average of this many monthly peaks. */
+  monthsInAverage: 12,
+  /** Every monthly peak counts as at least this much. */
+  minimumKilowatts: 2.5,
+  /** Fluvius Imewo (around Gent), 2026, per kW of the average per year; billed per month (÷ 12). */
+  euroPerKilowattPerYear: 57.45,
 };
 
 /** "Vandaag tot nu" on the Energie page (docs/design/energie-vandaag): the P1 meter's daily sensors, in kWh. */

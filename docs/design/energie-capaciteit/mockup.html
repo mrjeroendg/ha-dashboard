@@ -1,0 +1,96 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Capaciteitstarief sheet</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:390px;gap:28px}
+.cap{min-height:110px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--pink:#d55181;--green:#6bab3e;
+position:relative;width:390px;border-radius:44px 44px 0 0;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:26px 24px 0}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kicker{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+h1{margin:6px 0 14px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:34px}
+.tabs{display:flex;gap:6px;margin:0 0 14px}.tab{padding:8px 14px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);color:var(--muted);font-size:14px;font-weight:500}
+.tab.on{background:rgba(217,119,87,.18);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(217,119,87,.45)}
+.card{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:14px 16px 12px;overflow:hidden}
+.lbl{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}.lbl i{width:8px;height:8px;border-radius:50%;background:var(--pink)}
+.big{font-size:40px;font-weight:600;letter-spacing:-.01em;color:var(--pink)}.big small{font-size:15px;color:var(--muted);font-weight:500;margin-left:3px}
+.bars{display:block;width:calc(100% + 32px);margin:6px -16px 0}
+.axis{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px}
+.q{position:relative;border-top:1px solid var(--border);margin:12px -16px 0;padding:12px 16px 0}
+.qf{display:flex;justify-content:space-between}.qf p{margin:0;font-size:13px;color:var(--muted)}.qf strong{display:flex;align-items:center;gap:6px;color:var(--text);font-size:22px;margin-top:2px}.qf .r strong{justify-content:flex-end}.qf .r{text-align:right}
+.qf strong small{font-size:13px;color:var(--muted);font-weight:500}.qf strong i{width:8px;height:8px;border-radius:50%}
+.qbar{position:relative;height:10px;margin:14px 0 6px}.qbar:before{content:'';position:absolute;inset:0;border-radius:5px;background:linear-gradient(90deg,#6bab3e 37%,#e8913a 62%,#b42318 87%);opacity:.25}
+.qbar b{position:absolute;left:0;top:0;bottom:0;width:15%;border-radius:5px;background:#6bab3e}.qbar u{position:absolute;left:45%;top:-5px;bottom:-5px;width:2px;background:#f5f4ef}
+.marks{position:relative;height:14px;font-size:11px;color:var(--muted)}.marks span{position:absolute;transform:translateX(-50%)}
+.qleft{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin-top:4px}
+.chev{display:inline-flex;align-items:center;gap:2px;color:var(--muted)}.chev svg{width:14px;height:14px}
+.info{position:absolute;right:12px;top:10px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:var(--muted);background:rgba(245,244,239,.06)}
+.info svg{width:15px;height:15px}
+.linkrow{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);margin:12px -16px -12px;padding:12px 16px;font-size:13px;color:var(--muted)}
+.linkrow strong{color:var(--text);font-weight:600}
+.pressed{outline:2px dashed rgba(217,119,87,.7);outline-offset:-4px;border-radius:12px}
+.tip{position:absolute;font-size:11px;font-weight:600;color:#d97757;background:rgba(217,119,87,.15);padding:2px 7px;border-radius:999px}
+
+/* sheet */
+.backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+.sheet{position:absolute;left:0;right:0;bottom:0;border-radius:24px 24px 0 0;background:var(--surface);box-shadow:0 -1px 0 var(--border);padding:0 20px 28px}
+.grab{display:flex;justify-content:center;padding:10px 0 8px}.grab i{width:36px;height:5px;border-radius:3px;background:rgba(245,244,239,.25)}
+.stitle{margin:4px 0 2px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:24px}
+.ssub{margin:0 0 14px;font-size:13px;color:var(--muted);line-height:1.4}
+.figs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fig{border-radius:14px;background:rgba(245,244,239,.04);padding:10px 12px}.fig p{margin:0;font-size:12px;color:var(--muted)}
+.fig strong{display:block;font-size:22px;font-weight:600;margin-top:2px}.fig strong small{font-size:12px;color:var(--muted);font-weight:500;margin-left:2px}
+.fig em{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:2px}
+.sec{margin:18px 0 6px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+svg.chart{display:block;width:100%}
+.months{display:grid;grid-template-columns:repeat(12,1fr);font-size:10px;color:var(--muted);text-align:center;margin-top:4px}.months .now{color:var(--text);font-weight:700}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-top:8px}.legend span{display:flex;align-items:center;gap:5px}
+.explain{margin:0;padding:0;list-style:none;font-size:13px;line-height:1.45;color:var(--text)}
+.explain li{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--border)}.explain li:first-child{border-top:0}
+.explain b{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;background:rgba(245,244,239,.08);color:var(--muted)}
+.explain span small{display:block;color:var(--muted);font-size:12px}
+.acc{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border);font-size:14px}
+.acc svg{width:14px;height:14px;color:var(--muted)}
+.callout{border-radius:14px;padding:10px 12px;background:rgba(107,171,62,.12);font-size:13px;line-height:1.4;margin-top:10px}.callout strong{font-weight:600}
+.sheet.full{position:relative;border-radius:24px 24px 0 0}
+.explain li span{flex:1}
+.note{font-size:11px;color:var(--muted);margin:12px 0 0;line-height:1.4}
+.fig strong.pink{color:var(--text)}
+.calc{margin:0;padding:0;list-style:none;font-size:13px}
+.calc li{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid var(--border);color:var(--muted)}.calc li:first-child{border-top:0}
+.calc li strong{color:var(--text);font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.calc li.total{border-top:1px solid rgba(245,244,239,.25);color:var(--text);font-weight:600}.calc li.total strong{font-size:15px}
+.intro{margin:0 0 6px;font-size:12px;color:var(--muted);line-height:1.4}
+</style></head><body></body>
+<script>
+const svg=(inner,c='i')=>`<svg class="${c}" viewBox="0 0 24 24">${inner}</svg>`;
+const MONTHS=['dec','jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov'];
+const PEAKS=[4.1,5.2,4.8,3.9,3.1,2.1,1.9,2.6,2.9,3.3,4.4,3.6];
+const MIN=2.5, PRICE=57.45, counted=PEAKS.map(p=>Math.max(MIN,p)), avg=counted.reduce((s,v)=>s+v,0)/12;
+const nl=(v,d=1)=>v.toLocaleString('nl-BE',{minimumFractionDigits:d,maximumFractionDigits:d});
+const eur=(v)=>'€ '+Math.round(v);
+const perMonth=avg*PRICE/12, aboveMinimum=(avg-MIN)*PRICE/12, perKilowattPerMonth=PRICE/12;
+const colorAt=(kw)=>kw<=3?'#6bab3e':kw<=5?'#e8913a':'#b42318';
+function monthChart(){const W=350,H=120,top=6,slot=W/12,width=slot*.62,y=v=>H-(v/top)*H;
+ return `<svg class="chart" viewBox="0 0 ${W} ${H}" height="${H}">
+ <rect x="0" y="${y(MIN)}" width="${W}" height="${H-y(MIN)}" fill="rgba(245,244,239,.05)"/>
+ <line x1="0" x2="${W}" y1="${y(MIN)}" y2="${y(MIN)}" stroke="rgba(245,244,239,.3)"/>
+ ${PEAKS.map((p,i)=>`<rect x="${(i*slot+(slot-width)/2).toFixed(1)}" y="${y(p).toFixed(1)}" width="${width.toFixed(1)}" height="${(H-y(p)).toFixed(1)}" rx="2" fill="${colorAt(p)}" opacity="${i===11?1:.6}"/>`).join('')}
+ <line x1="0" x2="${W}" y1="${y(avg)}" y2="${y(avg)}" stroke="#f5f4ef" stroke-dasharray="3 3" opacity=".8"/>
+ <rect x="0" y="${y(avg)-16}" width="66" height="14" rx="4" fill="#30302e"/><text x="4" y="${y(avg)-6}" font-size="10" fill="#f5f4ef">gem. ${nl(avg,2)} kW</text>
+ <text x="${slot*5+2}" y="${y(MIN)-4}" font-size="10" fill="#a6a39b">min. 2,50</text></svg>
+ <div class="months">${MONTHS.map((m,i)=>`<span class="${i===11?'now':''}">${m}</span>`).join('')}</div>`;}
+const legend=`<div class="legend"><span><svg width="10" height="10"><rect width="10" height="10" rx="2" fill="#e8913a" opacity=".6"/></svg>maandpiek</span><span><svg width="16" height="2"><line x1="0" x2="16" y1="1" y2="1" stroke="#f5f4ef" stroke-dasharray="3 3"/></svg>gemiddelde</span></div>`;
+const figs=`<div class="figs"><div class="fig"><p>Gemiddelde 12 maanden</p><strong>${nl(avg,2)}<small>kW</small></strong></div><div class="fig"><p>Je betaalt nu per maand</p><strong>≈ € ${nl(perMonth,2)}</strong></div></div>`;
+const thisMonth=`<div class="sec">Deze maand</div><div class="figs"><div class="fig"><p>Piek tot nu</p><strong>3,60<small>kW</small></strong><em>do 14 nov, 18:15–18:30</em></div><div class="fig"><p>Maand nog</p><strong>16<small>dagen</small></strong></div></div>
+`;
+const calc=`<div class="sec">Wat kost deze maand?</div><p class="intro">Elke maand telt je hoogste kwartier, minstens 2,50 kW. Je betaalt op het gemiddelde van de laatste 12 maanden.</p><ul class="calc">
+<li>Gemiddelde van 12 maandpieken<strong>${nl(avg,2)} kW</strong></li>
+<li>× tarief (€ 57,45 per jaar ÷ 12)<strong>€ ${nl(perKilowattPerMonth,2)} per kW</strong></li>
+<li class="total">Deze maand<strong>≈ € ${nl(perMonth,2)}</strong></li></ul>`;
+const sheet=(open)=>`<div class="sheet full"><div class="grab"><i></i></div><p class="stitle">Capaciteitstarief</p><p class="ssub">Je hoogste kwartier per maand, het laatste jaar.</p>${figs}<div class="sec">Maandpieken</div>${monthChart()}${thisMonth}${calc}</div>`;
+const S0=[
+ ['De sheet','Bovenaan wat je nu per maand betaalt, en hoeveel daarvan boven het minimum van 2,5 kW is (het deel dat je piek bepaalt). "Deze maand" zegt wat een kW piek kost. De uitleg is ingeklapt.',sheet(false)],
+ ['"Hoe werkt het?" open','Vier stappen, de laatste met de rekensom en waar je het betaalt. Onderaan het tarief en de bron. De sheet scrolt als hij hoger is dan 85% van het scherm.',sheet(true)],
+];
+const S=[['De sheet','Zonder de extra regels en zonder "loopt nog". De uitleg is vervangen door de rekensom van deze maand, met één korte zin erboven.',sheet()]];
+document.body.innerHTML=S.map(([t,sub,h])=>`<div><p class="cap">${t}<small>${sub}</small></p><div class="phone" style="background:#141413;padding-top:40px">${h}</div></div>`).join('');
+</script></html>

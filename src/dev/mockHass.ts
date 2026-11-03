@@ -343,6 +343,33 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
         ]),
       ) as T;
     }
+    // The monthly peaks of the last year (docs/design/energie-capaciteit), in W; this month's comes from the state.
+    if (msg.type === 'recorder/statistics_during_period' && msg.period === 'month') {
+      const monthlyPeaks = [4100, 5200, 4800, 3900, 3100, 2100, 1900, 2600, 2900, 3300, 4400, 3400];
+      const firstMonth = new Date(String(msg.start_time));
+      return Object.fromEntries(
+        (msg.statistic_ids as string[]).map((statisticId) => [
+          statisticId,
+          monthlyPeaks.map((max, monthIndex) => ({
+            start: new Date(firstMonth.getFullYear(), firstMonth.getMonth() + monthIndex, 1).getTime(),
+            max,
+          })),
+        ]),
+      ) as T;
+    }
+    // This month's peak was reached on the 2nd at 18:22.
+    if (msg.type === 'history/history_during_period') {
+      const peakReachedAt = new Date(Date.parse(String(msg.start_time)));
+      peakReachedAt.setDate(2);
+      peakReachedAt.setHours(18, 22, 0, 0);
+      const monthStart = Date.parse(String(msg.start_time)) / 1000;
+      return Object.fromEntries(
+        (msg.entity_ids as string[]).map((entityId) => [
+          entityId,
+          [{ s: '2900', lu: monthStart }, { s: 'unavailable', lu: monthStart + 3600 }, { s: '3600', lu: peakReachedAt.getTime() / 1000 }],
+        ]),
+      ) as T;
+    }
     if (msg.type === 'recorder/statistics_during_period') {
       const statisticIds = msg.statistic_ids as string[];
       const dayLength = 24 * 3600_000;

@@ -1,7 +1,9 @@
-import type { CSSProperties } from 'react';
+import { useState, type CSSProperties, type KeyboardEvent } from 'react';
 import { ENERGY_QUARTER } from '../../config/energy';
 import { useNow } from '../../hooks/useNow';
+import { haptic } from '../../lib/haptic';
 import { numberState } from '../../lib/statistics';
+import { CapacitySheet } from './CapacitySheet';
 import type { HomeAssistant } from '../../types/hass';
 
 interface Props {
@@ -17,10 +19,12 @@ const MINUTES_PER_QUARTER = 15;
  * the average of the current quarter-hour against this month's peak, the two
  * figures the capaciteitstarief is based on. The bar shows the colours up to
  * where it reaches; the white mark is this month's peak. The bottom part of
- * the Energie page's card (EnergyPage), without a card of its own.
+ * the Energie page's card (EnergyPage), without a card of its own. A tap
+ * opens the capaciteitstarief over the year (CapacitySheet).
  */
 export function QuarterPeak({ hass }: Props) {
   const now = useNow();
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
   const averageWatts = numberState(hass.states, ENERGY_QUARTER.averageDemand);
   const peakWatts = numberState(hass.states, ENERGY_QUARTER.monthPeak);
   if (averageWatts === undefined || peakWatts === undefined) return null;
@@ -40,26 +44,37 @@ export function QuarterPeak({ hass }: Props) {
     '--quarter-gradient-size': averageShare > 0 ? `${100 / averageShare}% 100%` : '100% 100%',
   } as CSSProperties;
 
+  const openSheet = () => {
+    haptic('selection');
+    setIsSheetOpen(true);
+  };
+  const openSheetWithKeyboard = (keyboardEvent: KeyboardEvent) => {
+    if (keyboardEvent.key === 'Enter' || keyboardEvent.key === ' ') openSheet();
+  };
+
   return (
-    <div className="quarter-peak">
-      <div className="quarter-card__figures">
-        <Figure label="Gemiddeld dit kwartier" kilowatts={averageKilowatts} />
-        <Figure label="Piek deze maand" kilowatts={peakKilowatts} isRight />
+    <>
+      <div className="quarter-peak" role="button" tabIndex={0} onClick={openSheet} onKeyDown={openSheetWithKeyboard}>
+        <div className="quarter-card__figures">
+          <Figure label="Gemiddeld dit kwartier" kilowatts={averageKilowatts} />
+          <Figure label="Piek deze maand" kilowatts={peakKilowatts} isRight />
+        </div>
+        <div className="quarter-bar" style={bar} aria-hidden>
+          <span className="quarter-bar__fill" />
+          <span className="quarter-bar__peak" style={{ left: `${shareOfBar(peakKilowatts) * 100}%` }} />
+        </div>
+        <div className="quarter-bar__marks" aria-hidden>
+          {ENERGY_QUARTER.marksAtKilowatts.map((kilowatts, markNumber) => (
+            <span key={kilowatts} style={{ left: `${shareOfBar(kilowatts) * 100}%` }}>
+              {kilowatts}
+              {markNumber === ENERGY_QUARTER.marksAtKilowatts.length - 1 && ' kW'}
+            </span>
+          ))}
+        </div>
+        <p className="quarter-card__left">Nog {minutesLeftInQuarter} min</p>
       </div>
-      <div className="quarter-bar" style={bar} aria-hidden>
-        <span className="quarter-bar__fill" />
-        <span className="quarter-bar__peak" style={{ left: `${shareOfBar(peakKilowatts) * 100}%` }} />
-      </div>
-      <div className="quarter-bar__marks" aria-hidden>
-        {ENERGY_QUARTER.marksAtKilowatts.map((kilowatts, markNumber) => (
-          <span key={kilowatts} style={{ left: `${shareOfBar(kilowatts) * 100}%` }}>
-            {kilowatts}
-            {markNumber === ENERGY_QUARTER.marksAtKilowatts.length - 1 && ' kW'}
-          </span>
-        ))}
-      </div>
-      <p className="quarter-card__left">Nog {minutesLeftInQuarter} min</p>
-    </div>
+      {isSheetOpen && <CapacitySheet hass={hass} onClose={() => setIsSheetOpen(false)} />}
+    </>
   );
 }
 

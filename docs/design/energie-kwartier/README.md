@@ -5,6 +5,8 @@ The capaciteitstarief on the [Energie](../nav-categories/README.md) page, under 
 > ✅ **Approved (K1, colours V2) and built** (3 November). Don't change proportions or behaviour without asking first.
 >
 > Code: `QuarterPeak.tsx` in `src/components/energy/`, `ENERGY_QUARTER` in `src/config/energy.ts`, styles under "Energie: Dit kwartier" in `src/styles.css`.
+>
+> **A tap opens the capaciteitstarief over the year** ([energie-capaciteit](../energie-capaciteit/README.md)). How that's shown on the card isn't decided yet.
 
 The options (K1: a bar with the month's peak, K2: a ring, K3: the last quarter-hours as bars): [`options.png`](./options.png) ([`options.html`](./options.html)). The colour bands, first hard: [`bands.png`](./bands.png) ([`bands.html`](./bands.html)), then blending, V1 and V2: [`mockup.png`](./mockup.png) ([`mockup.html`](./mockup.html)). As built (dev mode, mock values), normal and high:
 

@@ -1,0 +1,101 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Capaciteitstarief</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,390px);gap:28px}
+.cap{min-height:110px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--accent:#d97757;--pink:#d55181;--green:#6bab3e;
+position:relative;width:390px;border-radius:44px 44px 0 0;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:26px 24px 0}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kicker{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+h1{margin:6px 0 14px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:34px}
+.tabs{display:flex;gap:6px;margin:0 0 14px}.tab{padding:8px 14px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);color:var(--muted);font-size:14px;font-weight:500}
+.tab.on{background:rgba(217,119,87,.18);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(217,119,87,.45)}
+.card{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:14px 16px 12px;overflow:hidden}
+.lbl{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}.lbl i{width:8px;height:8px;border-radius:50%;background:var(--pink)}
+.big{font-size:40px;font-weight:600;letter-spacing:-.01em;color:var(--pink)}.big small{font-size:15px;color:var(--muted);font-weight:500;margin-left:3px}
+.bars{display:block;width:calc(100% + 32px);margin:6px -16px 0}
+.axis{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px}
+.q{position:relative;border-top:1px solid var(--border);margin:12px -16px 0;padding:12px 16px 0}
+.qf{display:flex;justify-content:space-between}.qf p{margin:0;font-size:13px;color:var(--muted)}.qf strong{display:flex;align-items:center;gap:6px;color:var(--text);font-size:22px;margin-top:2px}.qf .r strong{justify-content:flex-end}.qf .r{text-align:right}
+.qf strong small{font-size:13px;color:var(--muted);font-weight:500}.qf strong i{width:8px;height:8px;border-radius:50%}
+.qbar{position:relative;height:10px;margin:14px 0 6px}.qbar:before{content:'';position:absolute;inset:0;border-radius:5px;background:linear-gradient(90deg,#6bab3e 37%,#e8913a 62%,#b42318 87%);opacity:.25}
+.qbar b{position:absolute;left:0;top:0;bottom:0;width:15%;border-radius:5px;background:#6bab3e}.qbar u{position:absolute;left:45%;top:-5px;bottom:-5px;width:2px;background:#f5f4ef}
+.marks{position:relative;height:14px;font-size:11px;color:var(--muted)}.marks span{position:absolute;transform:translateX(-50%)}
+.qleft{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted);margin-top:4px}
+.chev{display:inline-flex;align-items:center;gap:2px;color:var(--muted)}.chev svg{width:14px;height:14px}
+.info{position:absolute;right:12px;top:10px;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;color:var(--muted);background:rgba(245,244,239,.06)}
+.info svg{width:15px;height:15px}
+.linkrow{display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--border);margin:12px -16px -12px;padding:12px 16px;font-size:13px;color:var(--muted)}
+.linkrow strong{color:var(--text);font-weight:600}
+.pressed{outline:2px dashed rgba(217,119,87,.7);outline-offset:-4px;border-radius:12px}
+.tip{position:absolute;font-size:11px;font-weight:600;color:#d97757;background:rgba(217,119,87,.15);padding:2px 7px;border-radius:999px}
+
+/* sheet */
+.backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+.sheet{position:absolute;left:0;right:0;bottom:0;border-radius:24px 24px 0 0;background:var(--surface);box-shadow:0 -1px 0 var(--border);padding:0 20px 28px}
+.grab{display:flex;justify-content:center;padding:10px 0 8px}.grab i{width:36px;height:5px;border-radius:3px;background:rgba(245,244,239,.25)}
+.stitle{margin:4px 0 2px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:24px}
+.ssub{margin:0 0 14px;font-size:13px;color:var(--muted);line-height:1.4}
+.figs{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fig{border-radius:14px;background:rgba(245,244,239,.04);padding:10px 12px}.fig p{margin:0;font-size:12px;color:var(--muted)}
+.fig strong{display:block;font-size:22px;font-weight:600;margin-top:2px}.fig strong small{font-size:12px;color:var(--muted);font-weight:500;margin-left:2px}
+.fig em{display:block;font-style:normal;font-size:11px;color:var(--muted);margin-top:2px}
+.sec{margin:18px 0 6px;font-size:12px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+svg.chart{display:block;width:100%}
+.months{display:grid;grid-template-columns:repeat(12,1fr);font-size:10px;color:var(--muted);text-align:center;margin-top:4px}.months .now{color:var(--text);font-weight:700}
+.legend{display:flex;gap:14px;font-size:11px;color:var(--muted);margin-top:8px}.legend span{display:flex;align-items:center;gap:5px}
+.explain{margin:0;padding:0;list-style:none;font-size:13px;line-height:1.45;color:var(--text)}
+.explain li{display:flex;gap:10px;padding:8px 0;border-top:1px solid var(--border)}.explain li:first-child{border-top:0}
+.explain b{flex:none;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:11px;background:rgba(245,244,239,.08);color:var(--muted)}
+.explain span small{display:block;color:var(--muted);font-size:12px}
+.acc{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border);font-size:14px}
+.acc svg{width:14px;height:14px;color:var(--muted)}
+.callout{border-radius:14px;padding:10px 12px;background:rgba(107,171,62,.12);font-size:13px;line-height:1.4;margin-top:10px}.callout strong{font-weight:600}
+</style></head><body></body>
+<script>
+const svg=(inner,c='i')=>`<svg class="${c}" viewBox="0 0 24 24">${inner}</svg>`;
+const chevron=svg('<path d="M9 6l6 6-6 6"/>'), down=svg('<path d="M6 9l6 6 6-6"/>'), infoIcon=svg('<circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/>');
+const NET=[310,280,260,180,90,140,220,320,420,510,380,175];
+function bars(values){const W=358,H=56,max=Math.max(...values)*1.1,slot=W/values.length,width=slot*.62;
+ return `<svg class="bars" viewBox="0 0 ${W} ${H}" height="${H}"><line x1="0" x2="${W}" y1="${H-.5}" y2="${H-.5}" stroke="rgba(245,244,239,.16)"/>${values.map((v,i)=>{const h=v/max*H;return `<rect x="${(i*slot+(slot-width)/2).toFixed(1)}" y="${(H-h).toFixed(1)}" width="${width.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="#d55181"/>`}).join('')}</svg>`;}
+const figures=`<div class="qf"><div><p>Gemiddeld dit kwartier</p><strong><i style="background:#6bab3e"></i>1,2<small>kW</small></strong></div><div class="r"><p>Piek deze maand</p><strong><i style="background:#8fae3c"></i>3,6<small>kW</small></strong></div></div><div class="qbar"><b></b><u></u></div><div class="marks"><span style="left:50%">4</span><span style="left:75%">6 kW</span></div>`;
+const nowTop=`<span class="lbl"><i></i>Van het net</span><div class="big">175<small>W</small></div>${bars(NET)}<div class="axis"><span>1 uur geleden</span><span>nu</span></div>`;
+const tabs=`<div class="tabs"><span class="tab on">Stroom</span><span class="tab">Gas</span><span class="tab">Water</span></div>`;
+const head=`<div class="in"><div class="kicker">Categorie</div><h1>Energie</h1>${tabs}`;
+const L1=`${head}<div class="card">${nowTop}<div class="q pressed">${figures}<div class="qleft"><span>Nog 8 min</span><span class="chev">Jaaroverzicht ${chevron}</span></div></div></div></div>`;
+const L2=`${head}<div class="card">${nowTop}<div class="q">${figures}<div class="qleft"><span>Nog 8 min</span><span class="info" style="position:static;outline:2px dashed rgba(217,119,87,.7);outline-offset:2px">${infoIcon}</span></div></div></div></div>`;
+const L3=`${head}<div class="card">${nowTop}<div class="q">${figures}<div class="qleft"><span>Nog 8 min</span></div></div><div class="linkrow pressed"><span>Capaciteitstarief · gem. 12 maanden <strong>3,6 kW</strong></span><span class="chev">${chevron}</span></div></div></div>`;
+
+// The months: peaks in kW, the last is this month (still running).
+const MONTHS=['dec','jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov'];
+const PEAKS=[4.1,5.2,4.8,3.9,3.1,2.1,1.9,2.6,2.9,3.3,4.4,3.6];
+const MIN=2.5, counted=PEAKS.map(p=>Math.max(MIN,p)), avg=counted.reduce((s,v)=>s+v,0)/12, EURO_PER_KW=55;
+const nl=(v,d=1)=>v.toLocaleString('nl-BE',{minimumFractionDigits:d,maximumFractionDigits:d});
+const colorAt=(kw)=>kw<=3?'#6bab3e':kw<=5?'#e8913a':'#b42318';
+function monthChart(){const W=350,H=120,top=6,slot=W/12,width=slot*.62,y=v=>H-(v/top)*H;
+ return `<svg class="chart" viewBox="0 0 ${W} ${H}" height="${H}">
+ <rect x="0" y="${y(MIN)}" width="${W}" height="${H-y(MIN)}" fill="rgba(245,244,239,.05)"/>
+ <line x1="0" x2="${W}" y1="${y(MIN)}" y2="${y(MIN)}" stroke="rgba(245,244,239,.3)"/>
+ ${PEAKS.map((p,i)=>`<rect x="${(i*slot+(slot-width)/2).toFixed(1)}" y="${y(p).toFixed(1)}" width="${width.toFixed(1)}" height="${(H-y(p)).toFixed(1)}" rx="2" fill="${colorAt(p)}" opacity="${i===11?1:.6}" ${i===11?'stroke="#f5f4ef" stroke-dasharray="2 2" stroke-width="1"':''}/>`).join('')}
+ <line x1="0" x2="${W}" y1="${y(avg)}" y2="${y(avg)}" stroke="#f5f4ef" stroke-dasharray="3 3" opacity=".8"/>
+ <rect x="0" y="${y(avg)-16}" width="62" height="14" rx="4" fill="#30302e"/><text x="4" y="${y(avg)-6}" font-size="10" fill="#f5f4ef">gem. ${nl(avg)} kW</text>
+ <text x="${slot*5+2}" y="${y(MIN)-4}" font-size="10" fill="#a6a39b">min. 2,5</text></svg>
+ <div class="months">${MONTHS.map((m,i)=>`<span class="${i===11?'now':''}">${m}</span>`).join('')}</div>`;}
+const figs=`<div class="figs"><div class="fig"><p>Gemiddelde 12 maanden</p><strong>${nl(avg)}<small>kW</small></strong><em>waarop je factuur rekent</em></div><div class="fig"><p>Kost per jaar</p><strong>≈ € ${Math.round(avg*EURO_PER_KW)}</strong><em>schatting, € ${EURO_PER_KW} per kW</em></div></div>`;
+const thisMonth=`<div class="sec">Deze maand</div><div class="figs"><div class="fig"><p>Piek tot nu</p><strong>3,6<small>kW</small></strong><em>do 14 nov, 18:15–18:30</em></div><div class="fig"><p>Maand nog</p><strong>16<small>dagen</small></strong><em>daarna begint een nieuwe piek</em></div></div>
+<div class="callout">Blijf je deze maand onder <strong>${nl(avg)} kW</strong>, dan daalt je gemiddelde. Elke kW minder piek deze maand scheelt ≈ <strong>€ ${nl(EURO_PER_KW/12,2).replace(/,00$/,'')}</strong> per jaar.</div>`;
+const explain=`<div class="sec">Hoe werkt het?</div><ul class="explain">
+<li><b>1</b><span>Elk kwartier meet de meter je gemiddelde vermogen.<small>Even de oven en de waterkoker samen is geen probleem; een kwartier lang wel.</small></span></li>
+<li><b>2</b><span>Het hoogste kwartier van de maand is je maandpiek.<small>Minstens 2,5 kW, ook als je lager blijft.</small></span></li>
+<li><b>3</b><span>Je factuur rekent met het gemiddelde van de laatste 12 maandpieken.<small>Eén hoge maand telt dus een jaar lang mee, voor 1/12.</small></span></li></ul>`;
+const legend=`<div class="legend"><span><svg width="10" height="10"><rect width="10" height="10" rx="2" fill="#e8913a" opacity=".6"/></svg>maandpiek</span><span><svg width="16" height="2"><line x1="0" x2="16" y1="1" y2="1" stroke="#f5f4ef" stroke-dasharray="3 3"/></svg>gemiddelde</span><span><svg width="10" height="10"><rect x=".5" y=".5" width="9" height="9" rx="2" fill="none" stroke="#f5f4ef" stroke-dasharray="2 2"/></svg>loopt nog</span></div>`;
+const S1=`${L1}<div class="backdrop"></div><div class="sheet"><div class="grab"><i></i></div><p class="stitle">Capaciteitstarief</p><p class="ssub">Je hoogste kwartier per maand, het laatste jaar.</p>${figs}<div class="sec">Maandpieken</div>${monthChart()}${legend}${explain}</div>`;
+const S2=`${L1}<div class="backdrop"></div><div class="sheet"><div class="grab"><i></i></div><p class="stitle">Capaciteitstarief</p><p class="ssub">Je hoogste kwartier per maand, het laatste jaar.</p>${figs}<div class="sec">Maandpieken</div>${monthChart()}${legend}${thisMonth}<div class="acc" style="margin-top:14px">Hoe werkt het? ${down}</div></div>`;
+const S=[
+ ['L1 · Het hele kwartier-deel, met "Jaaroverzicht ›"','Het onderste deel van de kaart (de cijfers, de balk en "Nog 8 min") is één knop. Rechts naast "Nog 8 min" staat "Jaaroverzicht ›", zodat je ziet dat het opent. Het oranje stippelkader toont alleen wat klikbaar is.',L1,780],
+ ['L2 · Een i-knopje','Een klein rond i-knopje rechts naast "Nog 8 min". Het minst zichtbaar, maar klein om op te tikken en het zegt "uitleg" eerder dan "meer cijfers".',L2,780],
+ ['L3 · Een eigen regel onderaan','Een regel onder de kaart: "Capaciteitstarief · gem. 12 maanden 3,6 kW ›". Toont meteen het cijfer waarop je factuur rekent, maar maakt de kaart een regel langer.',L3,780],
+ ['S1 · Sheet: cijfers, maanden, uitleg','Bovenaan het gemiddelde van 12 maanden en wat dat per jaar kost. Daaronder de 12 maandpieken (kleur zoals de balk; deze maand gestippeld omdat ze nog loopt), de grens van 2,5 kW en het gemiddelde. Onderaan in 3 stappen hoe het werkt.',S1,1060],
+ ['S2 · Sheet: plus "Deze maand", uitleg ingeklapt','Zoals S1, maar met "Deze maand": wanneer je piek was, hoeveel dagen nog, en wat een lagere piek oplevert. De uitleg zit ingeklapt onder "Hoe werkt het?".',S2,1060],
+];
+document.body.innerHTML=S.map(([t,sub,h,height])=>`<div><p class="cap">${t}<small>${sub}</small></p><div class="phone" style="height:${height}px">${h}</div></div>`).join('');
+</script></html>

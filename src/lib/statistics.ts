@@ -141,6 +141,79 @@ export async function fetchFiveMinuteStatistics(
   });
 }
 
+/** Local midnight on the 1st of the month, `monthsAgo` months back (0 = this month). */
+export function startOfMonth(monthsAgo: number) {
+  const firstOfMonth = new Date();
+  firstOfMonth.setHours(0, 0, 0, 0);
+  firstOfMonth.setDate(1);
+  firstOfMonth.setMonth(firstOfMonth.getMonth() - monthsAgo);
+  return firstOfMonth;
+}
+
+export interface MonthlyMaximum {
+  /** Local midnight on the 1st of the month, in ms. */
+  monthStart: number;
+  maximum: number;
+}
+
+/**
+ * A sensor's highest value per month, for this month and the
+ * `numberOfMonths - 1` before it, oldest first: HA's long-term statistics
+ * (`max`). This month's is as far as HA's last full hour. A month without
+ * statistics is missing.
+ */
+export async function fetchMonthlyMaximums(
+  hass: HomeAssistant,
+  entityId: string,
+  numberOfMonths: number,
+): Promise<MonthlyMaximum[]> {
+  const statisticsPerEntity = await hass.callWS<
+    Record<string, Array<{ start: number | string; max?: number | null }>> | undefined
+  >({
+    type: 'recorder/statistics_during_period',
+    start_time: startOfMonth(numberOfMonths - 1).toISOString(),
+    statistic_ids: [entityId],
+    period: 'month',
+    types: ['max'],
+  });
+
+  const monthlyRows = statisticsPerEntity?.[entityId] ?? [];
+  return monthlyRows
+    .filter((monthlyRow) => isNumber(monthlyRow.max))
+    .map((monthlyRow) => ({
+      monthStart: typeof monthlyRow.start === 'number' ? monthlyRow.start : Date.parse(monthlyRow.start),
+      maximum: monthlyRow.max as number,
+    }));
+}
+
+/**
+ * When the sensor got its current value this month, from HA's history, in ms;
+ * undefined when the history doesn't go back far enough to tell (HA keeps it
+ * for about 10 days), or the value hasn't changed this month.
+ */
+export async function fetchWhenValueWasReachedThisMonth(hass: HomeAssistant, entityId: string): Promise<number | undefined> {
+  const historyPerEntity = await hass.callWS<Record<string, Array<{ s: string; lu: number; lc?: number }>> | undefined>({
+    type: 'history/history_during_period',
+    start_time: startOfMonth(0).toISOString(),
+    entity_ids: [entityId],
+    minimal_response: true,
+    no_attributes: true,
+    significant_changes_only: false,
+  });
+
+  // Without "unavailable" and the like (e.g. while HA restarts), so the value
+  // after it doesn't look new.
+  const numberStates = (historyPerEntity?.[entityId] ?? []).filter((historyState) => !Number.isNaN(Number.parseFloat(historyState.s)));
+  const currentValue = numberStates.at(-1)?.s;
+  // The same value can be recorded more than once in a row; the first of the last run is when it was reached.
+  const statesNewestFirst = [...numberStates].reverse();
+  const otherValueNewestFirstIndex = statesNewestFirst.findIndex((historyState) => historyState.s !== currentValue);
+  if (otherValueNewestFirstIndex === -1) return undefined;
+
+  const reachedState = statesNewestFirst[otherValueNewestFirstIndex - 1];
+  return (reachedState.lc ?? reachedState.lu) * 1000;
+}
+
 /** A sensor's state as a number, or undefined when it's missing or unavailable. */
 export function numberState(states: HassEntities, entityId: string): number | undefined {
   const numberFromEntity = Number.parseFloat(states[entityId]?.state ?? '');

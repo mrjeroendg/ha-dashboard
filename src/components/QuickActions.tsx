@@ -56,20 +56,18 @@ export function QuickActions({ hass }: Props) {
   return (
     <section>
       <h2 className="section-title">Snel</h2>
-      <div className="snel-dock">
-        <div className="snel-dock__window" ref={pager.ref} onScroll={pager.onScroll}>
-          {pages.map((page, pageNumber) => (
-            <div key={pageNumber} className="snel-dock__page">
-              {page.map((shortcut) =>
-                shortcut.kind === 'sheet' ? (
-                  <SheetTile key={shortcut.key} name={shortcut.name} icon={shortcut.icon} onOpen={() => setOpenSheetKey(shortcut.key)} />
-                ) : (
-                  <ShortcutTile key={shortcut.key} hass={hass} shortcutRow={shortcut.row} />
-                ),
-              )}
-            </div>
-          ))}
-        </div>
+      <div className="snel-dock__window" ref={pager.ref} onScroll={pager.onScroll}>
+        {pages.map((page, pageNumber) => (
+          <div key={pageNumber} className="snel-dock__page">
+            {page.map((shortcut) =>
+              shortcut.kind === 'sheet' ? (
+                <SheetTile key={shortcut.key} name={shortcut.name} icon={shortcut.icon} onOpen={() => setOpenSheetKey(shortcut.key)} />
+              ) : (
+                <ShortcutTile key={shortcut.key} hass={hass} shortcutRow={shortcut.row} />
+              ),
+            )}
+          </div>
+        ))}
       </div>
       {pages.length > 1 && (
         <div className="page-dots page-dots--small" aria-hidden>

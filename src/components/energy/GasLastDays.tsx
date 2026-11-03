@@ -13,7 +13,8 @@ const REFRESH_DAYS_EVERY_MILLISECONDS = 5 * 60_000;
 
 /**
  * The "Gas" chip on the Energie page (docs/design/energie-gas): today's gas in
- * m³, with the 13 days before as bars and their average, as a day tile.
+ * m³ and in euros, with the 13 days before as bars and their average, as a
+ * day tile.
  */
 export function GasLastDays({ hass }: Props) {
   const gasTodayCubicMetres = numberState(hass.states, ENERGY_GAS.gasToday);
@@ -34,6 +35,7 @@ export function GasLastDays({ hass }: Props) {
         unit="m³"
         decimals={2}
         previousDays={dailyTotalsPerSensor?.[ENERGY_GAS.gasToday]}
+        euros={gasTodayCubicMetres * ENERGY_GAS.euroPerCubicMetre}
       />
     </div>
   );

@@ -36,6 +36,10 @@ export const ENERGY_QUARTER = {
   marksAtKilowatts: [4, 6],
   /** The sheet (docs/design/energie-capaciteit): the bill takes the average of this many monthly peaks. */
   monthsInAverage: 12,
+  /** The template sensor that keeps the earlier months' peaks, in its `peaks` attribute. */
+  monthlyPeaks: Entity.ELECTRICITY_MONTHLY_PEAKS,
+  /** A month the template sensor doesn't have (yet), in W. */
+  assumedPeakWattsForMissingMonth: 3500,
   /** Every monthly peak counts as at least this much. */
   minimumKilowatts: 2.5,
   /** Fluvius Imewo (around Gent), 2026, per kW of the average per year; billed per month (÷ 12). */

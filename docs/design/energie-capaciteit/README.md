@@ -4,7 +4,7 @@ A bottom sheet with the capaciteitstarief over the year, opened from "Dit kwarti
 
 > ✅ **Sheet approved and built.** **How it opens isn't decided yet:** the owner didn't like L1–L3 in the options. For now a tap anywhere on the quarter-hour part opens it, with nothing on the card to show it. Don't change proportions or behaviour without asking first.
 >
-> Code: `CapacitySheet.tsx` and `QuarterPeak.tsx` in `src/components/energy/`, `ENERGY_QUARTER` in `src/config/energy.ts`, `fetchMonthlyMaximums` and `fetchWhenValueWasReachedThisMonth` in `src/lib/statistics.ts`, styles under "Capaciteitstarief" in `src/styles.css`.
+> Code: `CapacitySheet.tsx` and `QuarterPeak.tsx` in `src/components/energy/`, `ENERGY_QUARTER` in `src/config/energy.ts`, `fetchWhenValueWasReachedThisMonth` in `src/lib/statistics.ts`, the template sensor `sensor.p1_maandpieken` (below), styles under "Capaciteitstarief" in `src/styles.css`.
 
 The approved sheet: [`mockup.png`](./mockup.png) ([`mockup.html`](./mockup.html)). The first options for opening it (L1–L3, none chosen) and the first sheets (S1, S2): [`options.png`](./options.png) ([`options.html`](./options.html)). As built (dev mode, mock values):
 
@@ -29,7 +29,39 @@ All numbers with **two decimals** (the owner's choice), except the days.
 
 ## Where the numbers come from
 
-- **The earlier months:** HA's monthly long-term statistics (`max`) of `sensor.p1_meter_peak_demand_current_month`, fetched again every 5 minutes. It needs a `state_class`, or HA keeps no statistics. A month without statistics is left out, and the average is over the months there are ("Gemiddelde 4 maanden").
+- **The earlier 11 months:** the template sensor `sensor.p1_maandpieken` (below), its `peaks` attribute: the peak in W per month (`"2026-10": 3400`). HA keeps a sensor's current state and attributes across restarts and the 10-day purge, so the list grows by itself. **A month it doesn't have counts as 3,5 kW** (`ENERGY_QUARTER.assumedPeakWattsForMissingMonth`), the owner's choice to keep it simple; it isn't shown any differently. Without the sensor, all 11 are 3,5 kW.
 - **This month:** the sensor's state.
 - **When the peak was reached:** HA's history of the same sensor this month, the first moment of its current value. HA keeps history about 10 days, so for an older peak there's no time. Whether the meter updates the peak during the quarter-hour or at its end isn't checked: at its end, the shown quarter-hour would be one too late.
 - **The chart:** ApexCharts keeps 30px free above the bars; `grid.padding.top: -22` takes most of it away.
+
+## The template sensor (in HA's `configuration.yaml`)
+
+On every change of the month's peak, it stores that value under the current month, and keeps the last 12 months. The peak only rises within a month, so the latest value is the month's peak; a reset that comes in a few minutes late corrects itself with the next value. "unavailable" and the like are skipped.
+
+```yaml
+template:
+  - trigger:
+      - trigger: state
+        entity_id: sensor.p1_meter_peak_demand_current_month
+    condition:
+      - condition: template
+        value_template: "{{ trigger.to_state.state | is_number }}"
+    sensor:
+      - name: P1 maandpieken
+        unique_id: p1_monthly_peaks
+        unit_of_measurement: W
+        state: "{{ trigger.to_state.state }}"
+        attributes:
+          peaks: >
+            {% set month = now().strftime('%Y-%m') %}
+            {% set peaks = this.attributes.peaks | default({}) %}
+            {% set merged = dict(peaks, **{month: trigger.to_state.state | float}) %}
+            {% set newest_months = (merged.keys() | list | sort)[-12:] %}
+            {% set kept = namespace(peaks={}) %}
+            {% for kept_month in newest_months %}
+              {% set kept.peaks = dict(kept.peaks, **{kept_month: merged[kept_month]}) %}
+            {% endfor %}
+            {{ kept.peaks }}
+```
+
+Earlier months can be added by hand once (e.g. from mijn.fluvius.be), but HA's attributes can't be edited in the UI; that would need an extra step, so for now missing months are 3,5 kW.

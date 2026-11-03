@@ -6,7 +6,7 @@ import 'apexcharts/bar';
 import 'apexcharts/features/annotations';
 import { ENERGY_QUARTER } from '../../config/energy';
 import { usePeriodicFetch } from '../../hooks/usePeriodicFetch';
-import { fetchMonthlyMaximums, fetchWhenValueWasReachedThisMonth, numberState, startOfMonth } from '../../lib/statistics';
+import { fetchWhenValueWasReachedThisMonth, numberState, startOfMonth } from '../../lib/statistics';
 import type { HomeAssistant } from '../../types/hass';
 import { BottomSheet } from '../BottomSheet';
 
@@ -15,8 +15,8 @@ interface Props {
   onClose(): void;
 }
 
-/** The months before this one don't change; this month's peak comes from the state. */
-const REFRESH_MONTHS_EVERY_MILLISECONDS = 5 * 60_000;
+/** When the peak was reached only changes with the peak itself; this is plenty. */
+const REFRESH_PEAK_MOMENT_EVERY_MILLISECONDS = 5 * 60_000;
 const QUARTER_HOUR = 15 * 60_000;
 const CHART_HEIGHT = 140;
 /** The earlier months' bars: their colour at 60% ("99" in hex); this month's is the full colour. */
@@ -37,87 +37,73 @@ interface MonthlyPeak {
  */
 export function CapacitySheet({ hass, onClose }: Props) {
   const peakThisMonthWatts = numberState(hass.states, ENERGY_QUARTER.monthPeak);
-  const monthlyMaximums = usePeriodicFetch(
-    () => fetchMonthlyMaximums(hass, ENERGY_QUARTER.monthPeak, ENERGY_QUARTER.monthsInAverage),
-    ENERGY_QUARTER.monthPeak,
-    REFRESH_MONTHS_EVERY_MILLISECONDS,
-  );
   const peakReachedAt = usePeriodicFetch(
     () => fetchWhenValueWasReachedThisMonth(hass, ENERGY_QUARTER.monthPeak),
     `${ENERGY_QUARTER.monthPeak} ${peakThisMonthWatts}`,
-    REFRESH_MONTHS_EVERY_MILLISECONDS,
+    REFRESH_PEAK_MOMENT_EVERY_MILLISECONDS,
   );
+  if (peakThisMonthWatts === undefined) return null;
 
-  const thisMonthStart = startOfMonth(0).getTime();
-  const earlierMonthlyPeaks: MonthlyPeak[] = (monthlyMaximums ?? [])
-    .filter((monthlyMaximum) => monthlyMaximum.monthStart < thisMonthStart)
-    .map((monthlyMaximum) => ({
-      monthStart: monthlyMaximum.monthStart,
-      kilowatts: monthlyMaximum.maximum / 1000,
-    }));
-  const thisMonthPeak: MonthlyPeak[] =
-    peakThisMonthWatts === undefined ? [] : [{ monthStart: thisMonthStart, kilowatts: peakThisMonthWatts / 1000 }];
-  const monthlyPeaks = [...earlierMonthlyPeaks, ...thisMonthPeak];
+  const savedPeakWattsPerMonth = savedMonthlyPeaks(hass);
+  const earlierMonthlyPeaks: MonthlyPeak[] = Array.from(
+    { length: ENERGY_QUARTER.monthsInAverage - 1 },
+    (_unused, monthNumber) => {
+      const monthStart = startOfMonth(ENERGY_QUARTER.monthsInAverage - 1 - monthNumber);
+      const savedPeakWatts = savedPeakWattsPerMonth[monthKey(monthStart)];
+      const peakWatts = savedPeakWatts ?? ENERGY_QUARTER.assumedPeakWattsForMissingMonth;
+      return { monthStart: monthStart.getTime(), kilowatts: peakWatts / 1000 };
+    },
+  );
+  const thisMonthPeak: MonthlyPeak = { monthStart: startOfMonth(0).getTime(), kilowatts: peakThisMonthWatts / 1000 };
+  const monthlyPeaks = [...earlierMonthlyPeaks, thisMonthPeak];
 
   const countedKilowatts = monthlyPeaks.map((monthlyPeak) => Math.max(ENERGY_QUARTER.minimumKilowatts, monthlyPeak.kilowatts));
   const averageKilowatts = countedKilowatts.reduce((sum, kilowatts) => sum + kilowatts, 0) / countedKilowatts.length;
   const euroPerKilowattPerMonth = ENERGY_QUARTER.euroPerKilowattPerYear / 12;
   const costThisMonth = averageKilowatts * euroPerKilowattPerMonth;
-  const numberOfMonths = monthlyPeaks.length;
-  const hasPeaks = numberOfMonths > 0;
 
   return (
     <BottomSheet label="Capaciteitstarief" className="capacity-sheet" onClose={onClose}>
       <h2 className="capacity-sheet__title">Capaciteitstarief</h2>
       <p className="capacity-sheet__subtitle">Je hoogste kwartier per maand, het laatste jaar.</p>
-      {hasPeaks && (
-        <>
-          <div className="capacity-sheet__figures">
-            <Figure
-              label={`Gemiddelde ${numberOfMonths} ${numberOfMonths === 1 ? 'maand' : 'maanden'}`}
-              value={twoDecimals(averageKilowatts)}
-              unit="kW"
-            />
-            <Figure label="Je betaalt nu per maand" value={`≈ ${euros(costThisMonth)}`} />
-          </div>
+      <div className="capacity-sheet__figures">
+        <Figure label={`Gemiddelde ${ENERGY_QUARTER.monthsInAverage} maanden`} value={twoDecimals(averageKilowatts)} unit="kW" />
+        <Figure label="Je betaalt nu per maand" value={`≈ ${euros(costThisMonth)}`} />
+      </div>
 
-          <h3 className="capacity-sheet__heading">Maandpieken</h3>
-          <MonthlyPeaksChart monthlyPeaks={monthlyPeaks} averageKilowatts={averageKilowatts} />
+      <h3 className="capacity-sheet__heading">Maandpieken</h3>
+      <MonthlyPeaksChart monthlyPeaks={monthlyPeaks} averageKilowatts={averageKilowatts} />
 
-          <h3 className="capacity-sheet__heading">Deze maand</h3>
-          <div className="capacity-sheet__figures">
-            {thisMonthPeak.length > 0 && (
-              <Figure
-                label="Piek tot nu"
-                value={twoDecimals(thisMonthPeak[0].kilowatts)}
-                unit="kW"
-                detail={peakReachedAt === undefined ? undefined : readableQuarterHour(peakReachedAt)}
-              />
-            )}
-            <Figure label="Maand nog" value={String(daysLeftInMonth())} unit={daysLeftInMonth() === 1 ? 'dag' : 'dagen'} />
-          </div>
+      <h3 className="capacity-sheet__heading">Deze maand</h3>
+      <div className="capacity-sheet__figures">
+        <Figure
+          label="Piek tot nu"
+          value={twoDecimals(thisMonthPeak.kilowatts)}
+          unit="kW"
+          detail={peakReachedAt === undefined ? undefined : readableQuarterHour(peakReachedAt)}
+        />
+        <Figure label="Maand nog" value={String(daysLeftInMonth())} unit={daysLeftInMonth() === 1 ? 'dag' : 'dagen'} />
+      </div>
 
-          <h3 className="capacity-sheet__heading">Wat kost deze maand?</h3>
-          <p className="capacity-sheet__intro">
-            Elke maand telt je hoogste kwartier, minstens {twoDecimals(ENERGY_QUARTER.minimumKilowatts)} kW. Je betaalt op het
-            gemiddelde van de laatste {ENERGY_QUARTER.monthsInAverage} maanden.
-          </p>
-          <ul className="capacity-sheet__calculation">
-            <li>
-              Gemiddelde van {numberOfMonths} {numberOfMonths === 1 ? 'maandpiek' : 'maandpieken'}
-              <strong>{twoDecimals(averageKilowatts)} kW</strong>
-            </li>
-            <li>
-              × tarief ({euros(ENERGY_QUARTER.euroPerKilowattPerYear)} per jaar ÷ 12)
-              <strong>{euros(euroPerKilowattPerMonth)} per kW</strong>
-            </li>
-            <li className="capacity-sheet__total">
-              Deze maand
-              <strong>≈ {euros(costThisMonth)}</strong>
-            </li>
-          </ul>
-        </>
-      )}
+      <h3 className="capacity-sheet__heading">Wat kost deze maand?</h3>
+      <p className="capacity-sheet__intro">
+        Elke maand telt je hoogste kwartier, minstens {twoDecimals(ENERGY_QUARTER.minimumKilowatts)} kW. Je betaalt op het
+        gemiddelde van de laatste {ENERGY_QUARTER.monthsInAverage} maanden.
+      </p>
+      <ul className="capacity-sheet__calculation">
+        <li>
+          Gemiddelde van {ENERGY_QUARTER.monthsInAverage} maandpieken
+          <strong>{twoDecimals(averageKilowatts)} kW</strong>
+        </li>
+        <li>
+          × tarief ({euros(ENERGY_QUARTER.euroPerKilowattPerYear)} per jaar ÷ 12)
+          <strong>{euros(euroPerKilowattPerMonth)} per kW</strong>
+        </li>
+        <li className="capacity-sheet__total">
+          Deze maand
+          <strong>≈ {euros(costThisMonth)}</strong>
+        </li>
+      </ul>
     </BottomSheet>
   );
 }
@@ -243,6 +229,23 @@ function MonthlyPeaksChart({ monthlyPeaks, averageKilowatts }: { monthlyPeaks: M
     </div>
   );
 }
+
+/**
+ * The peaks of the months before this one, in W by month ("2026-10"), as the
+ * template sensor "P1 maandpieken" keeps them in its `peaks` attribute
+ * (docs/design/energie-capaciteit). Empty while it doesn't exist.
+ */
+function savedMonthlyPeaks(hass: HomeAssistant): Record<string, number | undefined> {
+  const peaksAttribute = hass.states[ENERGY_QUARTER.monthlyPeaks]?.attributes.peaks;
+  const isPeaksObject = typeof peaksAttribute === 'object' && peaksAttribute !== null;
+  if (!isPeaksObject) return {};
+
+  const numberPeaks = Object.entries(peaksAttribute).map(([month, watts]) => [month, Number(watts)] as const);
+  return Object.fromEntries(numberPeaks.filter(([_month, watts]) => !Number.isNaN(watts)));
+}
+
+/** "2026-11", the way the template sensor names a month. */
+const monthKey = (monthStart: Date) => `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, '0')}`;
 
 /** The quarter-hour bar's colour band a peak falls in: green up to 3 kW, orange up to 5, then red. */
 function colorFor(kilowatts: number): string {

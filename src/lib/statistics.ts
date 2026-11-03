@@ -150,42 +150,6 @@ export function startOfMonth(monthsAgo: number) {
   return firstOfMonth;
 }
 
-export interface MonthlyMaximum {
-  /** Local midnight on the 1st of the month, in ms. */
-  monthStart: number;
-  maximum: number;
-}
-
-/**
- * A sensor's highest value per month, for this month and the
- * `numberOfMonths - 1` before it, oldest first: HA's long-term statistics
- * (`max`). This month's is as far as HA's last full hour. A month without
- * statistics is missing.
- */
-export async function fetchMonthlyMaximums(
-  hass: HomeAssistant,
-  entityId: string,
-  numberOfMonths: number,
-): Promise<MonthlyMaximum[]> {
-  const statisticsPerEntity = await hass.callWS<
-    Record<string, Array<{ start: number | string; max?: number | null }>> | undefined
-  >({
-    type: 'recorder/statistics_during_period',
-    start_time: startOfMonth(numberOfMonths - 1).toISOString(),
-    statistic_ids: [entityId],
-    period: 'month',
-    types: ['max'],
-  });
-
-  const monthlyRows = statisticsPerEntity?.[entityId] ?? [];
-  return monthlyRows
-    .filter((monthlyRow) => isNumber(monthlyRow.max))
-    .map((monthlyRow) => ({
-      monthStart: typeof monthlyRow.start === 'number' ? monthlyRow.start : Date.parse(monthlyRow.start),
-      maximum: monthlyRow.max as number,
-    }));
-}
-
 /**
  * When the sensor got its current value this month, from HA's history, in ms;
  * undefined when the history doesn't go back far enough to tell (HA keeps it

@@ -47,6 +47,45 @@ export async function fetchDailyTotals(
   );
 }
 
+export interface DailyTotal {
+  /** Local midnight of the day, in ms. */
+  dayStart: number;
+  total: number;
+}
+
+/**
+ * Like `fetchDailyTotals`, but each total with the day it belongs to, for a
+ * chart that labels its days (docs/design/day-tile). Oldest first; a day
+ * without statistics is missing.
+ */
+export async function fetchDailyTotalsWithDays(
+  hass: HomeAssistant,
+  entityIds: string[],
+  numberOfDays: number,
+): Promise<Record<string, DailyTotal[]>> {
+  const statisticsPerEntity = await hass.callWS<Record<string, StatisticsRow[]> | undefined>({
+    type: 'recorder/statistics_during_period',
+    start_time: midnight(numberOfDays).toISOString(),
+    end_time: midnight(0).toISOString(),
+    statistic_ids: entityIds,
+    period: 'day',
+    types: ['change'],
+  });
+
+  return Object.fromEntries(
+    entityIds.map((entityId) => {
+      const dailyRows = statisticsPerEntity?.[entityId] ?? [];
+      const dailyTotals = dailyRows
+        .filter((dailyRow) => isNumber(dailyRow.change))
+        .map((dailyRow) => ({
+          dayStart: typeof dailyRow.start === 'number' ? dailyRow.start : Date.parse(dailyRow.start),
+          total: dailyRow.change as number,
+        }));
+      return [entityId, dailyTotals];
+    }),
+  );
+}
+
 /** The highest power since midnight, from HA's statistics; undefined when HA has none yet. */
 export async function fetchPeakToday(hass: HomeAssistant, powerEntityId: string): Promise<number | undefined> {
   const statisticToday = await hass.callWS<{ max?: number | null } | undefined>({

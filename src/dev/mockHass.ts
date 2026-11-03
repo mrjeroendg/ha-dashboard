@@ -333,11 +333,18 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     if (msg.type === 'recorder/statistics_during_period') {
       const statisticIds = msg.statistic_ids as string[];
       const dayLength = 24 * 3600_000;
+      const firstDayStart = Date.parse(String(msg.start_time));
+      const numberOfDays = Math.round((Date.parse(String(msg.end_time)) - firstDayStart) / dayLength);
+      // As many days as asked: the 6 totals repeat, the last one always being yesterday's.
       return Object.fromEntries(
-        statisticIds.map((statisticId) => [
-          statisticId,
-          (DAILY_TOTALS[statisticId] ?? []).map((change, dayIndex) => ({ start: Date.now() - (6 - dayIndex) * dayLength, change })),
-        ]),
+        statisticIds.map((statisticId) => {
+          const totals = DAILY_TOTALS[statisticId] ?? [];
+          const days = totals.length === 0 ? [] : Array.from({ length: numberOfDays }, (_unused, dayIndex) => ({
+            start: firstDayStart + dayIndex * dayLength,
+            change: totals[totals.length - 1 - ((numberOfDays - 1 - dayIndex) % totals.length)],
+          }));
+          return [statisticId, days];
+        }),
       ) as T;
     }
     if (msg.type === 'recorder/statistic_during_period') return { max: 2400 } as T;

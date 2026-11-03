@@ -40,8 +40,8 @@ export const ENERGY_TODAY = {
   takenFromGrid: Entity.ELECTRICITY_CONSUMPTION_TODAY,
   /** Fed back to the grid since midnight. */
   fedBackToGrid: Entity.ELECTRICITY_PRODUCTION_TODAY,
-  /** The bar compares today with the average of this many days before it. */
-  daysInAverage: 7,
+  /** The chart shows this many days before today, plus today; the dashed line is their average. */
+  previousDays: 13,
   /**
    * € per kWh, for "≈ € 1,45": what taking from the grid costs, and what
    * feeding back earns. The contract is dynamic (Eneco), so these are fixed

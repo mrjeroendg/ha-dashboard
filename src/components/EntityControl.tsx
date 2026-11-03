@@ -7,6 +7,7 @@ import { rowModel, type LightMember, turnOnLight, type RowOptions, type RGB } fr
 import type { MowerConfig } from '../config/rooms';
 import type { HomeAssistant } from '../types/hass';
 import { AircoSheet } from './AircoSheet';
+import { CameraRow } from './cameras/CameraRow';
 import { Icon, type IconName } from './Icon';
 import { LightSheet } from './LightSheet';
 import { MowerSheet } from './MowerSheet';
@@ -127,6 +128,10 @@ export function EntityControl({ entity, name, options = {}, myPosition, members,
 
   if (model.kind === 'mower') {
     return <MowerRow hass={hass} mower={entity} name={name} config={mower ?? {}} />;
+  }
+
+  if (model.kind === 'camera') {
+    return <CameraRow hass={hass} cameraEntity={entity} name={name} icon={icon ?? model.icon} />;
   }
 
   if (model.kind === 'climate' && model.run) {

@@ -1897,21 +1897,6 @@ a.pill-button { text-decoration: none; }
 
 /* ---------------------------------------------------------------- Snel (docs/design/snel-dock, D2) */
 
-/* Soft patches of colour behind the glass card. */
-.snel-dock { position: relative; }
-
-.snel-dock::before {
-  content: '';
-  position: absolute;
-  inset: -6px 10px;
-  border-radius: 26px;
-  background:
-    radial-gradient(circle at 20% 50%, rgba(217, 119, 87, 0.55), transparent 45%),
-    radial-gradient(circle at 80% 40%, rgba(122, 92, 255, 0.45), transparent 45%),
-    radial-gradient(circle at 55% 90%, rgba(57, 135, 229, 0.35), transparent 45%);
-  filter: blur(14px);
-}
-
 /* The glass card, which stays put: the pages slide inside it as one belt,
    and a swipe always lands on a whole page of five. */
 .snel-dock__window {
@@ -2074,6 +2059,20 @@ a.pill-button { text-decoration: none; }
 }
 
 .camera-tile--large { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
+
+/* A camera in a room (docs/design/room-camera, B): the still image under the
+   name, lined up with it (36px icon tile + 14px gap), like a cover's strip. */
+.camera-row { flex-wrap: wrap; row-gap: 10px; }
+
+.camera-row__image {
+  position: relative;
+  flex: 0 0 calc(100% - 50px);
+  margin-left: 50px;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #1b1c1d;
+}
 
 .camera-tile__image,
 .camera-live__media {

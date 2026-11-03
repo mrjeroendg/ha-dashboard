@@ -2,7 +2,7 @@
 
 What the P1 meter counted since midnight, on the [Energie](../nav-categories/README.md) page under [Dit kwartier](../energie-kwartier/README.md). Dark mode only.
 
-> ✅ **Approved and built** (4 November): two tiles side by side, the **net** figures from the P1 meter, each as the shared [day tile](../day-tile/README.md) (C1): against an ordinary day and in euros. Don't change proportions or behaviour without asking first.
+> ✅ **Approved and built** (4 November): two tiles side by side, the **net** figures from the P1 meter, each as the shared [day tile](../day-tile/README.md) (D2): in euros and with the last 14 days. Don't change proportions or behaviour without asking first.
 >
 > Code: `TodaySoFar.tsx` in `src/components/energy/`, `ENERGY_TODAY` in `src/config/energy.ts`, `DayTile`, the `pylon` icon in `Icon.tsx`.
 
@@ -19,7 +19,7 @@ The earlier options (A: three tiles, B: a list, C: a balance, D: four tiles with
 
 - In kWh with two decimals, straight from the sensors' states (live). The colours are the ones of the Nu card.
 - **Net, not gross:** what went through the meter, not what the house used or the panels made (that would need Smappee).
-- **The bar:** today against the average of the **7 days before today** (`ENERGY_TODAY.daysInAverage`), from HA's daily statistics of the same sensors, fetched again every 5 minutes. No bar while HA has no statistics yet.
+- **Full width**, one under the other, named "Afgenomen vandaag" and "Teruggeleverd vandaag", each with **the 13 days before today and today as bars**, and their average as a dashed line ([day tile](../day-tile/README.md), D2). From the daily statistics of the same sensors in HA (`ENERGY_TODAY.previousDays`), fetched again every 5 minutes. No chart while HA has no statistics yet.
 - **"≈ € …":** today's kWh times `ENERGY_TODAY.euroPerKilowattHour`. **The prices in the config are placeholders (€0,30 and €0,04) until the owner fills in the ones from the bill.** An indication only: the bill also has fixed costs, the capaciteitstarief and taxes; a dynamic tariff isn't one price.
 - Without either sensor there's no section.
 - *No section title "Vandaag tot nu" any more:* since S2 ([energie-page](../energie-page/README.md)) the tiles sit under the card for now.

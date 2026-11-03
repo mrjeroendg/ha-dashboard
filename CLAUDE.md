@@ -48,5 +48,5 @@ Instructions for Claude when working in this repository.
   empty frame.
 - **Day totals:** a tile with a total for today (so far) uses the shared
   `DayTile` (docs/design/day-tile): name and icon, the value, and optionally
-  the bar against an ordinary day and the amount in euros. Never a tile of its
-  own for this.
+  the amount in euros and the days before today as bars with their average.
+  Never a tile of its own for this.

@@ -95,7 +95,7 @@ export enum Entity {
   ELECTRICITY_POWER = 'sensor.p1_meter_power',
   ELECTRICITY_AVERAGE_DEMAND_THIS_QUARTER = 'sensor.p1_meter_average_demand',
   ELECTRICITY_PEAK_DEMAND_THIS_MONTH = 'sensor.p1_meter_peak_demand_current_month',
-  ELECTRICITY_MONTHLY_PEAKS = 'sensor.p1_maandpieken',
+  ELECTRICITY_MONTHLY_PEAKS = 'input_text.p1_maandpieken',
   ELECTRICITY_CONSUMPTION_TODAY = 'sensor.p1_meter_energy_consumption_daily',
   ELECTRICITY_PRODUCTION_TODAY = 'sensor.p1_meter_energy_production_daily',
   SOLAR_PRODUCTION_TODAY = 'sensor.garage_smappee_total_production_today',

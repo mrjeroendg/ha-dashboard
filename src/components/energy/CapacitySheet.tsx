@@ -232,19 +232,25 @@ function MonthlyPeaksChart({ monthlyPeaks, averageKilowatts }: { monthlyPeaks: M
 
 /**
  * The peaks of the months before this one, in W by month ("2026-10"), as the
- * template sensor "P1 maandpieken" keeps them in its `peaks` attribute
- * (docs/design/energie-capaciteit). Empty while it doesn't exist.
+ * text helper "P1 maandpieken" keeps them, as JSON (docs/design/energie-capaciteit).
+ * Empty while it doesn't exist or holds something else.
  */
 function savedMonthlyPeaks(hass: HomeAssistant): Record<string, number | undefined> {
-  const peaksAttribute = hass.states[ENERGY_QUARTER.monthlyPeaks]?.attributes.peaks;
-  const isPeaksObject = typeof peaksAttribute === 'object' && peaksAttribute !== null;
+  const peaksText = hass.states[ENERGY_QUARTER.monthlyPeaks]?.state ?? '';
+  let peaksFromText: unknown;
+  try {
+    peaksFromText = JSON.parse(peaksText);
+  } catch {
+    return {};
+  }
+  const isPeaksObject = typeof peaksFromText === 'object' && peaksFromText !== null;
   if (!isPeaksObject) return {};
 
-  const numberPeaks = Object.entries(peaksAttribute).map(([month, watts]) => [month, Number(watts)] as const);
+  const numberPeaks = Object.entries(peaksFromText).map(([month, watts]) => [month, Number(watts)] as const);
   return Object.fromEntries(numberPeaks.filter(([_month, watts]) => !Number.isNaN(watts)));
 }
 
-/** "2026-11", the way the template sensor names a month. */
+/** "2026-11", the way the automation names a month. */
 const monthKey = (monthStart: Date) => `${monthStart.getFullYear()}-${String(monthStart.getMonth() + 1).padStart(2, '0')}`;
 
 /** The quarter-hour bar's colour band a peak falls in: green up to 3 kW, orange up to 5, then red. */

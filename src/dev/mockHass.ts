@@ -82,8 +82,8 @@ function baseStates(): HassEntities {
     entity('sensor.p1_meter_power', '196', { unit_of_measurement: 'W', device_class: 'power', state_class: 'measurement' }),
     entity('sensor.p1_meter_average_demand', '4600', { unit_of_measurement: 'W', device_class: 'power' }),
     entity('sensor.p1_meter_peak_demand_current_month', '3600', { unit_of_measurement: 'W', device_class: 'power' }),
-    // The template sensor with the earlier months' peaks (docs/design/energie-capaciteit); the oldest 3 are missing.
-    entity('sensor.p1_maandpieken', '3600', { unit_of_measurement: 'W', peaks: earlierMonthlyPeaks() }),
+    // The text helper with the earlier months' peaks (docs/design/energie-capaciteit); the oldest 3 are missing.
+    entity('input_text.p1_maandpieken', JSON.stringify(earlierMonthlyPeaks()), { max: 255 }),
     entity('sensor.p1_meter_energy_consumption_daily', '8.13', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.garage_smappee_total_production_today', '3.86', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.p1_meter_energy_production_daily', '1.24', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),

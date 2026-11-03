@@ -88,7 +88,7 @@ const number = (value: unknown, digits = 1) =>
 
 // ---------------------------------------------------------------- rows
 
-export type RowKind = 'toggle' | 'action' | 'climate' | 'cover' | 'mower' | 'readonly';
+export type RowKind = 'toggle' | 'action' | 'climate' | 'cover' | 'mower' | 'camera' | 'readonly';
 
 export interface RowModel {
   kind: RowKind;
@@ -336,6 +336,9 @@ export function rowModel(entity: HassEntity, { allowUnknownState, simple }: RowO
     // docs/design/lawn-mower: the whole row opens her sheet; the row's second line comes from lib/mower.
     case 'lawn_mower':
       return { kind: 'mower', icon: 'mower', on: entity.state === 'mowing', detail: readableState(entity) };
+    // docs/design/room-camera: the still image under the name; a tap opens the live sheet.
+    case 'camera':
+      return { kind: 'camera', icon: 'camera', on: false, detail: '' };
     // docs/design/airco-sheet: the switch toggles, the rest of the row opens the sheet.
     case 'climate':
       return {

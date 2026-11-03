@@ -2060,6 +2060,20 @@ a.pill-button { text-decoration: none; }
 
 .camera-tile--large { grid-column: 1 / -1; aspect-ratio: 16 / 9; }
 
+/* A camera in a room (docs/design/room-camera, B): the still image under the
+   name, lined up with it (36px icon tile + 14px gap), like a cover's strip. */
+.camera-row { flex-wrap: wrap; row-gap: 10px; }
+
+.camera-row__image {
+  position: relative;
+  flex: 0 0 calc(100% - 50px);
+  margin-left: 50px;
+  aspect-ratio: 16 / 9;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #1b1c1d;
+}
+
 .camera-tile__image,
 .camera-live__media {
   position: absolute;

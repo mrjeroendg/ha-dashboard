@@ -1,5 +1,6 @@
 import type { HassEntity } from 'home-assistant-js-websocket';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useStillImageRefresh } from '../../hooks/useStillImageRefresh';
 import { configuredCameras, stillImageUrl } from '../../lib/cameras';
 import { haptic } from '../../lib/haptic';
 import type { HomeAssistant } from '../../types/hass';
@@ -9,9 +10,6 @@ interface Props {
   hass: HomeAssistant;
 }
 
-/** How often the tiles fetch a new still image. */
-const TILE_REFRESH_MS = 10_000;
-
 /**
  * "Camera's" on Thuis (docs/design/cameras): the first camera as one large
  * 16:9 tile, the others as 4:3 tiles two by two. Fixed order, still images
@@ -20,16 +18,8 @@ const TILE_REFRESH_MS = 10_000;
 export function Cameras({ hass }: Props) {
   const cameras = configuredCameras(hass.states);
   const [openedCameraNumber, setOpenedCameraNumber] = useState<number | null>(null);
-  const [refreshStamp, setRefreshStamp] = useState(() => Date.now());
   const isSheetOpen = openedCameraNumber !== null;
-
-  useEffect(() => {
-    // Not behind the live sheet: there, only the camera in view streams.
-    if (isSheetOpen) return;
-
-    const refreshTimer = window.setInterval(() => setRefreshStamp(Date.now()), TILE_REFRESH_MS);
-    return () => window.clearInterval(refreshTimer);
-  }, [isSheetOpen]);
+  const refreshStamp = useStillImageRefresh(isSheetOpen);
 
   if (cameras.length === 0) return null;
 

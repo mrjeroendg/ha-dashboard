@@ -7,6 +7,7 @@ Cameras on **Thuis**, with a live sheet. Dark mode only. Builds on the [media ca
 | Tiles on Thuis, live sheet | ✅ **Approved and built**, brought back to the bare minimum (see [Removed](#removed)). |
 | Streaming | ✅ **Built:** WebRTC (3 attempts) → HLS → MJPEG → still image. See [Streaming](#streaming). |
 | Code | ✅ Refactored for readability, as in [`code-structure.md`](./code-structure.md). |
+| In a room | ✅ A camera can also be a control on a room page, with the same still image and live sheet: [room-camera](../room-camera/README.md). |
 
 > ✅ **The design is final.** Don't change layout, proportions or content without asking first.
 

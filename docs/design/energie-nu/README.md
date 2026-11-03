@@ -16,7 +16,7 @@ Only the P1 meter: `sensor.p1_meter_power` (`ENERGY_NOW.gridPower`), positive wh
 
 ## The card (B)
 
-- **"NU"** as the section title.
+- *No section title any more:* since S2 ([energie-page](../energie-page/README.md)) this is part of one card for now.
 - **The label:** "Van het net" with a pink dot (`#d55181`), or "Terug naar het net" with a green dot (`#6bab3e`), following the sign.
 - **The big number** (40px, fixed-width digits), without a minus sign, **in the colour of the bars**: pink while taking, green while feeding back. It **counts** to each new value in 0.4 s and follows every state change (about every 3 s).
 - *No "Live" badge any more* (removed on 4 November at the owner's request).

@@ -16,7 +16,8 @@ const MINUTES_PER_QUARTER = 15;
  * "Dit kwartier" on the Energie page (docs/design/energie-kwartier, K1, V2):
  * the average of the current quarter-hour against this month's peak, the two
  * figures the capaciteitstarief is based on. The bar shows the colours up to
- * where it reaches; the white mark is this month's peak.
+ * where it reaches; the white mark is this month's peak. The bottom part of
+ * the Energie page's card (EnergyPage), without a card of its own.
  */
 export function QuarterPeak({ hass }: Props) {
   const now = useNow();
@@ -40,28 +41,25 @@ export function QuarterPeak({ hass }: Props) {
   } as CSSProperties;
 
   return (
-    <section>
-      <h2 className="section-title">Dit kwartier</h2>
-      <div className="quarter-card">
-        <div className="quarter-card__figures">
-          <Figure label="Gemiddeld dit kwartier" kilowatts={averageKilowatts} />
-          <Figure label="Piek deze maand" kilowatts={peakKilowatts} isRight />
-        </div>
-        <div className="quarter-bar" style={bar} aria-hidden>
-          <span className="quarter-bar__fill" />
-          <span className="quarter-bar__peak" style={{ left: `${shareOfBar(peakKilowatts) * 100}%` }} />
-        </div>
-        <div className="quarter-bar__marks" aria-hidden>
-          {ENERGY_QUARTER.marksAtKilowatts.map((kilowatts, markNumber) => (
-            <span key={kilowatts} style={{ left: `${shareOfBar(kilowatts) * 100}%` }}>
-              {kilowatts}
-              {markNumber === ENERGY_QUARTER.marksAtKilowatts.length - 1 && ' kW'}
-            </span>
-          ))}
-        </div>
-        <p className="quarter-card__left">Nog {minutesLeftInQuarter} min</p>
+    <div className="quarter-peak">
+      <div className="quarter-card__figures">
+        <Figure label="Gemiddeld dit kwartier" kilowatts={averageKilowatts} />
+        <Figure label="Piek deze maand" kilowatts={peakKilowatts} isRight />
       </div>
-    </section>
+      <div className="quarter-bar" style={bar} aria-hidden>
+        <span className="quarter-bar__fill" />
+        <span className="quarter-bar__peak" style={{ left: `${shareOfBar(peakKilowatts) * 100}%` }} />
+      </div>
+      <div className="quarter-bar__marks" aria-hidden>
+        {ENERGY_QUARTER.marksAtKilowatts.map((kilowatts, markNumber) => (
+          <span key={kilowatts} style={{ left: `${shareOfBar(kilowatts) * 100}%` }}>
+            {kilowatts}
+            {markNumber === ENERGY_QUARTER.marksAtKilowatts.length - 1 && ' kW'}
+          </span>
+        ))}
+      </div>
+      <p className="quarter-card__left">Nog {minutesLeftInQuarter} min</p>
+    </div>
   );
 }
 

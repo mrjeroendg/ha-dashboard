@@ -1995,12 +1995,19 @@ a.pill-button { text-decoration: none; }
 
 /* ---------------------------------------------------------------- Energie: Nu (docs/design/energie-nu) */
 
+/* The Energie page (docs/design/energie-page, S2): no section titles; one card
+   for now (the power, a thin line, the quarter-hour), the day tiles below. */
 .energy-card {
-  padding: 14px 16px 10px;
+  padding: 14px 16px;
   border-radius: 20px;
   background: var(--surface);
   box-shadow: inset 0 0 0 1px var(--border);
 }
+
+.energy-card:empty { display: none; }
+.energy-card > * + * { margin-top: 12px; padding-top: 14px; border-top: 1px solid var(--border); }
+.energy-page__now { margin-top: 14px; }
+.energy-page__today { margin-top: 20px; }
 
 .energy-card__label {
   display: flex;
@@ -2029,13 +2036,6 @@ a.pill-button { text-decoration: none; }
 .energy-card__axis { display: flex; justify-content: space-between; padding: 2px 16px 0; font-size: 11px; color: var(--text-muted); }
 
 /* ---------------------------------------------------------------- Energie: Dit kwartier (docs/design/energie-kwartier, K1, V2) */
-
-.quarter-card {
-  padding: 14px 16px;
-  border-radius: 20px;
-  background: var(--surface);
-  box-shadow: inset 0 0 0 1px var(--border);
-}
 
 .quarter-card__figures { display: flex; justify-content: space-between; }
 .quarter-figure--right { text-align: right; }

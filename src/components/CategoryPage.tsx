@@ -1,8 +1,6 @@
 import type { Category } from '../config/categories';
 import type { HomeAssistant } from '../types/hass';
-import { EnergyNow } from './energy/EnergyNow';
-import { QuarterPeak } from './energy/QuarterPeak';
-import { TodaySoFar } from './energy/TodaySoFar';
+import { EnergyPage } from './energy/EnergyPage';
 
 interface Props {
   category: Category;
@@ -17,13 +15,7 @@ export function CategoryPage({ category, hass }: Props) {
         <p className="header__date">Categorie</p>
         <h1 className="header__greeting">{category.name}</h1>
       </header>
-      {hass && category.id === 'energie' && (
-        <>
-          <EnergyNow hass={hass} />
-          <QuarterPeak hass={hass} />
-          <TodaySoFar hass={hass} />
-        </>
-      )}
+      {hass && category.id === 'energie' && <EnergyPage hass={hass} />}
     </>
   );
 }

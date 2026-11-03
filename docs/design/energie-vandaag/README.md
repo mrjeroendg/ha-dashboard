@@ -22,3 +22,4 @@ The earlier options (A: three tiles, B: a list, C: a balance, D: four tiles with
 - **The bar:** today against the average of the **7 days before today** (`ENERGY_TODAY.daysInAverage`), from HA's daily statistics of the same sensors, fetched again every 5 minutes. No bar while HA has no statistics yet.
 - **"≈ € …":** today's kWh times `ENERGY_TODAY.euroPerKilowattHour`. **The prices in the config are placeholders (€0,30 and €0,04) until the owner fills in the ones from the bill.** An indication only: the bill also has fixed costs, the capaciteitstarief and taxes; a dynamic tariff isn't one price.
 - Without either sensor there's no section.
+- *No section title "Vandaag tot nu" any more:* since S2 ([energie-page](../energie-page/README.md)) the tiles sit under the card for now.

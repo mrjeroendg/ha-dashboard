@@ -30,31 +30,28 @@ export function TodaySoFar({ hass }: Props) {
   const prices = ENERGY_TODAY.euroPerKilowattHour;
 
   return (
-    <section>
-      <h2 className="section-title">Vandaag tot nu</h2>
-      <div className="day-tiles">
-        <DayTile
-          name="Afgenomen"
-          icon="pylon"
-          color={ENERGY_NOW.fromGridColor}
-          value={takenFromGridKilowattHours}
-          unit="kWh"
-          decimals={2}
-          average={averageOf(dailyTotalsPerSensor?.[ENERGY_TODAY.takenFromGrid])}
-          euros={takenFromGridKilowattHours * prices.takenFromGrid}
-        />
-        <DayTile
-          name="Teruggeleverd"
-          icon="sun"
-          color={ENERGY_NOW.backToGridColor}
-          value={fedBackToGridKilowattHours}
-          unit="kWh"
-          decimals={2}
-          average={averageOf(dailyTotalsPerSensor?.[ENERGY_TODAY.fedBackToGrid])}
-          euros={fedBackToGridKilowattHours * prices.fedBackToGrid}
-        />
-      </div>
-    </section>
+    <div className="day-tiles energy-page__today">
+      <DayTile
+        name="Afgenomen"
+        icon="pylon"
+        color={ENERGY_NOW.fromGridColor}
+        value={takenFromGridKilowattHours}
+        unit="kWh"
+        decimals={2}
+        average={averageOf(dailyTotalsPerSensor?.[ENERGY_TODAY.takenFromGrid])}
+        euros={takenFromGridKilowattHours * prices.takenFromGrid}
+      />
+      <DayTile
+        name="Teruggeleverd"
+        icon="sun"
+        color={ENERGY_NOW.backToGridColor}
+        value={fedBackToGridKilowattHours}
+        unit="kWh"
+        decimals={2}
+        average={averageOf(dailyTotalsPerSensor?.[ENERGY_TODAY.fedBackToGrid])}
+        euros={fedBackToGridKilowattHours * prices.fedBackToGrid}
+      />
+    </div>
   );
 }
 

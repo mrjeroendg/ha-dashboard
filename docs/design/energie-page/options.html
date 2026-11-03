@@ -1,0 +1,65 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Energie zonder koppen</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(4,390px);gap:28px}
+.cap{min-height:110px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--from:#d55181;--back:#6bab3e;
+position:relative;width:390px;height:780px;border-radius:44px 44px 0 0;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:26px 24px 0}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kicker{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+h1{margin:6px 0 20px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:34px}
+.card{position:relative;border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);overflow:hidden}
+.gap{height:12px}.biggap{height:22px}
+.lbl{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}.lbl i{width:8px;height:8px;border-radius:50%;background:var(--c)}
+.tag{position:absolute;top:14px;right:16px;font-size:11px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);opacity:.8}
+.big{font-size:40px;font-weight:600;letter-spacing:-.01em;color:var(--c);font-variant-numeric:tabular-nums}.big small{font-size:15px;color:var(--muted);font-weight:500;margin-left:3px}
+.pad{padding:14px 16px}
+.graph{display:block;width:100%;height:64px;margin-top:6px}
+.axis{display:flex;justify-content:space-between;padding:2px 16px 10px;font-size:11px;color:var(--muted)}
+.row2{display:flex;justify-content:space-between;align-items:baseline}.mid{font-size:22px;font-weight:600}.mid small{font-size:13px;color:var(--muted);font-weight:500;margin-left:2px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:2px}
+.meter{position:relative;height:10px;border-radius:5px;margin:14px 0 6px}
+.meter::before{content:"";position:absolute;inset:0;border-radius:5px;background:linear-gradient(90deg,#6bab3e 37%,#e8913a 62%,#b42318 87%);opacity:.25}
+.meter .fill{position:absolute;left:0;top:0;bottom:0;width:52%;border-radius:5px;background:linear-gradient(90deg,#6bab3e 0 72%,#e8913a 100%)}
+.meter .mark{position:absolute;top:-5px;bottom:-5px;left:41%;width:2px;background:var(--text);border-radius:1px}
+.ticks{position:relative;height:14px;font-size:11px;color:var(--muted)}.ticks span{position:absolute;transform:translateX(-50%)}
+.foot{font-size:12px;color:var(--muted);margin-top:4px}
+.tiles{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tile{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:12px 14px 14px;position:relative}
+.tile .name{display:flex;align-items:center;gap:6px;margin:0;font-size:13px;color:var(--muted)}.tile .name span{display:grid;color:var(--c)}
+.tile .value{margin:6px 0 0;font-size:26px;font-weight:600}.tile .value small{margin-left:3px;font-size:13px;font-weight:500;color:var(--muted)}
+.progress{height:6px;border-radius:3px;background:rgba(0,0,0,.3);margin-top:10px;position:relative}.progress i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;background:var(--c)}.progress b{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--text);border-radius:1px}
+.extra{margin-top:6px;font-size:12px;color:var(--muted);white-space:nowrap}.extra b{color:var(--text)}
+.divider{height:1px;background:rgba(245,244,239,.08);margin:0 16px}
+.rule{height:1px;background:rgba(245,244,239,.1);margin:20px 4px}
+.daylabel{font-size:12px;color:var(--muted);margin:0 4px 8px}
+</style></head><body></body>
+<script>
+const svg=(inner)=>`<svg class="i" viewBox="0 0 24 24">${inner}</svg>`;
+const I={pylon:svg('<path d="M8 21l4-18 4 18M6 8h12M7 13h10M9.5 21l5-8M14.5 21l-5-8"/>'),sun:svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>')};
+const HOUR=[310,280,260,180,90,-40,-180,-320,-420,-610,-780,-850];
+function bars(values){const W=342,H=64,top=Math.max(0,...values),bottom=Math.min(0,...values);const y=(v)=>4+(top-v)/(top-bottom)*(H-8),zero=y(0),slot=W/values.length,width=slot*.62;
+ return `<svg class="graph" viewBox="0 0 ${W} ${H}"><line x1="0" x2="${W}" y1="${zero}" y2="${zero}" stroke="rgba(245,244,239,.16)"/>${values.map((v,i)=>{const yy=y(v);return `<rect x="${(i*slot+(slot-width)/2).toFixed(1)}" y="${Math.min(yy,zero).toFixed(1)}" width="${width.toFixed(1)}" height="${Math.max(1.5,Math.abs(yy-zero)).toFixed(1)}" rx="2" stroke="none" fill="${v<0?'#6bab3e':'#d55181'}"/>`}).join('')}</svg>`;}
+const head=`<div class="kicker">Categorie</div><h1>Energie</h1>`;
+const nuInner=(tag='')=>`<div class="pad" style="--c:#6bab3e;padding-bottom:0">${tag}<span class="lbl"><i></i>Terug naar het net</span><div class="big">850<small>W</small></div></div>${bars(HOUR)}<div class="axis"><span>1 uur geleden</span><span>nu</span></div>`;
+const kwartierInner=(tag='')=>`<div class="pad">${tag}<div class="row2"><span class="lbl">Gemiddeld dit kwartier</span><span class="lbl">Piek deze maand</span></div>
+ <div class="row2"><span class="mid"><span class="dot" style="background:#9ab04a"></span>3,2<small>kW</small></span><span class="mid"><span class="dot" style="background:#9ab04a"></span>3,6<small>kW</small></span></div>
+ <div class="meter"><span class="fill"></span><span class="mark"></span></div><div class="ticks"><span style="left:50%">4</span><span style="left:75%">6 kW</span></div><div class="foot">Nog 9 min</div></div>`;
+const tile=(taken)=>`<div class="tile" style="--c:${taken?'var(--from)':'var(--back)'}"><p class="name"><span>${taken?I.pylon:I.sun}</span>${taken?'Afgenomen':'Teruggeleverd'}</p><p class="value">${taken?'4,82':'6,10'}<small>kWh</small></p><div class="progress"><i style="width:${taken?52:78}%"></i><b style="left:${taken?64:58}%"></b></div><div class="extra">Gem. ${taken?'6,10':'4,50'} · ≈ <b>€ ${taken?'1,69':'0,24'}</b></div></div>`;
+const tiles=`<div class="tiles">${tile(true)}${tile(false)}</div>`;
+const tag=(text)=>`<span class="tag">${text}</span>`;
+// S1: no titles, the labels inside are enough
+const S1=head+`<div class="card">${nuInner()}</div><div class="gap"></div><div class="card">${kwartierInner()}</div><div class="gap"></div>${tiles}`;
+// S2: Nu and the quarter in one card
+const S2=head+`<div class="card">${nuInner()}<div class="divider"></div>${kwartierInner()}</div><div class="biggap"></div>${tiles}`;
+// S3: small tags inside the cards
+const S3=head+`<div class="card">${nuInner(tag('Nu'))}</div><div class="gap"></div><div class="card">${kwartierInner()}</div><div class="gap"></div>${tiles.replace('<div class="tiles">','<div class="daylabel">Vandaag</div><div class="tiles">')}`;
+// S4: two groups by time: now, today, with a thin rule
+const S4=head+`<div class="card">${nuInner()}</div><div class="gap"></div><div class="card">${kwartierInner()}</div><div class="rule"></div>${tiles}`;
+const S=[
+ ['S1 · Geen koppen','De kaarten gewoon onder elkaar, met wat ruimte ertussen. Elke kaart zegt zelf al wat ze is: "Terug naar het net", "Gemiddeld dit kwartier", "Afgenomen". Het eenvoudigst.',S1],
+ ['S2 · Nu en het kwartier samen','Alles over "nu" in één kaart: het vermogen en de staafjes, een dun lijntje, dan het kwartier. Daaronder de twee dagtegels. Twee blokken in plaats van drie.',S2],
+ ['S3 · Alleen waar het nodig is','Geen koppen, behalve een klein "Vandaag" boven de tegels, omdat 4,82 kWh zonder dat niet zegt over welke periode het gaat. "Nu" klein in de hoek van de eerste kaart.',S3],
+ ['S4 · Een lijn tussen nu en vandaag','Geen koppen; een dunne lijn scheidt wat nu gebeurt (vermogen, kwartier) van wat vandaag al gebeurde (de tegels).',S4],
+];
+document.body.innerHTML=S.map(([t,sub,h])=>`<div><p class="cap">${t}<small>${sub}</small></p><div class="phone"><div class="in">${h}</div></div></div>`).join('');
+</script></html>

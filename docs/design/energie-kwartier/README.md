@@ -29,7 +29,7 @@ Without either sensor there's no section. The peak has no time attribute, and `l
 
 ## The card (K1)
 
-- **"DIT KWARTIER"** as the section title.
+- *No section title any more:* since S2 ([energie-page](../energie-page/README.md)) this is part of one card for now.
 - **Two figures:** "Gemiddeld dit kwartier" on the left, "Piek deze maand" on the right, each with a **dot in the colour of its value**.
 - **The bar** (10px, radius 5) runs to 8 kW, or further when a value is higher, so the colours stay in place. Along its whole length the colours are soft (25%); up to the current quarter-hour they're bright (V2: the bar shows the gradient as far as it reaches). A **white mark** is this month's peak: past it, this quarter-hour becomes a new peak.
 - **Marks** under the bar at 4 and "6 kW".

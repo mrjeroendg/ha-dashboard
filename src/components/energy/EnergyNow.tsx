@@ -24,27 +24,23 @@ const BARS_HEIGHT = 64;
  * "Nu" on the Energie page (docs/design/energie-nu, option B): what goes
  * through the P1 meter right now, as a number that counts to each new value,
  * in the colour of the bars (pink taking, green feeding back), with the last
- * hour as bars of 5 minutes below it.
+ * hour as bars of 5 minutes below it. The top part of the Energie page's
+ * card (EnergyPage), without a card of its own.
  */
 export function EnergyNow({ hass }: Props) {
   const currentWatts = numberState(hass.states, ENERGY_NOW.gridPower);
   if (currentWatts === undefined) return null;
 
-  return (
-    <section>
-      <h2 className="section-title">Nu</h2>
-      <GridPowerCard hass={hass} currentWatts={currentWatts} />
-    </section>
-  );
+  return <GridPower hass={hass} currentWatts={currentWatts} />;
 }
 
-function GridPowerCard({ hass, currentWatts }: Props & { currentWatts: number }) {
+function GridPower({ hass, currentWatts }: Props & { currentWatts: number }) {
   const isMotionReduced = usePrefersReducedMotion();
   const shownWatts = useEasedNumber(currentWatts, isMotionReduced);
   const isFeedingBack = shownWatts < 0;
 
   return (
-    <div className="energy-card" style={{ '--energy-color': colorFor(shownWatts) } as CSSProperties}>
+    <div className="energy-now" style={{ '--energy-color': colorFor(shownWatts) } as CSSProperties}>
       <p className="energy-card__label">{isFeedingBack ? 'Terug naar het net' : 'Van het net'}</p>
       <p className="energy-card__value">
         {readableWatts(shownWatts)}

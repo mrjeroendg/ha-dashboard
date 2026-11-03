@@ -537,6 +537,16 @@ button.quick-card:active { transform: scale(0.97); }
 /* Only the icon and name turn orange; no area behind them. */
 .bottom-nav__item[aria-current='page'] { color: var(--accent); }
 
+/* Between the categories and Thuis (docs/design/nav-categories, A). */
+.bottom-nav__divider {
+  flex: none;
+  align-self: center;
+  width: 1px;
+  height: 30px;
+  margin: 0 4px;
+  background: rgba(245, 244, 239, 0.14);
+}
+
 /* ---------------------------------------------------------------- room page */
 
 /* Room header: temperature large on the right of the name (docs/design/room-header). */

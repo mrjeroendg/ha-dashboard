@@ -2,12 +2,14 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { Attention } from './components/Attention';
 import { BottomNav } from './components/BottomNav';
 import { Cameras } from './components/cameras/Cameras';
+import { CategoryPage } from './components/CategoryPage';
 import { Header } from './components/Header';
 import { MediaShortcuts } from './components/media/MediaShortcuts';
 import { MiniPlayer } from './components/media/MiniPlayer';
 import { QuickActions } from './components/QuickActions';
 import { RoomView } from './components/RoomView';
 import { StatisticsSection } from './components/StatisticsSection';
+import { CATEGORIES } from './config/categories';
 import { STATISTICS } from './config/statistics';
 import { ROOMS } from './config/rooms';
 import { useDock } from './hooks/useDock';
@@ -23,9 +25,11 @@ interface Props {
 }
 
 export function App({ hass, config }: Props) {
-  const [roomId, setRoomId] = useState<string | null>(null);
-  // Which way the new page slides in: from the right when you tap a room
-  // further along the bar, from the left when you go back. None on first load.
+  // null = Thuis; otherwise a category's or a room's id.
+  const [pageId, setPageId] = useState<string | null>(null);
+  // Which way the new page slides in: from the right when you tap a page
+  // further along the bar, from the left when you tap one before it (a
+  // category, or Thuis from a room). None on first load.
   const [direction, setDirection] = useState<'forward' | 'back' | null>(null);
   const top = useRef<HTMLElement>(null);
   // The device of the media shortcuts; it follows the mini player's page.
@@ -33,13 +37,18 @@ export function App({ hass, config }: Props) {
 
   const states = hass?.states;
   const rooms = useMemo(() => (states ? resolveRooms(ROOMS, states) : []), [states]);
-  const room = rooms.find((r) => r.id === roomId);
+  const room = rooms.find((roomInBar) => roomInBar.id === pageId);
+  const category = CATEGORIES.find((categoryInBar) => categoryInBar.id === pageId);
+  const isThuis = pageId === null;
 
-  const selectPage = (id: string | null) => {
-    if (id === roomId) return;
-    const order = [null, ...rooms.map((r) => r.id)];
-    setDirection(order.indexOf(id) > order.indexOf(roomId) ? 'forward' : 'back');
-    setRoomId(id);
+  const selectPage = (selectedPageId: string | null) => {
+    if (selectedPageId === pageId) return;
+    // The order of the bar: the categories, Thuis, the rooms.
+    const pageOrder = [...CATEGORIES.map((categoryInBar) => categoryInBar.id), null, ...rooms.map((roomInBar) => roomInBar.id)];
+    const isFurtherAlong = pageOrder.indexOf(selectedPageId) > pageOrder.indexOf(pageId);
+
+    setDirection(isFurtherAlong ? 'forward' : 'back');
+    setPageId(selectedPageId);
   };
 
   const dock = useRef<HTMLDivElement>(null);
@@ -54,14 +63,16 @@ export function App({ hass, config }: Props) {
     const isPage = scroller === document.scrollingElement || scroller === document.documentElement;
     const offset = el.getBoundingClientRect().top - (isPage ? 0 : scroller.getBoundingClientRect().top);
     if (offset < 0) scroller.scrollBy({ top: offset });
-  }, [roomId]);
+  }, [pageId]);
 
   return (
     <main className="dashboard" ref={top}>
       <div className="dashboard__content">
         {/* A new key per page restarts the slide-in animation. */}
-        <div key={room?.id ?? 'thuis'} className={direction ? `page page--${direction}` : 'page'}>
-          {hass && room ? (
+        <div key={pageId ?? 'thuis'} className={direction ? `page page--${direction}` : 'page'}>
+          {category ? (
+            <CategoryPage category={category} />
+          ) : hass && room ? (
             <RoomView room={room} hass={hass} />
           ) : (
             <>
@@ -76,13 +87,14 @@ export function App({ hass, config }: Props) {
       </div>
       <div className="dock" ref={dock}>
         {/* The mini player and the media shortcuts only live on Thuis. */}
-        {hass && !room && <MiniPlayer hass={hass} onDeviceInView={setMediaDevice} />}
+        {hass && isThuis && <MiniPlayer hass={hass} onDeviceInView={setMediaDevice} />}
         {rooms.length > 0 && (
           <BottomNav
+            categories={CATEGORIES}
             rooms={rooms}
-            active={room ? room.id : null}
+            active={pageId}
             onSelect={selectPage}
-            top={hass && !room && <MediaShortcuts hass={hass} device={mediaDevice} onDeviceChange={setMediaDevice} />}
+            top={hass && isThuis && <MediaShortcuts hass={hass} device={mediaDevice} onDeviceChange={setMediaDevice} />}
           />
         )}
       </div>

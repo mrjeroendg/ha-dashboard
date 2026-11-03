@@ -21,14 +21,18 @@ function midnight(daysAgo: number) {
 }
 
 /**
- * How much each daily sensor counted per day, for the days before today, oldest
- * first. HA's `change` handles the reset at midnight. A day without statistics
- * is simply missing.
+ * How much each daily sensor counted per day, for the `numberOfDays` days
+ * before today, oldest first. HA's `change` handles the reset at midnight. A
+ * day without statistics is simply missing.
  */
-export async function fetchDailyTotals(hass: HomeAssistant, entityIds: string[]): Promise<Record<string, number[]>> {
+export async function fetchDailyTotals(
+  hass: HomeAssistant,
+  entityIds: string[],
+  numberOfDays = PREVIOUS_DAYS_IN_LINE,
+): Promise<Record<string, number[]>> {
   const statisticsPerEntity = await hass.callWS<Record<string, StatisticsRow[]> | undefined>({
     type: 'recorder/statistics_during_period',
-    start_time: midnight(PREVIOUS_DAYS_IN_LINE).toISOString(),
+    start_time: midnight(numberOfDays).toISOString(),
     end_time: midnight(0).toISOString(),
     statistic_ids: entityIds,
     period: 'day',

@@ -46,3 +46,7 @@ Instructions for Claude when working in this repository.
 - **Empty sheets:** a sheet that can have nothing to list shows the shared
   `EmptyState` (docs/design/empty-state) with its own short text, never an
   empty frame.
+- **Day totals:** a tile with a total for today (so far) uses the shared
+  `DayTile` (docs/design/day-tile): name and icon, the value, and optionally
+  the bar against an ordinary day and the amount in euros. Never a tile of its
+  own for this.

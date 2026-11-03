@@ -40,4 +40,11 @@ export const ENERGY_TODAY = {
   takenFromGrid: Entity.ELECTRICITY_CONSUMPTION_TODAY,
   /** Fed back to the grid since midnight. */
   fedBackToGrid: Entity.ELECTRICITY_PRODUCTION_TODAY,
+  /** The bar compares today with the average of this many days before it. */
+  daysInAverage: 7,
+  /**
+   * € per kWh, for "≈ € 1,45": what taking from the grid costs, and what
+   * feeding back earns. TODO: placeholders, replace with the prices on the bill.
+   */
+  euroPerKilowattHour: { takenFromGrid: 0.3, fedBackToGrid: 0.04 },
 };

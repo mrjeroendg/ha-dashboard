@@ -52,12 +52,11 @@ export const ENERGY_TODAY = {
   /** The chart shows this many days before today, plus today; the dashed line is their average. */
   previousDays: 13,
   /**
-   * € per kWh, for "≈ € 1,45": what taking from the grid costs, and what
-   * feeding back earns. Solar used yourself saves what taking would cost. The contract is dynamic (Eneco), so these are fixed
-   * approximations: taking at the higher price, all-in. Feeding back is still a
-   * placeholder. Live prices are on the to-do list (docs/TODO.md).
+   * € per kWh, for Afgenomen's "≈ € 1,45". The contract is dynamic (Eneco),
+   * so this is a fixed approximation: the higher price, all-in. Live prices
+   * are on the to-do list (docs/TODO.md).
    */
-  euroPerKilowattHour: { takenFromGrid: 0.35, fedBackToGrid: 0.04 },
+  euroPerKilowattHour: { takenFromGrid: 0.35 },
 };
 
 /** The "Gas" chip on the Energie page (docs/design/energie-gas): the gas meter's daily sensor, in m³. */

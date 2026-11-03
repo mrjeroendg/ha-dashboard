@@ -16,6 +16,6 @@ The options under Stroom (A to C; B's bottom tile was chosen): [`options.png`](.
 - **Yellow** `#f2c230`; the earlier days in a darker solid yellow `#a8902f` (the usual 45% of the colour looks olive on the dark card).
 - **The split**, between the value and the chart: one bar, yellow for what the house used itself, **red** `#e05252` for what went back to the grid (the owner's choice: feeding back is bad for you, so not green), as wide as their shares. Under it "Verbruikt 2,62 · 68%" and "Teruggeleverd 1,24". Not shown while the panels made nothing yet today.
   - Used yourself = solar − fed back, never below 0 (Smappee and the P1 meter measure apart).
-- **"≈ €":** used yourself × the price of taking (€0,35, what it saved) + fed back × the price of feeding back (still the €0,04 placeholder).
+- **No "≈ €":** what solar is worth (saved plus earned) didn't explain itself next to the kWh, so the owner chose to leave it out.
 - **Source:** `sensor.garage_smappee_total_production_today` (Smappee; Wh or kWh, its unit decides) with its daily statistics, and `sensor.p1_meter_energy_production_daily` (the P1 meter's feeding back), fetched again every 5 minutes.
 - Without either sensor, there's no Zon tile; "Afgenomen vandaag" stays.

@@ -17,8 +17,9 @@ const TODAY_SENSORS = [ENERGY_TODAY.takenFromGrid, ENERGY_TODAY.solarToday];
  * The day tiles under Stroom's card (docs/design/energie-vandaag,
  * docs/design/energie-zon): "Afgenomen vandaag" from the P1 meter, and "Zon
  * vandaag" from Smappee, split into what the house used itself and what went
- * back to the grid (the P1 meter's feeding back, in red: it's worth little). Each in euros and with the
- * 13 days before as bars (docs/design/day-tile, D2).
+ * back to the grid (the P1 meter's feeding back, in red: it's worth little).
+ * Each with the 13 days before as bars (docs/design/day-tile, D2); only
+ * Afgenomen in euros.
  */
 export function TodaySoFar({ hass }: Props) {
   const takenFromGridKilowattHours = numberState(hass.states, ENERGY_TODAY.takenFromGrid);
@@ -71,8 +72,6 @@ function SolarToday({ solarKilowattHours, fedBackToGridKilowattHours, previousDa
   const usedYourselfKilowattHours = Math.max(0, solarKilowattHours - fedBackToGridKilowattHours);
   const hasSolarToday = solarKilowattHours > 0;
   const usedYourselfPercentage = hasSolarToday ? Math.round((usedYourselfKilowattHours / solarKilowattHours) * 100) : 0;
-  const prices = ENERGY_TODAY.euroPerKilowattHour;
-  const euros = usedYourselfKilowattHours * prices.takenFromGrid + fedBackToGridKilowattHours * prices.fedBackToGrid;
 
   return (
     <DayTile
@@ -84,7 +83,6 @@ function SolarToday({ solarKilowattHours, fedBackToGridKilowattHours, previousDa
       unit="kWh"
       decimals={2}
       previousDays={previousDays}
-      euros={euros}
     >
       {hasSolarToday && (
         <div className="solar-split">

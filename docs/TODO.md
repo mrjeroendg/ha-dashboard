@@ -40,7 +40,7 @@ To decide in the design: whether both sheets get it, and what the row shows whil
 
 ## Live electricity prices for the euros on Energie
 
-The contract is dynamic (Eneco): the price per kWh changes every hour. "Vandaag tot nu" now multiplies today's kWh by one fixed price from the config (`ENERGY_TODAY.euroPerKilowattHour` in `src/config/energy.ts`: €0,35 for taking, all-in at the higher price; feeding back still a placeholder), so the "≈ €" is an approximation.
+The contract is dynamic (Eneco): the price per kWh changes every hour. "Vandaag tot nu" now multiplies today's kWh by one fixed price from the config (`ENERGY_TODAY.euroPerKilowattHour` in `src/config/energy.ts`: €0,35 for taking, all-in at the higher price), so the "≈ €" is an approximation.
 
 **In Home Assistant:** the hourly Belgian day-ahead prices (the ENTSO-E or Nord Pool integration, zone Belgium), and a template sensor with Eneco's formula from the tariefkaart (Belpex × factor + a fixed amount, plus network costs, levies and VAT), one for taking and one for feeding back.
 

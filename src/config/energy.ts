@@ -10,3 +10,26 @@ export const ENERGY_NOW = {
   /** "Terug naar het net": below zero. */
   backToGridColor: UTILITY_COLORS.feedingBack,
 };
+
+/**
+ * "Dit kwartier" on the Energie page (docs/design/energie-kwartier): the
+ * capaciteitstarief, from the P1 meter's own figures, in W.
+ */
+export const ENERGY_QUARTER = {
+  /** The running average of the current quarter-hour. */
+  averageDemand: Entity.ELECTRICITY_AVERAGE_DEMAND_THIS_QUARTER,
+  /** The highest quarter-hour this month; resets on the 1st. */
+  monthPeak: Entity.ELECTRICITY_PEAK_DEMAND_THIS_MONTH,
+  /**
+   * The colours by kW, blending from one to the next: fully green up to 3 kW,
+   * orange at 5, dark red from 7. So 4 and 6 kW, the borders of good, watch
+   * out and too high, sit halfway through each blend.
+   */
+  colorStops: [
+    { kilowatts: 3, color: '#6bab3e' },
+    { kilowatts: 5, color: '#e8913a' },
+    { kilowatts: 7, color: '#b42318' },
+  ],
+  /** The marks under the bar, at the borders. */
+  marksAtKilowatts: [4, 6],
+};

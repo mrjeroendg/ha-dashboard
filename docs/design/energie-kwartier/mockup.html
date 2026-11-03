@@ -1,0 +1,54 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>K1 met mengende kleuren</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:repeat(3,390px);gap:28px}
+.cap{min-height:76px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--good:#6bab3e;--watch:#e8913a;--bad:#b42318;
+position:relative;width:390px;height:300px;border-radius:44px 44px 0 0;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:26px 24px 0}
+.sec{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted);margin:0 4px 10px}
+.card{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:14px 16px}
+.row2{display:flex;justify-content:space-between;align-items:baseline}.lbl{font-size:13px;color:var(--muted)}
+.mid{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}.mid small{font-size:13px;color:var(--muted);font-weight:500;margin-left:2px}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:2px}
+.meter{position:relative;height:10px;border-radius:5px;margin:14px 0 6px;overflow:visible;
+ background:linear-gradient(90deg,color-mix(in srgb,var(--good) 22%,transparent) 0 var(--b4),color-mix(in srgb,var(--watch) 22%,transparent) var(--b4) var(--b6),color-mix(in srgb,var(--bad) 30%,transparent) var(--b6))}
+.meter .fill{position:absolute;left:0;top:0;bottom:0;border-radius:5px}
+.meter .mark{position:absolute;top:-5px;bottom:-5px;width:2px;border-radius:1px;background:var(--text)}
+.ticks{position:relative;height:14px;font-size:11px;color:var(--muted)}.ticks span{position:absolute;transform:translateX(-50%)}
+.foot{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:4px}
+
+/* blended */
+.meter.blend{background:linear-gradient(90deg,color-mix(in srgb,var(--good) 22%,transparent) 0,color-mix(in srgb,var(--good) 22%,transparent) var(--b3),color-mix(in srgb,var(--watch) 24%,transparent) var(--b5),color-mix(in srgb,var(--bad) 32%,transparent) var(--b7))}
+.meter .fill.reveal{background:linear-gradient(90deg,var(--good) 0,var(--good) var(--f3),var(--watch) var(--f5),var(--bad) var(--f7));}
+</style></head><body></body>
+<script>
+const SCALE=8;
+const fmt=(kw)=>kw.toLocaleString('nl-BE',{minimumFractionDigits:1,maximumFractionDigits:1});
+// The colour for a value, blending: green up to 3 kW, to orange at 5 kW, to dark red at 7 kW.
+const STOPS=[[0,[107,171,62]],[3,[107,171,62]],[5,[232,145,58]],[7,[180,35,24]]];
+function blended(kw){
+  for(let n=1;n<STOPS.length;n++){const [toKw,to]=STOPS[n],[fromKw,from]=STOPS[n-1];
+    if(kw<=toKw){const share=toKw===fromKw?1:(kw-fromKw)/(toKw-fromKw);return `rgb(${from.map((part,i)=>Math.round(part+(to[i]-part)*share)).join(',')})`;}}
+  return 'rgb(180,35,24)';
+}
+function k1(quarter,peak,left,reveal){
+  const top=Math.max(SCALE,peak*1.1),pct=(kw)=>`${(kw/top*100).toFixed(1)}%`;
+  // For the revealing fill: where the stops fall within the fill's own width.
+  const within=(kw)=>`${Math.min(100,kw/quarter*100).toFixed(1)}%`;
+  const fill=reveal?`<span class="fill reveal" style="width:${pct(quarter)};--f3:${within(3)};--f5:${within(5)};--f7:${within(7)}"></span>`:`<span class="fill" style="width:${pct(quarter)};background:${blended(quarter)}"></span>`;
+  return `<div class="sec">Dit kwartier</div><div class="card">
+  <div class="row2"><span class="lbl">Gemiddeld dit kwartier</span><span class="lbl">Piek deze maand</span></div>
+  <div class="row2"><span class="mid"><span class="dot" style="background:${blended(quarter)}"></span>${fmt(quarter)}<small>kW</small></span><span class="mid"><span class="dot" style="background:${blended(peak)}"></span>${fmt(peak)}<small>kW</small></span></div>
+  <div class="meter blend" style="--b3:${pct(3)};--b5:${pct(5)};--b7:${pct(7)}">${fill}<span class="mark" style="left:${pct(peak)}"></span></div>
+  <div class="ticks"><span style="left:${pct(4)}">4</span><span style="left:${pct(6)}">6 kW</span></div>
+  <div class="foot"><span>Nog ${left} min</span><span></span></div></div>`;
+}
+const S=[
+ ['V1 · Eén kleur die mengt: rustig','De achtergrond loopt vloeiend van groen naar oranje naar donkerrood. De balk en de bolletjes krijgen één kleur, gemengd naar de waarde: 0,4 kW is gewoon groen.',k1(0.4,3.6,9,false)],
+ ['V1 · bij 4,6 kW','4,6 kW ligt tussen groen en oranje in, dus de balk en het bolletje zijn geeloranje: onderweg naar oranje.',k1(4.6,3.6,6,false)],
+ ['V1 · bij 6,8 kW piek','6,8 kW is bijna helemaal donkerrood. De piek van 3,6 kW van de andere voorbeelden zou groen zijn.',k1(1.1,6.8,12,false)],
+ ['V2 · De balk toont het verloop: rustig','De balk zelf is een verloop: hoe verder hij komt, hoe meer van groen naar oranje naar rood je ziet. Bij 0,4 kW alleen groen.',k1(0.4,3.6,9,true)],
+ ['V2 · bij 4,6 kW','De balk begint groen en wordt naar het einde toe oranje: je ziet hoe ver je in de oranje zone zit.',k1(4.6,3.6,6,true)],
+ ['V2 · bij 7,2 kW','Bij een erg hoog kwartier loopt de balk door tot in het donkerrood.',k1(7.2,6.8,3,true)],
+];
+document.body.innerHTML=S.map(([t,sub,h])=>`<div><p class="cap">${t}<small>${sub}</small></p><div class="phone"><div class="in">${h}</div></div></div>`).join('');
+</script></html>

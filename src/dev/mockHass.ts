@@ -67,6 +67,8 @@ function baseStates(): HassEntities {
     entity('scene.living_mood_lighting', 'unknown', { friendly_name: 'Sfeer' }),
     // Verbruik (docs/design/verbruik); the IDs are the real ones from src/config/statistics.ts.
     entity('sensor.p1_meter_power', '196', { unit_of_measurement: 'W', device_class: 'power', state_class: 'measurement' }),
+    entity('sensor.p1_meter_average_demand', '4600', { unit_of_measurement: 'W', device_class: 'power' }),
+    entity('sensor.p1_meter_peak_demand_current_month', '3600', { unit_of_measurement: 'W', device_class: 'power' }),
     entity('sensor.p1_meter_energy_consumption_daily', '8.13', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.p1_meter_energy_production_daily', '1.24', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.garage_water_meter_consumption_daily', '0.102', { unit_of_measurement: 'm³', state_class: 'total_increasing' }),

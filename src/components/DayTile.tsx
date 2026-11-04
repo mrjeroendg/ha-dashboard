@@ -155,7 +155,8 @@ function DaysChart({ previousDays, today, color, earlierDaysColor, bottomPart, r
       : [colorPerDay(color, earlierDaysColor)],
     dataLabels: { enabled: false },
     legend: { show: false },
-    grid: { show: false, padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    // ApexCharts keeps 30px free above the bars, even without a title or toolbar; most of it goes.
+    grid: { show: false, padding: { top: -22, right: 0, bottom: 0, left: 0 } },
     xaxis: {
       categories: dayLetters,
       axisBorder: { show: false },

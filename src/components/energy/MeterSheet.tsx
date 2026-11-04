@@ -15,7 +15,6 @@ import {
   InfoFigures,
   InfoSection,
   InfoSheet,
-  InfoText,
   monthName,
   readableAmount,
   readableDay,
@@ -53,13 +52,14 @@ interface Props {
 /** The hours and days before now don't change; this is plenty. */
 const REFRESH_EVERY_MILLISECONDS = 5 * 60_000;
 const PREVIOUS_DAYS = 30;
-const EARLIER_MONTHS = 12;
 const MONTHS_IN_CHART = 12;
+/** The months before this one in the chart; this month is the days so far. */
+const EARLIER_MONTHS = MONTHS_IN_CHART - 1;
 
 /**
  * The sheet behind a day tile (docs/design/energie-sheets): today and this
- * month (with euros and what the same month cost last year), today per hour,
- * and the last 12 months, then the sheet's own sections.
+ * month (with euros), today per hour, and the last 12 months, then the
+ * sheet's own sections.
  */
 export function MeterSheet(props: Props) {
   const { hass, title, subtitle, entityId, today, unit, decimals, color, unitsPerSensorUnit = 1, euroPerUnit, onClose, children } = props;
@@ -98,7 +98,6 @@ export function MeterSheet(props: Props) {
   const averageEarlierMonth =
     knownEarlierMonthlyTotals.length > 0 ? knownEarlierMonthlyTotals.reduce((sum, total) => sum + total, 0) / knownEarlierMonthlyTotals.length : undefined;
 
-  const sameMonthLastYear = monthlyTotalOf(startOfMonth(12).getTime());
   const eurosFor = (amount: number) => (euroPerUnit === undefined ? undefined : `≈ ${readableEuros(amount * euroPerUnit)}`);
   const hasHours = hourlyTotals.some((total) => total !== null && total > 0);
   const hasMonths = knownEarlierMonthlyTotals.length > 0;
@@ -112,7 +111,7 @@ export function MeterSheet(props: Props) {
 
       {hasHours && (
         <InfoSection heading="Vandaag per uur">
-          <InfoBarChart labels={hourLabels()} values={hourlyTotals} color={color} nowIndex={new Date().getHours()} />
+          <InfoBarChart labels={hourLabels()} values={hourlyTotals} color={color} nowIndex={new Date().getHours()} unit={unit} />
         </InfoSection>
       )}
 
@@ -122,12 +121,9 @@ export function MeterSheet(props: Props) {
             labels={monthStarts.map(monthName)}
             values={monthlyTotals}
             color={color}
+            unit={unit}
             average={averageEarlierMonth === undefined ? undefined : { value: averageEarlierMonth, label: `gem. ${readable(averageEarlierMonth)}` }}
           />
-          <InfoText>
-            {capitalised(fullMonthName(thisMonthStart))} loopt nog
-            {sameMonthLastYear === null ? '.' : <>; vorig jaar was het in totaal <strong>{readable(sameMonthLastYear)} {unit}</strong>.</>}
-          </InfoText>
         </InfoSection>
       )}
 
@@ -137,11 +133,6 @@ export function MeterSheet(props: Props) {
     </InfoSheet>
   );
 }
-
-/** "november": a month's full name in Dutch. */
-const fullMonthName = (moment: number) => new Date(moment).toLocaleDateString('nl-BE', { month: 'long' });
-
-const capitalised = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
 
 /** The average day and the highest day of the last 30 days. */
 function LastThirtyDays({ previousDays, unit, readable }: { previousDays: DailyTotal[]; unit: string; readable(amount: number): string }) {

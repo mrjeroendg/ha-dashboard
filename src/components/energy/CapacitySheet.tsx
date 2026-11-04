@@ -9,6 +9,7 @@ import { usePeriodicFetch } from '../../hooks/usePeriodicFetch';
 import { fetchEarlierMonthlyPeaks, fetchWhenValueWasReachedThisMonth, numberState, startOfMonth } from '../../lib/statistics';
 import type { HomeAssistant } from '../../types/hass';
 import { BottomSheet } from '../BottomSheet';
+import { axisOptions, roundAxis } from './InfoSheet';
 
 interface Props {
   hass: HomeAssistant;
@@ -18,7 +19,7 @@ interface Props {
 /** The earlier months don't change, and when the peak was reached only changes with the peak itself; this is plenty. */
 const REFRESH_EVERY_MILLISECONDS = 5 * 60_000;
 const QUARTER_HOUR = 15 * 60_000;
-const CHART_HEIGHT = 140;
+const CHART_HEIGHT = 160;
 /** The earlier months' bars: their colour at 60% ("99" in hex); this month's is the full colour. */
 const EARLIER_MONTH_OPACITY_HEX = '99';
 const TEXT_COLOR = '#f5f4ef';
@@ -149,6 +150,8 @@ function MonthlyPeaksChart({
     monthIndex === lastMonthIndex ? TEXT_COLOR : MUTED_TEXT_COLOR,
   );
   const highestKilowatts = Math.max(ENERGY_QUARTER.minimumKilowatts, ...monthlyPeaks.map((monthlyPeak) => monthlyPeak.kilowatts));
+  // Every number in this sheet has two decimals (the owner's choice), the axis too.
+  const axis = roundAxis(highestKilowatts * 1.1, 2);
 
   const options: ApexOptions = {
     chart: {
@@ -164,15 +167,21 @@ function MonthlyPeaksChart({
     colors: barColors,
     dataLabels: { enabled: false },
     legend: { show: false },
-    // ApexCharts keeps 30px free above the bars, even without a title or toolbar; most of it goes.
-    grid: { show: false, padding: { top: -22, right: 0, bottom: 0, left: 0 } },
+    // Faint lines at each step of the y-axis, as in the other sheets (InfoBarChart).
+    grid: {
+      show: true,
+      borderColor: 'rgba(245, 244, 239, 0.08)',
+      xaxis: { lines: { show: false } },
+      yaxis: { lines: { show: true } },
+      padding: { top: -14, right: 0, bottom: 0, left: 0 },
+    },
     xaxis: {
       categories: monthlyPeaks.map((monthlyPeak) => monthName(monthlyPeak.monthStart)),
       axisBorder: { show: false },
       axisTicks: { show: false },
       labels: { style: { colors: labelColors, fontSize: '10px' } },
     },
-    yaxis: { show: false, min: 0, max: highestKilowatts * 1.15 },
+    yaxis: axisOptions(axis, 'kW'),
     annotations: {
       yaxis: [
         // The band up to the minimum: a peak below it still counts as the minimum.

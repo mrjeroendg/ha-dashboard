@@ -64,20 +64,26 @@ interface InfoBarChartProps {
   nowIndex?: number;
   /** A dashed line with its label, e.g. "gem. 9,59". */
   average?: { value: number; label: string };
+  /** On the y-axis's labels, e.g. "kWh". */
+  unit: string;
 }
 
-const CHART_HEIGHT = 120;
+const CHART_HEIGHT = 150;
+const AXIS_LINE_COLOR = 'rgba(245, 244, 239, 0.08)';
+/** About this many steps on the y-axis, each a round number. */
+const AXIS_STEPS = 4;
 const EARLIER_BAR_OPACITY_HEX = '73';
 const TEXT_COLOR = '#f5f4ef';
 const MUTED_TEXT_COLOR = '#a6a39b';
 const SHEET_COLOR = '#2b2b29';
 
 /** A bar per hour, day or month, the one for now in the full colour and its label white. */
-export function InfoBarChart({ labels, values, color, nowIndex = values.length - 1, average }: InfoBarChartProps) {
+export function InfoBarChart({ labels, values, color, nowIndex = values.length - 1, average, unit }: InfoBarChartProps) {
   const barColors = values.map((_value, barIndex) => (barIndex === nowIndex ? color : `${color}${EARLIER_BAR_OPACITY_HEX}`));
   const labelColors = labels.map((_label, barIndex) => (barIndex === nowIndex ? TEXT_COLOR : MUTED_TEXT_COLOR));
   const knownValues = values.filter((value) => value !== null);
   const highestValue = Math.max(0, ...knownValues, average?.value ?? 0);
+  const axis = roundAxis(highestValue);
 
   const options: ApexOptions = {
     chart: { toolbar: { show: false }, zoom: { enabled: false }, animations: { enabled: false }, parentHeightOffset: 0 },
@@ -86,15 +92,22 @@ export function InfoBarChart({ labels, values, color, nowIndex = values.length -
     colors: barColors,
     dataLabels: { enabled: false },
     legend: { show: false },
-    // ApexCharts keeps 30px free above the bars, even without a title or toolbar; most of it goes.
-    grid: { show: false, padding: { top: -22, right: 0, bottom: 0, left: 0 } },
+    // Faint lines at each step of the y-axis, nothing upright. ApexCharts keeps
+    // 30px free above the plot; part of it goes, the top label still fits.
+    grid: {
+      show: true,
+      borderColor: AXIS_LINE_COLOR,
+      xaxis: { lines: { show: false } },
+      yaxis: { lines: { show: true } },
+      padding: { top: -14, right: 0, bottom: 0, left: 0 },
+    },
     xaxis: {
       categories: labels,
       axisBorder: { show: false },
       axisTicks: { show: false },
       labels: { rotate: 0, hideOverlappingLabels: false, style: { colors: labelColors, fontSize: '10px' } },
     },
-    yaxis: { show: false, min: 0, max: highestValue * 1.15 || 1 },
+    yaxis: axisOptions(axis, unit),
     annotations: {
       yaxis: average
         ? [
@@ -122,6 +135,44 @@ export function InfoBarChart({ labels, values, color, nowIndex = values.length -
       <Chart type="bar" height={CHART_HEIGHT} width="100%" series={[{ name: 'Per periode', data: values }]} options={options} />
     </div>
   );
+}
+
+export interface RoundAxis {
+  max: number;
+  steps: number;
+  decimals: number;
+}
+
+/**
+ * A y-axis from 0 to just above `highestValue`, in about 4 round steps (1, 2,
+ * 2,5 or 5 times a power of ten), with as many decimals as the step needs.
+ */
+export function roundAxis(highestValue: number, decimals?: number): RoundAxis {
+  const roughStep = (highestValue || 1) / AXIS_STEPS;
+  const powerOfTen = 10 ** Math.floor(Math.log10(roughStep));
+  const roundStep = [1, 2, 2.5, 5, 10].map((factor) => factor * powerOfTen).find((step) => step >= roughStep) ?? 10 * powerOfTen;
+  const steps = Math.ceil((highestValue || 1) / roundStep);
+  const decimalsOfStep = Math.max(0, -Math.floor(Math.log10(roundStep) + 1e-9) + (roundStep / powerOfTen === 2.5 ? 1 : 0));
+
+  return { max: steps * roundStep, steps, decimals: decimals ?? decimalsOfStep };
+}
+
+/** ApexCharts' y-axis for a round axis: muted labels like "2,5 kWh" on the left. */
+export function axisOptions(axis: RoundAxis, unit: string): ApexOptions['yaxis'] {
+  return {
+    show: true,
+    min: 0,
+    max: axis.max,
+    tickAmount: axis.steps,
+    labels: {
+      // Room for "400 kWh", and a little away from the plot, so the average's
+      // label (on the left of the plot) doesn't cover its end.
+      minWidth: 52,
+      offsetX: -6,
+      style: { colors: MUTED_TEXT_COLOR, fontSize: '10px' },
+      formatter: (value: number) => `${readableAmount(value, axis.decimals)} ${unit}`,
+    },
+  };
 }
 
 /** "nov": a month's short name in Dutch, without the full stop. */

@@ -20,8 +20,9 @@ A tap anywhere on the day tile (`DayTile`'s `onOpen`). A small "›" right after
 
 - **Vandaag** and **Deze maand**, with "≈ €" (not for Zon). This month = the days before today this month (daily statistics) + today's state.
 - **Vandaag per uur:** 24 bars from midnight (hourly statistics, `change`); the current hour, which HA has no statistics for yet, is today so far minus the hours before it, in the full colour. Labels under 0u, 6u, 12u and 18u.
-- **Laatste 12 maanden:** 11 months from the monthly statistics plus this month so far, with the average of the earlier months as a dashed line, and "November loopt nog; vorig jaar was het in totaal …" (the same month a year ago).
+- **Laatste 12 maanden:** 11 months from the monthly statistics plus this month so far, with the average of the earlier months as a dashed line. (A line "November loopt nog; vorig jaar …" under it was removed at the owner's request.)
 - **Laatste 30 dagen:** the average day and the highest day, with its date.
+- **Every chart in a sheet has a y-axis** (4 November, the owner's request: only in the sheets, not on the tiles): 0 to just above the highest bar in about 4 round steps (`roundAxis`: 1, 2, 2,5 or 5 × a power of ten), muted labels with the unit ("2,5 kWh", "300 kWh") and faint horizontal lines at each step (`axisOptions`, shared with the Capaciteitstarief sheet). The labels sit a little left of the plot, so the average's label doesn't cover them.
 - A section that has no statistics yet is left out.
 
 ## Per sheet

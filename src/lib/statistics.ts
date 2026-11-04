@@ -12,6 +12,16 @@ interface StatisticsRow {
 
 const isNumber = (value: unknown): value is number => typeof value === 'number' && !Number.isNaN(value);
 
+/**
+ * Whether a daily row is a day before today. HA also returns a row for today
+ * (so far) when `end_time` is this morning's midnight; today comes from the
+ * state instead.
+ */
+const isBeforeToday = (dailyRow: { start: number | string }) => {
+  const rowStart = typeof dailyRow.start === 'number' ? dailyRow.start : Date.parse(dailyRow.start);
+  return rowStart < midnight(0).getTime();
+};
+
 /** Local midnight, `daysAgo` days back (0 = this morning). */
 function midnight(daysAgo: number) {
   const day = new Date();
@@ -41,7 +51,7 @@ export async function fetchDailyTotals(
 
   return Object.fromEntries(
     entityIds.map((entityId) => {
-      const dailyRows = statisticsPerEntity?.[entityId] ?? [];
+      const dailyRows = (statisticsPerEntity?.[entityId] ?? []).filter(isBeforeToday);
       return [entityId, dailyRows.map((dailyRow) => dailyRow.change).filter(isNumber)];
     }),
   );
@@ -74,7 +84,7 @@ export async function fetchDailyTotalsWithDays(
 
   return Object.fromEntries(
     entityIds.map((entityId) => {
-      const dailyRows = statisticsPerEntity?.[entityId] ?? [];
+      const dailyRows = (statisticsPerEntity?.[entityId] ?? []).filter(isBeforeToday);
       const dailyTotals = dailyRows
         .filter((dailyRow) => isNumber(dailyRow.change))
         .map((dailyRow) => ({

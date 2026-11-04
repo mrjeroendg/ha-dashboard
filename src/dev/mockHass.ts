@@ -444,6 +444,8 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
             start: firstDayStart + dayIndex * dayLength,
             change: totals[totals.length - 1 - ((numberOfDays - 1 - dayIndex) % totals.length)],
           }));
+          // Like HA: also a row for today so far, although end_time is this morning's midnight.
+          if (days.length > 0) days.push({ start: Date.parse(String(msg.end_time)), change: totals[0] / 10 });
           return [statisticId, days];
         }),
       ) as T;

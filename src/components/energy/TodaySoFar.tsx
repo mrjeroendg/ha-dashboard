@@ -43,13 +43,15 @@ export function TodaySoFar({ hass }: Props) {
   const isSolarKnown = solarTodayInItsUnit !== undefined && fedBackToGridKilowattHours !== undefined;
 
   const solarKilowattHoursPerUnit = kilowattHoursPerSolarUnit(hass);
+  // Smappee can report a hair below zero at night (e.g. −0,01 kWh); no solar is 0.
+  const solarTodayKilowattHours = Math.max(0, (solarTodayInItsUnit ?? 0) * solarKilowattHoursPerUnit);
 
   return (
     <div className="day-tiles energy-page__today">
       {isSolarKnown && (
         <HouseToday
           takenFromGridKilowattHours={takenFromGridKilowattHours}
-          solarKilowattHours={solarTodayInItsUnit * solarKilowattHoursPerUnit}
+          solarKilowattHours={solarTodayKilowattHours}
           fedBackToGridKilowattHours={fedBackToGridKilowattHours}
           previousDays={houseDays(dailyTotalsPerSensor, solarKilowattHoursPerUnit)}
         />
@@ -67,7 +69,7 @@ export function TodaySoFar({ hass }: Props) {
       />
       {isSolarKnown && (
         <SolarToday
-          solarKilowattHours={solarTodayInItsUnit * kilowattHoursPerSolarUnit(hass)}
+          solarKilowattHours={solarTodayKilowattHours}
           fedBackToGridKilowattHours={fedBackToGridKilowattHours}
           onOpen={() => setOpenSheet('solar')}
           previousDays={dailyTotalsPerSensor?.[ENERGY_TODAY.solarToday]?.map((dailyTotal) => ({

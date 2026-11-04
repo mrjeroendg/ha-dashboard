@@ -20,7 +20,8 @@ export function SolarSheet({ hass, onClose }: Props) {
   const injectedTodayKilowattHours = numberState(hass.states, ENERGY_TODAY.fedBackToGrid);
   if (solarTodayInItsUnit === undefined) return null;
 
-  const solarTodayKilowattHours = solarTodayInItsUnit * kilowattHoursPerSolarUnit(hass);
+  // Smappee can report a hair below zero at night (e.g. −0,01 kWh); no solar is 0.
+  const solarTodayKilowattHours = Math.max(0, solarTodayInItsUnit * kilowattHoursPerSolarUnit(hass));
   const euroPerKilowattHour = ENERGY_TODAY.euroPerKilowattHour.takenFromGrid;
 
   return (

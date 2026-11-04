@@ -2285,6 +2285,10 @@ a.pill-button { text-decoration: none; }
    name, lined up with it (36px icon tile + 14px gap), like a cover's strip. */
 .camera-row { flex-wrap: wrap; row-gap: 10px; }
 
+/* While it streams in the row (S1): the sheet's status line where "Bijgewerkt" was. */
+.camera-row__status { height: auto; margin: 2px 0 0; gap: 6px; }
+.camera-row__status .stream-status__dot { margin: 0; }
+
 .camera-row__image {
   position: relative;
   flex: 0 0 calc(100% - 50px);
@@ -2293,6 +2297,8 @@ a.pill-button { text-decoration: none; }
   border-radius: 14px;
   overflow: hidden;
   background: #1b1c1d;
+  /* Tapping the picture opens the live sheet. */
+  cursor: pointer;
 }
 
 .camera-tile__image,

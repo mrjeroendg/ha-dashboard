@@ -8,6 +8,7 @@ import 'apexcharts/features/annotations';
 import { haptic } from '../lib/haptic';
 import type { DailyTotal } from '../lib/statistics';
 import { Icon, type IconName } from './Icon';
+import { LinkChevron } from './LinkChevron';
 
 interface Props {
   name: string;
@@ -83,6 +84,7 @@ export function DayTile(props: Props) {
       <p className="day-tile__name">
         <Icon name={icon} />
         {name}
+        {onOpen && <LinkChevron />}
       </p>
       <div className="day-tile__values">
         <p className="day-tile__value">

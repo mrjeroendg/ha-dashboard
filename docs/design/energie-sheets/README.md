@@ -14,7 +14,7 @@ As built (dev mode, mock values):
 
 ## Opening
 
-A tap anywhere on the day tile, like "Dit kwartier" opens the Capaciteitstarief: nothing on the tile shows it (`DayTile`'s `onOpen`).
+A tap anywhere on the day tile (`DayTile`'s `onOpen`). A small "›" right after the tile's name shows it ("Afgenomen vandaag ›"), the shared `LinkChevron`, the owner's choice (option A in [`tappable.png`](./tappable.png), [`tappable.html`](./tappable.html); more ideas in [`tappable-more.png`](./tappable-more.png), [`tappable-more.html`](./tappable-more.html)).
 
 ## In every sheet (`MeterSheet`)
 

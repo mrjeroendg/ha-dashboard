@@ -23,7 +23,7 @@ How it got here: the options for extra information (E1: yesterday, E2: per hour,
   previousDays={dailyTotals}         // optional: the bars and the dashed average
   euros={1.69}                       // optional: "≈ € 1,69"
   earlierDaysColor="#a8902f"         // optional: instead of the colour at 45%
-  onOpen={() => setIsSheetOpen(true)} // optional: a tap opens more, e.g. its sheet (energie-sheets)
+  onOpen={() => setIsSheetOpen(true)} // optional: a tap opens more, e.g. its sheet, with "›" after the name (energie-sheets)
   iconColor="#d8d2c4"                // optional: the icon in its own colour (energie-huis)
   bottomPart={{ color, earlierDaysColor, previousDays, today }} // optional: each bar stacked, this part at the bottom (energie-huis)
 >

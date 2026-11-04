@@ -3,6 +3,7 @@ import { ENERGY_QUARTER } from '../../config/energy';
 import { useNow } from '../../hooks/useNow';
 import { haptic } from '../../lib/haptic';
 import { numberState } from '../../lib/statistics';
+import { LinkChevron } from '../LinkChevron';
 import { CapacitySheet } from './CapacitySheet';
 import type { HomeAssistant } from '../../types/hass';
 
@@ -20,7 +21,8 @@ const MINUTES_PER_QUARTER = 15;
  * figures the capaciteitstarief is based on. The bar shows the colours up to
  * where it reaches; the white mark is this month's peak. The bottom part of
  * the Energie page's card (EnergyPage), without a card of its own. A tap
- * opens the capaciteitstarief over the year (CapacitySheet).
+ * opens the capaciteitstarief over the year (CapacitySheet); "Piek deze
+ * maand ›" shows it.
  */
 export function QuarterPeak({ hass }: Props) {
   const now = useNow();
@@ -57,7 +59,7 @@ export function QuarterPeak({ hass }: Props) {
       <div className="quarter-peak" role="button" tabIndex={0} onClick={openSheet} onKeyDown={openSheetWithKeyboard}>
         <div className="quarter-card__figures">
           <Figure label="Gemiddeld dit kwartier" kilowatts={averageKilowatts} />
-          <Figure label="Piek deze maand" kilowatts={peakKilowatts} isRight />
+          <Figure label="Piek deze maand" kilowatts={peakKilowatts} isRight opensMore />
         </div>
         <div className="quarter-bar" style={bar} aria-hidden>
           <span className="quarter-bar__fill" />
@@ -78,10 +80,13 @@ export function QuarterPeak({ hass }: Props) {
   );
 }
 
-function Figure({ label, kilowatts, isRight }: { label: string; kilowatts: number; isRight?: boolean }) {
+function Figure({ label, kilowatts, isRight, opensMore }: { label: string; kilowatts: number; isRight?: boolean; opensMore?: boolean }) {
   return (
     <div className={`quarter-figure${isRight ? ' quarter-figure--right' : ''}`}>
-      <p className="quarter-figure__label">{label}</p>
+      <p className="quarter-figure__label">
+        {label}
+        {opensMore && <LinkChevron />}
+      </p>
       <p className="quarter-figure__value" style={{ '--quarter-dot': colorAt(kilowatts) } as CSSProperties}>
         {kilowatts.toLocaleString('nl-BE', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
         <small>kW</small>

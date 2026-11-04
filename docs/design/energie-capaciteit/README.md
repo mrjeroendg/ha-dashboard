@@ -2,7 +2,7 @@
 
 A bottom sheet with the capaciteitstarief over the year, opened from "Dit kwartier" ([energie-kwartier](../energie-kwartier/README.md)) on Stroom. Dark mode only.
 
-> ✅ **Sheet approved and built.** **How it opens isn't decided yet:** the owner didn't like L1–L3 in the options. For now a tap anywhere on the quarter-hour part opens it, with nothing on the card to show it. Don't change proportions or behaviour without asking first.
+> ✅ **Sheet approved and built.** A tap anywhere on the quarter-hour part opens it; **"Piek deze maand ›"** shows it (the shared `LinkChevron`, like the day tiles: docs/design/energie-sheets). The owner didn't like L1–L3 in the options. Don't change proportions or behaviour without asking first.
 >
 > Code: `CapacitySheet.tsx` and `QuarterPeak.tsx` in `src/components/energy/`, `ENERGY_QUARTER` in `src/config/energy.ts`, `fetchEarlierMonthlyPeaks` and `fetchWhenValueWasReachedThisMonth` in `src/lib/statistics.ts`, the template helper `sensor.p1_monthly_peak` (below), styles under "Capaciteitstarief" in `src/styles.css`.
 

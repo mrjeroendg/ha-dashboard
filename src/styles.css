@@ -2039,7 +2039,8 @@ a.pill-button { text-decoration: none; }
 
 .quarter-card__figures { display: flex; justify-content: space-between; }
 .quarter-figure--right { text-align: right; }
-.quarter-figure__label { margin: 0; font-size: 13px; color: var(--text-muted); }
+.quarter-figure__label { display: flex; align-items: center; justify-content: inherit; margin: 0; font-size: 13px; color: var(--text-muted); }
+.quarter-figure--right .quarter-figure__label { justify-content: flex-end; }
 
 .quarter-figure__value {
   display: flex;
@@ -2096,7 +2097,7 @@ a.pill-button { text-decoration: none; }
 
 .quarter-card__left { margin: 4px 0 0; font-size: 12px; color: var(--text-muted); }
 
-/* A tap opens the capaciteitstarief; nothing on the card shows it. */
+/* A tap opens the capaciteitstarief; "Piek deze maand ›" shows it. */
 .quarter-peak { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 
 /* ---------------------------------------------------------------- Info sheets (docs/design/energie-sheets)
@@ -2186,6 +2187,13 @@ a.pill-button { text-decoration: none; }
 /* The days: ApexCharts takes one font weight for all labels, so today's (the last) is bold here. */
 .day-tile__chart { margin: 6px -6px 0; }
 .day-tile--opens { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+
+/* "›" right after the text that opens more (LinkChevron), like the room's safety line. */
+.link-chevron { display: inline-grid; margin-left: 2px; vertical-align: middle; color: var(--text-muted); }
+.link-chevron .icon { width: 12px; height: 12px; }
+/* In a day tile's name, after the tile's own icon rule. */
+.day-tile__name .link-chevron { margin-left: -2px; }
+.day-tile__name .link-chevron .icon { width: 12px; height: 12px; color: var(--text-muted); }
 .day-tile__chart .apexcharts-xaxis-texts-g text:last-of-type { font-weight: 700; }
 
 /* Zon vandaag (docs/design/energie-zon, B): the solar used yourself and fed back, as one bar. */

@@ -49,7 +49,9 @@ Instructions for Claude when working in this repository.
 - **What opens more shows "›".** Text that opens a sheet (or more detail)
   gets the shared `LinkChevron` right after it: "Afgenomen vandaag ›", "Piek deze
   maand ›", the room's safety line. Never a hidden tap with nothing to see,
-  and no other sign (no ⓘ, no "Meer" text, no extra row).
+  and no other sign (no ⓘ, no "Meer" text, no extra row). Controls (a
+  room's rows, `EntityControl`, e.g. a camera or the lawn mower) are their
+  own kind of component and keep their own look.
 - **Bar charts: always ApexCharts.** Every bar chart, also a single split
   bar (the shared `SplitBar`), is ApexCharts (`react-apexcharts/core` with
   only the chart types and features it needs, e.g. `apexcharts/bar`). Never

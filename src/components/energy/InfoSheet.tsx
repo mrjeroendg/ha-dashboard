@@ -139,23 +139,27 @@ export function InfoBarChart({ labels, values, color, nowIndex = values.length -
 export interface RoundAxis {
   max: number;
   steps: number;
+  /** As few as the step needs: none for whole steps, one for 0,2 or 0,5. */
+  decimals: number;
 }
 
 /**
- * A y-axis from 0 to just above `highestValue`, in about 4 round steps of
- * whole numbers (1, 2, 5 or 10 times a power of ten), so the labels need no
- * decimals.
+ * A y-axis from 0 to just above `highestValue`, in about 4 round steps (1, 2
+ * or 5 times a power of ten). Whole numbers when the values are big enough;
+ * below that, steps like 0,2 with the one decimal they need (the owner's
+ * choice: no decimals, except where whole numbers would only give "0 1").
  */
 export function roundAxis(highestValue: number): RoundAxis {
-  const roughStep = Math.max(1, (highestValue || 1) / AXIS_STEPS);
+  const roughStep = (highestValue || 1) / AXIS_STEPS;
   const powerOfTen = 10 ** Math.floor(Math.log10(roughStep));
   const roundStep = [1, 2, 5, 10].map((factor) => factor * powerOfTen).find((step) => step >= roughStep) ?? 10 * powerOfTen;
   const steps = Math.max(1, Math.ceil(highestValue / roundStep));
+  const decimals = Math.max(0, -Math.floor(Math.log10(roundStep) + 1e-9));
 
-  return { max: steps * roundStep, steps };
+  return { max: steps * roundStep, steps, decimals };
 }
 
-/** ApexCharts' y-axis for a round axis: muted whole numbers on the left, without the unit (the sheet says it). */
+/** ApexCharts' y-axis for a round axis: muted numbers on the left, without the unit (the sheet says it). */
 export function axisOptions(axis: RoundAxis): ApexOptions['yaxis'] {
   return {
     show: true,
@@ -164,7 +168,7 @@ export function axisOptions(axis: RoundAxis): ApexOptions['yaxis'] {
     tickAmount: axis.steps,
     labels: {
       style: { colors: MUTED_TEXT_COLOR, fontSize: '10px' },
-      formatter: (value: number) => readableAmount(value, 0),
+      formatter: (value: number) => readableAmount(value, axis.decimals),
     },
   };
 }

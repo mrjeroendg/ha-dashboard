@@ -4,6 +4,7 @@ import { usePeriodicFetch } from '../../hooks/usePeriodicFetch';
 import { type DailyTotal, fetchDailyTotalsWithDays, numberState } from '../../lib/statistics';
 import type { HomeAssistant } from '../../types/hass';
 import { DayTile } from '../DayTile';
+import { SplitBar } from '../SplitBar';
 import { ElectricitySheet } from './ElectricitySheet';
 import { SolarSheet } from './SolarSheet';
 import { kilowattHoursPerSolarUnit } from './solarUnits';
@@ -97,10 +98,12 @@ function SolarToday({ solarKilowattHours, fedBackToGridKilowattHours, previousDa
     >
       {hasSolarToday && (
         <div className="solar-split">
-          <div className="solar-split__bar" aria-hidden>
-            <span style={splitPart(ENERGY_TODAY.solarColor, usedYourselfKilowattHours)} />
-            <span style={splitPart(ENERGY_TODAY.solarFedBackColor, fedBackToGridKilowattHours)} />
-          </div>
+          <SplitBar
+            parts={[
+              { value: usedYourselfKilowattHours, color: ENERGY_TODAY.solarColor },
+              { value: fedBackToGridKilowattHours, color: ENERGY_TODAY.solarFedBackColor },
+            ]}
+          />
           <p className="solar-split__legend">
             <span style={{ '--solar-split-color': ENERGY_TODAY.solarColor } as CSSProperties}>
               Verbruikt <strong>{readableKilowattHours(usedYourselfKilowattHours)} · {usedYourselfPercentage}%</strong>
@@ -114,10 +117,6 @@ function SolarToday({ solarKilowattHours, fedBackToGridKilowattHours, previousDa
     </DayTile>
   );
 }
-
-/** A part of the split bar, as wide as its share. */
-const splitPart = (color: string, kilowattHours: number) =>
-  ({ '--solar-split-color': color, flex: kilowattHours } as CSSProperties);
 
 const readableKilowattHours = (kilowattHours: number) =>
   kilowattHours.toLocaleString('nl-BE', { minimumFractionDigits: 2, maximumFractionDigits: 2 });

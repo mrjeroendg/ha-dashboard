@@ -46,6 +46,10 @@ Instructions for Claude when working in this repository.
 - **Empty sheets:** a sheet that can have nothing to list shows the shared
   `EmptyState` (docs/design/empty-state) with its own short text, never an
   empty frame.
+- **Bar charts: always ApexCharts.** Every bar chart, also a single split
+  bar (the shared `SplitBar`), is ApexCharts (`react-apexcharts/core` with
+  only the chart types and features it needs, e.g. `apexcharts/bar`). Never
+  bars in plain HTML/CSS or hand-drawn SVG. Mockups may draw them by hand.
 - **Day totals:** a tile with a total for today (so far) uses the shared
   `DayTile` (docs/design/day-tile): name and icon, the value, and optionally
   the amount in euros and the days before today as bars with their average.

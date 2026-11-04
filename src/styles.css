@@ -2190,8 +2190,7 @@ a.pill-button { text-decoration: none; }
 
 /* Zon vandaag (docs/design/energie-zon, B): the solar used yourself and fed back, as one bar. */
 .solar-split { margin-top: 12px; }
-.solar-split__bar { display: flex; gap: 2px; height: 10px; border-radius: 5px; overflow: hidden; }
-.solar-split__bar span { background: var(--solar-split-color); }
+.split-bar { height: 12px; }
 .solar-split__legend { display: flex; justify-content: space-between; gap: 8px; margin: 6px 0 0; font-size: 12px; color: var(--text-muted); }
 .solar-split__legend span { display: flex; align-items: center; gap: 5px; }
 .solar-split__legend span::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--solar-split-color); }

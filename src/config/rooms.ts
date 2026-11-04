@@ -139,7 +139,8 @@ export const ROOMS: RoomConfig[] = [
     ],
     entities: [
       { entity: Entity.GARAGE_STORAGE_LIGHT, name: 'Berging' },
-      { entity: Entity.GARAGE_DOOR_IMPULSE_SCRIPT, name: 'Garagedeur' }
+      { entity: Entity.GARAGE_DOOR_IMPULSE_SCRIPT, name: 'Garagedeur' },
+      { entity: Entity.GARAGE_DOOR_CAMERA, name: 'Camera' }
     ],
   },
   {

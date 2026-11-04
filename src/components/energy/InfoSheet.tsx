@@ -97,8 +97,8 @@ export function InfoBarChart({ labels, values, color, nowIndex = values.length -
       borderColor: AXIS_LINE_COLOR,
       xaxis: { lines: { show: false } },
       yaxis: { lines: { show: true } },
-      // Room between the y-axis's numbers and the first bar (and its label).
-      padding: { top: -14, right: 0, bottom: 0, left: 12 },
+      // Room between the y-axis's numbers and the first bar, so they don't stick to the chart.
+      padding: { top: -14, right: 0, bottom: 0, left: 20 },
     },
     xaxis: {
       categories: labels,

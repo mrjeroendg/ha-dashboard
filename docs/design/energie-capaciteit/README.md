@@ -22,7 +22,7 @@ All numbers with **two decimals** (the owner's choice), except the days and the 
 
 - **Title** "Capaciteitstarief" (serif, 24px), "Je hoogste kwartier per maand, het laatste jaar."
 - **Two figures:** "Gemiddelde 12 maanden" (kW) and "Je betaalt nu per maand" (≈ €).
-- **Maandpieken:** an ApexCharts bar chart, a bar per month (this month last, its name bold), coloured by the quarter-hour bar's bands (green up to 3 kW, orange up to 5, then red), earlier months at 60%. The minimum as a line over a shaded band ("min. 2,50"), the average as a dashed line ("gem. 3,57 kW"). A y-axis in kW with faint lines at each step. No legend.
+- **Maandpieken:** an ApexCharts bar chart, a bar per month (this month last, its name bold), coloured by the quarter-hour bar's bands (green up to 3 kW, orange up to 5, then red), earlier months at 60%. The average as a dashed line ("gem. 3,57 kW"). No line or band for the minimum of 2,50 kW (removed 4 November: the owner found it a weird effect). A y-axis in kW with faint lines at each step. No legend.
 - **Deze maand:** "Piek tot nu" (kW), with the quarter-hour it was reached in ("ma 2 nov, 18:15–18:30") when HA's history can tell; "Maand nog" (days, today included).
 - **Wat kost deze maand?** One sentence ("Elke maand telt je hoogste kwartier, minstens 2,50 kW. Je betaalt op het gemiddelde van de laatste 12 maanden."), then the calculation: the average × the price per month (€57,45 ÷ 12) = this month's cost.
 - Scrolls inside the sheet when it's higher than 85% of the screen.

@@ -130,8 +130,8 @@ function Figure({ label, value, unit, detail }: { label: string; value: string; 
 
 /**
  * A bar per month in the colour of the quarter-hour bar (green, orange, red),
- * this month's brightest, with the minimum of 2,50 kW as a line over a shaded
- * band and the average as a dashed line.
+ * this month's brightest, with the average as a dashed line. No line for the
+ * minimum of 2,50 kW (the owner found it a weird effect).
  */
 function MonthlyPeaksChart({
   monthlyPeaks,
@@ -173,8 +173,8 @@ function MonthlyPeaksChart({
       borderColor: 'rgba(245, 244, 239, 0.08)',
       xaxis: { lines: { show: false } },
       yaxis: { lines: { show: true } },
-      // Room between the y-axis's numbers and the first bar (and its label).
-      padding: { top: -14, right: 0, bottom: 0, left: 12 },
+      // Room between the y-axis's numbers and the first bar, so they don't stick to the chart.
+      padding: { top: -14, right: 0, bottom: 0, left: 20 },
     },
     xaxis: {
       categories: monthlyPeaks.map((monthlyPeak) => monthName(monthlyPeak.monthStart)),
@@ -185,30 +185,6 @@ function MonthlyPeaksChart({
     yaxis: axisOptions(axis),
     annotations: {
       yaxis: [
-        // The band up to the minimum: a peak below it still counts as the minimum.
-        {
-          y: 0,
-          y2: ENERGY_QUARTER.minimumKilowatts,
-          fillColor: TEXT_COLOR,
-          opacity: 0.05,
-          borderColor: 'transparent',
-        },
-        {
-          y: ENERGY_QUARTER.minimumKilowatts,
-          borderColor: 'rgba(245, 244, 239, 0.3)',
-          strokeDashArray: 0,
-          label: {
-            text: `min. ${twoDecimals(ENERGY_QUARTER.minimumKilowatts)}`,
-            position: 'center',
-            textAnchor: 'middle',
-            borderWidth: 0,
-            style: {
-              background: 'transparent',
-              color: MUTED_TEXT_COLOR,
-              fontSize: '10px',
-            },
-          },
-        },
         {
           y: averageKilowatts,
           borderColor: 'rgba(245, 244, 239, 0.8)',

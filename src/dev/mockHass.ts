@@ -326,7 +326,8 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
     if (msg.type === 'recorder/statistics_during_period' && msg.period === '5minute') {
       const fiveMinutes = 5 * 60_000;
       const firstStart = Date.parse(String(msg.start_time));
-      const averages = [310, 280, 260, 180, 90, -40, -180, -320, -420, -610, -780, -850];
+      // The last 2 hours: taking in the morning, then the sun takes over.
+      const averages = [420, 380, 350, 400, 360, 330, 310, 280, 260, 220, 240, 200, 310, 280, 260, 180, 90, -40, -180, -320, -420, -610, -780, -850];
       return Object.fromEntries(
         (msg.statistic_ids as string[]).map((statisticId) => [
           statisticId,

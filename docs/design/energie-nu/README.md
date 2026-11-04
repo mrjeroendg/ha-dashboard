@@ -4,6 +4,8 @@ The "Nu" section at the top of the [Energie](../nav-categories/README.md) page: 
 
 > ✅ **Approved and built** (3 November): card B from [`without-chart.png`](./without-chart.png), with the 5-minute bars of [`graph-options.png`](./graph-options.png) (B2, but for the last hour). Don't change proportions or behaviour without asking first.
 >
+> **2 hours, 24 bars of 5 minutes** (4 November; it was the last hour, 12 bars), axis labels "2 uur geleden" and "nu".
+>
 > Code: `EnergyNow.tsx` in `src/components/energy/`, the bars in `FiveMinuteBars.tsx`, `fetchFiveMinuteAverages` in `src/lib/statistics.ts`, `src/config/energy.ts`, the hooks `useEasedNumber`, `usePeriodicFetch` and `usePrefersReducedMotion`, styles under "Energie: Nu" in `src/styles.css`.
 
 ![Built](./built.png)
@@ -17,8 +19,8 @@ Only the P1 meter: `sensor.p1_meter_power` (`ENERGY_NOW.gridPower`), positive wh
 ## The card (B)
 
 - *No section title any more:* since S2 ([energie-page](../energie-page/README.md)) this is part of one card for now.
-- **The label:** "Van het net" with a pink dot (`#d55181`), or "Terug naar het net" with a green dot (`#6bab3e`), following the sign.
-- **The big number** (40px, fixed-width digits), without a minus sign, **in the colour of the bars**: pink while taking, green while feeding back. It **counts** to each new value in 0.4 s and follows every state change (about every 3 s).
+- **The label:** "Van het net" with a blue dot (`#4c9be8`, pink `#d55181` until 4 November), or "Terug naar het net" with a green dot (`#6bab3e`), following the sign.
+- **The big number** (40px, fixed-width digits), without a minus sign, **in the colour of the bars**: blue while taking, green while feeding back. It **counts** to each new value in 0.4 s and follows every state change (about every 3 s).
 - *No "Live" badge any more* (removed on 4 November at the owner's request).
 
 ## The bars

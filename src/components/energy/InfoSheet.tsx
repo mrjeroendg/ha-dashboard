@@ -97,7 +97,8 @@ export function InfoBarChart({ labels, values, color, nowIndex = values.length -
       borderColor: AXIS_LINE_COLOR,
       xaxis: { lines: { show: false } },
       yaxis: { lines: { show: true } },
-      padding: { top: -14, right: 0, bottom: 0, left: 0 },
+      // Room between the y-axis's numbers and the first bar (and its label).
+      padding: { top: -14, right: 0, bottom: 0, left: 12 },
     },
     xaxis: {
       categories: labels,
@@ -162,8 +163,6 @@ export function axisOptions(axis: RoundAxis): ApexOptions['yaxis'] {
     max: axis.max,
     tickAmount: axis.steps,
     labels: {
-      // A little away from the plot, so the average's label (on the left of the plot) doesn't cover its end.
-      offsetX: -6,
       style: { colors: MUTED_TEXT_COLOR, fontSize: '10px' },
       formatter: (value: number) => readableAmount(value, 0),
     },

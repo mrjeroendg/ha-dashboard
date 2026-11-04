@@ -173,7 +173,8 @@ function MonthlyPeaksChart({
       borderColor: 'rgba(245, 244, 239, 0.08)',
       xaxis: { lines: { show: false } },
       yaxis: { lines: { show: true } },
-      padding: { top: -14, right: 0, bottom: 0, left: 0 },
+      // Room between the y-axis's numbers and the first bar (and its label).
+      padding: { top: -14, right: 0, bottom: 0, left: 12 },
     },
     xaxis: {
       categories: monthlyPeaks.map((monthlyPeak) => monthName(monthlyPeak.monthStart)),

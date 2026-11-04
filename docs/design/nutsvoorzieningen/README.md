@@ -52,7 +52,7 @@ The dark steps from the dataviz reference palette, validated on surface `#30302e
 
 | Utility | Color |
 |---|---|
-| Stroom | `#d55181` (magenta) |
+| Stroom | `#4c9be8` (blue; magenta `#d55181` until 4 November) |
 | Zon | `#c98500` (yellow) |
 | Water | `#3987e5` (blue) |
 | Gas | `#a37cf0` (purple; was aqua green `#199e70`, changed with Energie's gas) |

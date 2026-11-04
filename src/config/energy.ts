@@ -9,8 +9,8 @@ export const ENERGY_NOW = {
   fromGridColor: UTILITY_COLORS.stroom,
   /** "Terug naar het net": below zero. */
   backToGridColor: UTILITY_COLORS.feedingBack,
-  /** The bars below the number: the last hour. */
-  fiveMinuteBars: 12,
+  /** The bars below the number: the last 2 hours. */
+  fiveMinuteBars: 24,
 };
 
 /**
@@ -69,7 +69,7 @@ export const ENERGY_TODAY = {
    */
   alwaysOnPower: Entity.ELECTRICITY_ALWAYS_ON_POWER,
   alwaysOnToday: Entity.ELECTRICITY_ALWAYS_ON_TODAY,
-  /** "Huis vandaag" (docs/design/energie-huis): teal for its icon, apart from net (pink), zon (yellow) and gas (purple); the bars are net and zon. */
+  /** "Huis vandaag" (docs/design/energie-huis): teal for its icon, apart from net (blue), zon (yellow) and gas (purple); the bars are net and zon. */
   houseColor: '#3fb6a8',
   /** The chart shows this many days before today, plus today; the dashed line is their average. */
   previousDays: 13,

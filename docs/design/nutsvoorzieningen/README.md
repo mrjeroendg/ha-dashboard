@@ -1,6 +1,10 @@
 # Nutsvoorzieningen
 
-Today's energy and water use on **Thuis**. Dark mode only. Replaces the owner's existing HA "Nutsvoorzieningen" section and follows the same design system as the [media card](../media-card/README.md) and [cameras](../cameras/README.md).
+Today's energy and water use on **Thuis**. Dark mode only.
+
+> **The Water tile is gone** (4 November): the water meter was removed, so Gas sits alone on the bottom row.
+
+The original: Replaces the owner's existing HA "Nutsvoorzieningen" section and follows the same design system as the [media card](../media-card/README.md) and [cameras](../cameras/README.md).
 
 > ➡️ **Adjusted and built as [Verbruik](../verbruik/README.md).** What's below is the original approved design; Verbruik lists what changed.
 >

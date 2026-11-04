@@ -5,19 +5,16 @@ import { EnergyNow } from './EnergyNow';
 import { GasLastDays } from './GasLastDays';
 import { QuarterPeak } from './QuarterPeak';
 import { TodaySoFar } from './TodaySoFar';
-import { WaterNow } from './WaterNow';
-import { WaterToday } from './WaterToday';
 
 interface Props {
   hass: HomeAssistant;
 }
 
-type EnergyTab = 'stroom' | 'gas' | 'water';
+type EnergyTab = 'stroom' | 'gas';
 
 const TABS: Array<{ id: EnergyTab; name: string }> = [
   { id: 'stroom', name: 'Stroom' },
   { id: 'gas', name: 'Gas' },
-  { id: 'water', name: 'Water' },
 ];
 
 /**
@@ -25,9 +22,7 @@ const TABS: Array<{ id: EnergyTab; name: string }> = [
  * room's tabs (docs/design/energie-gas). "Stroom" (docs/design/energie-page,
  * S2): one card for now (the power with its 5-minute bars, a thin line, then
  * the quarter-hour), and the day tiles below it. "Gas": today's gas with the
- * last 14 days. "Water" (docs/design/energie-water): like Stroom, the flow
- * now with the last 2 hours as bars, and today's water below it. It always
- * opens on Stroom.
+ * last 14 days. It always opens on Stroom.
  */
 export function EnergyPage({ hass }: Props) {
   const [activeTab, setActiveTab] = useState<EnergyTab>('stroom');
@@ -66,14 +61,6 @@ export function EnergyPage({ hass }: Props) {
         <div className="energy-page__now">
           <GasLastDays hass={hass} />
         </div>
-      )}
-      {activeTab === 'water' && (
-        <>
-          <div className="energy-card energy-page__now">
-            <WaterNow hass={hass} />
-          </div>
-          <WaterToday hass={hass} />
-        </>
       )}
     </>
   );

@@ -39,7 +39,6 @@ function GridPower({ hass, currentWatts }: Props & { currentWatts: number }) {
       <FiveMinuteBars
         hass={hass}
         entityId={ENERGY_NOW.gridPower}
-        statisticType="mean"
         numberOfBars={ENERGY_NOW.fiveMinuteBars}
         colorFor={colorFor}
         firstBarLabel="1 uur geleden"

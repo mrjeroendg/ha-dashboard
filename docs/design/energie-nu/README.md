@@ -4,7 +4,7 @@ The "Nu" section at the top of the [Energie](../nav-categories/README.md) page: 
 
 > ✅ **Approved and built** (3 November): card B from [`without-chart.png`](./without-chart.png), with the 5-minute bars of [`graph-options.png`](./graph-options.png) (B2, but for the last hour). Don't change proportions or behaviour without asking first.
 >
-> Code: `EnergyNow.tsx` in `src/components/energy/`, the bars in `FiveMinuteBars.tsx` (shared with Water, [energie-water](../energie-water/README.md)), `fetchFiveMinuteStatistics` in `src/lib/statistics.ts`, `src/config/energy.ts`, the hooks `useEasedNumber`, `usePeriodicFetch` and `usePrefersReducedMotion`, styles under "Energie: Nu" in `src/styles.css`.
+> Code: `EnergyNow.tsx` in `src/components/energy/`, the bars in `FiveMinuteBars.tsx`, `fetchFiveMinuteAverages` in `src/lib/statistics.ts`, `src/config/energy.ts`, the hooks `useEasedNumber`, `usePeriodicFetch` and `usePrefersReducedMotion`, styles under "Energie: Nu" in `src/styles.css`.
 
 ![Built](./built.png)
 

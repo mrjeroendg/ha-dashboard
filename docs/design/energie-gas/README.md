@@ -14,7 +14,7 @@ The designs that led here: Gas as its own page in the bar (G1 to G3): [`page-opt
 
 ## The chips
 
-- **"Stroom", "Gas" and "Water"** ([energie-water](../energie-water/README.md)) under the title, the same chips as a room's tabs (`room-tabs`, `room-tab`): the active one in the accent tint.
+- **"Stroom" and "Gas"** under the title (a "Water" chip was there too, removed with the water meter), the same chips as a room's tabs (`room-tabs`, `room-tab`): the active one in the accent tint.
 - **"Stroom"** is the page as it was ([energie-page](../energie-page/README.md), S2). The page always opens on Stroom; nothing is remembered.
 
 ## Gas

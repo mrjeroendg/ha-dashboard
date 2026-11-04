@@ -91,7 +91,7 @@ export enum Entity {
   GARDEN_LAWN_MOWER_BLADE_HOURS_SINCE_RESET = 'sensor.jeroen_dg2_gmail_com_jaqueline_blade_runtime_since_reset',
   GARDEN_LAWN_MOWER_DISTANCE_TOTAL = 'sensor.jeroen_dg2_gmail_com_jaqueline_distance_driven_total',
 
-  // Energy and water
+  // Energy
   ELECTRICITY_POWER = 'sensor.p1_meter_power',
   ELECTRICITY_AVERAGE_DEMAND_THIS_QUARTER = 'sensor.p1_meter_average_demand',
   ELECTRICITY_PEAK_DEMAND_THIS_MONTH = 'sensor.p1_meter_peak_demand_current_month',
@@ -100,8 +100,6 @@ export enum Entity {
   ELECTRICITY_PRODUCTION_TODAY = 'sensor.p1_meter_energy_production_daily',
   SOLAR_PRODUCTION_TODAY = 'sensor.garage_smappee_total_production_today',
   GAS_CONSUMPTION_TODAY = 'sensor.gas_meter_consumption_daily',
-  WATER_CONSUMPTION_TODAY = 'sensor.garage_water_meter_consumption_daily',
-  WATER_USAGE = 'sensor.garage_water_meter_water_usage',
 
   // Radio stations
   PLAY_RADIO_1_ON_CHROMECAST_SCRIPT = 'script.speel_radio1_op_chromecast',

@@ -5,14 +5,12 @@ import Chart from 'react-apexcharts/core';
 import 'apexcharts/bar';
 import 'apexcharts/features/annotations';
 import { usePeriodicFetch } from '../../hooks/usePeriodicFetch';
-import { fetchFiveMinuteStatistics } from '../../lib/statistics';
+import { fetchFiveMinuteAverages } from '../../lib/statistics';
 import type { HomeAssistant } from '../../types/hass';
 
 interface Props {
   hass: HomeAssistant;
   entityId: string;
-  /** `mean` for a power-like sensor, `change` for a meter that counts up. */
-  statisticType: 'mean' | 'change';
   numberOfBars: number;
   /** The bar's colour, by its value. */
   colorFor: (value: number) => string;
@@ -25,15 +23,15 @@ const REFRESH_BARS_EVERY_MILLISECONDS = 60_000;
 const BARS_HEIGHT = 64;
 
 /**
- * The bars under a big number on the Energie page (docs/design/energie-nu,
- * docs/design/energie-water): one per 5 minutes, up to the last 5 minutes that
+ * The bars under the power on the Energie page (docs/design/energie-nu): the
+ * average of each 5 minutes, up to the last 5 minutes that
  * are over, across the full width of the card. Upwards for positive values,
  * downwards for negative ones. Fetched again every minute, without animation.
  */
-export function FiveMinuteBars({ hass, entityId, statisticType, numberOfBars, colorFor, firstBarLabel }: Props) {
+export function FiveMinuteBars({ hass, entityId, numberOfBars, colorFor, firstBarLabel }: Props) {
   const fiveMinuteValues = usePeriodicFetch(
-    () => fetchFiveMinuteStatistics(hass, entityId, statisticType, numberOfBars),
-    `${entityId} ${statisticType} ${numberOfBars}`,
+    () => fetchFiveMinuteAverages(hass, entityId, numberOfBars),
+    `${entityId} ${numberOfBars}`,
     REFRESH_BARS_EVERY_MILLISECONDS,
   );
   const values = fiveMinuteValues ?? [];

@@ -2102,7 +2102,7 @@ a.pill-button { text-decoration: none; }
 
 /* ---------------------------------------------------------------- Info sheets (docs/design/energie-sheets)
    The shared layout of the sheets behind Energie's tiles: Capaciteitstarief
-   (docs/design/energie-capaciteit), and Afgenomen, Zon, Gas and Water. */
+   (docs/design/energie-capaciteit), and Afgenomen, Zon and Gas. */
 
 .info-sheet {
   max-height: 85dvh;

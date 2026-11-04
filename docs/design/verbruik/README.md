@@ -1,5 +1,7 @@
 # Verbruik: energy and water on Thuis
 
+> **Water is gone** (4 November): the water meter was removed, and with it the Water tile on Thuis.
+
 The approved [Nutsvoorzieningen](../nutsvoorzieningen/README.md) design, adjusted to the owner's current HA section. Dark mode only. Read-only: nothing is tappable.
 
 > ✅ **Approved.** Don't change layout, colours, proportions or content without asking first.

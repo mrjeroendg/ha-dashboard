@@ -113,23 +113,16 @@ const FIVE_MINUTES = 5 * 60_000;
 interface FiveMinuteRow {
   start: number | string;
   mean?: number | null;
-  change?: number | null;
 }
 
 /**
- * A sensor's statistic per 5 minutes over the last `numberOfBars` × 5 minutes,
- * oldest first: HA's short-term statistics, what its history graph calls
- * "5-minute aggregated". `mean` for a power-like sensor (time-weighted),
- * `change` for a meter that counts up (how much it counted). The newest is the
- * last 5 minutes that are over. A 5 minutes without statistics (e.g. while HA
+ * A power sensor's average per 5 minutes over the last `numberOfBars` × 5
+ * minutes, oldest first: HA's short-term statistics, what its history graph
+ * calls "5-minute aggregated" (time-weighted). The newest is the last 5
+ * minutes that are over. A 5 minutes without statistics (e.g. while HA
  * restarted) is `null`.
  */
-export async function fetchFiveMinuteStatistics(
-  hass: HomeAssistant,
-  entityId: string,
-  statisticType: 'mean' | 'change',
-  numberOfBars: number,
-): Promise<Array<number | null>> {
+export async function fetchFiveMinuteAverages(hass: HomeAssistant, entityId: string, numberOfBars: number): Promise<Array<number | null>> {
   const startOfCurrentFiveMinutes = Math.floor(Date.now() / FIVE_MINUTES) * FIVE_MINUTES;
   const startOfFirstBar = startOfCurrentFiveMinutes - numberOfBars * FIVE_MINUTES;
   const statisticsPerEntity = await hass.callWS<Record<string, FiveMinuteRow[]> | undefined>({
@@ -138,11 +131,11 @@ export async function fetchFiveMinuteStatistics(
     end_time: new Date(startOfCurrentFiveMinutes).toISOString(),
     statistic_ids: [entityId],
     period: '5minute',
-    types: [statisticType],
+    types: ['mean'],
   });
 
   const rows = statisticsPerEntity?.[entityId] ?? [];
-  const valueAt = new Map(rows.map((row) => [typeof row.start === 'number' ? row.start : Date.parse(row.start), row[statisticType]]));
+  const valueAt = new Map(rows.map((row) => [typeof row.start === 'number' ? row.start : Date.parse(row.start), row.mean]));
   const barStarts = Array.from({ length: numberOfBars }, (_unused, barNumber) => startOfFirstBar + barNumber * FIVE_MINUTES);
 
   return barStarts.map((barStart) => {
@@ -305,29 +298,6 @@ export async function fetchLowestHourlyAverageLastNight(hass: HomeAssistant, pow
 
   const hourlyAverages = (statisticsPerEntity?.[powerEntityId] ?? []).map((hourlyRow) => hourlyRow.mean).filter(isNumber);
   return hourlyAverages.length > 0 ? Math.min(...hourlyAverages) : undefined;
-}
-
-/**
- * Whether a meter counted in every 5 minutes of last night (1:00 to 5:00), a
- * sign of a leak: normally nothing runs then for a while. Undefined when a 5
- * minutes is missing from the statistics (HA keeps them 10 days).
- */
-export async function fetchHasCountedAllNight(hass: HomeAssistant, meterEntityId: string): Promise<boolean | undefined> {
-  const { nightStart, nightEnd } = lastNight();
-  const statisticsPerEntity = await hass.callWS<Record<string, Array<{ start: number | string; change?: number | null }>> | undefined>({
-    type: 'recorder/statistics_during_period',
-    start_time: new Date(nightStart).toISOString(),
-    end_time: new Date(nightEnd).toISOString(),
-    statistic_ids: [meterEntityId],
-    period: '5minute',
-    types: ['change'],
-  });
-
-  const fiveMinuteTotals = (statisticsPerEntity?.[meterEntityId] ?? []).map((fiveMinuteRow) => fiveMinuteRow.change).filter(isNumber);
-  const numberOfFiveMinutesInNight = (nightEnd - nightStart) / FIVE_MINUTES;
-  if (fiveMinuteTotals.length < numberOfFiveMinutesInNight) return undefined;
-
-  return fiveMinuteTotals.every((fiveMinuteTotal) => fiveMinuteTotal > 0);
 }
 
 /** A sensor's state as a number, or undefined when it's missing or unavailable. */

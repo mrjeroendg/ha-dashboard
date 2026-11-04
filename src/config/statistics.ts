@@ -37,7 +37,6 @@ export interface StatisticTileConfig {
 export const UTILITY_COLORS = {
   stroom: '#d55181',
   zon: '#c98500',
-  water: '#3987e5',
   gas: '#a37cf0',
   feedingBack: '#6bab3e',
 };
@@ -49,7 +48,6 @@ export const STATISTICS: StatisticsSectionConfig[] = [
     tiles: [
       { name: 'Stroom', icon: 'bolt', color: UTILITY_COLORS.stroom, entity: Entity.ELECTRICITY_CONSUMPTION_TODAY, decimals: 2 },
       { name: 'Zon', icon: 'sun', color: UTILITY_COLORS.zon, entity: Entity.ELECTRICITY_PRODUCTION_TODAY, decimals: 2 },
-      { name: 'Water', icon: 'droplet', color: UTILITY_COLORS.water, entity: Entity.WATER_CONSUMPTION_TODAY, decimals: 3 },
       { name: 'Gas', icon: 'flame', color: UTILITY_COLORS.gas, entity: Entity.GAS_CONSUMPTION_TODAY, decimals: 2 },
     ],
   },

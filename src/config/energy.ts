@@ -88,22 +88,3 @@ export const ENERGY_GAS = {
    */
   euroPerCubicMetre: 1.3,
 };
-
-/** The "Water" chip on the Energie page (docs/design/energie-water): the water meter. */
-export const ENERGY_WATER = {
-  /** The flow right now, in l/min. */
-  usageNow: Entity.WATER_USAGE,
-  /** Since midnight, in m³; also the source of the 5-minute bars (its change per 5 minutes). */
-  consumptionToday: Entity.WATER_CONSUMPTION_TODAY,
-  color: UTILITY_COLORS.water,
-  /** The bars below the number: the last 2 hours. */
-  fiveMinuteBars: 24,
-  /** The chart shows this many days before today, plus today. */
-  previousDays: 13,
-  /**
-   * € per m³, for "≈ € 0,60": an estimate on the high side (Flemish water,
-   * all-in with the sanitation charges) until it's replaced by the price on
-   * the bill.
-   */
-  euroPerCubicMetre: 5.9,
-};

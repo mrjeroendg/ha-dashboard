@@ -1,4 +1,3 @@
-import { ENERGY_TODAY } from '../../config/energy';
 import type { HomeAssistant } from '../../types/hass';
 import { AlwaysOnSection } from './AlwaysOnSection';
 import { InfoFigure, InfoFigures, InfoSheet, readableAmount } from './InfoSheet';

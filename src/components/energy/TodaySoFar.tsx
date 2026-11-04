@@ -6,6 +6,7 @@ import type { HomeAssistant } from '../../types/hass';
 import { DayTile } from '../DayTile';
 import { SplitBar } from '../SplitBar';
 import { ElectricitySheet } from './ElectricitySheet';
+import { HouseSheet } from './HouseSheet';
 import { SolarSheet } from './SolarSheet';
 import { kilowattHoursPerSolarUnit } from './solarUnits';
 
@@ -27,7 +28,7 @@ const TODAY_SENSORS = [ENERGY_TODAY.takenFromGrid, ENERGY_TODAY.solarToday, ENER
  * Afgenomen in euros.
  */
 export function TodaySoFar({ hass }: Props) {
-  const [openSheet, setOpenSheet] = useState<'electricity' | 'solar'>();
+  const [openSheet, setOpenSheet] = useState<'house' | 'electricity' | 'solar'>();
   const closeSheet = () => setOpenSheet(undefined);
   const takenFromGridKilowattHours = numberState(hass.states, ENERGY_TODAY.takenFromGrid);
   const fedBackToGridKilowattHours = numberState(hass.states, ENERGY_TODAY.fedBackToGrid);
@@ -54,6 +55,10 @@ export function TodaySoFar({ hass }: Props) {
           solarKilowattHours={solarTodayKilowattHours}
           fedBackToGridKilowattHours={fedBackToGridKilowattHours}
           previousDays={houseDays(dailyTotalsPerSensor, solarKilowattHoursPerUnit)}
+          isSheetOpen={openSheet === 'house'}
+          onOpen={() => setOpenSheet('house')}
+          onClose={closeSheet}
+          hass={hass}
         />
       )}
       <DayTile
@@ -97,7 +102,10 @@ interface HouseDay {
  * three sensors: each day taken from the grid, plus that day's solar minus
  * what was injected. A day without solar statistics counts no own solar.
  */
-function houseDays(dailyTotalsPerSensor: Record<string, DailyTotal[]> | undefined, solarKilowattHoursPerUnit: number): HouseDay[] | undefined {
+function houseDays(
+  dailyTotalsPerSensor: Record<string, DailyTotal[]> | undefined,
+  solarKilowattHoursPerUnit: number,
+): HouseDay[] | undefined {
   if (dailyTotalsPerSensor === undefined) return undefined;
 
   const totalOnDay = (entityId: string, dayStart: number) =>
@@ -117,6 +125,10 @@ interface HouseTodayProps {
   solarKilowattHours: number;
   fedBackToGridKilowattHours: number;
   previousDays?: HouseDay[];
+  hass: HomeAssistant;
+  isSheetOpen: boolean;
+  onOpen(): void;
+  onClose(): void;
 }
 
 /**
@@ -124,7 +136,17 @@ interface HouseTodayProps {
  * the grid and from its own solar, as a split bar ("Zon", "Net"), and each of
  * the days before split the same way (own solar at the bottom).
  */
-function HouseToday({ takenFromGridKilowattHours, solarKilowattHours, fedBackToGridKilowattHours, previousDays }: HouseTodayProps) {
+function HouseToday(props: HouseTodayProps) {
+  const {
+    takenFromGridKilowattHours,
+    solarKilowattHours,
+    fedBackToGridKilowattHours,
+    previousDays,
+    hass,
+    isSheetOpen,
+    onOpen,
+    onClose,
+  } = props;
   // Smappee and the P1 meter measure apart, so injecting can come out a little above the solar.
   const ownSolarKilowattHours = Math.max(0, solarKilowattHours - fedBackToGridKilowattHours);
   const houseKilowattHours = takenFromGridKilowattHours + ownSolarKilowattHours;
@@ -132,43 +154,58 @@ function HouseToday({ takenFromGridKilowattHours, solarKilowattHours, fedBackToG
   const ownSolarPercentage = hasUsedAnything ? Math.round((ownSolarKilowattHours / houseKilowattHours) * 100) : 0;
 
   return (
-    <DayTile
-      name="Huis vandaag"
-      icon="home"
-      color={ENERGY_NOW.fromGridColor}
-      iconColor={ENERGY_TODAY.houseColor}
-      value={houseKilowattHours}
-      unit="kWh"
-      decimals={2}
-      previousDays={previousDays}
-      bottomPart={
-        previousDays && {
-          color: ENERGY_TODAY.solarColor,
-          earlierDaysColor: ENERGY_TODAY.solarEarlierDaysColor,
-          previousDays: previousDays.map((previousDay) => previousDay.ownSolar),
-          today: ownSolarKilowattHours,
+    <>
+      <DayTile
+        name="Huis vandaag"
+        icon="home"
+        color={ENERGY_NOW.fromGridColor}
+        iconColor={ENERGY_TODAY.houseColor}
+        value={houseKilowattHours}
+        onOpen={onOpen}
+        unit="kWh"
+        decimals={2}
+        previousDays={previousDays}
+        bottomPart={
+          previousDays && {
+            color: ENERGY_TODAY.solarColor,
+            earlierDaysColor: ENERGY_TODAY.solarEarlierDaysColor,
+            previousDays: previousDays.map((previousDay) => previousDay.ownSolar),
+            today: ownSolarKilowattHours,
+          }
         }
-      }
-    >
-      {hasUsedAnything && (
-        <div className="solar-split">
-          <SplitBar
-            parts={[
-              { value: ownSolarKilowattHours, color: ENERGY_TODAY.solarColor },
-              { value: takenFromGridKilowattHours, color: ENERGY_NOW.fromGridColor },
-            ]}
-          />
-          <p className="solar-split__legend">
-            <span style={{ '--solar-split-color': ENERGY_TODAY.solarColor } as CSSProperties}>
-              Zon <strong>{readableKilowattHours(ownSolarKilowattHours)} · {ownSolarPercentage}%</strong>
-            </span>
-            <span style={{ '--solar-split-color': ENERGY_NOW.fromGridColor } as CSSProperties}>
-              Net <strong>{readableKilowattHours(takenFromGridKilowattHours)}</strong>
-            </span>
-          </p>
-        </div>
+      >
+        {hasUsedAnything && (
+          <div className="solar-split">
+            <SplitBar
+              parts={[
+                { value: ownSolarKilowattHours, color: ENERGY_TODAY.solarColor },
+                { value: takenFromGridKilowattHours, color: ENERGY_NOW.fromGridColor },
+              ]}
+            />
+            <p className="solar-split__legend">
+              <span style={{ '--solar-split-color': ENERGY_TODAY.solarColor } as CSSProperties}>
+                Zon{' '}
+                <strong>
+                  {readableKilowattHours(ownSolarKilowattHours)} · {ownSolarPercentage}%
+                </strong>
+              </span>
+              <span style={{ '--solar-split-color': ENERGY_NOW.fromGridColor } as CSSProperties}>
+                Net <strong>{readableKilowattHours(takenFromGridKilowattHours)}</strong>
+              </span>
+            </p>
+          </div>
+        )}
+      </DayTile>
+      {isSheetOpen && (
+        <HouseSheet
+          hass={hass}
+          houseKilowattHours={houseKilowattHours}
+          ownSolarKilowattHours={ownSolarKilowattHours}
+          takenFromGridKilowattHours={takenFromGridKilowattHours}
+          onClose={onClose}
+        />
       )}
-    </DayTile>
+    </>
   );
 }
 
@@ -207,7 +244,10 @@ function SolarToday({ solarKilowattHours, fedBackToGridKilowattHours, previousDa
           />
           <p className="solar-split__legend">
             <span style={{ '--solar-split-color': ENERGY_TODAY.solarColor } as CSSProperties}>
-              Verbruikt <strong>{readableKilowattHours(usedYourselfKilowattHours)} · {usedYourselfPercentage}%</strong>
+              Verbruikt{' '}
+              <strong>
+                {readableKilowattHours(usedYourselfKilowattHours)} · {usedYourselfPercentage}%
+              </strong>
             </span>
             <span style={{ '--solar-split-color': ENERGY_TODAY.solarFedBackColor } as CSSProperties}>
               Geïnjecteerd <strong>{readableKilowattHours(fedBackToGridKilowattHours)}</strong>

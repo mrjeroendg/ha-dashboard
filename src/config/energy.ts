@@ -69,8 +69,8 @@ export const ENERGY_TODAY = {
    */
   alwaysOnPower: Entity.ELECTRICITY_ALWAYS_ON_POWER,
   alwaysOnToday: Entity.ELECTRICITY_ALWAYS_ON_TODAY,
-  /** "Huis vandaag" (docs/design/energie-huis): a neutral light colour for its icon, the bars are net (pink) and zon (yellow). */
-  houseColor: '#d8d2c4',
+  /** "Huis vandaag" (docs/design/energie-huis): teal for its icon, apart from net (pink), zon (yellow) and gas (purple); the bars are net and zon. */
+  houseColor: '#3fb6a8',
   /** The chart shows this many days before today, plus today; the dashed line is their average. */
   previousDays: 13,
   /**

@@ -24,6 +24,8 @@ How it got here: the options for extra information (E1: yesterday, E2: per hour,
   euros={1.69}                       // optional: "≈ € 1,69"
   earlierDaysColor="#a8902f"         // optional: instead of the colour at 45%
   onOpen={() => setIsSheetOpen(true)} // optional: a tap opens more, e.g. its sheet (energie-sheets)
+  iconColor="#d8d2c4"                // optional: the icon in its own colour (energie-huis)
+  bottomPart={{ color, earlierDaysColor, previousDays, today }} // optional: each bar stacked, this part at the bottom (energie-huis)
 >
   {/* optional: shown between the value and the chart, e.g. Zon vandaag's split (energie-zon) */}
 </DayTile>
@@ -40,4 +42,4 @@ How it got here: the options for extra information (E1: yesterday, E2: per hour,
 
 ## In ApexCharts
 
-A normal bar chart (`apexcharts/bar`), not a sparkline, so the x-axis can carry the day letters (`xaxis.categories`); axis border, ticks, y-axis and grid off. `plotOptions.bar.distributed` gives each bar its own colour (an 8-digit hex: the colour plus `73` for the earlier days). The dashed average is a y-axis annotation (`apexcharts/features/annotations`) with its own label. ApexCharts takes one font weight for all axis labels, so today's (the last) is bold through CSS.
+A normal bar chart (`apexcharts/bar`), not a sparkline, so the x-axis can carry the day letters (`xaxis.categories`); axis border, ticks, y-axis and grid off. Each bar gets its own colour through `colors` as a function of `dataPointIndex` (an 8-digit hex: the colour plus `73` for the earlier days); not `distributed`, which a stacked chart (`bottomPart`) can't use. The dashed average is a y-axis annotation (`apexcharts/features/annotations`) with its own label. ApexCharts takes one font weight for all axis labels, so today's (the last) is bold through CSS.

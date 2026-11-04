@@ -16,6 +16,8 @@ interface Props {
   color: string;
   /** The earlier days' bars; by default the tile's colour at 45%. */
   earlierDaysColor?: string;
+  /** The icon, when it shouldn't be `color` (e.g. Huis vandaag, whose bars are two colours). */
+  iconColor?: string;
   /** Today so far. */
   value: number;
   unit: string;
@@ -24,10 +26,23 @@ interface Props {
   previousDays?: DailyTotal[];
   /** Shows "≈ € 1,45" next to the value. */
   euros?: number;
+  /**
+   * Each day's bar in two, stacked: this part at the bottom (e.g. own solar)
+   * in its own colours, the rest of the day's total on top in `color`. One
+   * value per day of `previousDays`, in the same order, and today's.
+   */
+  bottomPart?: BottomPart;
   /** Between the value and the chart, e.g. Zon vandaag's split. */
   children?: ReactNode;
   /** A tap on the tile opens more (e.g. its sheet); nothing on the tile shows it. */
   onOpen?(): void;
+}
+
+export interface BottomPart {
+  color: string;
+  earlierDaysColor: string;
+  previousDays: number[];
+  today: number;
 }
 
 const CHART_HEIGHT = 110;
@@ -42,14 +57,16 @@ const MUTED_TEXT_COLOR = '#a6a39b';
  * before today and today, each with the first letter of its day, and their
  * average as a dashed line. Shared by every tile that shows a total for today.
  */
-export function DayTile({ name, icon, color, earlierDaysColor, value, unit, decimals, previousDays, euros, children, onOpen }: Props) {
-  const readable = (amount: number) => amount.toLocaleString('nl-BE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+export function DayTile(props: Props) {
+  const { name, icon, color, earlierDaysColor, iconColor, value, unit, decimals, previousDays, euros, bottomPart, children, onOpen } = props;
+  const readable = (amount: number) =>
+    amount.toLocaleString('nl-BE', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
   const hasChart = previousDays !== undefined && previousDays.length > 0;
 
   return (
     <div
       className={`day-tile${onOpen ? ' day-tile--opens' : ''}`}
-      style={{ '--day-tile-color': color } as CSSProperties}
+      style={{ '--day-tile-color': iconColor ?? color } as CSSProperties}
       {...(onOpen && {
         role: 'button',
         tabIndex: 0,
@@ -86,6 +103,7 @@ export function DayTile({ name, icon, color, earlierDaysColor, value, unit, deci
           today={value}
           color={color}
           earlierDaysColor={earlierDaysColor ?? `${color}${EARLIER_DAY_OPACITY_HEX}`}
+          bottomPart={bottomPart}
           readable={readable}
         />
       )}
@@ -98,21 +116,41 @@ interface DaysChartProps {
   today: number;
   color: string;
   earlierDaysColor: string;
+  bottomPart?: BottomPart;
   readable(amount: number): string;
 }
 
-function DaysChart({ previousDays, today, color, earlierDaysColor, readable }: DaysChartProps) {
+function DaysChart({ previousDays, today, color, earlierDaysColor, bottomPart, readable }: DaysChartProps) {
   const average = previousDays.reduce((sum, previousDay) => sum + previousDay.total, 0) / previousDays.length;
   const dayLetters = [...previousDays.map((previousDay) => dayLetter(new Date(previousDay.dayStart))), dayLetter(new Date())];
-  const barColors = [...previousDays.map(() => earlierDaysColor), color];
+  const todayIndex = previousDays.length;
+  const totals = [...previousDays.map((previousDay) => previousDay.total), today];
+  // Per bar: today's in the full colour. A stacked chart can't be `distributed`, so a function picks the colour per bar.
+  const colorPerDay = (todayColor: string, earlierColor: string) => (bar: { dataPointIndex: number }) =>
+    bar.dataPointIndex === todayIndex ? todayColor : earlierColor;
   const labelColors = [...previousDays.map(() => MUTED_TEXT_COLOR), TEXT_COLOR];
   const highestDay = Math.max(today, ...previousDays.map((previousDay) => previousDay.total));
 
+  const bottomParts = bottomPart ? [...bottomPart.previousDays, bottomPart.today] : [];
+  const series = bottomPart
+    ? [
+        { name: 'Onderaan', data: bottomParts },
+        { name: 'Bovenaan', data: totals.map((total, dayIndex) => Math.max(0, total - bottomParts[dayIndex])) },
+      ]
+    : [{ name: 'Per dag', data: totals }];
+
   const options: ApexOptions = {
-    chart: { toolbar: { show: false }, zoom: { enabled: false }, animations: { enabled: false }, parentHeightOffset: 0 },
-    // One colour per bar (distributed), so today's can be brighter than the rest.
-    plotOptions: { bar: { columnWidth: '62%', borderRadius: 2, distributed: true } },
-    colors: barColors,
+    chart: {
+      stacked: bottomPart !== undefined,
+      toolbar: { show: false },
+      zoom: { enabled: false },
+      animations: { enabled: false },
+      parentHeightOffset: 0,
+    },
+    plotOptions: { bar: { columnWidth: '62%', borderRadius: 2, borderRadiusWhenStacked: 'all' } },
+    colors: bottomPart
+      ? [colorPerDay(bottomPart.color, bottomPart.earlierDaysColor), colorPerDay(color, earlierDaysColor)]
+      : [colorPerDay(color, earlierDaysColor)],
     dataLabels: { enabled: false },
     legend: { show: false },
     grid: { show: false, padding: { top: 0, right: 0, bottom: 0, left: 0 } },
@@ -145,13 +183,7 @@ function DaysChart({ previousDays, today, color, earlierDaysColor, readable }: D
 
   return (
     <div className="day-tile__chart" aria-hidden>
-      <Chart
-        type="bar"
-        height={CHART_HEIGHT}
-        width="100%"
-        series={[{ name: 'Per dag', data: [...previousDays.map((previousDay) => previousDay.total), today] }]}
-        options={options}
-      />
+      <Chart type="bar" height={CHART_HEIGHT} width="100%" series={series} options={options} />
     </div>
   );
 }

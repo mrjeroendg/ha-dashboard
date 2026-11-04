@@ -62,6 +62,8 @@ export const ENERGY_TODAY = {
   solarEarlierDaysColor: '#a8902f',
   /** The solar that went back to the grid, in Zon vandaag's split: red, because it's worth little. */
   solarFedBackColor: '#e05252',
+  /** "Huis vandaag" (docs/design/energie-huis): a neutral light colour for its icon, the bars are net (pink) and zon (yellow). */
+  houseColor: '#d8d2c4',
   /** The chart shows this many days before today, plus today; the dashed line is their average. */
   previousDays: 13,
   /**

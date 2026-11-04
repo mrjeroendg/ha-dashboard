@@ -1,0 +1,90 @@
+<!doctype html><html lang="nl"><head><meta charset="utf-8"><title>Huis vandaag</title><style>
+body{margin:0;padding:32px;background:#e9e6dd;font-family:-apple-system,"Segoe UI",system-ui,sans-serif;display:grid;grid-template-columns:390px;gap:28px}
+.cap{min-height:96px;font-size:15px;font-weight:600;color:#3d3c38;margin:0 0 10px}.cap small{display:block;font-weight:400;color:#73726c;margin-top:3px;line-height:1.35}
+.phone{--bg:#262624;--surface:#30302e;--text:#f5f4ef;--muted:#a6a39b;--border:rgba(245,244,239,.08);--gas:#5cb8f2;--accent:#d97757;
+position:relative;width:390px;height:760px;border-radius:44px 44px 0 0;overflow:hidden;background:var(--bg);color:var(--text);box-shadow:0 20px 50px rgba(0,0,0,.12)}
+.in{padding:26px 24px 0}
+svg.i{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.kicker{font-size:13px;font-weight:500;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+h1{margin:6px 0 14px;font-family:ui-serif,"New York",Georgia,serif;font-weight:400;font-size:34px}
+.card{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:14px 16px 10px;overflow:hidden}
+.lbl{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}.lbl i{width:8px;height:8px;border-radius:50%;background:var(--gas)}
+.big{font-size:40px;font-weight:600;letter-spacing:-.01em;color:var(--gas)}.big small{font-size:15px;color:var(--muted);font-weight:500;margin-left:3px}
+.bars{display:block;width:calc(100% + 32px);margin:6px -16px 0}
+.axis{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:2px}
+.tile{border-radius:20px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);padding:12px 16px 8px;margin-top:20px}
+.name{display:flex;align-items:center;gap:6px;margin:0;font-size:13px;color:var(--muted)}.name span{display:grid;color:var(--gas)}
+.values{display:flex;justify-content:space-between;align-items:baseline}
+.value{margin:6px 0 0;font-size:26px;font-weight:600}.value small{margin-left:3px;font-size:13px;font-weight:500;color:var(--muted)}
+.price{font-size:15px;font-weight:600}.price small{font-size:12px;font-weight:500;color:var(--muted);margin-right:3px}
+svg.chart{display:block;width:100%;margin-top:10px}
+.days{display:grid;grid-template-columns:repeat(14,1fr);font-size:10px;color:var(--muted);text-align:center;margin-top:4px}.days span.today{color:var(--text);font-weight:700}
+.nav{position:absolute;left:14px;right:14px;bottom:16px;border-radius:30px;background:color-mix(in srgb,var(--surface) 82%,transparent);box-shadow:inset 0 0 0 1px var(--border)}
+.scroller{display:flex;align-items:center;gap:4px;padding:6px 14px;overflow:hidden}
+.item{flex:none;min-width:52px;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 10px 7px;font-size:12px;color:var(--muted)}
+.item svg{width:18px;height:18px}.item.on{color:var(--accent)}
+.divider{flex:none;width:1px;height:30px;background:rgba(245,244,239,.14);margin:0 4px}
+
+.tabs{display:flex;gap:6px;margin:0 0 14px}.tab{padding:8px 14px;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--border);color:var(--muted);font-size:14px;font-weight:500}
+.tab.on{background:rgba(217,119,87,.18);color:var(--accent);box-shadow:inset 0 0 0 1px rgba(217,119,87,.45)}
+.group{display:flex;gap:0;padding:0 2px;border-radius:22px;background:rgba(245,244,239,.05);box-shadow:inset 0 0 0 1px rgba(245,244,239,.06);margin-right:6px}
+
+.card{margin-bottom:20px}
+.big.sun{color:var(--sun)}.lbl i.sun{background:var(--sun)}.big.idle{color:var(--muted)}.lbl i.idle{background:var(--muted)}
+.phone{--sun:#f2c230}
+.split{margin-top:12px}.splitbar{display:flex;height:10px;border-radius:5px;overflow:hidden;gap:2px}
+.splitbar b{display:block}.legend{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+.legend strong{color:var(--text);font-weight:600}.legend i{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}
+.sub{font-size:12px;color:var(--muted);margin-top:4px}.big.water{color:#3987e5}.big.idle{color:var(--muted)}
+.lbl i.water{background:#3987e5}.lbl i.idle{background:var(--muted)}
+
+.tile{margin-top:12px}.tiles{margin-top:20px}.tiles .tile:first-child{margin-top:0}
+.trio{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
+.trio div{border-radius:12px;background:rgba(245,244,239,.04);padding:7px 10px}.trio p{margin:0;font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.trio strong{display:block;font-size:17px;font-weight:600;margin-top:2px}.trio small{font-size:11px;color:var(--muted);font-weight:500;margin-left:2px}
+.trio p i{width:7px;height:7px;border-radius:50%}
+.line{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);margin-top:2px}.line strong{color:var(--text);font-weight:600}
+.q{border-top:1px solid var(--border);margin-top:12px;padding-top:12px}
+.qf{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}.qf strong{display:block;color:var(--text);font-size:20px;margin-top:2px}
+.qbar{position:relative;height:8px;border-radius:4px;background:rgba(245,244,239,.08);margin-top:10px}.qbar b{position:absolute;left:0;top:0;bottom:0;width:15%;border-radius:4px;background:#6bab3e}.qbar u{position:absolute;left:45%;top:-3px;bottom:-3px;width:2px;background:#f5f4ef}
+.qleft{font-size:11px;color:var(--muted);margin-top:8px}
+</style></head><body></body>
+<script>
+const svg=(inner)=>`<svg class="i" viewBox="0 0 24 24">${inner}</svg>`;
+const I={sun:svg('<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'),pylon:svg('<path d="M8 21l4-18 4 18M6 8h12M5 13h14M9.5 16l5 0"/>'),home:svg('<path d="M4 11l8-7 8 7v9H4z"/>')};
+const SUN='#f2c230', SUN_EARLIER='#a8902f', RED='#e05252', PINK='#d55181', GREEN='#6bab3e';
+const DAYS=['D','V','Z','Z','M','D','W','D','V','Z','Z','M','D','W'];
+function dayChart(values,color,earlier,stacked){const W=326,H=56,avg=values.slice(0,-1).reduce((s,v)=>s+v,0)/13,top=Math.max(...values)*1.15,slot=W/values.length,width=slot*.62,y=(v)=>H-(v/top)*H;
+ const bars=values.map((v,i)=>{const x=(i*slot+(slot-width)/2).toFixed(1);const now=i===13;
+   if(stacked){const solarPart=stacked[i];const yTotal=y(v),ySolar=y(solarPart);return `<rect x="${x}" y="${yTotal.toFixed(1)}" width="${width.toFixed(1)}" height="${(H-yTotal).toFixed(1)}" rx="2" fill="${PINK}" opacity="${now?1:.45}"/><rect x="${x}" y="${ySolar.toFixed(1)}" width="${width.toFixed(1)}" height="${(H-ySolar).toFixed(1)}" rx="2" fill="${now?SUN:SUN_EARLIER}"/>`;}
+   return `<rect x="${x}" y="${y(v).toFixed(1)}" width="${width.toFixed(1)}" height="${(H-y(v)).toFixed(1)}" rx="2" fill="${now?color:(earlier||color)}" opacity="${now||earlier?1:.45}"/>`}).join('');
+ return `<svg class="chart" viewBox="0 0 ${W} ${H}" height="${H}">${bars}<line x1="0" x2="${W}" y1="${y(avg)}" y2="${y(avg)}" stroke="#f5f4ef" stroke-dasharray="3 3" opacity=".7"/><rect x="0" y="${y(avg)-16}" width="54" height="14" rx="4" fill="#262624"/><text x="5" y="${y(avg)-6}" font-size="10" fill="#f5f4ef">gem. ${avg.toFixed(2).replace('.',',')}</text></svg><div class="days">${DAYS.map((d,i)=>`<span class="${i===13?'today':''}">${d}</span>`).join('')}</div>`;}
+const tile=({name,icon,color,value,euro,extra='',values,earlier,stacked})=>`<div class="tile"><p class="name"><span style="color:${color}">${icon}</span>${name}</p><div class="values"><p class="value">${value}<small>kWh</small></p>${euro?`<span class="price"><small>≈</small>€ ${euro}</span>`:''}</div>${extra}${dayChart(values,color,earlier,stacked)}</div>`;
+const TAKEN=[9.4,8.8,10.2,7.9,9.1,11.3,9.4,8.8,10.2,7.9,9.1,11.3,9.0,4.1];
+const SOLAR=[6.1,4.2,8.9,7.4,2.1,5.6,9.8,8.2,3.4,6.7,10.1,7.9,4.8,3.86];
+const BACK=[3.1,1.6,4.2,3.8,0.8,2.1,5.1,4.6,1.2,3.0,5.4,3.9,2.4,1.24];
+const HOUSE=TAKEN.map((t,i)=>t+SOLAR[i]-BACK[i]);
+const OWN=SOLAR.map((s,i)=>s-BACK[i]);
+const HOUSE_COLOR='#d8d2c4', HOUSE_EARLIER='#7d796f';
+const house=HOUSE[13], own=OWN[13], grid=TAKEN[13];
+const nl=(v)=>v.toFixed(2).replace('.',',');
+const pct=Math.round(own/house*100);
+const houseSplit=`<div class="split"><div class="splitbar"><b style="flex:${own};background:${SUN}"></b><b style="flex:${grid};background:${PINK}"></b></div><div class="legend"><span><i style="background:${SUN}"></i>Zon <strong>${nl(own)} · ${pct}%</strong></span><span><i style="background:${PINK}"></i>Net <strong>${nl(grid)}</strong></span></div></div>`;
+const solarSplit=`<div class="split"><div class="splitbar"><b style="flex:2.62;background:${SUN}"></b><b style="flex:1.24;background:${RED}"></b></div><div class="legend"><span><i style="background:${SUN}"></i>Verbruikt <strong>2,62 · 68%</strong></span><span><i style="background:${RED}"></i>Geïnjecteerd <strong>1,24</strong></span></div></div>`;
+const tHouseA=tile({name:'Huis vandaag',icon:I.home,color:HOUSE_COLOR,value:nl(house),extra:houseSplit,values:HOUSE,earlier:HOUSE_EARLIER});
+const tHouseB=tile({name:'Huis vandaag',icon:I.home,color:HOUSE_COLOR,value:nl(house),extra:`<div class="sub" style="margin-top:4px"><strong style="color:${SUN}">${pct}%</strong> van je zon · ${nl(grid)} kWh van het net</div>`,values:HOUSE,stacked:OWN});
+const tTaken=tile({name:'Afgenomen vandaag',icon:I.pylon,color:PINK,value:'4,10',euro:'1,44',values:TAKEN});
+const tSolar=tile({name:'Zon vandaag',icon:I.sun,color:SUN,value:'3,86',extra:solarSplit,values:SOLAR,earlier:SUN_EARLIER});
+const tabs=`<div class="tabs"><span class="tab on">Stroom</span><span class="tab">Gas</span><span class="tab">Water</span></div>`;
+const card=`<div class="card" style="padding-bottom:14px"><span class="lbl"><i style="background:${PINK}"></i>Van het net</span><div class="big" style="color:${PINK}">175<small>W</small></div><div style="height:54px;margin-top:8px;border-radius:8px;background:rgba(245,244,239,.04);display:grid;place-items:center;font-size:11px;color:var(--muted)">5-minutenstaafjes · Dit kwartier (ongewijzigd)</div></div>`;
+const page=(t)=>`<div class="in"><div class="kicker">Categorie</div><h1>Energie</h1>${tabs}${card}<div class="tiles">${t}</div></div>`;
+const tHouseC=tile({name:'Huis vandaag',icon:I.home,color:HOUSE_COLOR,value:nl(house),extra:houseSplit,values:HOUSE,stacked:OWN});
+const S=[
+ ['H3 · Beide: de balk voor vandaag, de dagen verdeeld','De verdeelbalk uit H1 voor vandaag (van je zon, van het net, met het percentage), en de 14 dagen uit H2: elke dagstaaf onderaan geel (je zon) en bovenaan roze (het net). Vandaag in de volle kleuren.',page(tHouseC+tTaken+tSolar)],
+];
+const S_OLD=[
+ ['H1 · Huis vandaag met een verdeelbalk','Een nieuwe tegel bovenaan: wat je huis vandaag verbruikte (net + zon − geïnjecteerd), in een neutrale lichte kleur, met dezelfde balk als Zon: hoeveel van je eigen zon kwam (geel) en hoeveel van het net (roze). De 14 dagen in dezelfde kleur. Afgenomen en Zon blijven zoals ze zijn.',page(tHouseA+tTaken+tSolar)],
+ ['H2 · De dagen zelf verdeeld','Geen aparte balk, maar elke dagstaaf in twee: onderaan het deel van je zon (geel), bovenaan het deel van het net (roze). Je ziet zo per dag hoe zelfvoorzienend je was. Eén regel tekst onder het getal.',page(tHouseB+tTaken+tSolar)],
+];
+document.body.innerHTML=S.map(([t,sub,h])=>`<div><p class="cap">${t}<small>${sub}</small></p><div class="phone" style="height:1160px">${h}</div></div>`).join('');
+</script></html>

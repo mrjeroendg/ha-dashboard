@@ -212,7 +212,9 @@ export const ROOMS: RoomConfig[] = [
           distance: Entity.GARDEN_LAWN_MOWER_DISTANCE_TOTAL,
           batteryTemperature: Entity.GARDEN_LAWN_MOWER_BATTERY_TEMPERATURE
         }
-      }
+      },
+      { entity: Entity.BACK_DOOR_CAMERA, name: 'Achterdeur' },
+      { entity: Entity.PATHWAY_CAMERA, name: 'Zijpad' }
     ],
   }
 ];

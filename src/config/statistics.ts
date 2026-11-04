@@ -35,8 +35,8 @@ export interface StatisticTileConfig {
 
 /** The approved colours (docs/design/nutsvoorzieningen), validated together in this order. */
 export const UTILITY_COLORS = {
-  // Blue, like the grid in HA's Energy dashboard (4 November; it was pink #d55181).
-  stroom: '#4c9be8',
+  // Red: taking from the grid costs money (4 November; it was pink #d55181, briefly blue #4c9be8).
+  stroom: '#e5484d',
   zon: '#c98500',
   gas: '#a37cf0',
   feedingBack: '#6bab3e',

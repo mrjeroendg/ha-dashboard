@@ -19,8 +19,8 @@ Only the P1 meter: `sensor.p1_meter_power` (`ENERGY_NOW.gridPower`), positive wh
 ## The card (B)
 
 - *No section title any more:* since S2 ([energie-page](../energie-page/README.md)) this is part of one card for now.
-- **The label:** "Van het net" with a blue dot (`#4c9be8`, pink `#d55181` until 4 November), or "Terug naar het net" with a green dot (`#6bab3e`), following the sign.
-- **The big number** (40px, fixed-width digits), without a minus sign, **in the colour of the bars**: blue while taking, green while feeding back. It **counts** to each new value in 0.4 s and follows every state change (about every 3 s).
+- **The label:** "Van het net" with a red dot (`#e5484d`; pink `#d55181` until 4 November), or "Terug naar het net" with a green dot (`#6bab3e`), following the sign.
+- **The big number** (40px, fixed-width digits), without a minus sign, **in the colour of the bars**: red while taking, green while feeding back. It **counts** to each new value in 0.4 s and follows every state change (about every 3 s).
 - *No "Live" badge any more* (removed on 4 November at the owner's request).
 
 ## The bars
@@ -30,7 +30,7 @@ Only the P1 meter: `sensor.p1_meter_power` (`ENERGY_NOW.gridPower`), positive wh
 - **The newest bar is the last 5 minutes that are over;** the minutes still running are only in the big number.
 - **Refreshed every minute** (`usePeriodicFetch`, also when the app comes back to the foreground), without animation. No subscription: HA has none for statistics, and HACS' apexcharts-card also fetches again, on every state change or a fixed `update_interval`.
 - A 5 minutes without statistics (e.g. while HA restarted) is an empty slot.
-- Under the bars: "1 uur geleden" and "nu". The bars run across the full width of the card, like the Verbruik tiles' lines.
+- Under the bars: "2 uur geleden" and "nu". The bars stay within the card's padding (4 November; across the full width, the outer bars of 24 touched the card's edges).
 - ApexCharts bar chart (`apexcharts/bar`, plus `apexcharts/features/annotations` for the zero line), each bar's colour set from its sign.
 
 ## Reduce motion

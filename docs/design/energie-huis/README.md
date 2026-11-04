@@ -16,8 +16,8 @@ The approved mockup: [`mockup.png`](./mockup.png) ([`mockup.html`](./mockup.html
 
 - **The shared [day tile](../day-tile/README.md):** "Huis vandaag ›", house icon in **teal** `#3fb6a8` (chosen 4 November; it was a neutral light `#d8d2c4`), in kWh with two decimals. Above "Afgenomen vandaag" and "Zon vandaag", which stay as they are.
 - **The value:** taken from the grid + own solar, where own solar = Smappee's solar − the P1 meter's injected (never below 0, as the two meters measure apart).
-- **The split bar** (`SplitBar`, ApexCharts): own solar in yellow, the grid in blue, as wide as their shares. Under it "Zon 2,62 · 24%" and "Net 8,13". Not shown before anything was used today.
-- **The 14 days:** each day's bar stacked, own solar at the bottom (yellow), the grid on top (blue); today in the full colours, the days before darker. The dashed line is the average house total of the days before. From the daily statistics of the three sensors (taken, solar, injected), fetched again every 5 minutes; a day without solar statistics counts no own solar.
+- **The split bar** (`SplitBar`, ApexCharts): own solar in yellow, the grid in red, as wide as their shares. Under it "Zon 2,62 · 24%" and "Net 8,13". Not shown before anything was used today.
+- **The 14 days:** each day's bar stacked, own solar at the bottom (yellow), the grid on top (red); today in the full colours, the days before darker. The dashed line is the average house total of the days before. From the daily statistics of the three sensors (taken, solar, injected), fetched again every 5 minutes; a day without solar statistics counts no own solar.
 - **The Huis sheet** (`HouseSheet.tsx`, built 4 November without a design first): "Huis", "Vandaag 10,75 kWh, van de zon en van het net.", the figures **Zon** and **Net** with their share of the house, and the **Sluipverbruik** (`AlwaysOnSection`, Smappee's always-on), moved here from Afgenomen: it's what the house uses, from the grid or the sun.
 - Without Smappee or the P1 meter's injecting, there's no Huis tile.
 

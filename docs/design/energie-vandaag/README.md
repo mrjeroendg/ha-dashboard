@@ -16,7 +16,7 @@ The earlier options (A: three tiles, B: a list, C: a balance, D: four tiles with
 
 | Tile | Icon | Sensor | Price |
 |---|---|---|---|
-| **Afgenomen** (taken from the grid) | pylon, blue `#4c9be8` (pink `#d55181` until 4 November) | `sensor.p1_meter_energy_consumption_daily` | what taking costs per kWh |
+| **Afgenomen** (taken from the grid) | pylon, red `#e5484d` (pink `#d55181` until 4 November) | `sensor.p1_meter_energy_consumption_daily` | what taking costs per kWh |
 | **Teruggeleverd** (fed back) | sun, green `#6bab3e` | `sensor.p1_meter_energy_production_daily` | what feeding back earns per kWh |
 
 - In kWh with two decimals, straight from the sensors' states (live). The colours are the ones of the Nu card.

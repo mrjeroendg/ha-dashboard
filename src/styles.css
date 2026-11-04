@@ -2031,9 +2031,9 @@ a.pill-button { text-decoration: none; }
 
 .energy-card__value small { margin-left: 3px; font-size: 15px; font-weight: 500; color: var(--text-muted); }
 
-/* The last hour, 12 bars of 5 minutes, across the full width of the card. */
-.energy-card__bars { margin: 6px -16px 0; }
-.energy-card__axis { display: flex; justify-content: space-between; padding: 2px 16px 0; font-size: 11px; color: var(--text-muted); }
+/* The last 2 hours, 24 bars of 5 minutes, within the card's padding (full width, the outer bars touched its edges). */
+.energy-card__bars { margin: 6px 0 0; }
+.energy-card__axis { display: flex; justify-content: space-between; padding: 2px 0 0; font-size: 11px; color: var(--text-muted); }
 
 /* ---------------------------------------------------------------- Energie: Dit kwartier (docs/design/energie-kwartier, K1, V2) */
 

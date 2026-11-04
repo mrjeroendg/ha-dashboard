@@ -29,7 +29,7 @@ A tap anywhere on the day tile (`DayTile`'s `onOpen`). A small "›" right after
 
 No "Goed om te weten" sections and no explanatory paragraph under the sluipverbruik (removed at the owner's request, 4 November).
 
-- **Afgenomen** (`sensor.p1_meter_energy_consumption_daily`, blue): only the shared sections. Its **Sluipverbruik** moved to the [Huis sheet](../energie-huis/README.md) (4 November): it's what the house uses, not only what came from the grid. There it's Smappee's always-on (`sensor.garage_smappee_always_on_active_power`, the lowest power of the last 2 days, with what that is per year at €0,35 per kWh) and what it used today (`sensor.garage_smappee_always_on_today`, in kWh, with ≈ €). Before, it was the lowest hour of the P1 meter last night, which assumed everyone asleep and no sun.
+- **Afgenomen** (`sensor.p1_meter_energy_consumption_daily`, red): only the shared sections. Its **Sluipverbruik** moved to the [Huis sheet](../energie-huis/README.md) (4 November): it's what the house uses, not only what came from the grid. There it's Smappee's always-on (`sensor.garage_smappee_always_on_active_power`, the lowest power of the last 2 days, with what that is per year at €0,35 per kWh) and what it used today (`sensor.garage_smappee_always_on_today`, in kWh, with ≈ €). Before, it was the lowest hour of the P1 meter last night, which assumed everyone asleep and no sun.
 - **Zon** (Smappee, yellow, no €): **Waar ging je zon heen vandaag:** used and injected (the P1 meter), each with its share, and what the solar used yourself saved at the price of taking.
 - **Gas** (purple): only the shared sections.
 

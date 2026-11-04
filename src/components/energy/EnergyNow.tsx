@@ -13,7 +13,7 @@ interface Props {
 /**
  * "Nu" on the Energie page (docs/design/energie-nu, option B): what goes
  * through the P1 meter right now, as a number that counts to each new value,
- * in the colour of the bars (blue taking, green feeding back), with the last
+ * in the colour of the bars (red taking, green feeding back), with the last
  * 2 hours as bars of 5 minutes below it (each the average). The top part of the
  * Energie page's card (EnergyPage), without a card of its own.
  */

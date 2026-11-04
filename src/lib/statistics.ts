@@ -272,34 +272,6 @@ export async function fetchEarlierMonthlyTotals(hass: HomeAssistant, entityId: s
   );
 }
 
-/** Last night from 1:00 to 5:00: this morning's, or yesterday's before 5:00. */
-function lastNight() {
-  const nightStart = new Date();
-  if (nightStart.getHours() < 5) nightStart.setDate(nightStart.getDate() - 1);
-  nightStart.setHours(1, 0, 0, 0);
-  return { nightStart: nightStart.getTime(), nightEnd: nightStart.getTime() + 4 * ONE_HOUR };
-}
-
-/**
- * The lowest hourly average of a power sensor last night (1:00 to 5:00), in
- * its unit: what the house always uses, with nothing switched on. Undefined
- * without statistics.
- */
-export async function fetchLowestHourlyAverageLastNight(hass: HomeAssistant, powerEntityId: string): Promise<number | undefined> {
-  const { nightStart, nightEnd } = lastNight();
-  const statisticsPerEntity = await hass.callWS<Record<string, Array<{ start: number | string; mean?: number | null }>> | undefined>({
-    type: 'recorder/statistics_during_period',
-    start_time: new Date(nightStart).toISOString(),
-    end_time: new Date(nightEnd).toISOString(),
-    statistic_ids: [powerEntityId],
-    period: 'hour',
-    types: ['mean'],
-  });
-
-  const hourlyAverages = (statisticsPerEntity?.[powerEntityId] ?? []).map((hourlyRow) => hourlyRow.mean).filter(isNumber);
-  return hourlyAverages.length > 0 ? Math.min(...hourlyAverages) : undefined;
-}
-
 /** A sensor's state as a number, or undefined when it's missing or unavailable. */
 export function numberState(states: HassEntities, entityId: string): number | undefined {
   const numberFromEntity = Number.parseFloat(states[entityId]?.state ?? '');

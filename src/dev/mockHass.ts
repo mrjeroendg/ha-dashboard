@@ -72,6 +72,8 @@ function baseStates(): HassEntities {
     // The copy of the month's peak with a state class (docs/design/energie-capaciteit).
     entity('sensor.p1_monthly_peak', '3600', { unit_of_measurement: 'W', device_class: 'power', state_class: 'measurement' }),
     entity('sensor.p1_meter_energy_consumption_daily', '8.13', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
+    entity('sensor.garage_smappee_always_on_active_power', '138', { unit_of_measurement: 'W', device_class: 'power' }),
+    entity('sensor.garage_smappee_always_on_today', '2166', { unit_of_measurement: 'Wh', device_class: 'energy' }),
     entity('sensor.garage_smappee_total_production_today', '3.86', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.p1_meter_energy_production_daily', '1.24', { unit_of_measurement: 'kWh', state_class: 'total_increasing' }),
     entity('sensor.gas_meter_consumption_daily', '2.78', { unit_of_measurement: 'm³', state_class: 'total_increasing' }),
@@ -353,17 +355,6 @@ export function createMockHass(onChange: (hass: HomeAssistant) => void) {
             })),
           ];
         }),
-      ) as T;
-    }
-    // Last night's hours of the P1 meter (the sluipverbruik): the lowest is 165 W.
-    if (msg.type === 'recorder/statistics_during_period' && msg.period === 'hour') {
-      const oneHour = 3600_000;
-      const nightStart = Date.parse(String(msg.start_time));
-      return Object.fromEntries(
-        (msg.statistic_ids as string[]).map((statisticId) => [
-          statisticId,
-          [210, 172, 165, 190].map((mean, hour) => ({ start: nightStart + hour * oneHour, mean })),
-        ]),
       ) as T;
     }
     // The months before this one: about 30 days of each daily sensor's usual day, gas much higher in winter.

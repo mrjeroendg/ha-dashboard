@@ -99,6 +99,8 @@ export enum Entity {
   ELECTRICITY_CONSUMPTION_TODAY = 'sensor.p1_meter_energy_consumption_daily',
   ELECTRICITY_PRODUCTION_TODAY = 'sensor.p1_meter_energy_production_daily',
   SOLAR_PRODUCTION_TODAY = 'sensor.garage_smappee_total_production_today',
+  ELECTRICITY_ALWAYS_ON_POWER = 'sensor.garage_smappee_always_on_active_power',
+  ELECTRICITY_ALWAYS_ON_TODAY = 'sensor.garage_smappee_always_on_today',
   GAS_CONSUMPTION_TODAY = 'sensor.gas_meter_consumption_daily',
 
   // Radio stations

@@ -62,6 +62,13 @@ export const ENERGY_TODAY = {
   solarEarlierDaysColor: '#a8902f',
   /** The solar that went back to the grid, in Zon vandaag's split: red, because it's worth little. */
   solarFedBackColor: '#e05252',
+  /**
+   * The sluipverbruik in the Afgenomen sheet (docs/design/energie-sheets), from
+   * Smappee: the lowest power of the last 2 days in W, and what that has used
+   * since midnight (Wh or kWh, its unit says which).
+   */
+  alwaysOnPower: Entity.ELECTRICITY_ALWAYS_ON_POWER,
+  alwaysOnToday: Entity.ELECTRICITY_ALWAYS_ON_TODAY,
   /** "Huis vandaag" (docs/design/energie-huis): a neutral light colour for its icon, the bars are net (pink) and zon (yellow). */
   houseColor: '#d8d2c4',
   /** The chart shows this many days before today, plus today; the dashed line is their average. */

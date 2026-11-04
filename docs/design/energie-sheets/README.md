@@ -4,7 +4,7 @@ A tap on a day tile on Energie opens a sheet with more about it: **Afgenomen**, 
 
 > 🛠 **Built without a design first**, at the owner's request ("no design, just build it; I'll review the code and app later"). Everything below is open to change.
 >
-> Code: `MeterSheet.tsx` (the shared sections), `InfoSheet.tsx` (the shared parts), `ElectricitySheet.tsx`, `SolarSheet.tsx`, and `GasSheet.tsx` in `src/components/energy/`; `DayTile`'s `onOpen`; `fetchHourlyTotalsToday`, `fetchEarlierMonthlyTotals` and `fetchLowestHourlyAverageLastNight` in `src/lib/statistics.ts`; styles under "Info sheets" in `src/styles.css` (shared with the [Capaciteitstarief](../energie-capaciteit/README.md) sheet).
+> Code: `MeterSheet.tsx` (the shared sections), `InfoSheet.tsx` (the shared parts), `ElectricitySheet.tsx`, `SolarSheet.tsx`, and `GasSheet.tsx` in `src/components/energy/`; `DayTile`'s `onOpen`; `fetchHourlyTotalsToday`, `fetchEarlierMonthlyTotals` in `src/lib/statistics.ts`; styles under "Info sheets" in `src/styles.css` (shared with the [Capaciteitstarief](../energie-capaciteit/README.md) sheet).
 
 As built (dev mode, mock values):
 
@@ -28,10 +28,12 @@ A tap anywhere on the day tile (`DayTile`'s `onOpen`). A small "›" right after
 
 No "Goed om te weten" sections and no explanatory paragraph under the sluipverbruik (removed at the owner's request, 4 November).
 
-- **Afgenomen** (`sensor.p1_meter_energy_consumption_daily`, pink): **Sluipverbruik:** the lowest hourly average of the P1 meter last night (1:00–5:00), what the house always uses, with what that is per year in kWh and €. The P1 meter is net, but at night there's no sun, so that's the house.
+- **Afgenomen** (`sensor.p1_meter_energy_consumption_daily`, pink): **Sluipverbruik**, from Smappee (4 November; before, the lowest hour of the P1 meter last night, which assumed everyone asleep and no sun):
+  - **Altijd aan:** `sensor.garage_smappee_always_on_active_power`, Smappee's lowest power of the last 2 days, with what that is per year: W × 8.760 h, in kWh and at €0,35 per kWh.
+  - **Vandaag:** `sensor.garage_smappee_always_on_today`, what that always-on power used since midnight (Smappee counts in Wh, shown in kWh), with ≈ €.
 - **Zon** (Smappee, yellow, no €): **Waar ging je zon heen vandaag:** used and injected (the P1 meter), each with its share, and what the solar used yourself saved at the price of taking.
 - **Gas** (purple): only the shared sections.
 
 ## Assumptions to check
 
-- Sluipverbruik takes the lowest hour; a fridge that cools all night is in it, a device that switches on now and then isn't.
+- Smappee's always-on is the lowest of 2 days; how short its readings are isn't documented, so a moment with everything off could pull it down a little.

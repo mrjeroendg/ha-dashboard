@@ -47,7 +47,7 @@ Instructions for Claude when working in this repository.
   `EmptyState` (docs/design/empty-state) with its own short text, never an
   empty frame.
 - **What opens more shows "›".** Text that opens a sheet (or more detail)
-  gets the shared `LinkChevron` right after it: "Huis vandaag ›", "Piek deze
+  gets the shared `LinkChevron` right after it: "Afgenomen vandaag ›", "Piek deze
   maand ›", the room's safety line. Never a hidden tap with nothing to see,
   and no other sign (no ⓘ, no "Meer" text, no extra row).
 - **Bar charts: always ApexCharts.** Every bar chart, also a single split

@@ -46,4 +46,6 @@ The contract is dynamic (Eneco): the price per kWh changes every hour. "Vandaag 
 
 **In the dashboard:** today's euros as each hour's kWh (HA's hourly statistics of the two daily sensors) times that hour's price, instead of today's total times one price. The config gets the two price sensors instead of the two numbers.
 
-To decide in the design: whether the current price itself shows somewhere on Energie (e.g. "cheap now", to shift the dishwasher), and what the tiles show while the hourly prices aren't there yet.
+**What it would add** (from the info sheets, docs/design/energie-sheets): the price now and **today's cheapest hours** (when to run the dishwasher or, later, charge the car); real euros in the Afgenomen, Zon and Capaciteitstarief sheets instead of the fixed €0,35; and **what injecting actually earns** (the Zon tile and sheet show no euros for it now, since there was no price).
+
+To decide in the design: where the current price and the cheapest hours show on Energie, and what the tiles show while the hourly prices aren't there yet.

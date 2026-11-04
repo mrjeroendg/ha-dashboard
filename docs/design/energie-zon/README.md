@@ -14,7 +14,7 @@ The options under Stroom (A to C; B's bottom tile was chosen): [`options.png`](.
 
 - **The shared [day tile](../day-tile/README.md):** "Zon vandaag", sun icon, in kWh with two decimals, with the 13 days before today and today as bars and their average.
 - **Yellow** `#f2c230`; the earlier days in a darker solid yellow `#a8902f` (the usual 45% of the colour looks olive on the dark card).
-- **The split**, between the value and the chart: one bar (the shared `SplitBar`, an ApexCharts stacked bar, like every bar: CLAUDE.md), yellow for what the house used itself, **red** `#e05252` for what went back to the grid (the owner's choice: feeding back is bad for you, so not green), as wide as their shares. Under it "Verbruikt 2,62 · 68%" and "Geïnjecteerd 1,24". Not shown while the panels made nothing yet today.
+- **The split**, between the value and the chart: one bar (the shared `SplitBar`, an ApexCharts stacked bar, like every bar: CLAUDE.md), yellow for what the house used itself, **pink** `#e86aa6` for what went back to the grid (the owner's choice: feeding back is bad for you, so not green; red `#e05252` until 4 November, when red became the grid's colour), as wide as their shares. Under it "Verbruikt 2,62 · 68%" and "Geïnjecteerd 1,24". Not shown while the panels made nothing yet today.
   - Used yourself = solar − fed back, never below 0 (Smappee and the P1 meter measure apart).
 - **No "≈ €":** what solar is worth (saved plus earned) didn't explain itself next to the kWh, so the owner chose to leave it out.
 - **Source:** `sensor.garage_smappee_total_production_today` (Smappee; Wh or kWh, its unit decides) with its daily statistics, and `sensor.p1_meter_energy_production_daily` (the P1 meter's feeding back), fetched again every 5 minutes.

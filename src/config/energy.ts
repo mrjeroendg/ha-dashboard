@@ -60,8 +60,8 @@ export const ENERGY_TODAY = {
   /** "Zon vandaag" (docs/design/energie-zon): yellow, and a darker yellow for the earlier days (45% of it looks olive). */
   solarColor: '#f2c230',
   solarEarlierDaysColor: '#a8902f',
-  /** The solar that went back to the grid, in Zon vandaag's split: red, because it's worth little. */
-  solarFedBackColor: '#e05252',
+  /** The solar that went back to the grid, in Zon vandaag's split: pink (the owner's choice; it was red #e05252, now the grid's colour). */
+  solarFedBackColor: '#e86aa6',
   /**
    * The sluipverbruik in the Afgenomen sheet (docs/design/energie-sheets), from
    * Smappee: the lowest power of the last 2 days in W, and what that has used

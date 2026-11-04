@@ -32,7 +32,7 @@ A tap anywhere on the day tile, like "Dit kwartier" opens the Capaciteitstarief:
 - **Zon** (Smappee, yellow, no €):
   - **Waar ging je zon heen vandaag:** used and injected (the P1 meter), each with its share, and what the solar used yourself saved at the price of taking.
   - **Goed om te weten:** injecting pays far less; run the washing machine and the like while the sun shines.
-- **Gas** (light blue): **Goed om te weten:** gas is mostly heating, so winter is many times summer; 1 °C lower saves about 7%; the € is an estimate.
+- **Gas** (purple): **Goed om te weten:** gas is mostly heating, so winter is many times summer; 1 °C lower saves about 7%; the € is an estimate.
 - **Water** (blue, in litres):
   - **Lekcheck:** whether the meter counted in every 5 minutes of last night (1:00–5:00, short-term statistics): if so, an orange note that it may be a leak; if not, a green "Geen lek gezien". Left out when a 5 minutes is missing.
   - **Ter vergelijking:** today in showers (±60 l each) and the average person in Flanders (±100 l per day): rough figures, not measured.

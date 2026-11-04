@@ -2152,13 +2152,9 @@ a.pill-button { text-decoration: none; }
 .info-sheet__calculation .info-sheet__total { border-top-color: rgba(245, 244, 239, 0.25); color: var(--text); font-weight: 600; }
 .info-sheet__total strong { font-size: 15px; }
 
-/* A paragraph of explanation, and a highlighted tip or warning. */
+/* A paragraph of explanation. */
 .info-sheet__text { margin: 8px 0 0; font-size: 13px; line-height: 1.45; color: var(--text-muted); }
 .info-sheet__text strong { color: var(--text); font-weight: 600; }
-.info-sheet__note { margin-top: 10px; padding: 10px 12px; border-radius: 14px; background: rgba(245, 244, 239, 0.06); font-size: 13px; line-height: 1.45; }
-.info-sheet__note--good { background: rgba(107, 171, 62, 0.14); }
-.info-sheet__note--warning { background: rgba(232, 145, 58, 0.16); }
-.info-sheet__note strong { font-weight: 600; }
 
 
 /* ---------------------------------------------------------------- Day tile (docs/design/day-tile) */

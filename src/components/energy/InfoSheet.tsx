@@ -10,8 +10,8 @@ import { BottomSheet } from '../BottomSheet';
 /**
  * The shared parts of the sheets behind Energie's tiles
  * (docs/design/energie-sheets): a sheet with a title and a line under it,
- * sections with a small heading, figures two by two, a bar chart, a paragraph
- * and a highlighted note. Styles under "Info sheets" in styles.css.
+ * sections with a small heading, figures two by two, a bar chart and a
+ * paragraph. Styles under "Info sheets" in styles.css.
  */
 export function InfoSheet({ title, subtitle, onClose, children }: { title: string; subtitle: string; onClose(): void; children: ReactNode }) {
   return (
@@ -51,11 +51,6 @@ export function InfoFigure({ label, value, unit, detail }: { label: string; valu
 
 export function InfoText({ children }: { children: ReactNode }) {
   return <p className="info-sheet__text">{children}</p>;
-}
-
-/** A tip or a finding, highlighted: neutral, good (green) or a warning (orange). */
-export function InfoNote({ tone = 'neutral', children }: { tone?: 'neutral' | 'good' | 'warning'; children: ReactNode }) {
-  return <div className={`info-sheet__note${tone === 'neutral' ? '' : ` info-sheet__note--${tone}`}`}>{children}</div>;
 }
 
 interface InfoBarChartProps {

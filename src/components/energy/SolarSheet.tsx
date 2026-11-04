@@ -1,7 +1,7 @@
 import { ENERGY_TODAY } from '../../config/energy';
 import { numberState } from '../../lib/statistics';
 import type { HomeAssistant } from '../../types/hass';
-import { InfoFigure, InfoFigures, InfoNote, InfoSection, InfoText, readableAmount, readableEuros } from './InfoSheet';
+import { InfoFigure, InfoFigures, InfoSection, InfoText, readableAmount, readableEuros } from './InfoSheet';
 import { MeterSheet } from './MeterSheet';
 import { kilowattHoursPerSolarUnit } from './solarUnits';
 
@@ -13,7 +13,7 @@ interface Props {
 /**
  * "Zon" (docs/design/energie-sheets), behind "Zon vandaag": what the panels
  * made (Smappee), per hour and per month, where today's went (used or
- * injected, the P1 meter), and why using it yourself pays.
+ * injected, the P1 meter), and what using it yourself saved.
  */
 export function SolarSheet({ hass, onClose }: Props) {
   const solarTodayInItsUnit = numberState(hass.states, ENERGY_TODAY.solarToday);
@@ -64,12 +64,6 @@ export function SolarSheet({ hass, onClose }: Props) {
                 </InfoText>
               </InfoSection>
             )}
-            <InfoSection heading="Goed om te weten">
-              <InfoNote>
-                Voor geïnjecteerde stroom krijg je veel minder dan je voor stroom van het net betaalt. Zet de wasmachine, de vaatwasser of de
-                droogkast daarom liefst aan als de zon schijnt.
-              </InfoNote>
-            </InfoSection>
           </>
         );
       }}

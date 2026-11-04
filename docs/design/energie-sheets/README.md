@@ -26,15 +26,12 @@ A tap anywhere on the day tile (`DayTile`'s `onOpen`). A small "›" right after
 
 ## Per sheet
 
-- **Afgenomen** (`sensor.p1_meter_energy_consumption_daily`, pink):
-  - **Sluipverbruik:** the lowest hourly average of the P1 meter last night (1:00–5:00), what the house always uses, with what that is per year in kWh and €, and what 10 W less saves per year. The P1 meter is net, but at night there's no sun, so that's the house.
-  - **Goed om te weten:** this is what came from the grid, not all the house used (own solar isn't in it), and the € is a fixed estimate of the dynamic tariff.
-- **Zon** (Smappee, yellow, no €):
-  - **Waar ging je zon heen vandaag:** used and injected (the P1 meter), each with its share, and what the solar used yourself saved at the price of taking.
-  - **Goed om te weten:** injecting pays far less; run the washing machine and the like while the sun shines.
-- **Gas** (purple): **Goed om te weten:** gas is mostly heating, so winter is many times summer; 1 °C lower saves about 7%; the € is an estimate.
+No "Goed om te weten" sections and no explanatory paragraph under the sluipverbruik (removed at the owner's request, 4 November).
+
+- **Afgenomen** (`sensor.p1_meter_energy_consumption_daily`, pink): **Sluipverbruik:** the lowest hourly average of the P1 meter last night (1:00–5:00), what the house always uses, with what that is per year in kWh and €. The P1 meter is net, but at night there's no sun, so that's the house.
+- **Zon** (Smappee, yellow, no €): **Waar ging je zon heen vandaag:** used and injected (the P1 meter), each with its share, and what the solar used yourself saved at the price of taking.
+- **Gas** (purple): only the shared sections.
 
 ## Assumptions to check
 
-- The rough figure: 7% gas per °C.
 - Sluipverbruik takes the lowest hour; a fridge that cools all night is in it, a device that switches on now and then isn't.

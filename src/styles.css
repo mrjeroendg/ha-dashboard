@@ -2286,8 +2286,11 @@ a.pill-button { text-decoration: none; }
 .camera-row { flex-wrap: wrap; row-gap: 10px; }
 
 /* While it streams in the row (S1): the sheet's status line where "Bijgewerkt" was. */
-.camera-row__status { height: auto; margin: 2px 0 0; gap: 6px; }
+/* Exactly the height of "Bijgewerkt …" (.card-detail), so the row doesn't jump when it starts. */
+/* With .stream-status in the selector: the sheet's own status line comes later in this file. */
+.stream-status.camera-row__status { height: calc(13px * 1.3); margin: 2px 0 0; gap: 6px; font-size: 13px; line-height: 1.3; }
 .camera-row__status .stream-status__dot { margin: 0; }
+.stream-status.camera-row__status .spinner { box-sizing: border-box; width: 10px; height: 10px; }
 
 .camera-row__image {
   position: relative;

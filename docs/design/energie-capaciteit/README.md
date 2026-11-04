@@ -18,7 +18,7 @@ Every quarter-hour the meter measures the average power. The highest quarter-hou
 
 ## The sheet
 
-All numbers with **two decimals** (the owner's choice), except the days.
+All numbers with **two decimals** (the owner's choice), except the days and the chart's y-axis (whole numbers, no unit).
 
 - **Title** "Capaciteitstarief" (serif, 24px), "Je hoogste kwartier per maand, het laatste jaar."
 - **Two figures:** "Gemiddelde 12 maanden" (kW) and "Je betaalt nu per maand" (≈ €).
@@ -32,7 +32,7 @@ All numbers with **two decimals** (the owner's choice), except the days.
 - **The earlier 11 months:** HA's daily long-term statistics (`max`) of `sensor.p1_monthly_peak`, a copy of the peak sensor with a state class (below), fetched again every 5 minutes. Per month the **last day with statistics**: the peak only rises within a month, so that's the month's peak. Not the month's own maximum: if the meter resets a few minutes after midnight on the 1st, the new month's first minutes still hold the previous month's peak. **A month without statistics counts as 3,5 kW** (`ENERGY_QUARTER.assumedPeakWattsForMissingMonth`), the owner's choice to keep it simple; it isn't shown any differently. HA keeps long-term statistics forever (one row per hour).
 - **This month:** the sensor's state.
 - **When the peak was reached:** HA's history of the same sensor this month, the first moment of its current value. HA keeps history about 10 days, so for an older peak there's no time. Whether the meter updates the peak during the quarter-hour or at its end isn't checked: at its end, the shown quarter-hour would be one too late.
-- **The chart:** a y-axis in kW with two decimals ("2,00 kW", like every number in this sheet) and faint lines at each step, as in the other sheets (`roundAxis`, `axisOptions`). ApexCharts keeps 30px free above the plot; `grid.padding.top: -14` takes part of it away, so the top label still fits.
+- **The chart:** a y-axis in whole kW without the unit ("0 2 4 6", the owner's choice; the other numbers keep two decimals) and faint lines at each step, as in the other sheets (`roundAxis`, `axisOptions`). ApexCharts keeps 30px free above the plot; `grid.padding.top: -14` takes part of it away, so the top label still fits.
 
 ## The template helper (made in HA's app)
 

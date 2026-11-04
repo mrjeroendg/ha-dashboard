@@ -64,8 +64,6 @@ interface InfoBarChartProps {
   nowIndex?: number;
   /** A dashed line with its label, e.g. "gem. 9,59". */
   average?: { value: number; label: string };
-  /** On the y-axis's labels, e.g. "kWh". */
-  unit: string;
 }
 
 const CHART_HEIGHT = 150;
@@ -78,7 +76,7 @@ const MUTED_TEXT_COLOR = '#a6a39b';
 const SHEET_COLOR = '#2b2b29';
 
 /** A bar per hour, day or month, the one for now in the full colour and its label white. */
-export function InfoBarChart({ labels, values, color, nowIndex = values.length - 1, average, unit }: InfoBarChartProps) {
+export function InfoBarChart({ labels, values, color, nowIndex = values.length - 1, average }: InfoBarChartProps) {
   const barColors = values.map((_value, barIndex) => (barIndex === nowIndex ? color : `${color}${EARLIER_BAR_OPACITY_HEX}`));
   const labelColors = labels.map((_label, barIndex) => (barIndex === nowIndex ? TEXT_COLOR : MUTED_TEXT_COLOR));
   const knownValues = values.filter((value) => value !== null);
@@ -107,7 +105,7 @@ export function InfoBarChart({ labels, values, color, nowIndex = values.length -
       axisTicks: { show: false },
       labels: { rotate: 0, hideOverlappingLabels: false, style: { colors: labelColors, fontSize: '10px' } },
     },
-    yaxis: axisOptions(axis, unit),
+    yaxis: axisOptions(axis),
     annotations: {
       yaxis: average
         ? [
@@ -140,37 +138,34 @@ export function InfoBarChart({ labels, values, color, nowIndex = values.length -
 export interface RoundAxis {
   max: number;
   steps: number;
-  decimals: number;
 }
 
 /**
- * A y-axis from 0 to just above `highestValue`, in about 4 round steps (1, 2,
- * 2,5 or 5 times a power of ten), with as many decimals as the step needs.
+ * A y-axis from 0 to just above `highestValue`, in about 4 round steps of
+ * whole numbers (1, 2, 5 or 10 times a power of ten), so the labels need no
+ * decimals.
  */
-export function roundAxis(highestValue: number, decimals?: number): RoundAxis {
-  const roughStep = (highestValue || 1) / AXIS_STEPS;
+export function roundAxis(highestValue: number): RoundAxis {
+  const roughStep = Math.max(1, (highestValue || 1) / AXIS_STEPS);
   const powerOfTen = 10 ** Math.floor(Math.log10(roughStep));
-  const roundStep = [1, 2, 2.5, 5, 10].map((factor) => factor * powerOfTen).find((step) => step >= roughStep) ?? 10 * powerOfTen;
-  const steps = Math.ceil((highestValue || 1) / roundStep);
-  const decimalsOfStep = Math.max(0, -Math.floor(Math.log10(roundStep) + 1e-9) + (roundStep / powerOfTen === 2.5 ? 1 : 0));
+  const roundStep = [1, 2, 5, 10].map((factor) => factor * powerOfTen).find((step) => step >= roughStep) ?? 10 * powerOfTen;
+  const steps = Math.max(1, Math.ceil(highestValue / roundStep));
 
-  return { max: steps * roundStep, steps, decimals: decimals ?? decimalsOfStep };
+  return { max: steps * roundStep, steps };
 }
 
-/** ApexCharts' y-axis for a round axis: muted labels like "2,5 kWh" on the left. */
-export function axisOptions(axis: RoundAxis, unit: string): ApexOptions['yaxis'] {
+/** ApexCharts' y-axis for a round axis: muted whole numbers on the left, without the unit (the sheet says it). */
+export function axisOptions(axis: RoundAxis): ApexOptions['yaxis'] {
   return {
     show: true,
     min: 0,
     max: axis.max,
     tickAmount: axis.steps,
     labels: {
-      // Room for "400 kWh", and a little away from the plot, so the average's
-      // label (on the left of the plot) doesn't cover its end.
-      minWidth: 52,
+      // A little away from the plot, so the average's label (on the left of the plot) doesn't cover its end.
       offsetX: -6,
       style: { colors: MUTED_TEXT_COLOR, fontSize: '10px' },
-      formatter: (value: number) => `${readableAmount(value, axis.decimals)} ${unit}`,
+      formatter: (value: number) => readableAmount(value, 0),
     },
   };
 }

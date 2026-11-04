@@ -150,8 +150,8 @@ function MonthlyPeaksChart({
     monthIndex === lastMonthIndex ? TEXT_COLOR : MUTED_TEXT_COLOR,
   );
   const highestKilowatts = Math.max(ENERGY_QUARTER.minimumKilowatts, ...monthlyPeaks.map((monthlyPeak) => monthlyPeak.kilowatts));
-  // Every number in this sheet has two decimals (the owner's choice), the axis too.
-  const axis = roundAxis(highestKilowatts * 1.1, 2);
+  // The axis in whole kW, without the unit (the owner's choice); the other numbers in this sheet have two decimals.
+  const axis = roundAxis(highestKilowatts * 1.1);
 
   const options: ApexOptions = {
     chart: {
@@ -181,7 +181,7 @@ function MonthlyPeaksChart({
       axisTicks: { show: false },
       labels: { style: { colors: labelColors, fontSize: '10px' } },
     },
-    yaxis: axisOptions(axis, 'kW'),
+    yaxis: axisOptions(axis),
     annotations: {
       yaxis: [
         // The band up to the minimum: a peak below it still counts as the minimum.

@@ -111,7 +111,7 @@ export function MeterSheet(props: Props) {
 
       {hasHours && (
         <InfoSection heading="Vandaag per uur">
-          <InfoBarChart labels={hourLabels()} values={hourlyTotals} color={color} nowIndex={new Date().getHours()} unit={unit} />
+          <InfoBarChart labels={hourLabels()} values={hourlyTotals} color={color} nowIndex={new Date().getHours()} />
         </InfoSection>
       )}
 
@@ -121,7 +121,6 @@ export function MeterSheet(props: Props) {
             labels={monthStarts.map(monthName)}
             values={monthlyTotals}
             color={color}
-            unit={unit}
             average={averageEarlierMonth === undefined ? undefined : { value: averageEarlierMonth, label: `gem. ${readable(averageEarlierMonth)}` }}
           />
         </InfoSection>

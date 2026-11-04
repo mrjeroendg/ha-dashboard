@@ -20,6 +20,6 @@ The designs that led here: Gas as its own page in the bar (G1 to G3): [`page-opt
 ## Gas
 
 - **One [day tile](../day-tile/README.md):** "Gas vandaag" in m³ (two decimals), with the 13 days before today and today as bars, a first letter per day (today's bold, its bar brighter) and their average as a dashed line.
-- **Purple** `#a37cf0` (`ENERGY_GAS.color`), the owner's choice; it was light blue `#5cb8f2`. Thuis' gas tile keeps its own colour for now.
+- **Purple** `#a37cf0` (`ENERGY_GAS.color`), the owner's choice; it was light blue `#5cb8f2`. Thuis' gas tile has the same colour (`UTILITY_COLORS.gas`).
 - **Source:** `sensor.gas_meter_consumption_daily` (today, from its state) and its daily statistics in HA (the days before), fetched again every 5 minutes.
 - **"≈ €":** today's m³ times `ENERGY_GAS.euroPerCubicMetre`, for now an **estimate on the high side, €1,30 per m³** (all-in about €0,12 per kWh × about 10,8 kWh per m³) until the price on the bill replaces it.

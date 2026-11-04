@@ -51,7 +51,7 @@ The dark steps from the dataviz reference palette, validated on surface `#30302e
 | Stroom | `#d55181` (magenta) |
 | Zon | `#c98500` (yellow) |
 | Water | `#3987e5` (blue) |
-| Gas | `#199e70` (aqua green) |
+| Gas | `#a37cf0` (purple; was aqua green `#199e70`, changed with Energie's gas) |
 
 - Validation (`validate_palette.js --mode dark --surface "#30302e"`) on the **grid-neighbour pairs** (Stroom–Zon, Zon–Gas, Gas–Water, Water–Stroom): **all checks pass.** The worst CVD ΔE is 8.4 and the worst normal-vision ΔE is 19.3.
 - Pairs that would be hard to tell apart (magenta↔aqua) only meet **diagonally**, so **don't reorder the tiles.**

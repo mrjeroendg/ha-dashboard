@@ -75,8 +75,8 @@ export const ENERGY_TODAY = {
 /** The "Gas" chip on the Energie page (docs/design/energie-gas): the gas meter's daily sensor, in m³. */
 export const ENERGY_GAS = {
   gasToday: Entity.GAS_CONSUMPTION_TODAY,
-  /** Purple (the owner's choice); Thuis' gas tile keeps its own colour for now. */
-  color: '#a37cf0',
+  /** Purple, like Thuis' gas tile (the owner's choice). */
+  color: UTILITY_COLORS.gas,
   /** The chart shows this many days before today, plus today. */
   previousDays: 13,
   /**

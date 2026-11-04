@@ -38,7 +38,7 @@ export const UTILITY_COLORS = {
   stroom: '#d55181',
   zon: '#c98500',
   water: '#3987e5',
-  gas: '#199e70',
+  gas: '#a37cf0',
   feedingBack: '#6bab3e',
 };
 
